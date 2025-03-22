@@ -294,35 +294,29 @@ class AgentSetting(models.Model):
             # just log the error
 
 
-class ToolManager(OrganizationManagerMixin, models.Manager):
+class MCPConfigManager(OrganizationManagerMixin, models.Manager):
     def get_queryset(self):
         return super().get_queryset().select_related("agent_setting__version__agent")
 
 
-class Tool(models.Model):
+class MCPConfig(models.Model):
     agent_setting = models.ForeignKey(
         AgentSetting,
         on_delete=models.CASCADE,
-        related_name="tools",
-        help_text="The agent setting this tool belongs to",
+        related_name="mcp_configs",
+        help_text="The agent setting this MCP config belongs to",
     )
-    name = models.CharField(max_length=200)
-    description = models.TextField(help_text="Description of what the tool does")
-    input_schema = models.JSONField(
-        default=dict,
-        help_text="JSON schema for the tool's input parameters",
+    sse_url = models.URLField(
+        help_text="The URL of the SSE endpoint of the MCP server",
     )
-    url = models.URLField(
-        blank=True, null=True, help_text="OpenAPI URL for Action type tools"
-    )
-    auth_token = models.CharField(
+    sse_token = models.CharField(
         max_length=255,
         blank=True,
         null=True,
-        help_text="Optional authentication token for API",
+        help_text="The token for the SSE endpoint",
     )
 
-    objects = ToolManager()
+    objects = MCPConfigManager()
 
     class Meta:
         indexes = [
@@ -338,8 +332,8 @@ class Tool(models.Model):
             # Only allow edits if version status is 'next'
             if self.agent_setting.version.status != "next":
                 raise IntegrityError(
-                    f"Cannot modify tools for version with status '{self.agent_setting.version.status}'. "
-                    f"Only tools in versions with 'next' status can be modified."
+                    f"Cannot modify MCP config for version with status '{self.agent_setting.version.status}'. "
+                    f"Only MCP configs in versions with 'next' status can be modified."
                 )
 
         self.clean()

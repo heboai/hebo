@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     LANGFUSE_HOST: str | None = None
 
     # General settings
-    ARTIFICIAL_DELAY_DURATION: int = 10
     MAX_RECURSION_DEPTH: int = 5
 
     # CORS settings

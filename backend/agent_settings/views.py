@@ -20,8 +20,8 @@ from core.authentication import APIKeyAuthentication
 from core.mixins import OrganizationPermissionMixin
 from versions.models import VersionSlug
 from .forms import LLMAdapterForm, AgentSettingForm
-from .models import AgentSetting, Tool, LLMAdapter
-from .serializers import AgentSettingSerializer, ToolSerializer
+from .models import AgentSetting, LLMAdapter, MCPConfig
+from .serializers import AgentSettingSerializer, MCPConfigSerializer
 
 # Configure a logger for this module
 logger = logging.getLogger(__name__)
@@ -82,44 +82,6 @@ class AgentSettingUpdateView(
             "agent_setting_update",
             kwargs={"organization_pk": self.organization.pk},
         )
-
-
-class ToolListView(LoginRequiredMixin, OrganizationPermissionMixin, ListView):
-    model = Tool
-    template_name = "agent_settings/tool_list.html"
-    context_object_name = "tool"
-
-
-class ToolCreateView(LoginRequiredMixin, OrganizationPermissionMixin, CreateView):
-    model = Tool
-    template_name = "agent_settings/tool_create.html"
-    context_object_name = "tool"
-    fields = ["name", "description", "url", "parameters"]
-
-    def get_success_url(self):
-        return reverse_lazy(
-            "tool_list",
-            kwargs={"organization_pk": self.agent_setting.organization.pk},  # type: ignore
-        )
-
-
-class ToolDeleteView(LoginRequiredMixin, OrganizationPermissionMixin, DeleteView):
-    model = Tool
-    template_name = "agent_settings/tool_delete.html"
-    context_object_name = "tool"
-
-    def get_success_url(self):
-        return reverse_lazy(
-            "tool_list",
-            kwargs={"organization_pk": self.agent_setting.organization.pk},  # type: ignore
-        )
-
-
-class ToolUpdateView(LoginRequiredMixin, OrganizationPermissionMixin, UpdateView):
-    model = Tool
-    template_name = "agent_settings/tool_update.html"
-    context_object_name = "tool"
-    fields = ["name", "description", "url", "parameters"]
 
 
 class LLMAdapterListView(LoginRequiredMixin, OrganizationPermissionMixin, ListView):
@@ -358,25 +320,23 @@ class AgentSettingViewSet(viewsets.ModelViewSet):
         )
 
 
-class ToolViewSet(viewsets.ModelViewSet):
+class MCPConfigViewSet(viewsets.ModelViewSet):
     """
-    API endpoint for accessing tools.
+    API endpoint for accessing MCP configs.
     """
 
-    serializer_class = ToolSerializer
+    serializer_class = MCPConfigSerializer
     authentication_classes = [APIKeyAuthentication]
     permission_classes = []
 
     def get_queryset(self):
         # Get organization from authentication
         organization = self.request.auth  # type: ignore
-
-        # Get agent_slug from query params
         agent_version = self.request.query_params.get("agent_version")  # type: ignore
         if not agent_version:
             raise ValidationError("agent_version query parameter is required")
 
-        # Get version from agent_slug
+        # Get version from agent_version
         try:
             version_slug = VersionSlug.objects.get(slug=agent_version)
             version = version_slug.version
@@ -385,8 +345,7 @@ class ToolViewSet(viewsets.ModelViewSet):
                 f"No version found for agent_version: {agent_version}"
             )
 
-        # Filter tools by agent_setting that matches the organization and version
-        return Tool.objects.filter(
+        return MCPConfig.objects.filter(
             agent_setting__organization=organization, agent_setting__version=version
         )
 
@@ -404,15 +363,15 @@ class ToolViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         """
-        List all tools for the authenticated organization and specified agent_slug.
+        List all MCP configs for the authenticated organization and specified agent_slug.
         """
         return super().list(request, *args, **kwargs)
 
     @action(detail=False, methods=["post"])
     def bulk_update(self, request):
         """
-        Bulk update tools for the current version.
-        Deletes existing tools and creates new ones.
+        Bulk update MCP configs for the current version.
+        Deletes existing MCP configs and creates new ones.
         Requires agent settings to exist for the version.
         """
         # Get queryset to ensure proper authentication and version lookup
@@ -422,7 +381,7 @@ class ToolViewSet(viewsets.ModelViewSet):
 
         # Validate request data
         if not isinstance(request.data, list):
-            raise ValidationError("Request body must be a list of tools")
+            raise ValidationError("Request body must be a list of MCP configs")
 
         # Check if agent settings exist
         try:
@@ -433,7 +392,7 @@ class ToolViewSet(viewsets.ModelViewSet):
             return Response(
                 {
                     "status": "error",
-                    "message": "Agent settings must exist before updating tools",
+                    "message": "Agent settings must exist before updating MCP configs",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -443,15 +402,15 @@ class ToolViewSet(viewsets.ModelViewSet):
 
         try:
             with transaction.atomic():
-                # Delete existing tools
+                # Delete existing MCP configs
                 deleted_count = queryset.delete()[0]
                 report["deleted"].append({"count": deleted_count})
 
-                # Create new tools
-                for tool_data in request.data:  # type: ignore
-                    tool_data["agent_setting"] = agent_setting
-                    new_tool = Tool.objects.create(**tool_data)
-                    report["created"].append({"id": new_tool.id})  # type: ignore
+                # Create new MCP configs
+                for config_data in request.data:  # type: ignore
+                    config_data["agent_setting"] = agent_setting
+                    new_config = MCPConfig.objects.create(**config_data)
+                    report["created"].append({"id": new_config.id})  # type: ignore
 
         except IntegrityError as e:
             report["errors"].append({"type": "integrity_error", "message": str(e)})

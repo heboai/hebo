@@ -397,11 +397,11 @@ class Version(models.Model):
                 include_last_24h_history=old_settings.include_last_24h_history,
             )
 
-            # Copy associated tools
-            for tool in old_settings.tools.all():
-                tool.pk = None  # This will create a new instance
-                tool.agent_setting = new_settings
-                tool.save()
+            # Copy associated MCP configs
+            for mcp_config in old_settings.mcp_configs.all():
+                mcp_config.pk = None  # This will create a new instance
+                mcp_config.agent_setting = new_settings
+                mcp_config.save()
 
     def _duplicate_pages(self, source_version: "Version") -> None:
         """Helper method to duplicate pages, parts, and vectors."""

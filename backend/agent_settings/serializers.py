@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import AgentSetting, Tool, LLMAdapter
+from .models import AgentSetting, LLMAdapter, MCPConfig
 
 
 class LLMAdapterSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class AgentSettingSerializer(serializers.ModelSerializer):
         ]
 
 
-class ToolSerializer(serializers.ModelSerializer):
+class MCPConfigSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Tool
-        fields = ["name", "description", "input_schema", "url", "auth_token"]
+        model = MCPConfig
+        fields = ["sse_url", "sse_token"]

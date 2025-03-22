@@ -8,7 +8,7 @@ import json
 
 import asyncpg
 
-from schemas.agent_settings import AgentSetting, LLMAdapter, Tool
+from schemas.agent_settings import AgentSetting, LLMAdapter, MCPParams
 from schemas.threads import Message, MessageType, MessageContent, Run, Summary, Thread
 
 logger = logging.getLogger(__name__)
@@ -298,14 +298,15 @@ class DB:
         if not settings_row:
             return None
 
-        # Get tools
-        tools_query = """
-            SELECT id, agent_setting_id, name, description, input_schema, url, auth_token
-            FROM agent_settings_tool
+        # Get MCP params
+        mcp_params_query = """
+            SELECT sse_url, sse_token
+            FROM agent_settings_mcpconfig
             WHERE agent_setting_id = $1
+            LIMIT 1
         """
-        tools_rows = await self.conn.fetch(tools_query, settings_row["id"])
-
+        mcp_params_row = await self.conn.fetchrow(mcp_params_query, settings_row["id"])
+        mcp_params = MCPParams(**mcp_params_row) if mcp_params_row else None
         # Get LLM adapters
         adapters_query = """
             SELECT id, is_default, organization_id, model_type, provider,
@@ -324,19 +325,6 @@ class DB:
         # Convert rows to objects
         adapters_dict = {row["id"]: LLMAdapter(**dict(row)) for row in adapters_rows}
 
-        tools = [
-            Tool(
-                **{
-                    **dict(row),
-                    # Parse input_schema from JSON string to dict
-                    "input_schema": (
-                        json.loads(row["input_schema"]) if row["input_schema"] else None
-                    ),
-                }
-            )
-            for row in tools_rows
-        ]
-
         # Construct AgentSetting object
         return AgentSetting(
             id=settings_row["id"],
@@ -349,7 +337,7 @@ class DB:
             delay=settings_row["delay"],
             hide_tool_messages=settings_row["hide_tool_messages"],
             include_last_24h_history=settings_row["include_last_24h_history"],
-            tools=tools,
+            mcp_params=mcp_params,
         )
 
     @db_operation

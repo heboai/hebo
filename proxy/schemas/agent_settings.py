@@ -1,7 +1,7 @@
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field
 
 
 class ModelType(str, Enum):
@@ -35,17 +35,9 @@ class LLMAdapter(BaseModel):
         from_attributes = True
 
 
-class Tool(BaseModel):
-    id: int
-    agent_setting_id: int
-    name: str = Field(max_length=200)
-    description: str
-    input_schema: dict
-    url: Optional[HttpUrl] = None
-    auth_token: Optional[str] = Field(default=None, max_length=255)
-
-    class Config:
-        from_attributes = True
+class MCPParams(BaseModel):
+    sse_url: str
+    sse_token: Optional[str] = None
 
 
 class AgentSetting(BaseModel):
@@ -59,7 +51,7 @@ class AgentSetting(BaseModel):
     delay: bool = False
     hide_tool_messages: bool = False
     include_last_24h_history: bool = False
-    tools: List[Tool] = []
+    mcp_params: Optional[MCPParams] = None
 
     class Config:
         from_attributes = True

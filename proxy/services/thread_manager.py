@@ -354,7 +354,7 @@ class ThreadManager:
                     )
 
             reply_messages = []
-            for _reply in execute_conversation(
+            async for _reply in execute_conversation(
                 agent_settings_or_llm=agent_settings,
                 conversation=llm_conversation,
                 behaviour=behaviour,

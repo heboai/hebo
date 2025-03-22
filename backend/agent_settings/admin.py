@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
-from .models import AgentSetting, LLMAdapter, Tool
+from .models import AgentSetting, LLMAdapter, MCPConfig
 
 
 @admin.register(AgentSetting)
@@ -34,13 +34,13 @@ class AgentSettingAdmin(ModelAdmin):
     version_slugs.short_description = "Version Slugs"
 
 
-@admin.register(Tool)
-class ToolAdmin(ModelAdmin):
-    list_display = ["name", "description"]
-    search_fields = ["name", "description"]
-
-
 @admin.register(LLMAdapter)
 class LLMAdapterAdmin(ModelAdmin):
     list_display = ["name", "is_default", "model_type", "provider"]
     search_fields = ["name"]
+
+
+@admin.register(MCPConfig)
+class MCPConfigAdmin(ModelAdmin):
+    list_display = ["agent_setting", "sse_url"]
+    search_fields = ["agent_setting__version__agent__name"]

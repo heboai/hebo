@@ -16,6 +16,8 @@ dependencies = [
     "pillow>=11.1.0",
     "voyageai>=0.3.2",
     "uvicorn>=0.34.0",
+    "mcp[cli]>=1.4.1",
+    "langchain-mcp-adapters>=0.0.5",
 ]
 
 [dependency-groups]

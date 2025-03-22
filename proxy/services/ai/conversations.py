@@ -1,7 +1,7 @@
 import logging
-from typing import Generator, List, Optional
+from typing import List, Optional, AsyncGenerator
 
-from langchain_core.language_models import LanguageModelInput
+from langchain_core.language_models import BaseChatModel, LanguageModelInput
 from langchain_core.messages import (
     AIMessage,
     BaseMessage,
@@ -10,10 +10,14 @@ from langchain_core.messages import (
     ToolMessage,
 )
 from langchain_core.runnables import Runnable
+from langchain_mcp_adapters.tools import load_mcp_tools
+
+from mcp.client.session import ClientSession
+from mcp.client.sse import sse_client
 
 from config import settings
 from schemas.ai import Session
-from schemas.agent_settings import AgentSetting, Tool
+from schemas.agent_settings import AgentSetting, MCPParams
 from services.exceptions import ColleagueHandoffException
 
 from .chat_models.bedrock import get_bedrock_client
@@ -30,18 +34,19 @@ MAX_RECURSION_DEPTH = settings.MAX_RECURSION_DEPTH
 logger = logging.getLogger(__name__)
 
 
-# TODO: make this async
-def execute_conversation(
-    agent_settings_or_llm: AgentSetting | Runnable[LanguageModelInput, BaseMessage],
+async def execute_conversation(
+    agent_settings_or_llm: (
+        AgentSetting | BaseChatModel | Runnable[LanguageModelInput, BaseMessage]
+    ),
     conversation: List[BaseMessage],
     session: Session,
     behaviour: str,
     context: str,
     history_summaries: Optional[str] = None,
-    tools: Optional[List[Tool]] = None,
+    mcp_server_params: Optional[MCPParams] = None,
     recursion_depth: int = 0,
-) -> Generator[AIMessage | BaseMessage | ToolMessage, None, None]:
-    """Execute a conversation with the LLM and yield messages to be returned."""
+) -> AsyncGenerator[AIMessage | BaseMessage | ToolMessage, None]:
+    """Execute a conversation with the LLM and yield messages asynchronously."""
 
     agent_settings = (
         agent_settings_or_llm
@@ -49,10 +54,10 @@ def execute_conversation(
         else None
     )
     llm = agent_settings_or_llm if isinstance(agent_settings_or_llm, Runnable) else None
-    tools = (
-        tools
-        if isinstance(tools, List)
-        else agent_settings.tools
+    mcp_server_params = (
+        mcp_server_params
+        if isinstance(mcp_server_params, MCPParams)
+        else agent_settings.mcp_params
         if agent_settings
         else None
     )
@@ -70,17 +75,10 @@ def execute_conversation(
     def get_llm(
         client,
         model_name: str,
-    ) -> Runnable[LanguageModelInput, BaseMessage]:
+    ) -> BaseChatModel:
         """Initialize the LLM, bind tools to it, and return the instance."""
-        logger.debug("Getting LLM instance")
-
         llm = init_llm(client, model_name)
-        # TODO: Add support for user defined tools
-        return llm.bind_tools(
-            [
-                colleague_handoff,
-            ]
-        )
+        return llm
 
     if recursion_depth == 0:
         conversation = [
@@ -124,75 +122,96 @@ def execute_conversation(
     if not llm:
         raise ValueError("LLM not found")
 
-    try:
-        logger.info("Invoking Conversation LLM...")
-        response = llm.invoke(
-            conversation,
-            config=langfuse_config,
-        )
-    except Exception as e:
-        logger.error(f"Error invoking LLM: {e}")
-        raise
-    # we retry because LLMs sometimes return empty response content
-    if not response.content:
-        logger.warning("LLM response content is empty. Retrying...")
-        yield from execute_conversation(
-            llm,
-            conversation,
-            session,
-            behaviour,
-            context,
-            history_summaries,
-            tools,
-            recursion_depth + 1,
-        )
-        return
+    if not mcp_server_params:
+        raise ValueError("MCP server params not found")
 
-    if isinstance(response.content, str):
-        response.content = [{"type": "text", "text": response.content}]
-    logger.debug(f"Conversation LLM response: {response}")
-    conversation.append(response)
-    yield response
+    # TODO: What do do if mcp_server_params is None?
+    async with sse_client(url=mcp_server_params.sse_url) as (read, write):
+        async with ClientSession(read, write) as client_session:
+            await client_session.initialize()
+            tools = await load_mcp_tools(client_session)
 
-    if isinstance(response, AIMessage) and response.tool_calls:
-        logger.debug(f"Processing {len(response.tool_calls)} tool calls")
-        for tool_call in response.tool_calls:
-            logger.info(f"Invoking tool: {tool_call}")
+            # TODO: make colleague_handoff optional. Maybe another flag on the agent settings?
+            tools.append(colleague_handoff)
+
+            if isinstance(llm, BaseChatModel):
+                llm = llm.bind_tools(tools)
+
             try:
-                response_text = eval(tool_call["name"]).invoke(tool_call["args"])
-            except ColleagueHandoffException as e:
-                raise e
+                logger.info("Invoking Conversation LLM...")
+                response = await llm.ainvoke(
+                    conversation,
+                    config=langfuse_config,
+                )
             except Exception as e:
-                logger.warning(f"Error invoking tool {tool_call['name']}: {e}")
-                response_text = f"Tool ({tool_call['name']}): Error invoking tool: {e}"
+                logger.error(f"Error invoking LLM: {e}")
+                raise
+            # we retry because LLMs sometimes return empty response content
+            if not response.content:
+                logger.warning("LLM response content is empty. Retrying...")
+                async for msg in execute_conversation(
+                    llm,
+                    conversation,
+                    session,
+                    behaviour,
+                    context,
+                    history_summaries,
+                    mcp_server_params,
+                    recursion_depth + 1,
+                ):
+                    yield msg
+                return
 
-            tool_message_content = [
-                {
-                    "type": "text",
-                    "text": response_text,
-                }
-            ]
+            if isinstance(response.content, str):
+                response.content = [{"type": "text", "text": response.content}]
+            logger.debug(f"Conversation LLM response: {response}")
+            conversation.append(response)
+            yield response
 
-            tool_message = ToolMessage(
-                content=tool_message_content,  # type: ignore
-                tool_call_id=tool_call["id"],
-                additional_kwargs={"tool_call_name": tool_call["name"]},
-            )
-            conversation.append(tool_message)
-            yield tool_message
+            if isinstance(response, AIMessage) and response.tool_calls:
+                logger.debug(f"Processing {len(response.tool_calls)} tool calls")
+                for tool_call in response.tool_calls:
+                    logger.info(f"Invoking tool: {tool_call}")
+                    try:
+                        response_text = await eval(tool_call["name"]).ainvoke(
+                            tool_call["args"]
+                        )
+                    except ColleagueHandoffException as e:
+                        raise e
+                    except Exception as e:
+                        logger.warning(f"Error invoking tool {tool_call['name']}: {e}")
+                        response_text = (
+                            f"Tool ({tool_call['name']}): Error invoking tool: {e}"
+                        )
 
-        # Recursive call
-        logger.debug(f"Making recursive call. Current depth: {recursion_depth}")
-        yield from execute_conversation(
-            llm,
-            conversation,
-            session,
-            behaviour,
-            context,
-            history_summaries,
-            tools,
-            recursion_depth + 1,
-        )
+                    tool_message_content = [
+                        {
+                            "type": "text",
+                            "text": response_text,
+                        }
+                    ]
+
+                    tool_message = ToolMessage(
+                        content=tool_message_content,  # type: ignore
+                        tool_call_id=tool_call["id"],
+                        additional_kwargs={"tool_call_name": tool_call["name"]},
+                    )
+                    conversation.append(tool_message)
+                    yield tool_message
+
+                # Recursive call
+                logger.debug(f"Making recursive call. Current depth: {recursion_depth}")
+                async for msg in execute_conversation(
+                    llm,
+                    conversation,
+                    session,
+                    behaviour,
+                    context,
+                    history_summaries,
+                    mcp_server_params,
+                    recursion_depth + 1,
+                ):
+                    yield msg
 
 
 # TODO: make this async
@@ -207,8 +226,7 @@ def execute_vision(
     langfuse_config = get_langfuse_config("vision", session)
 
     def get_llm(client):
-        """Initialize the LLM, bind tools to it, and return the instance."""
-        logger.debug("Getting LLM instance")
+        """Initialize the LLM and return the instance."""
         return init_llm(
             client,
             agent_settings.vision_llm.name if agent_settings.vision_llm else None,
@@ -291,8 +309,7 @@ def execute_condense(
     langfuse_config = get_langfuse_config("condense", session)
 
     def get_llm(client):
-        """Initialize the LLM, bind tools to it, and return the instance."""
-        logger.debug("Getting LLM instance")
+        """Initialize the LLM and return the instance."""
         return init_llm(
             client,
             agent_settings.condense_llm.name if agent_settings.condense_llm else None,
@@ -339,8 +356,7 @@ def execute_summary(
     langfuse_config = get_langfuse_config("summary", session)
 
     def get_llm(client):
-        """Initialize the LLM, bind tools to it, and return the instance."""
-        logger.debug("Getting LLM instance")
+        """Initialize the LLM and return the instance."""
         return init_llm(
             client,
             agent_settings.condense_llm.name if agent_settings.condense_llm else None,
