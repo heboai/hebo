@@ -1,0 +1,83 @@
+services:
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf
+  #     - backend_static:/var/www/static
+  #   depends_on:
+  #     - backend
+  #     - proxy
+  #   networks:
+  #     - hebo_network
+
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/backend.Dockerfile
+  #   volumes:
+  #     - backend_static:/app/staticfiles
+  #   env_file:
+  #     - backend/.env
+  #   environment:
+  #     - POSTGRES_HOST=db
+  #     - POSTGRES_PORT=5432
+  #     - POSTGRES_USER=hebo
+  #     - POSTGRES_PASSWORD=hebo
+  #     - POSTGRES_DB=hebo
+  #     - PROXY_SERVER_BASE_URL=http://localhost:80/api
+  #     - PROXY_URL=http://proxy:8001
+  #   depends_on:
+  #     - db
+  #     - redis
+  #   networks:
+  #     - hebo_network
+
+  # proxy:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/proxy.Dockerfile
+  #   env_file:
+  #     - proxy/.env
+  #   environment:
+  #     - POSTGRES_HOST=db
+  #     - POSTGRES_PORT=5432
+  #     - POSTGRES_USER=hebo
+  #     - POSTGRES_PASSWORD=hebo
+  #     - POSTGRES_DB=hebo
+  #     - ADDITIONAL_CORS_ORIGINS="https://api.hebo.ai,https://app.hebo.ai"
+  #   depends_on:
+  #     - db
+  #     - redis
+  #   networks:
+  #     - hebo_network
+
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: hebo
+      POSTGRES_PASSWORD: hebo
+      POSTGRES_DB: hebo
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hebo_network
+
+  redis:
+    image: redis:7
+    volumes:
+      - redis_data:/data
+    networks:
+      - hebo_network
+
+networks:
+  hebo_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_static:
