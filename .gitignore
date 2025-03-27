@@ -5,6 +5,11 @@ __pycache__/
 *$py.class
 *.so
 
+### Personal Data
+userconfig/
+docker-compose.yml
+proxy/config.py
+
 # Distribution / packaging
 dist/
 build/

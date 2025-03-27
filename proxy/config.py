@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     MAX_RECURSION_DEPTH: int = 5
 
     # CORS settings
-    ADDITIONAL_CORS_ORIGINS: list[str] = []
+    ADDITIONAL_CORS_ORIGINS: list[str] = ["https://api.hebo.ai"]
 
     @field_validator("ADDITIONAL_CORS_ORIGINS", mode="before")
     @classmethod
