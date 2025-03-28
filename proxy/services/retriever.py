@@ -3,6 +3,7 @@ import json
 from typing import List
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langchain_openai import ChatOpenAI
 
 from db.vectorstore import VectorStore
 from schemas.ai import Session
@@ -33,26 +34,42 @@ class Retriever:
             if agent_settings.embeddings and agent_settings.embeddings.api_key
             else ""
         )
-        self.condense_client = get_bedrock_client(
-            (
-                agent_settings.condense_llm.aws_access_key_id
-                if agent_settings.condense_llm
-                and agent_settings.condense_llm.aws_access_key_id
-                else ""
-            ),
-            (
-                agent_settings.condense_llm.aws_secret_access_key
-                if agent_settings.condense_llm
-                and agent_settings.condense_llm.aws_secret_access_key
-                else ""
-            ),
-            (
-                agent_settings.condense_llm.aws_region
-                if agent_settings.condense_llm
-                and agent_settings.condense_llm.aws_region
-                else ""
-            ),
-        )
+        
+        # Initialize the condense client based on provider
+        if (
+            agent_settings.condense_llm 
+            and agent_settings.condense_llm.provider == "openai"
+        ):
+            if not agent_settings.condense_llm.api_key:
+                raise ValueError("OpenAI API key not found in agent settings")
+                
+            self.condense_client = ChatOpenAI(
+                model=agent_settings.condense_llm.name,
+                api_key=agent_settings.condense_llm.api_key,
+                base_url=agent_settings.condense_llm.api_base or None,
+            )
+        else:
+            # Default to Bedrock client
+            self.condense_client = get_bedrock_client(
+                (
+                    agent_settings.condense_llm.aws_access_key_id
+                    if agent_settings.condense_llm
+                    and agent_settings.condense_llm.aws_access_key_id
+                    else ""
+                ),
+                (
+                    agent_settings.condense_llm.aws_secret_access_key
+                    if agent_settings.condense_llm
+                    and agent_settings.condense_llm.aws_secret_access_key
+                    else ""
+                ),
+                (
+                    agent_settings.condense_llm.aws_region
+                    if agent_settings.condense_llm
+                    and agent_settings.condense_llm.aws_region
+                    else ""
+                ),
+            )
 
     async def embed_content(self, content: str) -> List[float]:
         """Embed content using the embeddings client.
