@@ -21,11 +21,6 @@ services:
     env_file:
       - backend/.env
     environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=hebo
-      - POSTGRES_PASSWORD=hebo
-      - POSTGRES_DB=hebo
       - PROXY_SERVER_BASE_URL=http://localhost:80/api
       - PROXY_URL=http://proxy:8001
     depends_on:
@@ -41,11 +36,6 @@ services:
     env_file:
       - proxy/.env
     environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=hebo
-      - POSTGRES_PASSWORD=hebo
-      - POSTGRES_DB=hebo
       - ADDITIONAL_CORS_ORIGINS="https://api.hebo.ai,https://app.hebo.ai"
     depends_on:
       - db

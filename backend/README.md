@@ -61,8 +61,7 @@ npm run dev
 ```
 
 The application will be available at:
-- Django: http://localhost:8000
-- Frontend assets will automatically compile and update
+- Django: http://localhost
 
 ### Frontend Development
 

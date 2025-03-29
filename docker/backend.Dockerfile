@@ -5,8 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     nodejs \
-    npm \
-    && rm -rf /var/lib/apt/lists/*
+    npm
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
@@ -35,7 +34,7 @@ RUN npm install && npm run build
 RUN useradd -m -u 1000 app
 
 # Create and set ownership of the static directory
-RUN mkdir -p /app/staticfiles && chown -R app:app /app/staticfiles
+RUN mkdir -p /app/staticfiles && chown -R app:app /app/staticfiles && python /app/manage.py collectstatic --noinput
 
 # Runtime stage
 FROM python:3.13-rc-slim
@@ -51,9 +50,6 @@ COPY --from=builder --chown=app:app /usr/local /usr/local
 ENV PYTHONPATH="/app:$PYTHONPATH"
 ENV DJANGO_SETTINGS_MODULE="settings"
 
-# Add entrypoint script
-COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+WORKDIR /app
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"] 
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]

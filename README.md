@@ -10,6 +10,17 @@ Hebo AI is a platform designed for building and deploying AI agents. It provides
 - **Rapid Iteration**: Quickly iterate on agent designs with comprehensive control over their behavior and responses.
 - **Integrated Knowledge Base**: Seamlessly add and manage knowledge to enhance agent capabilities.
 
+## High-level Architecture
+```mermaid
+flowchart TD
+    web[Web UI] & cli[CLI] -- Managing --> core[Core]
+    core --> db[(DB)]
+    web & cli -- Testing--> proxy[Proxy]
+    proxy --> llm[LLM]
+    core -- Vectors --> proxy
+    user[Chat User] -- Conversing --> proxy
+```
+
 ## Getting Started
 
 1. **Create an Account**: Visit [app.hebo.ai](https://app.hebo.ai) to create an account.
