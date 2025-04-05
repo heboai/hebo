@@ -18,6 +18,7 @@ dependencies = [
     "uvicorn>=0.34.0",
     "mcp[cli]>=1.4.1",
     "langchain-mcp-adapters>=0.0.5",
+    "langchain-openai>=0.3.11",
 ]
 
 [dependency-groups]

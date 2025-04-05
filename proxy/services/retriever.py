@@ -11,7 +11,6 @@ from schemas.knowledge import ContentType
 
 # TODO: Add support for other embeddings providers
 # TODO: provide a similar interface for other embeddings and chat models
-from .ai.chat_models.bedrock import get_bedrock_client
 from .ai.conversations import execute_condense
 from .ai.embeddings.voyage import VoyageClient
 from .exceptions import EmbeddingError, RetrievalError
@@ -20,6 +19,33 @@ logger = logging.getLogger(__name__)
 
 
 class Retriever:
+    def _validate_provider_credentials(self, agent_settings: AgentSetting) -> None:
+        """Validate credentials based on the provider type.
+
+        Args:
+            agent_settings: The agent settings containing provider configuration
+
+        Raises:
+            ValueError: If required credentials are missing for the provider
+        """
+        if not agent_settings.condense_llm:
+            raise ValueError("No LLM configuration found in agent settings")
+
+        provider = agent_settings.condense_llm.provider.lower()
+
+        if provider == "openai":
+            if not agent_settings.condense_llm.api_key:
+                raise ValueError("OpenAI API key not found in agent settings")
+        elif provider == "bedrock":
+            if not agent_settings.condense_llm.aws_access_key_id:
+                raise ValueError("AWS access key ID not found in agent settings")
+            if not agent_settings.condense_llm.aws_secret_access_key:
+                raise ValueError("AWS secret access key not found in agent settings")
+            if not agent_settings.condense_llm.aws_region:
+                raise ValueError("AWS region not found in agent settings")
+        else:
+            raise ValueError(f"Unsupported provider: {provider}")
+
     def __init__(
         self,
         vector_store: VectorStore,
@@ -27,32 +53,16 @@ class Retriever:
     ):
         self.vector_store = vector_store
         self.agent_settings = agent_settings
-        # TODO: Add support for other embeddings providers
-        self.embeddings_client = VoyageClient(
-            agent_settings.embeddings.api_key
-            if agent_settings.embeddings and agent_settings.embeddings.api_key
-            else ""
-        )
-        self.condense_client = get_bedrock_client(
-            (
-                agent_settings.condense_llm.aws_access_key_id
-                if agent_settings.condense_llm
-                and agent_settings.condense_llm.aws_access_key_id
-                else ""
-            ),
-            (
-                agent_settings.condense_llm.aws_secret_access_key
-                if agent_settings.condense_llm
-                and agent_settings.condense_llm.aws_secret_access_key
-                else ""
-            ),
-            (
-                agent_settings.condense_llm.aws_region
-                if agent_settings.condense_llm
-                and agent_settings.condense_llm.aws_region
-                else ""
-            ),
-        )
+
+        # Validate embeddings configuration
+        if not agent_settings.embeddings or not agent_settings.embeddings.api_key:
+            raise ValueError("Embeddings API key not found in agent settings")
+
+        self.embeddings_client = VoyageClient(agent_settings.embeddings.api_key)
+
+        # Validate and initialize the condense client based on provider
+        if agent_settings.condense_llm:
+            self._validate_provider_credentials(agent_settings)
 
     async def embed_content(self, content: str) -> List[float]:
         """Embed content using the embeddings client.
@@ -191,9 +201,7 @@ class Retriever:
             RetrievalError: If query condensation fails
         """
         try:
-            return execute_condense(
-                self.condense_client, messages, session, agent_settings
-            )
+            return execute_condense(messages, session, agent_settings)
         except Exception as e:
             logger.error("Query condensation failed: %s", str(e))
             raise RetrievalError(f"Query condensation failed: {str(e)}")

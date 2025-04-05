@@ -11,7 +11,6 @@ from langchain_core.messages import (
 )
 from langchain_core.runnables import Runnable
 from langchain_mcp_adapters.tools import load_mcp_tools
-
 from mcp.client.session import ClientSession
 from mcp.client.sse import sse_client
 
@@ -23,7 +22,7 @@ from services.exceptions import ColleagueHandoffException
 from .chat_models.bedrock import get_bedrock_client
 from .dummy import dummy_sse_client, DummyClientSession, dummy_load_mcp_tools
 from .langfuse_utils import get_langfuse_config
-from .llms import init_llm
+from .llms import init_llm, BEDROCK_ARN_PATTERN, OPENAI_PATTERN
 from .prompts.condense import get_condense_prompt
 from .prompts.summary import get_summary_prompt
 from .prompts.system import get_system_prompt
@@ -44,6 +43,59 @@ def _extract_root_exception(
         root_exc = exc.exceptions[0]
         return _extract_root_exception(root_exc)
     return exc
+
+
+def get_llm(
+    agent_settings: Optional[AgentSetting],
+    model_name: Optional[str] = None,
+    llm_type: str = "core",  # can be "core", "condense", or "vision"
+) -> BaseChatModel:
+    """Initialize the LLM based on provider settings and return the instance."""
+    if not agent_settings:
+        raise ValueError("Agent settings are required")
+
+    # Get the appropriate LLM settings based on type
+    llm_settings = None
+    if llm_type == "core":
+        llm_settings = agent_settings.core_llm
+    elif llm_type == "condense":
+        llm_settings = agent_settings.condense_llm
+    elif llm_type == "vision":
+        llm_settings = agent_settings.vision_llm
+    else:
+        raise ValueError(f"Invalid LLM type: {llm_type}")
+
+    if not model_name and llm_settings:
+        model_name = llm_settings.name
+
+    if not model_name:
+        raise ValueError("Model name not found")
+
+    # Validate the model name
+    if not validate_model_name(model_name):
+        raise ValueError(f"Invalid model name: {model_name}")
+
+    if llm_settings:
+        if llm_settings.provider == "openai":
+            if not llm_settings.api_key:
+                raise ValueError("OpenAI API key not found in agent settings")
+
+            return init_llm(
+                client=None,
+                model_name=model_name,
+                api_key=llm_settings.api_key,
+                base_url=llm_settings.api_base or None,
+            )
+        else:
+            # Handle Bedrock case
+            conversation_client = get_bedrock_client(
+                llm_settings.aws_access_key_id or "",
+                llm_settings.aws_secret_access_key or "",
+                llm_settings.aws_region or "",
+            )
+            return init_llm(conversation_client, model_name)
+
+    raise ValueError("Invalid agent settings configuration")
 
 
 async def execute_conversation(
@@ -84,14 +136,6 @@ async def execute_conversation(
 
     langfuse_config = get_langfuse_config("conversation", session)
 
-    def get_llm(
-        client,
-        model_name: str,
-    ) -> BaseChatModel:
-        """Initialize the LLM, bind tools to it, and return the instance."""
-        llm = init_llm(client, model_name)
-        return llm
-
     if recursion_depth == 0:
         conversation = [
             SystemMessage(
@@ -100,36 +144,7 @@ async def execute_conversation(
         ] + conversation
 
     if not llm and agent_settings:
-        # TODO: Add support for other LLM providers
-        conversation_client = get_bedrock_client(
-            (
-                agent_settings.core_llm.aws_access_key_id
-                if agent_settings
-                and agent_settings.core_llm
-                and agent_settings.core_llm.aws_access_key_id
-                else ""
-            ),
-            (
-                agent_settings.core_llm.aws_secret_access_key
-                if agent_settings
-                and agent_settings.core_llm
-                and agent_settings.core_llm.aws_secret_access_key
-                else ""
-            ),
-            (
-                agent_settings.core_llm.aws_region
-                if agent_settings
-                and agent_settings.core_llm
-                and agent_settings.core_llm.aws_region
-                else ""
-            ),
-        )
-
-        model_name = agent_settings.core_llm.name if agent_settings.core_llm else None
-        if not model_name:
-            raise ValueError("Model name not found")
-
-        llm = get_llm(conversation_client, model_name)
+        llm = get_llm(agent_settings)
 
     if not llm:
         raise ValueError("LLM not found")
@@ -262,38 +277,8 @@ def execute_vision(
 ) -> str:
     langfuse_config = get_langfuse_config("vision", session)
 
-    def get_llm(client):
-        """Initialize the LLM and return the instance."""
-        return init_llm(
-            client,
-            agent_settings.vision_llm.name if agent_settings.vision_llm else None,
-        )
-
-    client = get_bedrock_client(
-        (
-            agent_settings.vision_llm.aws_access_key_id
-            if agent_settings
-            and agent_settings.vision_llm
-            and agent_settings.vision_llm.aws_access_key_id
-            else ""
-        ),
-        (
-            agent_settings.vision_llm.aws_secret_access_key
-            if agent_settings
-            and agent_settings.vision_llm
-            and agent_settings.vision_llm.aws_secret_access_key
-            else ""
-        ),
-        (
-            agent_settings.vision_llm.aws_region
-            if agent_settings
-            and agent_settings.vision_llm
-            and agent_settings.vision_llm.aws_region
-            else ""
-        ),
-    )
-
-    llm = get_llm(client)
+    # Use the vision LLM settings
+    llm = get_llm(agent_settings, llm_type="vision")
 
     try:
         logger.info("Invoking Vision LLM...")
@@ -359,25 +344,24 @@ def _format_conversation(
 
 # TODO: make this async
 def execute_condense(
-    client,
     conversation: List[BaseMessage],
     session: Session,
     # TODO: agent_settings is used just for the model name. Client depends on AgentSettings.
-    # TODO: This should be refactored and implemented in a more elegant way.
+    # TODO: This should refactored and implemented in a more elegant way.
     agent_settings: AgentSetting,
 ) -> str:
     """Execute a conversation with the LLM and yield messages to be returned."""
 
     langfuse_config = get_langfuse_config("condense", session)
 
-    def get_llm(client):
-        """Initialize the LLM and return the instance."""
-        return init_llm(
-            client,
-            agent_settings.condense_llm.name if agent_settings.condense_llm else None,
-        )
+    # Use the main get_llm function with condense_llm settings
+    llm = get_llm(
+        agent_settings,
+        model_name=agent_settings.condense_llm.name
+        if agent_settings.condense_llm
+        else None,
+    )
 
-    llm = get_llm(client)
     messages = _format_conversation(conversation, session, agent_settings)
     chat_history = "\n".join(messages[:-1])
     follow_up_question = messages[-1].replace("B: ", "")
@@ -409,7 +393,6 @@ def execute_condense(
     return content if isinstance(content, str) else ""
 
 
-# TODO: make this async
 def execute_summary(
     agent_settings: AgentSetting,
     conversation: List[BaseMessage],
@@ -417,39 +400,7 @@ def execute_summary(
 ):
     langfuse_config = get_langfuse_config("summary", session)
 
-    def get_llm(client):
-        """Initialize the LLM and return the instance."""
-        return init_llm(
-            client,
-            agent_settings.condense_llm.name if agent_settings.condense_llm else None,
-        )
-
-    # TODO: Add support for other LLM providers
-    client = get_bedrock_client(
-        (
-            agent_settings.condense_llm.aws_access_key_id
-            if agent_settings
-            and agent_settings.condense_llm
-            and agent_settings.condense_llm.aws_access_key_id
-            else ""
-        ),
-        (
-            agent_settings.condense_llm.aws_secret_access_key
-            if agent_settings
-            and agent_settings.condense_llm
-            and agent_settings.condense_llm.aws_secret_access_key
-            else ""
-        ),
-        (
-            agent_settings.condense_llm.aws_region
-            if agent_settings
-            and agent_settings.condense_llm
-            and agent_settings.condense_llm.aws_region
-            else ""
-        ),
-    )
-
-    llm = get_llm(client)
+    llm = get_llm(agent_settings, llm_type="condense")
 
     messages = _format_conversation(
         conversation, session, agent_settings, operation="summary"
@@ -478,3 +429,12 @@ def execute_summary(
     logger.debug(f"Summary LLM response: {response}")
     content = response.content
     return content if isinstance(content, str) else ""
+
+
+def validate_model_name(model_name: str) -> bool:
+    """Validate the model name using regex patterns."""
+    if BEDROCK_ARN_PATTERN.match(model_name):
+        return True
+    elif OPENAI_PATTERN.match(model_name):
+        return True
+    return False
