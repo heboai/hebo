@@ -799,9 +799,9 @@ class ThreadManager:
                 elif message.message_type == "human_agent":
                     curr_content = message.content
                     if curr_content[0].type == "text":
-                        message.content[0].text = (
-                            f"Human colleague: {curr_content[0].text}"
-                        )
+                        message.content[
+                            0
+                        ].text = f"Human colleague: {curr_content[0].text}"
                     else:
                         message.content.insert(
                             0,
@@ -817,9 +817,9 @@ class ThreadManager:
                         added_first_human_message = True
                         curr_content = message.content
                         if curr_content[0].type == "text":
-                            message.content[0].text = (
-                                f"(first message) {curr_content[0].text}"
-                            )
+                            message.content[
+                                0
+                            ].text = f"(first message) {curr_content[0].text}"
                         else:
                             message.content.insert(
                                 0,

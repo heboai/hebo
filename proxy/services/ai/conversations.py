@@ -326,9 +326,7 @@ async def _format_conversation(
                     elif item.get("type") == "image_url" and isinstance(
                         message, HumanMessage
                     ):
-                        content += (
-                            f"{await execute_vision([message], session, agent_settings)}\n"
-                        )
+                        content += f"{await execute_vision([message], session, agent_settings)}\n"
             return f"{prefix}{content.replace('\n', ' ')}" if content else ""
         else:
             return f"{prefix}{message.content.replace('\n', ' ')}"
@@ -356,9 +354,9 @@ async def execute_condense(
     # Use the main get_llm function with condense_llm settings
     llm = get_llm(
         agent_settings,
-        model_name=agent_settings.condense_llm.name
-        if agent_settings.condense_llm
-        else None,
+        model_name=(
+            agent_settings.condense_llm.name if agent_settings.condense_llm else None
+        ),
     )
 
     messages = await _format_conversation(conversation, session, agent_settings)
