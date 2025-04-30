@@ -33,6 +33,7 @@ from services.middleware import (
 )
 from services.response_manager import ResponseManager
 from services.thread_manager import ThreadManager
+from services.utils import timeit
 from services.vector_manager import VectorManager
 
 from __version__ import __version__
@@ -145,6 +146,7 @@ async def health_check(request: Request):
 
 
 @app.post("/vector", response_model=CreateVectorResponse)
+@timeit("create_vector")
 async def create_vector(request: CreateVectorRequest, req: Request):
     """Create a new vector"""
     organization_id = req.state.organization["id"]
@@ -161,6 +163,7 @@ async def create_vector(request: CreateVectorRequest, req: Request):
 
 
 @app.post("/threads", response_model=CreateThreadResponse)
+@timeit("create_thread")
 async def create_thread(request: CreateThreadRequest, req: Request):
     """Create a new thread"""
     organization_id = req.state.organization["id"]
@@ -182,6 +185,7 @@ async def create_thread(request: CreateThreadRequest, req: Request):
 
 
 @app.post("/threads/{thread_id}/close", response_model=CloseThreadResponse)
+@timeit("close_thread")
 async def close_thread(request: CloseThreadRequest, req: Request, thread_id: int):
     """Close a thread"""
     organization_id = req.state.organization["id"]
@@ -212,6 +216,7 @@ async def close_thread(request: CloseThreadRequest, req: Request, thread_id: int
     response_model=AddMessageResponse,
     response_model_exclude_none=True,
 )
+@timeit("add_message")
 async def add_message(request: AddMessageRequest, req: Request, thread_id: int):
     organization = req.state.organization
     async with app.state.db_pool.acquire() as conn:
@@ -228,6 +233,7 @@ async def add_message(request: AddMessageRequest, req: Request, thread_id: int):
     "/threads/{thread_id}/messages/{message_id}/remove",
     response_model=RemoveMessageResponse,
 )
+@timeit("remove_message")
 async def remove_message(message_id: int, req: Request, thread_id: int):
     organization = req.state.organization
     async with app.state.db_pool.acquire() as conn:
@@ -265,6 +271,7 @@ async def run(request: RunRequest, req: Request, thread_id: int):
 
 
 @app.post("/responses", response_model=Response)
+@timeit("create_response")
 async def create_response(request: ResponseRequest, req: Request):
     """Create a new response"""
     organization_id = req.state.organization["id"]
