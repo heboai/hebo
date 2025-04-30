@@ -269,8 +269,7 @@ async def execute_conversation(
         raise _extract_root_exception(e) from None
 
 
-# TODO: make this async
-def execute_vision(
+async def execute_vision(
     conversation: List[BaseMessage],
     session: Session,
     agent_settings: AgentSetting,
@@ -283,7 +282,7 @@ def execute_vision(
     try:
         logger.info("Invoking Vision LLM...")
         messages = [SystemMessage(content=get_vision_prompt())] + conversation
-        response = llm.invoke(
+        response = await llm.ainvoke(
             messages,
             config=langfuse_config,
         )
@@ -296,7 +295,7 @@ def execute_vision(
     return content if isinstance(content, str) else ""
 
 
-def _format_conversation(
+async def _format_conversation(
     conversation: List[BaseMessage],
     session: Session,
     agent_settings: AgentSetting,
@@ -306,7 +305,7 @@ def _format_conversation(
     if not conversation:
         return [""]
 
-    def format_message(
+    async def format_message(
         message: BaseMessage,
     ) -> str:
         """Helper function to format a single message"""
@@ -328,22 +327,22 @@ def _format_conversation(
                         message, HumanMessage
                     ):
                         content += (
-                            f"{execute_vision([message], session, agent_settings)}\n"
+                            f"{await execute_vision([message], session, agent_settings)}\n"
                         )
             return f"{prefix}{content.replace('\n', ' ')}" if content else ""
         else:
             return f"{prefix}{message.content.replace('\n', ' ')}"
 
     # Process all messages and join them with newlines
-    return [
-        msg
-        for msg in (format_message(message) for message in conversation)
-        if msg  # Filter out empty messages
-    ]
+    formatted_messages = []
+    for message in conversation:
+        formatted = await format_message(message)
+        if formatted:
+            formatted_messages.append(formatted)
+    return formatted_messages
 
 
-# TODO: make this async
-def execute_condense(
+async def execute_condense(
     conversation: List[BaseMessage],
     session: Session,
     # TODO: agent_settings is used just for the model name. Client depends on AgentSettings.
@@ -362,7 +361,7 @@ def execute_condense(
         else None,
     )
 
-    messages = _format_conversation(conversation, session, agent_settings)
+    messages = await _format_conversation(conversation, session, agent_settings)
     chat_history = "\n".join(messages[:-1])
     follow_up_question = messages[-1].replace("B: ", "")
 
@@ -393,7 +392,7 @@ def execute_condense(
     return content if isinstance(content, str) else ""
 
 
-def execute_summary(
+async def execute_summary(
     agent_settings: AgentSetting,
     conversation: List[BaseMessage],
     session: Session,
@@ -402,7 +401,7 @@ def execute_summary(
 
     llm = get_llm(agent_settings, llm_type="condense")
 
-    messages = _format_conversation(
+    messages = await _format_conversation(
         conversation, session, agent_settings, operation="summary"
     )
 

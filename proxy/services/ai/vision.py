@@ -29,9 +29,17 @@ def _image_url_body(encoded_image: str) -> dict:
 
 
 def _image_data_body(encoded_image: str) -> dict:
+    # If the image is already a data URL, use it directly
+    if encoded_image.startswith("data:"):
+        return {
+            "type": "image_url",
+            "image_url": {"url": encoded_image},
+        }
+
+    # Otherwise, format it as a data URL
     return {
         "type": "image_url",
-        "image_url": {"url": encoded_image},
+        "image_url": {"url": f"data:image/jpeg;base64,{encoded_image}"},
     }
 
 

@@ -548,7 +548,7 @@
                           <div class="max-w-3xl">
                             <div>
                               <img
-                                :src="content.image_data"
+                                :src="'data:image/jpeg;base64,' + content.image_data"
                                 class="max-h-64 rounded-lg"
                               />
                             </div>
@@ -789,6 +789,7 @@
     error: null,
     selectedImage: null,
     imageFile: null,
+    agentVersion: "{{ selected_version_slug }}",
 
     processMessageContent(content) {
       if (Array.isArray(content)) {
@@ -896,9 +897,11 @@
 
       // Add image content if present
       if (this.selectedImage && this.imageFile) {
+        // Extract the base64 part from the data URL
+        const base64Data = this.selectedImage.split(',')[1];
         messageContent.push({
           type: "image",
-          image_data: this.selectedImage,
+          image_data: base64Data,
         });
       }
 
@@ -946,7 +949,7 @@
           {
             method: "POST",
             body: JSON.stringify({
-              agent_version: "{{ selected_version_slug }}",
+              agent_version: this.agentVersion,
             }),
           }
         );
@@ -1039,6 +1042,12 @@
           `${PROXY_SERVER_BASE_URL}/threads/${this.threadId}/close`,
           {
             method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              agent_version: this.agentVersion,
+            }),
           }
         );
         const data = await response.json();

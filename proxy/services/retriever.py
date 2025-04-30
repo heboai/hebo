@@ -112,7 +112,7 @@ class Retriever:
             if not filtered_messages:
                 return ""
 
-            query = self._reduce_to_query(
+            query = await self._reduce_to_query(
                 filtered_messages, session, self.agent_settings
             )
             if not query:
@@ -182,7 +182,7 @@ class Retriever:
             logger.error("Unexpected error during retrieval: %s", str(e))
             raise RetrievalError(f"Retrieval failed: {str(e)}")
 
-    def _reduce_to_query(
+    async def _reduce_to_query(
         self,
         messages: List[BaseMessage],
         session: Session,
@@ -201,7 +201,7 @@ class Retriever:
             RetrievalError: If query condensation fails
         """
         try:
-            return execute_condense(messages, session, agent_settings)
+            return await execute_condense(messages, session, agent_settings)
         except Exception as e:
             logger.error("Query condensation failed: %s", str(e))
             raise RetrievalError(f"Query condensation failed: {str(e)}")

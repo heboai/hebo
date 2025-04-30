@@ -114,7 +114,7 @@ class ThreadManager:
                 created_at=datetime.now(messages[-1].created_at.tzinfo),
             )
         )
-        llm_conversation = self._messages_to_llm_conversation(
+        llm_conversation = await self._messages_to_llm_conversation(
             messages, agent_settings, session
         )
         llm_conversation: List[LangchainBaseMessage] = [
@@ -122,7 +122,7 @@ class ThreadManager:
             for msg in llm_conversation
             if isinstance(msg, (AIMessage, HumanMessage))
         ]
-        summary = execute_summary(agent_settings, llm_conversation[:-1], session)
+        summary = await execute_summary(agent_settings, llm_conversation[:-1], session)
 
         return summary
 
@@ -203,7 +203,7 @@ class ThreadManager:
         return message_id
 
     @staticmethod
-    def _replace_image_url_with_text(
+    async def _replace_image_url_with_text(
         message: LangchainBaseMessage,
         agent_setting: AgentSetting,
         session: Session,
@@ -211,15 +211,20 @@ class ThreadManager:
         if isinstance(message, AIMessage):
             for content in message.content:
                 if isinstance(content, dict) and content.get("type") == "image_url":
+                    # Create a new HumanMessage with the content
                     human_message = HumanMessage(content=[content])
+                    # Execute vision with a list containing the HumanMessage
+                    vision_response = await execute_vision(
+                        [human_message], session, agent_setting
+                    )
                     content["text"] = (
-                        f"I'm sharing an image with you. Here is the description:\n{execute_vision([human_message], session, agent_setting)}"
+                        f"I'm sharing an image with you. Here is the description:\n{vision_response}"
                     )
                     content["type"] = "text"
                     content.pop("image_url", None)
         return message
 
-    def _messages_to_llm_conversation(
+    async def _messages_to_llm_conversation(
         self, messages: List[Message], agent_setting: AgentSetting, session: Session
     ) -> List[LangchainBaseMessage]:
         llm_conversation: List[LangchainBaseMessage] = []
@@ -234,13 +239,12 @@ class ThreadManager:
                     "tool": ToolMessage,
                     "human_agent": AIMessage,
                 }[message.message_type.value]
-            llm_conversation.append(
-                self._replace_image_url_with_text(
+                formatted_message = await self._replace_image_url_with_text(
                     message_class(**message.to_langchain_format()),
                     agent_setting,
                     session,
                 )
-            )
+                llm_conversation.append(formatted_message)
         return llm_conversation
 
     async def run_thread(
@@ -362,7 +366,7 @@ class ThreadManager:
                 organization_id=organization_id,
             )
 
-            llm_conversation = self._messages_to_llm_conversation(
+            llm_conversation = await self._messages_to_llm_conversation(
                 messages, agent_settings, session
             )
 
@@ -795,9 +799,9 @@ class ThreadManager:
                 elif message.message_type == "human_agent":
                     curr_content = message.content
                     if curr_content[0].type == "text":
-                        message.content[
-                            0
-                        ].text = f"Human colleague: {curr_content[0].text}"
+                        message.content[0].text = (
+                            f"Human colleague: {curr_content[0].text}"
+                        )
                     else:
                         message.content.insert(
                             0,
@@ -813,9 +817,9 @@ class ThreadManager:
                         added_first_human_message = True
                         curr_content = message.content
                         if curr_content[0].type == "text":
-                            message.content[
-                                0
-                            ].text = f"(first message) {curr_content[0].text}"
+                            message.content[0].text = (
+                                f"(first message) {curr_content[0].text}"
+                            )
                         else:
                             message.content.insert(
                                 0,
