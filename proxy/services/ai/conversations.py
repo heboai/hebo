@@ -158,7 +158,12 @@ async def execute_conversation(
         active_session = ClientSession
         active_tools_loader = load_mcp_tools
 
-    try:
+    # Create a single task for the entire SSE client lifecycle
+    async def process_with_sse():
+        nonlocal llm, conversation
+        if not llm:
+            raise ValueError("LLM not initialized")
+
         async with active_sse_client(
             url=mcp_server_params.sse_url if mcp_server_params else ""
         ) as (read, write):
@@ -175,9 +180,6 @@ async def execute_conversation(
                 try:
                     conversation = [
                         (
-                            # This has been introduce as a hotfix for the bedrock -> mcp tools integration.
-                            # It's a workaround to remove the run_manager from the tool_calls.
-                            # TODO: Remove this once the tools integration is fixed (on Langchain side).
                             clean_ai_message(message)
                             if isinstance(message, AIMessage)
                             else message
@@ -191,7 +193,7 @@ async def execute_conversation(
                 except Exception as e:
                     logger.error(f"Error invoking LLM: {e}")
                     raise
-                # we retry because LLMs sometimes return empty response content
+
                 if not response.content:
                     logger.warning("LLM response content is empty. Retrying...")
                     async for msg in execute_conversation(
@@ -265,6 +267,9 @@ async def execute_conversation(
                     ):
                         yield msg
 
+    try:
+        async for msg in process_with_sse():
+            yield msg
     except* Exception as e:
         raise _extract_root_exception(e) from None
 
