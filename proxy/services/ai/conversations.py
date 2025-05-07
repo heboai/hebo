@@ -158,7 +158,12 @@ async def execute_conversation(
         active_session = ClientSession
         active_tools_loader = load_mcp_tools
 
-    try:
+    # Create a single task for the entire SSE client lifecycle
+    async def process_with_sse():
+        nonlocal llm, conversation
+        if not llm:
+            raise ValueError("LLM not initialized")
+
         async with active_sse_client(
             url=mcp_server_params.sse_url if mcp_server_params else ""
         ) as (read, write):
@@ -265,6 +270,9 @@ async def execute_conversation(
                     ):
                         yield msg
 
+    try:
+        async for msg in process_with_sse():
+            yield msg
     except* Exception as e:
         raise _extract_root_exception(e) from None
 
