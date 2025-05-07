@@ -180,6 +180,9 @@ async def execute_conversation(
                 try:
                     conversation = [
                         (
+                            # This has been introduce as a hotfix for the bedrock -> mcp tools integration.
+                            # It's a workaround to remove the run_manager from the tool_calls.
+                            # TODO: Remove this once the tools integration is fixed (on Langchain side).
                             clean_ai_message(message)
                             if isinstance(message, AIMessage)
                             else message
@@ -193,7 +196,7 @@ async def execute_conversation(
                 except Exception as e:
                     logger.error(f"Error invoking LLM: {e}")
                     raise
-
+                # we retry because LLMs sometimes return empty response content
                 if not response.content:
                     logger.warning("LLM response content is empty. Retrying...")
                     async for msg in execute_conversation(
