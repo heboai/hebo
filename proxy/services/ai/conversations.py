@@ -311,7 +311,7 @@ async def _format_conversation(
 ) -> List[str]:
     """
     Asynchronously formats a conversation into a list of speaker-prefixed strings.
-    
+
     Depending on the operation, formats each message with appropriate speaker labels and handles messages containing images by either inserting a placeholder or invoking a vision model to convert images to text.
     """
     if not conversation:
@@ -322,7 +322,7 @@ async def _format_conversation(
     ) -> str:
         """
         Formats a single conversation message as a string with appropriate speaker prefix.
-        
+
         For messages containing multiple content items, text is included directly. Image URLs are replaced with a placeholder for summary operations or converted to text using a vision model for condense operations.
         """
         first_person = "A" if operation == "condense" else "User"
