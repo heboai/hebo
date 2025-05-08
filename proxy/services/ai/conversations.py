@@ -334,7 +334,12 @@ async def _format_conversation(
                     elif item.get("type") == "image_url" and isinstance(
                         message, HumanMessage
                     ):
-                        content += f"{await execute_vision([message], session, agent_settings)}\n"
+                        if operation == "summary":
+                            # Use placeholder for summary operation
+                            content += "[image]\n"
+                        else:
+                            # Use vision conversion for condense operation
+                            content += f"{await execute_vision([message], session, agent_settings)}\n"
             return f"{prefix}{content.replace('\n', ' ')}" if content else ""
         else:
             return f"{prefix}{message.content.replace('\n', ' ')}"
