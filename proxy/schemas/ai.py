@@ -20,3 +20,6 @@ class Session(BaseModel):
 
     def __str__(self):
         return f"Session(contact_identifier={self.contact_identifier}, thread_id={self.thread_id}, trace_id={self.trace_id}, agent_version={self.agent_version}, organization_id={self.organization_id})"
+
+    def __hash__(self):
+        return hash((self.thread_id, self.agent_version, self.organization_id))

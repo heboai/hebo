@@ -15,17 +15,20 @@ TARGET_ENV = settings.TARGET_ENV
 
 langfuse = Langfuse()
 
+# Create a single global handler that will be reused across all sessions
+GLOBAL_HANDLER = CallbackHandler(
+    public_key=LANGFUSE_PUBLIC_KEY,
+    secret_key=LANGFUSE_SECRET_KEY,
+    host=LANGFUSE_HOST,
+    trace_name="HeboConversation",
+)
 
 def get_langfuse_handler(session: Session) -> CallbackHandler:
-    return CallbackHandler(
-        public_key=LANGFUSE_PUBLIC_KEY,
-        secret_key=LANGFUSE_SECRET_KEY,
-        host=LANGFUSE_HOST,
-        session_id=session.thread_id,
-        user_id=session.contact_identifier,
-        tags=[session.organization_id, session.agent_version],
-        trace_name="HeboConversation",
-    )
+    """Always reuse the same handler; attach session metadata dynamically."""
+    GLOBAL_HANDLER.session_id = session.thread_id
+    GLOBAL_HANDLER.user_id = session.contact_identifier
+    GLOBAL_HANDLER.tags = [session.organization_id, session.agent_version]
+    return GLOBAL_HANDLER
 
 
 def get_langfuse_config(name: str, session: Session) -> RunnableConfig:

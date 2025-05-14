@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     LANGFUSE_SECRET_KEY: str | None = None
     LANGFUSE_PUBLIC_KEY: str | None = None
     LANGFUSE_HOST: str | None = None
+    LANGFUSE_THREADS: int = 1
 
     # General settings
     MAX_RECURSION_DEPTH: int = 5
