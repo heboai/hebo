@@ -217,6 +217,8 @@ class ThreadManager:
                     # vision_response = await execute_vision(
                     #     [human_message], session, agent_setting
                     # )
+                    # Currently were getting a timeout error when closing a thread because the execute vision is taking too long and causing failure.
+                    # TODO: Find a better way to handle this and reenable the code above.
                     vision_response = "[image]"
                     content["text"] = (
                         f"I'm sharing an image with you. Here is the description:\n{vision_response}"
