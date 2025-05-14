@@ -23,6 +23,7 @@ GLOBAL_HANDLER = CallbackHandler(
     trace_name="HeboConversation",
 )
 
+
 def get_langfuse_handler(session: Session) -> CallbackHandler:
     """Always reuse the same handler; attach session metadata dynamically."""
     GLOBAL_HANDLER.session_id = session.thread_id
