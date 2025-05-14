@@ -33,7 +33,7 @@ from schemas.threads import (
     RunStatus,
     Thread,
 )
-from .ai.conversations import execute_conversation, execute_summary, execute_vision
+from .ai.conversations import execute_conversation, execute_summary
 from .ai.vision import get_content_from_human_message
 from .exceptions import ColleagueHandoffException
 from .retriever import Retriever
