@@ -212,11 +212,12 @@ class ThreadManager:
             for content in message.content:
                 if isinstance(content, dict) and content.get("type") == "image_url":
                     # Create a new HumanMessage with the content
-                    human_message = HumanMessage(content=[content])
+                    # human_message = HumanMessage(content=[content])
                     # Execute vision with a list containing the HumanMessage
-                    vision_response = await execute_vision(
-                        [human_message], session, agent_setting
-                    )
+                    # vision_response = await execute_vision(
+                    #     [human_message], session, agent_setting
+                    # )
+                    vision_response = "[image]"
                     content["text"] = (
                         f"I'm sharing an image with you. Here is the description:\n{vision_response}"
                     )
