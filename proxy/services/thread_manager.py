@@ -33,7 +33,7 @@ from schemas.threads import (
     RunStatus,
     Thread,
 )
-from .ai.conversations import execute_conversation, execute_summary, execute_vision
+from .ai.conversations import execute_conversation, execute_summary
 from .ai.vision import get_content_from_human_message
 from .exceptions import ColleagueHandoffException
 from .retriever import Retriever
@@ -212,11 +212,14 @@ class ThreadManager:
             for content in message.content:
                 if isinstance(content, dict) and content.get("type") == "image_url":
                     # Create a new HumanMessage with the content
-                    human_message = HumanMessage(content=[content])
+                    # human_message = HumanMessage(content=[content])
                     # Execute vision with a list containing the HumanMessage
-                    vision_response = await execute_vision(
-                        [human_message], session, agent_setting
-                    )
+                    # vision_response = await execute_vision(
+                    #     [human_message], session, agent_setting
+                    # )
+                    # Currently were getting a timeout error when closing a thread because the execute vision is taking too long and causing failure.
+                    # TODO: Find a better way to handle this and reenable the code above.
+                    vision_response = "[image]"
                     content["text"] = (
                         f"I'm sharing an image with you. Here is the description:\n{vision_response}"
                     )
