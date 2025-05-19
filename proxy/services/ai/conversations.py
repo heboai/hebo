@@ -397,7 +397,7 @@ async def execute_condense(
                         "Respond with the question only. "
                         "No comments or other text. "
                         "If only one question is present, respond with that question."
-                        "If the users is asking multiple questions in their last message, respond with all of them."
+                        "If the user is asking multiple questions in their last message, respond with all of them."
                     )
                 ),
             ],
