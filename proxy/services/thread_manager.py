@@ -719,56 +719,72 @@ class ThreadManager:
             for part in response_text.split("\n\n")
         ] + [c for c in message.content if c.type == MessageContentType.TOOL_USE]
 
-    def _sanitize_messages(self, messages: List[Message]) -> List[Message]:
-        """This assumes messages have been sorted and merged"""
-        if messages[-1].message_type != MessageType.HUMAN:
-            return self._sanitize_messages(messages[:-1])
+    @staticmethod
+    def _sanitize_messages(messages: list[Message]) -> list[Message]:
+        """
+        Make sure the sequence AI(tool_use) → TOOL_ANSWER → AI is respected
+        **everywhere** in the list, not just at the tail.
+        """
+        i = 0
+        while i < len(messages):
+            cur = messages[i]
+            nxt = messages[i + 1] if i + 1 < len(messages) else None
 
-        if len(messages) > 1:
-            # We must chain an AI response after a tool answer. If a user sends a message in the middle, we merge it into the tool answer.
-            if messages[-2].message_type == MessageType.TOOL_ANSWER:
-                tool_name = f" {messages[-2].tool_call_name}"
-                messages[-2].content.append(
-                    MessageContent(
-                        type=MessageContentType.TEXT,
-                        text=f"Above is the tool answer{tool_name}. In the meantime, the user has sent the following messages:",
-                    )
-                )
-                for message_content in messages[-1].content:
-                    messages[-2].content.append(message_content)
-                messages[-2].content.append(
-                    MessageContent(
-                        type=MessageContentType.TEXT,
-                        text="Please continue the conversation considering the above tool answer and the user's messages.",
-                    )
-                )
-                return messages[:-1]
-
-            # Here instead, we are making sure that there is a tool answer after a tool use from the AI, since API expects a tool answer after a tool use.
-            if messages[-2].message_type == MessageType.AI and any(
-                c.type == MessageContentType.TOOL_USE for c in messages[-2].content
+            # ----- 1. AI with TOOL_USE must be followed by a TOOL_ANSWER -----
+            if (
+                cur.message_type == MessageType.AI
+                and any(c.type == MessageContentType.TOOL_USE for c in cur.content)
             ):
-                for content in messages[-2].content:
-                    if content.type == MessageContentType.TOOL_USE:
-                        tool_call_id = content.id
+                if (
+                    nxt is None
+                    or nxt.message_type != MessageType.TOOL_ANSWER
+                    or nxt.tool_call_id != next(
+                        c.id for c in cur.content if c.type == MessageContentType.TOOL_USE
+                    )
+                ):
+                    # Insert a placeholder TOOL_ANSWER immediately after cur
+                    tool_use = next(
+                        c for c in cur.content if c.type == MessageContentType.TOOL_USE
+                    )
+                    placeholder = Message(
+                        message_type=MessageType.TOOL_ANSWER,
+                        content=[
+                            MessageContent(
+                                type=MessageContentType.TEXT,
+                                text="The tool was called but no response was received. Try again.",
+                            )
+                        ],
+                        created_at=cur.created_at + timedelta(milliseconds=1),
+                        thread_id=cur.thread_id,
+                        tool_call_id=tool_use.id,
+                        tool_call_name=tool_use.name,
+                    )
+                    messages.insert(i + 1, placeholder)
+                    # Do NOT advance i so we re-evaluate the freshly inserted item
+                    continue
 
-                        # Create a tool answer message between the AI tool use and human message
-                        tool_answer_message = Message(
-                            message_type=MessageType.TOOL_ANSWER,
-                            content=[
-                                MessageContent(
-                                    type=MessageContentType.TEXT,
-                                    text="The tool was called but no response was received. Try again.",
-                                )
-                            ],
-                            created_at=messages[-1].created_at - timedelta(seconds=1),
-                            thread_id=messages[-1].thread_id,
-                            tool_call_id=tool_call_id,
-                        )
+            # ----- 2. TOOL_ANSWER must be followed by an AI message -----
+            if cur.message_type == MessageType.TOOL_ANSWER:
+                if nxt is None or nxt.message_type != MessageType.AI:
+                    follow_up = Message(
+                        message_type=MessageType.AI,
+                        content=[
+                            MessageContent(
+                                type=MessageContentType.TEXT,
+                                text="Acknowledged. How can I help you further?",
+                            )
+                        ],
+                        created_at=cur.created_at + timedelta(milliseconds=1),
+                        thread_id=cur.thread_id,
+                    )
+                    messages.insert(i + 1, follow_up)
+                    continue  # Re-check the new pair
 
-                        # Insert the tool answer message between AI and human messages
-                        messages.insert(-1, tool_answer_message)
-                return self._sanitize_messages(messages)
+            i += 1
+
+        # ------ 3. Ensure the last message is HUMAN ------
+        if messages and messages[-1].message_type != MessageType.HUMAN:
+            messages.pop()
 
         return messages
 
