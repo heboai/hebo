@@ -781,7 +781,7 @@ class ThreadManager:
         # Sort messages by created_at in ascending order
         messages = sorted(messages, key=lambda x: x.created_at)
         for message in messages:
-            if (
+            if message.message_type != MessageType.TOOL_ANSWER and (
                 not previous_message_type
                 or message.message_type == previous_message_type
             ):
@@ -789,8 +789,7 @@ class ThreadManager:
                     prev_content = previous_message.content
                     curr_content = message.content
                     if (
-                        message.message_type == MessageType.AI
-                        and prev_content
+                        prev_content
                         and curr_content
                         and prev_content[-1].type == MessageContentType.TEXT
                         and curr_content[0].type == MessageContentType.TEXT
@@ -802,17 +801,8 @@ class ThreadManager:
                             prev_content[-1].text + "\n\n" + curr_content[0].text
                         )
                     else:
-                        # Add a space between text content if both messages have text content
-                        if (
-                            prev_content
-                            and curr_content
-                            and prev_content[-1].type == MessageContentType.TEXT
-                            and curr_content[0].type == MessageContentType.TEXT
-                            and curr_content[0].text is not None
-                        ):
-                            # Add a space to the beginning of the current message's text
-                            curr_content[0].text = " " + curr_content[0].text
                         message.content = prev_content + curr_content
+
                 elif message.message_type == MessageType.HUMAN_AGENT:
                     curr_content = message.content
                     if curr_content[0].type == MessageContentType.TEXT:
@@ -828,7 +818,6 @@ class ThreadManager:
                             ),
                         )
 
-                # TODO: this doesn't look like it is working. To be checked.
                 elif message.message_type == MessageType.HUMAN:
                     if not added_first_human_message:
                         added_first_human_message = True
