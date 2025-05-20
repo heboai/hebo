@@ -774,6 +774,11 @@ class ThreadManager:
 
     @staticmethod
     def _merge_messages(messages: List[Message]) -> List[Message]:
+        """
+        Merges consecutive messages of the same type (excluding tool answers) into single messages.
+        
+        Messages are sorted by creation time. Consecutive messages of the same type, except for tool answer messages, are merged by concatenating their content. The first human and human agent messages are prefixed for clarity.
+        """
         formatted_messages = []
         previous_message = None
         previous_message_type = None
