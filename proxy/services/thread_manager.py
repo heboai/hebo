@@ -731,15 +731,17 @@ class ThreadManager:
             nxt = messages[i + 1] if i + 1 < len(messages) else None
 
             # ----- 1. AI with TOOL_USE must be followed by a TOOL_ANSWER -----
-            if (
-                cur.message_type == MessageType.AI
-                and any(c.type == MessageContentType.TOOL_USE for c in cur.content)
+            if cur.message_type == MessageType.AI and any(
+                c.type == MessageContentType.TOOL_USE for c in cur.content
             ):
                 if (
                     nxt is None
                     or nxt.message_type != MessageType.TOOL_ANSWER
-                    or nxt.tool_call_id != next(
-                        c.id for c in cur.content if c.type == MessageContentType.TOOL_USE
+                    or nxt.tool_call_id
+                    != next(
+                        c.id
+                        for c in cur.content
+                        if c.type == MessageContentType.TOOL_USE
                     )
                 ):
                     # Insert a placeholder TOOL_ANSWER immediately after cur
