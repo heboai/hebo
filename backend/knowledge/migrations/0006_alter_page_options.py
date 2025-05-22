@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("knowledge", "0005_page_unique_page_position_per_version_and_parent"),
     ]

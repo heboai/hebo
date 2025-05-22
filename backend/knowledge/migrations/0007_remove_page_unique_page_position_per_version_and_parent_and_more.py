@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("hebo_organizations", "0002_organizationinvitation_is_admin"),
         ("knowledge", "0006_alter_page_options"),
