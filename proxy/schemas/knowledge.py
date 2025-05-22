@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -12,7 +12,6 @@ class Page(BaseModel):
     content: str
     created_at: datetime
     updated_at: datetime
-    parent_id: Optional[int] = None
 
     class Config:
         from_attributes = True

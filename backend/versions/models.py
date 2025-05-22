@@ -415,8 +415,6 @@ class Version(models.Model):
                     version=self,
                     title=old_page.title,
                     content=old_page.content,
-                    position=old_page.position,
-                    parent=None,  # We'll update this after all pages are created
                 )
 
                 # TODO: these 2 could be unified

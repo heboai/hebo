@@ -59,7 +59,6 @@ class KnowledgeBaseView(LoginRequiredMixin, OrganizationPermissionMixin, ListVie
     model = Page
     template_name = "knowledge/base.html"
     context_object_name = "pages"
-    ordering = ["title", "-updated_at"]
 
     def get_queryset(self):
         version_id = self.request.session.get("selected_version_id")
