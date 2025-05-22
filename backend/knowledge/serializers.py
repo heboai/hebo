@@ -12,10 +12,11 @@ class PageSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Validate the page data."""
-        # Ensure content is not empty
+        # Ensure title & content are not empty/whitespace
+        if not data.get("title", "").strip():
+            raise serializers.ValidationError({"title": "Title cannot be empty"})
         if not data.get("content", "").strip():
-            raise serializers.ValidationError("Content cannot be empty")
-
+            raise serializers.ValidationError({"content": "Content cannot be empty"})
         return data
 
 
