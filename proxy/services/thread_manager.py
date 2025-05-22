@@ -850,7 +850,7 @@ class ThreadManager:
             # No more messages, so definitely add the fallback assistant
             cleaned.append(self._ai_fallback(cleaned[-1]))
 
-        # ── 6. Ensure the conversation ends with HUMAN (optional policy) ───────
+        # ── 6. Ensure the conversation ends with HUMAN ───────
         if cleaned and cleaned[-1].message_type != MessageType.HUMAN:
             cleaned.pop()
 
