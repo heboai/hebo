@@ -2,6 +2,7 @@ import asyncio
 import logging
 import re
 import uuid
+from collections import deque
 from datetime import datetime, timedelta
 from typing import List
 
@@ -40,6 +41,7 @@ from .retriever import Retriever
 
 
 logger = logging.getLogger(__name__)
+FALLBACK_TEXT = "Acknowledged. How can I help you further?"
 
 
 class ThreadManager:
@@ -720,75 +722,139 @@ class ThreadManager:
         ] + [c for c in message.content if c.type == MessageContentType.TOOL_USE]
 
     @staticmethod
-    def _sanitize_messages(messages: list[Message]) -> list[Message]:
+    def _ai_fallback(after_msg: Message) -> Message:
+        """Create a plain-text AI reply that covers any missing assistant turn."""
+        return Message(
+            message_type=MessageType.AI,
+            content=[
+                MessageContent(
+                    type=MessageContentType.TEXT,
+                    text=FALLBACK_TEXT,
+                )
+            ],
+            created_at=after_msg.created_at + timedelta(milliseconds=1),
+            thread_id=after_msg.thread_id,
+        )
+
+    @staticmethod
+    def _tool_placeholder(tool_use: MessageContent, base_msg: Message) -> Message:
+        """Generate a dummy TOOL_ANSWER when the tool never replied."""
+        return Message(
+            message_type=MessageType.TOOL_ANSWER,
+            content=[
+                MessageContent(
+                    type=MessageContentType.TEXT,
+                    text="The tool was called but no response was received. Try again.",
+                )
+            ],
+            created_at=base_msg.created_at + timedelta(milliseconds=1),
+            thread_id=base_msg.thread_id,
+            tool_call_id=tool_use.id,
+            tool_call_name=tool_use.name,
+        )
+
+    def _sanitize_messages(self, messages: list[Message]) -> list[Message]:
         """
-        Make sure the sequence AI(tool_use) → TOOL_ANSWER → AI is respected
-        **everywhere** in the list, not just at the tail.
+        Enforces the sequence:
+
+            AI(tool_use …N)
+            → TOOL_ANSWER …N  (one per id, any order)
+            → AI(any text - tool_use allowed)  [fallback inserted *only if missing*]
+
+        • No other message type is allowed until all pending tool ids are answered.
+        • Missing answers are patched with placeholders.
+        • Conversation is trimmed so it ends on a HUMAN message (policy choice).
         """
+
+        cleaned: list[Message] = []
+        pending: deque[str] = deque()  # tool_call_ids awaiting answer
+
         i = 0
         while i < len(messages):
-            cur = messages[i]
-            nxt = messages[i + 1] if i + 1 < len(messages) else None
+            msg = messages[i]
 
-            # ----- 1. AI with TOOL_USE must be followed by a TOOL_ANSWER -----
-            if cur.message_type == MessageType.AI and any(
-                c.type == MessageContentType.TOOL_USE for c in cur.content
+            # ── 1. Assistant message ────────────────────────────────────────────
+            if msg.message_type == MessageType.AI:
+                cleaned.append(msg)
+
+                # Register any tool_use ids
+                pending.extend(
+                    c.id
+                    for c in msg.content
+                    if c.type == MessageContentType.TOOL_USE and c.id is not None
+                )
+                i += 1
+                continue
+
+            # ── 2. Expected tool answers ────────────────────────────────────────
+            if (
+                pending
+                and msg.message_type == MessageType.TOOL_ANSWER
+                and msg.tool_call_id in pending
             ):
-                if (
-                    nxt is None
-                    or nxt.message_type != MessageType.TOOL_ANSWER
-                    or nxt.tool_call_id
-                    != next(
-                        c.id
-                        for c in cur.content
-                        if c.type == MessageContentType.TOOL_USE
-                    )
-                ):
-                    # Insert a placeholder TOOL_ANSWER immediately after cur
-                    tool_use = next(
-                        c for c in cur.content if c.type == MessageContentType.TOOL_USE
-                    )
-                    placeholder = Message(
-                        message_type=MessageType.TOOL_ANSWER,
-                        content=[
-                            MessageContent(
-                                type=MessageContentType.TEXT,
-                                text="The tool was called but no response was received. Try again.",
-                            )
-                        ],
-                        created_at=cur.created_at + timedelta(milliseconds=1),
-                        thread_id=cur.thread_id,
-                        tool_call_id=tool_use.id,
-                        tool_call_name=tool_use.name,
-                    )
-                    messages.insert(i + 1, placeholder)
-                    # Do NOT advance i so we re-evaluate the freshly inserted item
-                    continue
+                cleaned.append(msg)
+                pending.remove(msg.tool_call_id)
 
-            # ----- 2. TOOL_ANSWER must be followed by an AI message -----
-            if cur.message_type == MessageType.TOOL_ANSWER:
-                if nxt is None or nxt.message_type != MessageType.AI:
-                    follow_up = Message(
-                        message_type=MessageType.AI,
-                        content=[
-                            MessageContent(
-                                type=MessageContentType.TEXT,
-                                text="Acknowledged. How can I help you further?",
-                            )
-                        ],
-                        created_at=cur.created_at + timedelta(milliseconds=1),
-                        thread_id=cur.thread_id,
+                # If that was the *last* expected answer,
+                # peek ahead: do we already have an assistant next?
+                if not pending:
+                    next_is_ai = (
+                        i + 1 < len(messages)
+                        and messages[i + 1].message_type == MessageType.AI
                     )
-                    messages.insert(i + 1, follow_up)
-                    continue  # Re-check the new pair
+                    if not next_is_ai:
+                        cleaned.append(self._ai_fallback(msg))
+                i += 1
+                continue
 
+            # ── 3. A NON-tool-answer arrived while answers still pending ────────
+            if pending:
+                # Close the gap with placeholders for every still-pending id
+                last_ai = next(
+                    m for m in reversed(cleaned) if m.message_type == MessageType.AI
+                )
+                id_to_tool = {
+                    c.id: c
+                    for c in last_ai.content
+                    if c.type == MessageContentType.TOOL_USE
+                }
+                for tid in list(pending):
+                    cleaned.append(self._tool_placeholder(id_to_tool[tid], last_ai))
+                    pending.remove(tid)
+
+                # Insert fallback only if *this* very message is not assistant
+                if msg.message_type != MessageType.AI:
+                    cleaned.append(self._ai_fallback(cleaned[-1]))
+
+                # ↓ Do not consume msg yet; process it in the next loop
+                continue
+
+            # ── 4. Normal copy once nothing is pending ──────────────────────────
+            cleaned.append(msg)
             i += 1
 
-        # ------ 3. Ensure the last message is HUMAN ------
-        if messages and messages[-1].message_type != MessageType.HUMAN:
-            messages.pop()
+        # ── 5. End-of-list: still missing answers? ──────────────────────────────
+        if pending:
+            last_ai = next(
+                m for m in reversed(cleaned) if m.message_type == MessageType.AI
+            )
+            id_to_tool = {
+                c.id: c
+                for c in last_ai.content
+                if c.type == MessageContentType.TOOL_USE
+            }
+            for tid in list(pending):
+                cleaned.append(self._tool_placeholder(id_to_tool[tid], last_ai))
+                pending.remove(tid)
 
-        return messages
+            # No more messages, so definitely add the fallback assistant
+            cleaned.append(self._ai_fallback(cleaned[-1]))
+
+        # ── 6. Ensure the conversation ends with HUMAN (optional policy) ───────
+        if cleaned and cleaned[-1].message_type != MessageType.HUMAN:
+            cleaned.pop()
+
+        return cleaned
 
     @staticmethod
     def _merge_messages(messages: List[Message]) -> List[Message]:
