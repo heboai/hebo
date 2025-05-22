@@ -22,7 +22,7 @@ class PageSerializer(serializers.ModelSerializer):
 class BulkPageSerializer(serializers.Serializer):
     """Serializer for bulk page operations."""
 
-    title = serializers.CharField(max_length=255)
+    title = serializers.CharField(max_length=200)
     content = serializers.CharField()
 
     def validate_title(self, value):
