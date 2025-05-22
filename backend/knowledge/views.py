@@ -200,7 +200,7 @@ class PageDetailView(LoginRequiredMixin, OrganizationPermissionMixin, DetailView
         context["current_page"] = self.object  # type: ignore
         # Add sidebar pages (same logic as KnowledgeBaseView)
         version_id = self.request.session.get("selected_version_id")
-        pages_qs = Page.objects.all()
+        pages_qs = Page.objects.filter(organization=self.organization)
         if version_id:
             pages_qs = pages_qs.filter(version_id=version_id)
         context["pages"] = pages_qs.order_by(Collate("title", "C"), "-updated_at")
