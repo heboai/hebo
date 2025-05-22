@@ -10,6 +10,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, IntegrityError, transaction
+from django.db.models.functions import Lower
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -93,13 +94,14 @@ class Page(ContentHashMixin, models.Model):
     objects = PageManager()
 
     class Meta:
-        ordering = ["title", "-updated_at"]
+        ordering = [Lower("title"), "-updated_at"]
         verbose_name = "Page"
         verbose_name_plural = "Pages"
         constraints = [
             models.UniqueConstraint(
-                fields=["version", "title"],
+                fields=["version"],
                 name="unique_page_title_per_version",
+                condition=models.Q(title__iexact=models.F("title")),
             )
         ]
 
