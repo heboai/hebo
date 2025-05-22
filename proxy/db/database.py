@@ -344,33 +344,16 @@ class DB:
     async def get_behaviour_parts(
         self, version_id: int, organization_id: str
     ) -> List[dict]:
-        """Get all behaviour parts for a version, ordered by page hierarchy and part position."""
+        """Get all behaviour parts for a version, ordered by page title and part position."""
         query = """
-            WITH RECURSIVE page_hierarchy AS (
-                SELECT id, parent_id, position,
-                       ARRAY[position] as path
-                FROM knowledge_page
-                WHERE parent_id IS NULL
-                  AND version_id = $1
-                  AND organization_id = $2
-
-                UNION ALL
-
-                -- Get child pages
-                SELECT c.id, c.parent_id, c.position,
-                       ph.path || c.position as path
-                FROM knowledge_page c
-                JOIN page_hierarchy ph ON c.parent_id = ph.id
-            )
-            SELECT p.id, p.start_line, p.end_line, pg.content
+            SELECT p.id, p.start_line, p.end_line, pg.content, pg.title
             FROM knowledge_part p
             JOIN knowledge_page pg ON p.page_id = pg.id
-            JOIN page_hierarchy ph ON pg.id = ph.id
             WHERE pg.version_id = $1
               AND pg.organization_id = $2
               AND p.content_type = 'behaviour'
               AND NOT (p.start_line = 0 AND p.end_line = 0)
-            ORDER BY ph.path, p.start_line, p.end_line
+            ORDER BY pg.title, p.start_line, p.end_line
         """
         rows = await self.conn.fetch(query, version_id, organization_id)
         parts = []

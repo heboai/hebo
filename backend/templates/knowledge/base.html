@@ -3,25 +3,6 @@
   [x-cloak] {
     display: none !important;
   }
-  /* --- Drop indicator styles --- */
-  .drop-indicator-above::before {
-    content: "";
-    display: block;
-    border-top: 2px solid #4a90e2; /* Bright blue for visibility */
-    margin: 4px 0;
-  }
-
-  .drop-indicator-below::after {
-    content: "";
-    display: block;
-    border-top: 2px solid #4a90e2;
-    margin: 4px 0;
-  }
-
-  .drop-indicator-child {
-    outline: 2px dashed #4a90e2;
-    outline-offset: 2px;
-  }
 
   /* Custom scrollbar styles */
   .custom-scrollbar::-webkit-scrollbar {
@@ -87,152 +68,6 @@
       throw error;
     }
   };
-
-  // --- Drag & Drop functions with additional debug logging ---
-
-  function handleDragStart(event) {
-    event.target.classList.add("opacity-50");
-    event.dataTransfer.setData("text/plain", event.target.dataset.pageId);
-  }
-
-  function handleDragEnd(event) {
-    event.target.classList.remove("opacity-50");
-    clearDropIndicators();
-  }
-
-  function clearDropIndicators() {
-    document.querySelectorAll("[data-drop-zone]").forEach((el) => {
-      el.classList.remove(
-        "drop-indicator-child",
-        "drop-indicator-above",
-        "drop-indicator-below"
-      );
-    });
-  }
-
-  function handleDragOver(event) {
-    event.preventDefault();
-    clearDropIndicators();
-    const dropZone = event.target.closest("[data-drop-zone]");
-    if (!dropZone) return;
-    const rect = dropZone.getBoundingClientRect();
-    const offsetY = event.clientY - rect.top;
-    const offsetX = event.clientX - rect.left;
-
-    // Use 20% of dropzone width as threshold for child drop
-    const childDropThreshold = rect.width * 0.2;
-
-    if (offsetX > childDropThreshold) {
-      dropZone.classList.add("drop-indicator-child");
-    } else {
-      if (offsetY < rect.height / 3) {
-        dropZone.classList.add("drop-indicator-above");
-      } else if (offsetY > (rect.height * 2) / 3) {
-        dropZone.classList.add("drop-indicator-below");
-      }
-    }
-  }
-
-  function handleDragLeave(event) {
-    const dropZone = event.target.closest("[data-drop-zone]");
-    if (dropZone) {
-      dropZone.classList.remove(
-        "drop-indicator-child",
-        "drop-indicator-above",
-        "drop-indicator-below"
-      );
-    }
-  }
-
-  function handleDrop(event) {
-    event.preventDefault();
-    clearDropIndicators();
-
-    const dropZone = event.target.closest("[data-drop-zone]");
-    if (!dropZone) return;
-
-    const draggedPageId = event.dataTransfer.getData("text/plain");
-    const draggedLi = document.querySelector(
-      `li[data-drop-zone][data-page-id="${draggedPageId}"]`
-    );
-    if (!draggedLi) return;
-
-    let newParentId = null;
-    let newPosition = 0;
-    let targetContainer = null;
-    const rect = dropZone.getBoundingClientRect();
-    const offsetX = event.clientX - rect.left;
-    const offsetY = event.clientY - rect.top;
-
-    // If horizontal offset is greater than 50 pixels, treat drop as a request
-    // to make the dropZone a parent (i.e. drop as a child of that page).
-    if (offsetX > 50) {
-      newParentId = dropZone.dataset.pageId; // intended parent id
-      targetContainer = dropZone.querySelector("ul");
-      if (!targetContainer) {
-        targetContainer = document.createElement("ul");
-        targetContainer.classList.add("ml-4", "mt-0.5", "space-y-0.5");
-        targetContainer.setAttribute("data-parent-id", newParentId);
-        dropZone.appendChild(targetContainer);
-      }
-      newPosition = targetContainer.children.length; // append at the end
-    } else {
-      // Otherwise, reordering within the same container.
-      targetContainer = dropZone.parentElement; // should be a UL
-      newParentId = targetContainer.getAttribute("data-parent-id") || null;
-      const childrenArray = Array.from(
-        targetContainer.querySelectorAll(":scope > li[data-drop-zone]")
-      );
-      const index = childrenArray.indexOf(dropZone);
-      if (offsetY > rect.height / 2) {
-        newPosition = index + 1;
-      } else {
-        newPosition = index;
-      }
-    }
-
-    // Determine old parent based on current container.
-    const oldContainer = draggedLi.parentElement;
-    const oldParentId = oldContainer.getAttribute("data-parent-id") || null;
-
-    // Remove the dragged element from its current container.
-    draggedLi.remove();
-    if (newPosition >= targetContainer.children.length) {
-      targetContainer.appendChild(draggedLi);
-    } else {
-      targetContainer.insertBefore(
-        draggedLi,
-        targetContainer.children[newPosition]
-      );
-    }
-
-    // Send the new ordering to the backend.
-    fetch("{% url 'knowledge_list' organization_pk=organization.pk %}", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")
-          .value,
-      },
-      body: JSON.stringify({
-        action: "reorder",
-        page_id: draggedPageId,
-        parent_id: newParentId,
-        position: newPosition,
-        old_parent_id: oldParentId,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          window.location.reload(); // Force refresh to sync with server
-        } else {
-          console.error("Reorder failed:", data.message);
-        }
-      })
-      .catch((error) => console.error("Error:", error));
-  }
 </script>
 {% endblock %} {% block content %}
 <div
@@ -334,22 +169,13 @@
             <li
               class="group relative"
               x-data="{ showMenu: false }"
-              data-drop-zone
-              data-page-id="{{ page.pk }}"
-              ondragover="handleDragOver(event)"
-              ondragleave="handleDragLeave(event)"
-              ondrop="handleDrop(event)"
             >
               <div
                 class="flex items-center rounded-lg transition-colors hover:bg-base-300 {% if page.pk == current_page.pk %}bg-base-300{% endif %}"
               >
                 <a
                   href="{% url 'page_detail' organization_pk=organization.pk pk=page.pk %}"
-                  class="flex-grow block px-3 py-1.5 text-sm cursor-move"
-                  draggable="true"
-                  ondragstart="handleDragStart(event)"
-                  ondragend="handleDragEnd(event)"
-                  data-page-id="{{ page.pk }}"
+                  class="flex-grow block px-3 py-1.5 text-sm"
                 >
                   <span>{{ page.title }}</span>
                 </a>
@@ -422,43 +248,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Child pages container -->
-              {% if page.children.exists %}
-              <ul
-                class="ml-4 mt-0.5 space-y-0.5"
-                data-parent-id="{{ page.pk }}"
-              >
-                {% for child in page.children.all %}
-                <li
-                  class="group relative"
-                  x-data="{ showMenu: false }"
-                  data-drop-zone
-                  data-page-id="{{ child.pk }}"
-                  ondragover="handleDragOver(event)"
-                  ondragleave="handleDragLeave(event)"
-                  ondrop="handleDrop(event)"
-                >
-                  <!-- Similar structure as parent, but with child page data -->
-                  <div
-                    class="flex items-center rounded-lg transition-colors hover:bg-base-300 {% if child.pk == current_page.pk %}bg-base-300{% endif %}"
-                  >
-                    <a
-                      href="{% url 'page_detail' organization_pk=organization.pk pk=child.pk %}"
-                      class="flex-grow block px-3 py-1.5 text-sm cursor-move"
-                      draggable="true"
-                      ondragstart="handleDragStart(event)"
-                      ondragend="handleDragEnd(event)"
-                      data-page-id="{{ child.pk }}"
-                    >
-                      <span>{{ child.title }}</span>
-                    </a>
-                    <!-- ... Child menu buttons ... -->
-                  </div>
-                </li>
-                {% endfor %}
-              </ul>
-              {% endif %}
             </li>
             {% endfor %}
           </ul>
