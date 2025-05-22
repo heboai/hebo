@@ -99,7 +99,7 @@ class Page(ContentHashMixin, models.Model):
         verbose_name_plural = "Pages"
         constraints = [
             models.UniqueConstraint(
-                fields=["version"],
+                fields=["title", "version"],
                 name="unique_page_title_per_version",
                 condition=models.Q(title__iexact=models.F("title")),
             )
