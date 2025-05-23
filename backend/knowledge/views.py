@@ -22,6 +22,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.db.models.functions import Collate
 
 from core.authentication import APIKeyAuthentication
 from core.mixins import OrganizationPermissionMixin
@@ -58,15 +59,14 @@ class KnowledgeBaseView(LoginRequiredMixin, OrganizationPermissionMixin, ListVie
     model = Page
     template_name = "knowledge/base.html"
     context_object_name = "pages"
-    ordering = ["-created_at"]
 
     def get_queryset(self):
         version_id = self.request.session.get("selected_version_id")
         queryset = super().get_queryset()
         if version_id:
             queryset = queryset.filter(version_id=version_id)
-        # Return only top-level pages ordered by position
-        return queryset.filter(parent__isnull=True).order_by("position")
+        # Enforce case-insensitive ordering by title
+        return queryset.order_by(Collate("title", "C"), "-updated_at")
 
     def get(self, request, *args, **kwargs):
         # Get the queryset first
@@ -122,10 +122,6 @@ class KnowledgeBaseView(LoginRequiredMixin, OrganizationPermissionMixin, ListVie
             try:
                 data = json.loads(request.body)
 
-                # Handle page reordering if that's the request type
-                if data.get("action") == "reorder":
-                    return self.handle_reorder(request, data)
-
                 # Existing page creation logic
                 content = data.get("content", "").strip()
                 title, formatted_content = extract_title_and_content(content)
@@ -174,30 +170,6 @@ class KnowledgeBaseView(LoginRequiredMixin, OrganizationPermissionMixin, ListVie
 
         return super().post(request, *args, **kwargs)  # type: ignore
 
-    @transaction.atomic
-    def handle_reorder(self, request, data):
-        try:
-            page_id = data.get("page_id")
-            new_parent_id = data.get("parent_id")
-            new_position = data.get("position", 0)
-            old_parent_id = data.get("old_parent_id")
-
-            page = Page.objects.get(id=page_id, organization=self.organization)
-            page.parent_id = new_parent_id  # type: ignore
-            page.position = new_position
-            page.save()
-
-            # Reorder siblings in new and old parent containers
-            Page.reorder_positions(parent_id=new_parent_id)
-            if old_parent_id != new_parent_id:
-                Page.reorder_positions(parent_id=old_parent_id)
-
-            return JsonResponse({"status": "success", "message": "Page reordered"})
-
-        except Exception as e:
-            logger.exception("Reorder failed")
-            return JsonResponse({"status": "error", "message": str(e)}, status=500)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Add the selected version ID to the context
@@ -225,6 +197,12 @@ class PageDetailView(LoginRequiredMixin, OrganizationPermissionMixin, DetailView
         context["page_content"] = md.convert(self.object.content)  # type: ignore
         context["raw_content"] = self.object.content  # type: ignore
         context["current_page"] = self.object  # type: ignore
+        # Add sidebar pages (same logic as KnowledgeBaseView)
+        version_id = self.request.session.get("selected_version_id")
+        pages_qs = Page.objects.filter(organization=self.organization)
+        if version_id:
+            pages_qs = pages_qs.filter(version_id=version_id)
+        context["pages"] = pages_qs.order_by(Collate("title", "C"), "-updated_at")
         return context
 
 
@@ -318,7 +296,7 @@ class PageViewSet(viewsets.ModelViewSet):
         return Page.objects.filter(
             organization=organization,
             version=version,
-        ).order_by("position")
+        ).order_by(Collate("title", "C"), "-updated_at")
 
     def get_serializer_context(self):
         """Add version to serializer context."""
@@ -388,7 +366,6 @@ class PageViewSet(viewsets.ModelViewSet):
                         if existing_page:
                             # Update existing page
                             existing_page.title = page_data["title"]
-                            existing_page.position = page_data["position"]
                             existing_page.save()
                             report["updated"].append(
                                 {"id": existing_page.id, "title": existing_page.title}  # type: ignore
@@ -400,7 +377,6 @@ class PageViewSet(viewsets.ModelViewSet):
                                 version=version,
                                 title=page_data["title"],
                                 content=page_data["content"],
-                                position=page_data["position"],
                             )
                             report["created"].append(
                                 {"id": new_page.id, "title": new_page.title}  # type: ignore
@@ -411,15 +387,7 @@ class PageViewSet(viewsets.ModelViewSet):
                         time.sleep(1)
 
         except IntegrityError as e:
-            if "unique_page_position_per_version_and_parent" in str(e):
-                report["errors"].append(
-                    {
-                        "type": "position_conflict",
-                        "message": "A page with the same position already exists in this version",
-                    }
-                )
-            else:
-                report["errors"].append({"type": "integrity_error", "message": str(e)})
+            report["errors"].append({"type": "integrity_error", "message": str(e)})
             return Response(
                 {
                     "status": "error",

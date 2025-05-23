@@ -10,6 +10,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, IntegrityError, transaction
+from django.db.models.functions import Lower
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -87,35 +88,20 @@ class Page(ContentHashMixin, models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # Add position field for ordering
-    position = models.PositiveIntegerField(
-        default=0,
-        db_index=True,
-        help_text=_("Position of the page within its parent level"),
-    )
-
-    # Existing parent field
-    parent = models.ForeignKey(
-        "self",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="children",
-    )
-
     # Add a new attribute to control part generation
     _skip_part_generation = False
 
     objects = PageManager()
 
     class Meta:
-        ordering = ["parent__id", "position", "-updated_at"]
+        ordering = [Lower("title"), "-updated_at"]
         verbose_name = "Page"
         verbose_name_plural = "Pages"
         constraints = [
             models.UniqueConstraint(
-                fields=["version", "parent", "position"],
-                name="unique_page_position_per_version_and_parent",
+                fields=["title", "version"],
+                name="unique_page_title_per_version",
+                condition=models.Q(title__iexact=models.F("title")),
             )
         ]
 
@@ -130,20 +116,6 @@ class Page(ContentHashMixin, models.Model):
                     f"Cannot modify page for version with status '{self.version.status}'. "
                     f"Only pages in versions with 'next' status can be modified."
                 )
-
-        if not self.position and self.parent:
-            # If no position specified, put it at the end of its parent's children
-            last_sibling = (
-                Page.objects.filter(parent=self.parent).order_by("-position").first()
-            )
-            self.position = (last_sibling.position + 1) if last_sibling else 0
-
-        elif not self.position:
-            # If no parent, put it at the end of root level pages
-            last_root = (
-                Page.objects.filter(parent__isnull=True).order_by("-position").first()
-            )
-            self.position = (last_root.position + 1) if last_root else 0
 
         super().save(*args, **kwargs)
 
@@ -403,21 +375,6 @@ class Page(ContentHashMixin, models.Model):
             int: Number of words in the content
         """
         return len(self.content.split())
-
-    @classmethod
-    def reorder_positions(cls, parent_id=None):
-        """
-        Reorders all pages at a given level (parent) to have consecutive positions.
-        This ensures there are no gaps in positions after deletions or moves.
-
-        Args:
-            parent_id: The ID of the parent page, or None for root level pages
-        """
-        pages = cls.objects.filter(parent_id=parent_id).order_by("position")
-        for index, page in enumerate(pages):
-            if page.position != index:
-                page.position = index
-                page.save(update_fields=["position"])
 
 
 class ContentType(models.TextChoices):

@@ -415,8 +415,6 @@ class Version(models.Model):
                     version=self,
                     title=old_page.title,
                     content=old_page.content,
-                    position=old_page.position,
-                    parent=None,  # We'll update this after all pages are created
                 )
 
                 # TODO: these 2 could be unified
@@ -438,12 +436,6 @@ class Version(models.Model):
                         old_vector.pk = None
                         old_vector.part = new_part
                         old_vector.save()
-
-            # Update parent relationships for pages
-            for old_page in source_version.pages.filter(parent__isnull=False):  # type: ignore
-                new_page_id = self._page_mapping[old_page.id]
-                new_parent_id = self._page_mapping[old_page.parent_id]
-                Page.objects.filter(id=new_page_id).update(parent_id=new_parent_id)
 
 
 class VersionSlug(models.Model):
