@@ -286,6 +286,9 @@ class ThreadManager:
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
             )
+            # First, expire previous runs for this thread
+            await self.db.expire_runs(thread_id, organization_id)
+            # Then, create the new run
             run_id = await self.db.create_run(run)
             run_response = RunResponse(
                 agent_version=run_request.agent_version,
