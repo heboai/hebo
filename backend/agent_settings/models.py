@@ -315,6 +315,12 @@ class MCPConfig(models.Model):
         null=True,
         help_text="The token for the SSE endpoint",
     )
+    sse_headers = models.JSONField(
+        default=dict,
+        blank=True,
+        null=True,
+        help_text="The headers for the SSE endpoint",
+    )
 
     objects = MCPConfigManager()
 

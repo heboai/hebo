@@ -39,4 +39,4 @@ class AgentSettingSerializer(serializers.ModelSerializer):
 class MCPConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = MCPConfig
-        fields = ["sse_url", "sse_token"]
+        fields = ["sse_url", "sse_token", "sse_headers"]
