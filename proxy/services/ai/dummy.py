@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def dummy_streamablehttp_client(*args, **kwargs):
-    """Dummy SSE client that returns meaningless read/write functions"""
+    """Dummy streamable HTTP client that returns meaningless read/write/get_session_id functions"""
 
     async def dummy_read():
         return ""
