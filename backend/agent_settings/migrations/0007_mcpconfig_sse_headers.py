@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("agent_settings", "0006_mcpconfig_delete_tool_and_more"),
     ]
