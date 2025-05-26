@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 
 @asynccontextmanager
-async def dummy_sse_client(*args, **kwargs):
+async def dummy_streamablehttp_client(*args, **kwargs):
     """Dummy SSE client that returns meaningless read/write functions"""
 
     async def dummy_read():
@@ -11,7 +11,10 @@ async def dummy_sse_client(*args, **kwargs):
     async def dummy_write(data):
         pass
 
-    yield (dummy_read, dummy_write)
+    async def dummy_get_session_id():
+        return "dummy_session_id"
+
+    yield (dummy_read, dummy_write, dummy_get_session_id)
 
 
 class DummyClientSession:

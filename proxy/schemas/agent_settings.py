@@ -38,6 +38,7 @@ class LLMAdapter(BaseModel):
 class MCPParams(BaseModel):
     sse_url: str
     sse_token: Optional[str] = None
+    sse_headers: Optional[dict] = None
 
 
 class AgentSetting(BaseModel):

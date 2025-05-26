@@ -11,8 +11,8 @@ from langchain_core.messages import (
 )
 from langchain_core.runnables import Runnable
 from langchain_mcp_adapters.tools import load_mcp_tools
-from mcp.client.session import ClientSession
-from mcp.client.sse import sse_client
+from mcp import ClientSession
+from mcp.client.streamable_http import streamablehttp_client
 
 from config import settings
 from schemas.ai import Session
@@ -20,7 +20,11 @@ from schemas.agent_settings import AgentSetting, MCPParams
 from services.exceptions import ColleagueHandoffException
 
 from .chat_models.bedrock import get_bedrock_client
-from .dummy import dummy_sse_client, DummyClientSession, dummy_load_mcp_tools
+from .dummy import (
+    DummyClientSession,
+    dummy_load_mcp_tools,
+    dummy_streamablehttp_client,
+)
 from .langfuse_utils import get_langfuse_config
 from .llms import init_llm, BEDROCK_ARN_PATTERN, OPENAI_PATTERN
 from .prompts.condense import get_condense_prompt
@@ -150,23 +154,24 @@ async def execute_conversation(
         raise ValueError("LLM not found")
 
     if not mcp_server_params:
-        active_sse_client = dummy_sse_client
+        active_streamablehttp_client = dummy_streamablehttp_client
         active_session = DummyClientSession
         active_tools_loader = dummy_load_mcp_tools
     else:
-        active_sse_client = sse_client
+        active_streamablehttp_client = streamablehttp_client
         active_session = ClientSession
         active_tools_loader = load_mcp_tools
 
-    # Create a single task for the entire SSE client lifecycle
-    async def process_with_sse():
+    # Create a single task for the entire streamablehttp client lifecycle
+    async def process_with_streamablehttp():
         nonlocal llm, conversation
         if not llm:
             raise ValueError("LLM not initialized")
 
-        async with active_sse_client(
-            url=mcp_server_params.sse_url if mcp_server_params else ""
-        ) as (read, write):
+        async with active_streamablehttp_client(
+            url=mcp_server_params.sse_url if mcp_server_params else "",
+            headers=mcp_server_params.sse_headers if mcp_server_params else {},
+        ) as (read, write, _):
             async with active_session(read, write) as client_session:  # type: ignore
                 await client_session.initialize()
                 tools = await active_tools_loader(client_session)  # type: ignore
@@ -271,7 +276,7 @@ async def execute_conversation(
                         yield msg
 
     try:
-        async for msg in process_with_sse():
+        async for msg in process_with_streamablehttp():
             yield msg
     except* Exception as e:
         raise _extract_root_exception(e) from None
