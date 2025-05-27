@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import anyio
 import logging
 from anyio.abc import ObjectSendStream
