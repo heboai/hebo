@@ -298,7 +298,7 @@ class DB:
         if not settings_row:
             return None
 
-        # Get MCP params
+        # Get MCP params, sse_headers is not currently used
         mcp_params_query = """
             SELECT sse_url, sse_token
             FROM agent_settings_mcpconfig
