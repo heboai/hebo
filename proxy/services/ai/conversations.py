@@ -106,11 +106,9 @@ def get_llm(
     raise ValueError("Invalid agent settings configuration")
 
 
-async def execute_conversation(                       # noqa: C901 – long but clear
+async def execute_conversation(  # noqa: C901 – long but clear
     agent_settings_or_llm: (
-        AgentSetting
-        | BaseChatModel
-        | Runnable[LanguageModelInput, BaseMessage]
+        AgentSetting | BaseChatModel | Runnable[LanguageModelInput, BaseMessage]
     ),
     conversation: List[BaseMessage],
     session: Session,
@@ -130,11 +128,7 @@ async def execute_conversation(                       # noqa: C901 – long but 
         if isinstance(agent_settings_or_llm, AgentSetting)
         else None
     )
-    llm = (
-        agent_settings_or_llm
-        if isinstance(agent_settings_or_llm, Runnable)
-        else None
-    )
+    llm = agent_settings_or_llm if isinstance(agent_settings_or_llm, Runnable) else None
     mcp_server_params = (
         mcp_server_params
         if isinstance(mcp_server_params, MCPParams)
@@ -203,9 +197,7 @@ async def execute_conversation(                       # noqa: C901 – long but 
 
                 # We retry because LLMs sometimes return an empty reponse content.
                 if not response.content:
-                    logger.warning(
-                        "LLM returned an empty response. Retrying..."
-                    )
+                    logger.warning("LLM returned an empty response. Retrying...")
                     response = await llm.ainvoke(cleaned_conv, config=langfuse_config)
 
                 if isinstance(response.content, str):
@@ -220,9 +212,7 @@ async def execute_conversation(                       # noqa: C901 – long but 
                             tool = next(t for t in tools if t.name == tc["name"])
                             tool_reply = await tool.ainvoke(tc["args"])
                         except StopIteration:
-                            logger.error(
-                                f"Tool {tc['name']} not found in tools list"
-                            )
+                            logger.error(f"Tool {tc['name']} not found in tools list")
                             tool_reply = f"Tool ({tc['name']}): not found"
                         except ColleagueHandoffException:
                             raise
@@ -253,14 +243,12 @@ async def execute_conversation(                       # noqa: C901 – long but 
         await send_stream.aclose()  # signals EOF to the receiver
 
     # ---------------------- supervisor / relay task --------------------------
-    send, receive = anyio.create_memory_object_stream(
-        20
-    )
+    send, receive = anyio.create_memory_object_stream(20)
 
     async with anyio.create_task_group() as tg:
-        tg.start_soon(_worker, send)        # worker lives *inside* TaskGroup
-        async for message in receive:       # relay lives *outside* the scope
-            yield message                   # ← incremental streaming continues
+        tg.start_soon(_worker, send)  # worker lives *inside* TaskGroup
+        async for message in receive:  # relay lives *outside* the scope
+            yield message  # ← incremental streaming continues
 
 
 async def execute_vision(
