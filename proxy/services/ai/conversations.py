@@ -1,4 +1,8 @@
+from __future__ import annotations
+
+import anyio
 import logging
+from anyio.abc import ObjectSendStream
 from typing import List, Optional, AsyncGenerator
 
 from langchain_core.language_models import BaseChatModel, LanguageModelInput
@@ -102,9 +106,11 @@ def get_llm(
     raise ValueError("Invalid agent settings configuration")
 
 
-async def execute_conversation(
+async def execute_conversation(                       # noqa: C901 – long but clear
     agent_settings_or_llm: (
-        AgentSetting | BaseChatModel | Runnable[LanguageModelInput, BaseMessage]
+        AgentSetting
+        | BaseChatModel
+        | Runnable[LanguageModelInput, BaseMessage]
     ),
     conversation: List[BaseMessage],
     session: Session,
@@ -114,14 +120,21 @@ async def execute_conversation(
     mcp_server_params: Optional[MCPParams] = None,
     recursion_depth: int = 0,
 ) -> AsyncGenerator[AIMessage | BaseMessage | ToolMessage, None]:
-    """Execute a conversation with the LLM and yield messages asynchronously."""
+    """
+    Streams messages to the caller **incrementally** while ensuring
+    AnyIO cancel-scopes are exited in the same task that entered them.
+    """
 
     agent_settings = (
         agent_settings_or_llm
         if isinstance(agent_settings_or_llm, AgentSetting)
         else None
     )
-    llm = agent_settings_or_llm if isinstance(agent_settings_or_llm, Runnable) else None
+    llm = (
+        agent_settings_or_llm
+        if isinstance(agent_settings_or_llm, Runnable)
+        else None
+    )
     mcp_server_params = (
         mcp_server_params
         if isinstance(mcp_server_params, MCPParams)
@@ -130,10 +143,7 @@ async def execute_conversation(
         else None
     )
 
-    logger.debug(f"Executing conversation. Recursion depth: {recursion_depth}")
-
     if recursion_depth >= MAX_RECURSION_DEPTH:
-        logger.warning(f"Max recursion depth reached: {recursion_depth}")
         raise ColleagueHandoffException(
             "Agent ran out of time. Please, take over the conversation."
         )
@@ -149,7 +159,6 @@ async def execute_conversation(
 
     if not llm and agent_settings:
         llm = get_llm(agent_settings)
-
     if not llm:
         raise ValueError("LLM not found")
 
@@ -162,8 +171,8 @@ async def execute_conversation(
         active_session = ClientSession
         active_tools_loader = load_mcp_tools
 
-    # Create a single task for the entire streamablehttp client lifecycle
-    async def process_with_streamablehttp():
+    async def _worker(send_stream: ObjectSendStream):
+        """Runs in its own task; pushes every new message to `send_stream`."""
         nonlocal llm, conversation
         if not llm:
             raise ValueError("LLM not initialized")
@@ -182,87 +191,53 @@ async def execute_conversation(
                 if isinstance(llm, BaseChatModel):
                     llm = llm.bind_tools(tools)
 
-                try:
-                    conversation = [
-                        (
-                            # This has been introduce as a hotfix for the bedrock -> mcp tools integration.
-                            # It's a workaround to remove the run_manager from the tool_calls.
-                            # TODO: Remove this once the tools integration is fixed (on Langchain side).
-                            clean_ai_message(message)
-                            if isinstance(message, AIMessage)
-                            else message
-                        )
-                        for message in conversation
-                    ]
-                    response = await llm.ainvoke(
-                        conversation,
-                        config=langfuse_config,
-                    )
-                except Exception as e:
-                    logger.error(f"Error invoking LLM: {e}")
-                    raise
-                # we retry because LLMs sometimes return empty response content
+                # ---------- first agent reply ----------
+                # This has been introduce as a hotfix for the bedrock -> mcp tools integration.
+                # It's a workaround to remove the run_manager from the tool_calls.
+                # TODO: Remove this once the tools integration is fixed (on Langchain side).
+                cleaned_conv = [
+                    clean_ai_message(m) if isinstance(m, AIMessage) else m
+                    for m in conversation
+                ]
+                response = await llm.ainvoke(cleaned_conv, config=langfuse_config)
+
+                # We retry because LLMs sometimes return an empty reponse content.
                 if not response.content:
-                    logger.warning("LLM response content is empty. Retrying...")
-                    async for msg in execute_conversation(
-                        llm,
-                        conversation,
-                        session,
-                        behaviour,
-                        context,
-                        history_summaries,
-                        mcp_server_params,
-                        recursion_depth + 1,
-                    ):
-                        yield msg
-                    return
+                    logger.warning(
+                        "LLM returned an empty response. Retrying..."
+                    )
+                    response = await llm.ainvoke(cleaned_conv, config=langfuse_config)
 
                 if isinstance(response.content, str):
                     response.content = [{"type": "text", "text": response.content}]
                 conversation.append(response)
-                yield response
+                await send_stream.send(response)
 
+                # ---------- tool calls (if any) ----------
                 if isinstance(response, AIMessage) and response.tool_calls:
-                    for tool_call in response.tool_calls:
+                    for tc in response.tool_calls:
                         try:
-                            tool = next(t for t in tools if t.name == tool_call["name"])
-                            response_text = await tool.ainvoke(tool_call["args"])
+                            tool = next(t for t in tools if t.name == tc["name"])
+                            tool_reply = await tool.ainvoke(tc["args"])
                         except StopIteration:
                             logger.error(
-                                f"Tool {tool_call['name']} not found in tools list"
+                                f"Tool {tc['name']} not found in tools list"
                             )
-                            response_text = (
-                                f"Tool ({tool_call['name']}): Error - tool not found"
-                            )
-                        except ColleagueHandoffException as e:
-                            raise e
-                        except Exception as e:
-                            logger.warning(
-                                f"Error invoking tool {tool_call['name']}: {e}"
-                            )
-                            response_text = (
-                                f"Tool ({tool_call['name']}): Error invoking tool: {e}"
-                            )
+                            tool_reply = f"Tool ({tc['name']}): not found"
+                        except ColleagueHandoffException:
+                            raise
+                        except Exception as exc:
+                            tool_reply = f"Tool ({tc['name']}): {exc}"
 
-                        tool_message_content = [
-                            {
-                                "type": "text",
-                                "text": response_text,
-                            }
-                        ]
-
-                        tool_message = ToolMessage(
-                            content=tool_message_content,  # type: ignore
-                            tool_call_id=tool_call["id"],
-                            additional_kwargs={"tool_call_name": tool_call["name"]},
+                        tm = ToolMessage(
+                            content=[{"type": "text", "text": tool_reply}],  # type: ignore  # noqa: E501
+                            tool_call_id=tc["id"],
+                            additional_kwargs={"tool_call_name": tc["name"]},
                         )
-                        conversation.append(tool_message)
-                        yield tool_message
+                        conversation.append(tm)
+                        await send_stream.send(tm)
 
-                    # Recursive call
-                    logger.debug(
-                        f"Making recursive call. Current depth: {recursion_depth}"
-                    )
+                    # ---------- second agent reply (recursive) ----------
                     async for msg in execute_conversation(
                         llm,
                         conversation,
@@ -273,13 +248,19 @@ async def execute_conversation(
                         mcp_server_params,
                         recursion_depth + 1,
                     ):
-                        yield msg
+                        await send_stream.send(msg)
 
-    try:
-        async for msg in process_with_streamablehttp():
-            yield msg
-    except* Exception as e:
-        raise _extract_root_exception(e) from None
+        await send_stream.aclose()  # signals EOF to the receiver
+
+    # ---------------------- supervisor / relay task --------------------------
+    send, receive = anyio.create_memory_object_stream(
+        20
+    )
+
+    async with anyio.create_task_group() as tg:
+        tg.start_soon(_worker, send)        # worker lives *inside* TaskGroup
+        async for message in receive:       # relay lives *outside* the scope
+            yield message                   # ← incremental streaming continues
 
 
 async def execute_vision(
