@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from "@/components/ui/sonner";
+import { PostHogProvider } from "@/components/PostHogProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,16 +37,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <StackProvider app={stackServerApp}>
-            <StackTheme theme={stackTheme}>
-              <div className="min-h-screen">
-                {children}
-              </div>
-              <Toaster richColors position="bottom-center" />
-            </StackTheme>
-          </StackProvider>
-        </ThemeProvider>
+        <PostHogProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+            <StackProvider app={stackServerApp}>
+              <StackTheme theme={stackTheme}>
+                <div className="min-h-screen">
+                  {children}
+                </div>
+                <Toaster richColors position="bottom-center" />
+              </StackTheme>
+            </StackProvider>
+          </ThemeProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
