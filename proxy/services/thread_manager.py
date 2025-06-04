@@ -15,7 +15,6 @@ from langchain_core.messages import (
     ToolMessage,
 )
 
-from config import settings
 from db.database import DB
 from db.vectorstore import VectorStore
 from schemas.ai import Session
@@ -355,7 +354,8 @@ class ThreadManager:
             # We include a small latency to make sure the user has finished typing their multi-part message
             # This is more art than science. We should think about a more robust solution in the future. (And patent it eventually)
             # The solution should handle cases where users are sending multi-part messages.
-            await asyncio.sleep(8 if settings.TARGET_ENV == "production" else 1)
+            if len(messages) > 1:
+                await asyncio.sleep(8)
             run_status = await self._get_run_status(run_id, organization_id)
             if run_status != RunStatus.CREATED:
                 run_response = RunResponse(
@@ -494,8 +494,8 @@ class ThreadManager:
                             word_count = len(part.text.split())
                             # Convert WPM to seconds
                             delay = (word_count / 100) * 60
-                            # Add a delay of -15 seconds for the first part to account for the system latency
-                            delay -= 15 if i == 0 else 0
+                            # Add a delay of -30 seconds for the first part to account for the system latency
+                            delay -= 30 if i == 0 else 0
                             await asyncio.sleep(
                                 max(0, delay)
                                 if (
