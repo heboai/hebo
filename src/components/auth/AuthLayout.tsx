@@ -82,7 +82,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                             alt="Decorative Quote"
                             width={50}
                             height={50}
-                            className="absolute -top-6 -left-6 select-none pointer-events-none z-0 w-auto"
+                            className="absolute -top-6 -left-6 select-none pointer-events-none z-0"
                         />
                         <p className="text-gray-500 text-xl font-regular leading-tight relative z-10">
                             The <span className="font-bold text-black">computing power</span> driving advances in <span className="font-bold text-black">generative AI</span> is projected to <span className="font-bold text-black">increase</span> by <span className="font-bold text-black">a millionfold</span> over the next decade.
