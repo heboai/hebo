@@ -1,12 +1,16 @@
 import { CredentialSignUp } from "@stackframe/stack";
 import AuthLayout from "@/components/auth/AuthLayout";
 import Link from "next/link";
+import { Suspense } from "react";
+import { AuthLoading } from "@/components/auth/AuthLoading";
 
 export default function CustomSignUpPage() {
   return (
     <AuthLayout>
       <div className="space-y-4">
-        <CredentialSignUp />
+        <Suspense fallback={<AuthLoading />}>
+          <CredentialSignUp />
+        </Suspense>
         <div className="w-full h-[1px] bg-gray-200 mt-4" />
         <p className="text-base text-left">
           Already have an account?{" "}

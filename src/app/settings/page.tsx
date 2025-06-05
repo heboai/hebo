@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/drawer"
 import { AccountSettings } from '@stackframe/stack';
 import { Suspense } from "react";
-import Loading from "../loading";
+import { Loading } from "@/components/ui/loading";
 
 export default function SettingsPage() {
     const [open, setOpen] = React.useState(true)
@@ -36,14 +36,14 @@ export default function SettingsPage() {
     if (isDesktop) {
         return (
             <Dialog open={open} onOpenChange={handleOpenChange}>
-                <DialogContent className="sm:max-w-[1000px]">
-                    <DialogHeader>
+                <DialogContent className="sm:max-w-[1000px] p-6 md:p-8 bg-white shadow-lg rounded-lg">
+                    <DialogHeader className="mb-4">
                         <DialogTitle>Account Settings</DialogTitle>
                         <DialogDescription>
                             Manage your account settings and preferences.
                         </DialogDescription>
                     </DialogHeader>
-                    <Suspense fallback={<Loading />}>
+                    <Suspense fallback={<Loading size="md" variant="primary" />}>
                         <AccountSettings
                             fullPage={false}
                         />
@@ -55,14 +55,14 @@ export default function SettingsPage() {
 
     return (
         <Drawer open={open} onOpenChange={handleOpenChange}>
-            <DrawerContent>
-                <DrawerHeader className="text-left">
+            <DrawerContent className="p-6 bg-white shadow-lg rounded-t-lg">
+                <DrawerHeader className="text-left mb-4">
                     <DrawerTitle>Account Settings</DrawerTitle>
                     <DrawerDescription>
                         Manage your account settings and preferences.
                     </DrawerDescription>
                 </DrawerHeader>
-                <Suspense fallback={<Loading />}>
+                <Suspense fallback={<Loading size="md" variant="primary" />}>
                     <AccountSettings
                         fullPage={false}
                     />

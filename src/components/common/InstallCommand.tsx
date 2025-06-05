@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Copy } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -10,10 +10,14 @@ interface InstallCommandProps {
 }
 
 export function InstallCommand({ cmd = "npm install -g hebo-eval@latest" }: InstallCommandProps) {
+  const [copied, setCopied] = React.useState(false);
+
   const copy = React.useCallback(() => {
-    navigator.clipboard.writeText(cmd).then(() =>
-      toast.success("Copied to clipboard!")
-    );
+    navigator.clipboard.writeText(cmd).then(() => {
+      setCopied(true);
+      toast.success("Copied to clipboard!");
+      setTimeout(() => setCopied(false), 1000);
+    });
   }, [cmd]);
 
   return (
@@ -28,7 +32,11 @@ export function InstallCommand({ cmd = "npm install -g hebo-eval@latest" }: Inst
         className="text-white hover:bg-indigo-800/60"
         aria-label="Copy command"
       >
-        <Copy className="h-4 w-4" />
+        {copied ? (
+          <Check className="h-4 w-4 text-green-400" />
+        ) : (
+          <Copy className="h-4 w-4" />
+        )}
       </Button>
     </div>
   );
