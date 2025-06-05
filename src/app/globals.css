@@ -161,3 +161,35 @@ body {
 input.stack-scope {
   background-color: #fff !important;
 }
+
+/* Stack User Button Popup Styles */
+.stack-scope [data-stack-user-button-popup],
+.stack-scope [data-stack-user-button-popup] * {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+.stack-scope [data-stack-user-button-popup] {
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  border-radius: var(--radius) !important;
+}
+
+.stack-scope [data-stack-user-button-popup] button {
+  background-color: transparent !important;
+  color: #000 !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  width: 100% !important;
+  text-align: left !important;
+  transition: background-color 0.2s !important;
+}
+
+.stack-scope [data-stack-user-button-popup] button:hover {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.stack-scope [data-stack-user-button-popup] hr {
+  border-color: var(--border) !important;
+  margin: 0.5rem 0 !important;
+}

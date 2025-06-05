@@ -35,10 +35,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         <PostHogProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
             <StackProvider app={stackServerApp}>
               <StackTheme theme={stackTheme}>
                 <div className="min-h-screen">
