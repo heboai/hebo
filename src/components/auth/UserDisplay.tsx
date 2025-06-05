@@ -6,11 +6,11 @@ import { useEffect } from 'react';
 
 export default function UserDisplay() {
   const app = useStackApp();
-  const user = app.useUser();
+  const user = app?.useUser();
   const posthog = usePostHog();
   
   useEffect(() => {
-    if (user) {
+    if (user && posthog) {
       posthog.identify(user.id, {
         name: user.displayName,
         email: user.primaryEmail
