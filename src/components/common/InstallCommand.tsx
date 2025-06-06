@@ -16,7 +16,7 @@ export function InstallCommand({ cmd = "npm install -g hebo-eval@latest" }: Inst
     navigator.clipboard.writeText(cmd).then(() => {
       setCopied(true);
       toast.success("Copied to clipboard!");
-      setTimeout(() => setCopied(false), 1000);
+      setTimeout(() => setCopied(false), 2500);
     });
   }, [cmd]);
 
@@ -29,7 +29,7 @@ export function InstallCommand({ cmd = "npm install -g hebo-eval@latest" }: Inst
         onClick={copy}
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-indigo-800/60"
+        className="text-white hover:text-white/80 hover:bg-indigo-800/60"
         aria-label="Copy command"
       >
         {copied ? (
