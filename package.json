@@ -46,5 +46,15 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.2",
     "typescript": "^5"
+  },
+  "resolutions": {
+    "glob": "^9.0.0",
+    "inflight": "^2.0.0",
+    "querystring": "^0.2.1"
+  },
+  "overrides": {
+    "glob": "^9.0.0",
+    "inflight": "^2.0.0",
+    "querystring": "^0.2.1"
   }
 }
