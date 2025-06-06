@@ -2,13 +2,17 @@ import { CredentialSignIn, OAuthButtonGroup } from "@stackframe/stack";
 import AuthLayout from "@/components/auth/AuthLayout";
 import Link from "next/link";
 import { Suspense } from "react";
-import { AuthLoading } from "@/components/auth/AuthLoading";
+import { Loading } from "@/components/ui/loading";
 
 export default function CustomSignInPage() {
   return (
     <AuthLayout>
       <div className="space-y-4">
-        <Suspense fallback={<AuthLoading />}>
+        <Suspense fallback={
+          <div className="relative min-h-[400px]">
+            <Loading size="lg" variant="primary" fullPage />
+          </div>
+        }>
           <CredentialSignIn />
         </Suspense>
         <div className="flex items-center gap-4">
@@ -16,7 +20,11 @@ export default function CustomSignInPage() {
           <span className="text-sm whitespace-nowrap">or continue with</span>
           <div className="flex-1 h-[1px] bg-gray-200" />
         </div>
-        <Suspense fallback={<AuthLoading />}>
+        <Suspense fallback={
+          <div className="relative min-h-[400px]">
+            <Loading size="lg" variant="primary" fullPage />
+          </div>
+        }>
           <OAuthButtonGroup type="sign-in" />
         </Suspense>
         <div className="w-full h-[1px] bg-gray-200 mt-4" />
