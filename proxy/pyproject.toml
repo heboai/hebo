@@ -14,7 +14,7 @@ dependencies = [
     "langchain>=0.3.14",
     "langchain-core>=0.3.29",
     "pydantic-settings>=2.7.0",
-    "langfuse>=2.57.5",
+    "langfuse==2.57.5",
     "pillow>=11.1.0",
     "voyageai>=0.3.2",
     "uvicorn>=0.34.0",
