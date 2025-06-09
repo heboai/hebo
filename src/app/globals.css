@@ -195,3 +195,18 @@ input.stack-scope {
   border-color: var(--border) !important;
   margin: 0.5rem 0 !important;
 }
+
+/* Dialog centering styles */
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  border-radius: 1rem;
+}
+
+/* Ensure dialog has border radius on all screen sizes */
+[role="dialog"] {
+  border-radius: 1rem !important;
+}
