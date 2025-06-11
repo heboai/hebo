@@ -14,17 +14,12 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
         if request.url.path == "/health":
             return await call_next(request)
 
-        # Get API key from various sources
-        api_key = request.headers.get("X-API-Key") or request.query_params.get(
-            "api_key"
-        )
-
-        # Handle Authorization header with Bearer token
+        api_key = request.headers.get("X-API-Key")
+        if not api_key:
+            api_key = request.query_params.get("api_key")
         auth_header = request.headers.get("Authorization")
-        if auth_header and auth_header.startswith("Bearer "):
-            api_key = auth_header.replace("Bearer ", "")
-        elif auth_header:
-            api_key = auth_header
+        if not api_key and auth_header and auth_header.startswith("Bearer "):
+            api_key = auth_header[len("Bearer ") :]
 
         if not api_key:
             return JSONResponse(
