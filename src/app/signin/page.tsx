@@ -13,7 +13,7 @@ export default function CustomSignInPage() {
             <Loading size="lg" variant="primary" fullPage />
           </div>
         }>
-          <CredentialSignIn />
+          <OAuthButtonGroup type="sign-in" />
         </Suspense>
         <div className="flex items-center gap-4">
           <div className="flex-1 h-[1px] bg-gray-200" />
@@ -25,13 +25,13 @@ export default function CustomSignInPage() {
             <Loading size="lg" variant="primary" fullPage />
           </div>
         }>
-          <OAuthButtonGroup type="sign-in" />
+          <CredentialSignIn />
         </Suspense>
         <div className="w-full h-[1px] bg-gray-200 mt-4" />
         <p className="text-base text-left">
           New to Hebo?{" "}
-          <Link 
-            href="/signup" 
+          <Link
+            href="/signup"
             className="font-bold underline hover:opacity-80 transition-opacity"
           >
             Create an account

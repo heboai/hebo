@@ -22,7 +22,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
 
                             {/* Description */}
                             <p className="text-base font-light mb-8">
-                                The fastest way to train, evaluate & observe agents
+                                The fastest way to build & scale agents
                             </p>
 
                             {children}
@@ -44,10 +44,10 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                     {/* Footer */}
                     <footer className="w-full max-w-[400px] mx-auto text-sm text-center mt-auto">
                         By continuing, you agree to Hebo&apos;s{" "}
-                        <Link href="/terms" className="underline hover:opacity-80 transition-opacity">
+                        {/* <Link href="/terms" className="underline hover:opacity-80 transition-opacity">
                             Terms of Service
                         </Link>{" "}
-                        and{" "}
+                        and{" "} */}
                         <Link href="/privacy" className="underline hover:opacity-80 transition-opacity">
                             Privacy Policy
                         </Link>
@@ -66,9 +66,9 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             bg-[var(--color-marketing-500)]
             relative
             ">
-                <Link 
-                    href="https://docs.hebo.ai" 
-                    target="_blank" 
+                <Link
+                    href="https://docs.hebo.ai"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="absolute top-6 right-6"
                 >

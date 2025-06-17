@@ -26,7 +26,7 @@ const stackTheme = {
 
 export const metadata: Metadata = {
   title: "Hebo Cloud",
-  description: "The fastest way to train, evaluate & observe agents",
+  description: "The fastest way to build & scale agents",
 };
 
 export default function RootLayout({
