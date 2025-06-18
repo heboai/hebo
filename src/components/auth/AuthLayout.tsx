@@ -40,19 +40,6 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                             </div>
                         </div>
                     </main>
-
-                    {/* Footer */}
-                    <footer className="w-full max-w-[400px] mx-auto text-sm text-center mt-auto">
-                        By continuing, you agree to Hebo&apos;s{" "}
-                        {/* <Link href="/terms" className="underline hover:opacity-80 transition-opacity">
-                            Terms of Service
-                        </Link>{" "}
-                        and{" "} */}
-                        <Link href="/privacy" className="underline hover:opacity-80 transition-opacity">
-                            Privacy Policy
-                        </Link>
-                        , and to receive periodic emails with updates.
-                    </footer>
                 </div>
             </div>
 
