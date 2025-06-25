@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   async rewrites() {
     return [
+      // Handle the /hebo redirect
+      {
+        source: "/hebo",
+        destination: "/",
+      },
       {
         source: "/ingest/static/:path*",
         destination: "https://eu-assets.i.posthog.com/static/:path*",

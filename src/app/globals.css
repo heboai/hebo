@@ -196,24 +196,7 @@ input.stack-scope {
   margin: 0.5rem 0 !important;
 }
 
-/* OAuth Button Group Styles - Make all OAuth buttons white */
-.stack-scope [data-stack-oauth-button-group] button,
-.stack-scope [data-stack-oauth-button-group] a,
-.stack-scope [data-stack-oauth-button-group] div[role="button"] {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 1px solid #e5e7eb !important;
-  transition: all 0.2s ease-in-out !important;
-}
-
-.stack-scope [data-stack-oauth-button-group] button:hover,
-.stack-scope [data-stack-oauth-button-group] a:hover,
-.stack-scope [data-stack-oauth-button-group] div[role="button"]:hover {
-  background-color: #f9fafb !important;
-  border-color: #d1d5db !important;
-}
-
-/* Alternative selectors for OAuth buttons in case the above don't work */
+/* Selectors for OAuth buttons in case the above don't work */
 .stack-scope button[data-provider],
 .stack-scope a[data-provider],
 .stack-scope div[data-provider] {
@@ -247,17 +230,6 @@ input.stack-scope {
   border-color: #d1d5db !important;
 }
 
-/* GitHub Icon Specific Styles - Make GitHub icons darker and more visible */
-.stack-scope [data-provider="github"] svg,
-.stack-scope [data-provider="github"] img,
-.stack-scope [class*="github"] svg,
-.stack-scope [class*="github"] img,
-.stack-scope [class*="GitHub"] svg,
-.stack-scope [class*="GitHub"] img {
-  filter: brightness(0) saturate(100%) !important;
-  color: #000000 !important;
-}
-
 /* Alternative selectors for GitHub icons */
 .stack-scope button[data-provider="github"] svg,
 .stack-scope a[data-provider="github"] svg,
@@ -265,22 +237,6 @@ input.stack-scope {
 .stack-scope button[data-provider="github"] img,
 .stack-scope a[data-provider="github"] img,
 .stack-scope div[data-provider="github"] img {
-  filter: brightness(0) saturate(100%) !important;
-  color: #000000 !important;
-}
-
-/* Target any element containing GitHub icon */
-.stack-scope svg[class*="github"],
-.stack-scope img[class*="github"],
-.stack-scope svg[class*="GitHub"],
-.stack-scope img[class*="GitHub"] {
-  filter: brightness(0) saturate(100%) !important;
-  color: #000000 !important;
-}
-
-/* Force dark color for any GitHub-related icon */
-.stack-scope [data-stack-oauth-button-group] svg,
-.stack-scope [data-stack-oauth-button-group] img {
   filter: brightness(0) saturate(100%) !important;
   color: #000000 !important;
 }
@@ -298,13 +254,6 @@ input.stack-scope {
   fill: #000000 !important;
 }
 
-/* Alternative approach - target any SVG path with white fill */
-.stack-scope svg path[fill="#FFFFFF"],
-.stack-scope svg path[fill="white"],
-.stack-scope svg path[fill="#fff"] {
-  fill: #000000 !important;
-}
-
 /* Dialog centering styles */
 .dialog {
   position: fixed;
@@ -318,4 +267,9 @@ input.stack-scope {
 /* Ensure dialog has border radius on all screen sizes */
 [role="dialog"] {
   border-radius: 1rem !important;
+}
+
+/* OTP digit box styling: force white background */
+.flex.items-center.gap-1 > .relative.flex.items-center.justify-center.border.rounded-md {
+  background-color: #fff !important;
 }
