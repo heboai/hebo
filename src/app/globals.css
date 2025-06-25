@@ -196,7 +196,7 @@ input.stack-scope {
   margin: 0.5rem 0 !important;
 }
 
-/* Selectors for OAuth buttons in case the above don't work */
+/* Selectors for OAuth buttons */
 .stack-scope button[data-provider],
 .stack-scope a[data-provider],
 .stack-scope div[data-provider] {
