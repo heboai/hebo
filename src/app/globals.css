@@ -196,6 +196,64 @@ input.stack-scope {
   margin: 0.5rem 0 !important;
 }
 
+/* Selectors for OAuth buttons */
+.stack-scope button[data-provider],
+.stack-scope a[data-provider],
+.stack-scope div[data-provider] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.stack-scope button[data-provider]:hover,
+.stack-scope a[data-provider]:hover,
+.stack-scope div[data-provider]:hover {
+  background-color: #f9fafb !important;
+  border-color: #d1d5db !important;
+}
+
+/* Additional selectors for OAuth buttons with different class patterns */
+.stack-scope .oauth-button,
+.stack-scope [class*="oauth"],
+.stack-scope [class*="OAuth"],
+.stack-scope [class*="provider"] {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.stack-scope .oauth-button:hover,
+.stack-scope [class*="oauth"]:hover,
+.stack-scope [class*="OAuth"]:hover,
+.stack-scope [class*="provider"]:hover {
+  background-color: #f9fafb !important;
+  border-color: #d1d5db !important;
+}
+
+/* Alternative selectors for GitHub icons */
+.stack-scope button[data-provider="github"] svg,
+.stack-scope a[data-provider="github"] svg,
+.stack-scope div[data-provider="github"] svg,
+.stack-scope button[data-provider="github"] img,
+.stack-scope a[data-provider="github"] img,
+.stack-scope div[data-provider="github"] img {
+  filter: brightness(0) saturate(100%) !important;
+  color: #000000 !important;
+}
+
+/* Specific GitHub SVG path styling - Change white fill to black */
+.stack-scope [data-provider="github"] svg path,
+.stack-scope [class*="github"] svg path,
+.stack-scope [class*="GitHub"] svg path,
+.stack-scope [data-stack-oauth-button-group] svg path {
+  fill: #000000 !important;
+}
+
+/* Target the specific GitHub logo SVG structure */
+.stack-scope svg[viewBox="0 0 496 512"] path {
+  fill: #000000 !important;
+}
+
 /* Dialog centering styles */
 .dialog {
   position: fixed;
@@ -209,4 +267,9 @@ input.stack-scope {
 /* Ensure dialog has border radius on all screen sizes */
 [role="dialog"] {
   border-radius: 1rem !important;
+}
+
+/* OTP digit box styling: force white background */
+.flex.items-center.gap-1 > .relative.flex.items-center.justify-center.border.rounded-md {
+  background-color: #fff !important;
 }
