@@ -1,109 +1,89 @@
-# Hebo Cloud
+# Hebo
 
-A modern web application built with Next.js, React, and TypeScript, featuring a beautiful UI powered by TailwindCSS and Shadcn components.
+This is the monorepo for Hebo, containing all our applications and shared packages.
 
-## 🚀 Features
+## Repository Structure
 
-- **Modern Tech Stack**: Built with Next.js 15, React 18, and TypeScript
-- **Beautiful UI**: Styled with TailwindCSS and Shadcn components
-- **Type Safety**: Full TypeScript support
-- **Testing**: Jest and React Testing Library for comprehensive testing
-- **Code Quality**: ESLint for code linting
-- **Edge Deployment**: Server-side rendering at the edge using AWS Lambda@Edge
-- **CI/CD**: Automated testing and linting with GitHub Actions
+```
+/ (git root)
+├── apps/                    # deployable targets
+│   └── web/                # Next.js web application
+├── packages/               # shareable libraries
+├── infra/                  # SST stacks
+│   ├── stacks/
+│   │   └── web-stack.ts
+│   └── sst.config.ts
+└── .github/
+    └── workflows/          # CI/CD pipelines
+```
 
-## 🛠️ Tech Stack
-
-- **Frontend Framework**: Next.js 15
-- **UI Library**: React 18
-- **Styling**: TailwindCSS
-- **Component Library**: Shadcn
-- **Language**: TypeScript
-- **Testing**: Jest, React Testing Library
-- **Deployment**: SST (Serverless Stack)
-- **Infrastructure**: AWS (via SST)
-
-## 🏗️ Development
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 20 or later
-- npm or yarn
-- AWS CLI configured (for deployment)
+- Node.js >= 18
+- pnpm >= 9.0.0
+- AWS CLI configured with appropriate credentials
 
 ### Installation
 
-1. Clone the repository:
+1. Install dependencies:
    ```bash
-   git clone https://github.com/yourusername/hebo-cloud.git
-   cd hebo-cloud
+   pnpm i
    ```
 
-2. Install dependencies:
+2. Set up your environment variables:
    ```bash
-   npm install
+   cp .env.example .env
    ```
 
-3. Start the development server:
-   ```bash
-   npx sst dev
-   ```
+### Development
 
-The application will be available at `http://localhost:3000`.
-
-### Available Scripts
-
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build the application
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run test` - Run tests
-- `npm run test:watch` - Run tests in watch mode
-- `npm run test:coverage` - Run tests with coverage report
-
-## 🚀 Deployment
-
-This project uses [SST](https://sst.dev) for deployment to AWS. SST provides a simple way to deploy serverless applications with infrastructure as code.
-
-### Deployment Steps
-
-1. Install SST CLI:
-   ```bash
-   npm install -g sst
-   ```
-
-2. Deploy to AWS:
-   ```bash
-   npx sst deploy --stage production
-   ```
-
-The deployment will:
-- Set up AWS infrastructure using SST
-- Configure CloudFront for edge deployment
-- Deploy the Next.js application
-- Set up Lambda@Edge for server-side rendering
-
-## 🧪 Testing
-
-The project uses Jest and React Testing Library for testing. Run tests using:
+To start all services locally:
 
 ```bash
-npm run test
+pnpm dev
 ```
 
-For watch mode:
+To start only specific services:
+
 ```bash
-npm run test:watch
+# Start dev with sst
+pnpm run dev:sst
 ```
 
-For coverage report:
+### Building
+
 ```bash
-npm run test:coverage
+# Build all packages and apps
+pnpm build
+
+# Build specific package/app
+pnpm --filter web build
 ```
 
-## 🔄 CI/CD
+### Testing
 
-The project uses GitHub Actions for continuous integration and deployment:
+```bash
+# Run all tests
+pnpm test
 
-- Linting and testing on every push to main and pull requests
-- Automated deployment to AWS using SST
+# Test specific package/app
+pnpm --filter web test
+```
+
+### Deployment
+
+The repository uses GitHub Actions for CI/CD:
+
+- Push a new tag to trigger the deployment
+
+Manual deployments:
+
+```bash
+# Deploy web app to staging
+npx sst deploy --stage staging
+
+# Deploy web app to production
+npx sst deploy --stage production
+```
