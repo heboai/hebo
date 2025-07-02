@@ -85,6 +85,10 @@ The repository uses GitHub Actions for CI/CD:
 Manual deployments:
 
 ```bash
+# Set secrets
+npx sst secret set HeboDatabasePassword <password>
+npx sst secret set HeboDatabaseUsername <username>
+
 # Deploy web app to staging
 npx sst deploy --stage staging
 
