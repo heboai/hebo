@@ -49,3 +49,6 @@ next-env.d.ts
 
 # Cursor
 .cursor
+
+# db
+local-db

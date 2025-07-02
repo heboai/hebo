@@ -9,6 +9,28 @@ declare module "sst" {
       "type": "sst.aws.Nextjs"
       "url": string
     }
+    "HeboDatabase": {
+      "clusterArn": string
+      "database": string
+      "host": string
+      "password": string
+      "port": number
+      "reader": string
+      "secretArn": string
+      "type": "sst.aws.Aurora"
+      "username": string
+    }
+    "HeboDatabasePassword": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "HeboDatabaseUsername": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "HeboVpc": {
+      "type": "sst.aws.Vpc"
+    }
   }
 }
 /// <reference path="sst-env.d.ts" />

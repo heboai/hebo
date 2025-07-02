@@ -7,11 +7,12 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 ```
 / (git root)
 ├── apps/                    # deployable targets
-│   └── web/                # Next.js web application
+│   └── hebo-cloud/         # Next.js web application
 ├── packages/               # shareable libraries
 ├── infra/                  # SST stacks
 │   ├── stacks/
-│   │   └── web-stack.ts
+│   │   ├── db.ts
+│   │   └── hebo-cloud.ts
 │   └── sst.config.ts
 └── .github/
     └── workflows/          # CI/CD pipelines
@@ -24,6 +25,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 - Node.js >= 18
 - pnpm >= 9.0.0
 - AWS CLI configured with appropriate credentials
+- Docker and Docker Compose (for local development database)
 
 ### Installation
 
@@ -42,10 +44,12 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 To start all services locally:
 
 ```bash
-pnpm dev
-```
+# Start the development database
+docker compose up -d db
 
-To start only specific services:
+# Verify the database is running
+docker compose ps
+```
 
 ```bash
 # Start dev with sst
@@ -59,7 +63,7 @@ pnpm run dev:sst
 pnpm build
 
 # Build specific package/app
-pnpm --filter web build
+pnpm --filter hebo-cloud build
 ```
 
 ### Testing
@@ -69,7 +73,7 @@ pnpm --filter web build
 pnpm test
 
 # Test specific package/app
-pnpm --filter web test
+pnpm --filter hebo-cloud test
 ```
 
 ### Deployment
