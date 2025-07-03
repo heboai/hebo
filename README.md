@@ -45,10 +45,7 @@ To start all services locally:
 
 ```bash
 # Start the development database
-docker compose up -d db
-
-# Verify the database is running
-docker compose ps
+pnpm run db:up
 ```
 
 ```bash
