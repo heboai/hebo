@@ -16,7 +16,10 @@
     "dev:sst": "sst dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "db:up": "docker compose -f infra/stacks/dev/docker-compose.yaml up -d",
+    "db:down": "docker compose -f infra/stacks/dev/docker-compose.yaml down",
+    "db:logs": "docker compose -f infra/stacks/dev/docker-compose.yaml logs -f"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
