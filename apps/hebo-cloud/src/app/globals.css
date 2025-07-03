@@ -5,7 +5,7 @@
 
 @theme {
   /* === Colours === */
-  --color-background-default : linear-gradient(0deg,#F8F9D2 0%,#F5F7FA 100%);
+  --color-background-default : linear-gradient(-20deg, #FEF9C3 10%, #F1F5F9 70%);
   --color-foreground-default : #000000;
   --color-background-secondary: rgba(175, 207, 255, 0.25);
   --color-foreground-secondary: #333333;
