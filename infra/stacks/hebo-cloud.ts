@@ -5,7 +5,7 @@ import heboDatabase from "./db";
 
 const heboCloudApp = new sst.aws.Nextjs("HeboCloudApp", {
   path: "apps/hebo-cloud",
-  domain: "cloud.hebo.ai",
+  domain: $app.stage === "production" ? "cloud.hebo.ai" : `${$app.stage}.cloud.hebo.ai`,
   link: [heboDatabase]
 });
 
