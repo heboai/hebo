@@ -26,20 +26,19 @@ const navLinks = [
 ];
 
 export const SideNav = () => {
+  // All hooks must be at the top, before any return or conditional
   const pathname = usePathname();
-  
-  // Don't render SideNav on authentication pages and new-agent page
-  const authPages = ['/signin', '/signup'];
-  const excludedPages = [...authPages, '/new-agent'];
-  
-  if (excludedPages.includes(pathname)) {
-    return null;
-  }
-
   const [expanded, setExpanded] = useState(true);
   const envOptions = ["Main", "Prod"];
   const [selectedEnv, setSelectedEnv] = useState(envOptions[0]);
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
+
+  // Now do early returns
+  const authPages = ['/signin', '/signup'];
+  const excludedPages = [...authPages, '/new-agent'];
+  if (excludedPages.includes(pathname)) {
+    return null;
+  }
 
   const handleToggle = () => {
     setExpanded((prev) => !prev);
