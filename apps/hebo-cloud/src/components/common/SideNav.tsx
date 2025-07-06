@@ -5,6 +5,7 @@ import Link from "next/link";
 import { House, BrainCog, KeyRound, Gauge, BookOpen, PanelRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@stackframe/stack";
+import Image from "next/image";
 
 const navLinks = [
   {
@@ -36,8 +37,6 @@ export const SideNav = () => {
   }
 
   const [expanded, setExpanded] = useState(true);
-
-  // Environment dropdown state
   const envOptions = ["Main", "Prod"];
   const [selectedEnv, setSelectedEnv] = useState(envOptions[0]);
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
@@ -129,7 +128,7 @@ export const SideNav = () => {
     >
       {/* Header: layout changes based on expanded state */}
       <div className={`mb-1 ${expanded ? "flex flex-row items-center gap-2 px-3" : "flex flex-col items-center gap-2 px-0"}`}>
-        <img
+        <Image
           src="/hebo-icon.svg"
           alt="Hebo Logo"
           width={32}

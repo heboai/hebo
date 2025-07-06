@@ -1,8 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { X, SquareChevronRight } from "lucide-react";
-
-const drawerWidth = 320; // 80 * 4 = 320px
+import { SquareChevronRight } from "lucide-react";
 
 export const ChatDrawer = () => {
   const [expanded, setExpanded] = useState(false);
