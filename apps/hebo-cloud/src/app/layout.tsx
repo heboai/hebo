@@ -6,6 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from "@/components/ui/sonner";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { SideNav } from "@/components/common/SideNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,8 +42,11 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
             <StackProvider app={stackServerApp}>
               <StackTheme theme={stackTheme}>
-                <div className="min-h-screen">
-                  {children}
+                <div className="min-h-screen flex">
+                  <SideNav />
+                  <main className="flex-1">
+                    {children}
+                  </main>
                 </div>
                 <Toaster richColors position="bottom-center" />
               </StackTheme>
