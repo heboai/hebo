@@ -53,6 +53,11 @@ pnpm run db:up
 pnpm run dev:sst
 ```
 
+```bash
+# Start only the hebo-cloud application
+pnpm run dev:hebo-cloud
+```
+
 ### Building
 
 ```bash

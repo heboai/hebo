@@ -14,6 +14,7 @@
     "deploy": "turbo run deploy",
     "dev": "turbo run dev --parallel",
     "dev:sst": "sst dev",
+    "dev:hebo-cloud": "pnpm --filter @hebo/hebo-cloud dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
     "test": "turbo run test",
