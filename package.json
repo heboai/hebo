@@ -1,7 +1,7 @@
 {
   "name": "hebo",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "packageManager": "pnpm@9.0.0",
   "workspaces": [
     "apps/*",
@@ -11,23 +11,26 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
+    "db:generate": "pnpm --filter @hebo/db exec sst shell drizzle-kit generate --config ../../sst.dev.config.ts",
+    "db:migrate": "pnpm --filter @hebo/db exec sst shell drizzle-kit migrate --config ../../sst.dev.config.ts",
+    "db:push": "pnpm --filter @hebo/db exec sst shell drizzle-kit push --config ../../sst.dev.config.ts",
+    "db:studio": "pnpm --filter @hebo/db exec sst shell drizzle-kit studio --config ../../sst.dev.config.ts",
     "deploy": "turbo run deploy",
     "dev": "turbo run dev --parallel",
-    "dev:sst": "sst dev",
     "dev:hebo-cloud": "pnpm --filter @hebo/hebo-cloud run dev",
+    "dev:remove": "sst remove --config sst.dev.config.ts",
+    "dev:sst": "sst dev --config sst.dev.config.ts",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
-    "test": "turbo run test",
-    "db:up": "docker compose -f infra/stacks/dev/docker-compose.yaml up -d",
-    "db:down": "docker compose -f infra/stacks/dev/docker-compose.yaml down",
-    "db:logs": "docker compose -f infra/stacks/dev/docker-compose.yaml logs -f"
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@hebo/db": "workspace:*",
     "@types/aws-lambda": "8.10.150",
     "eslint": "^9",
     "prettier": "^3.2.5",
-    "sst": "3.17.8",
+    "sst": "3.17.10",
     "turbo": "^1.12.4",
     "typescript": "^5"
   },

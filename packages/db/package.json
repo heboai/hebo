@@ -1,0 +1,26 @@
+{
+  "name": "@hebo/db",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./utils": "./utils.ts",
+    "./drizzle": "./drizzle.ts",
+    "./schema": "./schema/index.ts",
+    "./schema/sqlite": "./schema/sqlite/index.ts",
+    "./schema/postgresql": "./schema/postgresql/index.ts"
+  },
+  "scripts": {},
+  "dependencies": {
+    "@types/pg": "^8.15.4",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.44.2",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@libsql/client": "^0.15.9"
+  }
+}

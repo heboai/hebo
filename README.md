@@ -6,16 +6,33 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ```
 / (git root)
-├── apps/                    # deployable targets
+├── apps/                   # deployable targets
+│   ├── api/                # Hono API server
 │   └── hebo-cloud/         # Next.js web application
+│
 ├── packages/               # shareable libraries
-├── infra/                  # SST stacks
-│   ├── stacks/
-│   │   ├── db.ts
-│   │   └── hebo-cloud.ts
-│   └── sst.config.ts
-└── .github/
-    └── workflows/          # CI/CD pipelines
+│   └── db/                 # Database schema and migrations
+│
+├── infra/                  # SST infrastructure stacks
+│   └── stacks/
+│       ├── dev/            # Development environment stacks
+│       │   ├── api.ts
+│       │   ├── db.ts
+│       │   └── hebo-cloud.ts
+│       └── stage/          # Staging environment stacks
+│           ├── api.ts
+│           ├── db.ts
+│           ├── hebo-cloud.ts
+│           └── vpc.ts
+│
+├── .github/
+│   └── workflows/          # CI/CD pipelines
+│       ├── deploy.yml
+│       └── quality.yml
+│
+├── sst.config.ts           # SST configuration
+├── turbo.json              # Turborepo configuration
+└── pnpm-workspace.yaml     # pnpm workspace configuration
 ```
 
 ## Getting Started
@@ -25,7 +42,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 - Node.js >= 18
 - pnpm >= 9.0.0
 - AWS CLI configured with appropriate credentials
-- Docker and Docker Compose (for local development database)
+- sqlite cli (for local development database)
 
 ### Installation
 
@@ -44,8 +61,8 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 To start all services locally:
 
 ```bash
-# Start the development database
-pnpm run db:up
+# Init the development database
+pnpm run db:push
 ```
 
 ```bash
@@ -56,6 +73,11 @@ pnpm run dev:sst
 ```bash
 # Start only the hebo-cloud application
 pnpm run dev:hebo-cloud
+```
+
+```bash
+# Run the entire stack locally
+pnpm dev
 ```
 
 ### Building

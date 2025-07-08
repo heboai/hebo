@@ -1,7 +1,7 @@
 {
   "name": "@hebo/hebo-cloud",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "next build",
     "dev": "next dev --turbopack",
