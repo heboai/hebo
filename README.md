@@ -57,26 +57,24 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ### Development
 
-To start all services locally:
-
 ```bash
 # Init the development database
 pnpm run db:push
 ```
 
 ```bash
-# Start dev with sst
+# Start dev with sst (Full stack)
 pnpm run dev:sst
 ```
 
 ```bash
-# Start only the hebo-cloud application
-pnpm run dev:hebo-cloud
+# Run the entire stack locally without sst (Full stack)
+pnpm dev
 ```
 
 ```bash
-# Run the entire stack locally
-pnpm dev
+# Start only the hebo-cloud application Dev (FE-only)
+pnpm run dev:hebo-cloud
 ```
 
 ### Building

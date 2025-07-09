@@ -5,30 +5,20 @@
 
 declare module "sst" {
   export interface Resource {
+    "HeboApi": {
+      "service": string
+      "type": "sst.aws.Service"
+    }
     "HeboCloudApp": {
       "type": "sst.aws.Nextjs"
       "url": string
     }
     "HeboDatabase": {
-      "clusterArn": string
-      "database": string
-      "host": string
-      "password": string
-      "port": number
-      "reader": string
-      "secretArn": string
-      "type": "sst.aws.Aurora"
-      "username": string
-    }
-    "HeboDatabasePassword": {
-      "type": "sst.sst.Secret"
-      "value": string
-    }
-    "HeboDatabaseUsername": {
-      "type": "sst.sst.Secret"
-      "value": string
+      "SQLiteConnectionString": string
+      "type": "sst.sst.Linkable"
     }
     "HeboVpc": {
+      "bastion": string
       "type": "sst.aws.Vpc"
     }
   }
