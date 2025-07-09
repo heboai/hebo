@@ -19,6 +19,11 @@ export const ErrorPopup = ({ error, onClose }: ErrorPopupProps) => {
         </div>
         <button
           onClick={onClose}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              onClose();
+            }
+          }}
           className="flex-shrink-0 text-red-400 hover:text-red-600 focus:outline-none focus:text-red-600"
           aria-label="Close error message"
         >

@@ -9,7 +9,7 @@ import { Loading } from '@/components/ui/loading';
 import { Footer } from '@/components/auth/Footer';
 import { ErrorPopup } from '@/components/ui/error-popup';
 
-export default function NewAgentPage() {
+const NewAgentPage = () => {
   const [models, setModels] = useState<SupportedModel[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -35,6 +35,15 @@ export default function NewAgentPage() {
 
     loadModels();
   }, []);
+
+  const handleDropdownToggle = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleModelSelect = (modelId: string) => {
+    setSelectedModel(modelId);
+    setIsDropdownOpen(false);
+  };
 
   const handleCreateAgent = () => {
     if (!selectedModel) {
@@ -127,7 +136,7 @@ export default function NewAgentPage() {
               <div className="relative w-80">
                 <button
                   type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={handleDropdownToggle}
                   className="w-full h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white text-left flex items-center justify-between"
                   aria-haspopup="listbox"
                   aria-expanded={isDropdownOpen}
@@ -156,10 +165,7 @@ export default function NewAgentPage() {
                       <button
                         key={model.id}
                         type="button"
-                        onClick={() => {
-                          setSelectedModel(model.id);
-                          setIsDropdownOpen(false);
-                        }}
+                        onClick={() => handleModelSelect(model.id)}
                         className="w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-base"
                       >
                         <span className="font-bold">{model.name}</span>
@@ -198,4 +204,6 @@ export default function NewAgentPage() {
       </footer>
     </div>
   );
-} 
+};
+
+export default NewAgentPage; 
