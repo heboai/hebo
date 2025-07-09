@@ -42,7 +42,6 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 - Node.js >= 18
 - pnpm >= 9.0.0
 - AWS CLI configured with appropriate credentials
-- sqlite cli (for local development database)
 
 ### Installation
 

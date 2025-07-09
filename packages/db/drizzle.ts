@@ -25,25 +25,43 @@ export type UniversalDb = SqliteDb & PostgresDb;
 
 // Immediately-invoked function to build the correct DB instance.
 function initDb(): UniversalDb {
-  if (isLocal) {
-    // Local development – SQLite via libsql client
-    const { url } = getDbCredentials() as { url: string };
-    const client = createClient({ url });
-    return drizzleSqlite(client, { schema: sqliteSchema }) as unknown as UniversalDb;
-  }
+  try {
+    if (isLocal) {
+      // Local development – SQLite via libsql client
+      try {
+        const { url } = getDbCredentials() as { url: string };
+        const client = createClient({ url });
+        return drizzleSqlite(client, { schema: sqliteSchema }) as unknown as UniversalDb;
+      } catch (error) {
+        console.error("Failed to initialize SQLite database connection:", error);
+        throw new Error(`SQLite connection failed: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
 
-  // Remote/production – PostgreSQL via pg Pool
-  const { host, port, user, password, database } = getDbCredentials() as {
-    host: string; port: number; user: string; password: string; database: string;
-  };
-  const pool = new Pool({ host, port, user, password, database });
-  return drizzlePostgres(pool, { schema: postgresSchema }) as unknown as UniversalDb;
+    // Remote/production – PostgreSQL via pg Pool
+    try {
+      const { host, port, user, password, database } = getDbCredentials() as {
+        host: string; port: number; user: string; password: string; database: string;
+      };
+      const pool = new Pool({ host, port, user, password, database });
+      return drizzlePostgres(pool, { schema: postgresSchema }) as unknown as UniversalDb;
+    } catch (error) {
+      console.error("Failed to initialize PostgreSQL database connection:", error);
+      throw new Error(`PostgreSQL connection failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  } catch (error) {
+    console.error("Database initialization failed:", error);
+    throw new Error(`Database initialization failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
-// By default we expose `db` as `any` to allow universal usage of the query
-// builder regardless of which dialect is active at runtime.  Consumers that
-// prefer strict typing can import `UniversalDb` and cast accordingly.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const db: any = initDb();
+// By default we expose `db` with its inferred type from `initDb()` to maintain
+// type safety while allowing universal usage of the query builder regardless
+// of which dialect is active at runtime.
+export const db = initDb();
+
+// Separate typed export for consumers who want strict typing without losing
+// type safety globally
+export const typedDb: UniversalDb = db;
 
 export { dialect, isLocal };

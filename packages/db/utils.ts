@@ -80,7 +80,6 @@ export function getDbCredentials(): LocalCredentials | RemoteCredentials {
       safeRead(() => (heboDb as any).SQLiteConnectionString) ??
       process.env.SQLITE_CONNECTION_STRING ??
       (() => {
-        if (process.env.SQLITE_CONNECTION_STRING) return process.env.SQLITE_CONNECTION_STRING;
         // Absolute path to hebo.db residing in the same package directory as this util.
         const absPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "hebo.db");
         return `file:${absPath}`;

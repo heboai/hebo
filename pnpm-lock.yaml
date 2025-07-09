@@ -153,12 +153,9 @@ importers:
 
   packages/db:
     dependencies:
-      '@types/pg':
-        specifier: ^8.15.4
-        version: 8.15.4
-      drizzle-kit:
-        specifier: ^0.31.4
-        version: 0.31.4
+      '@libsql/client':
+        specifier: ^0.15.9
+        version: 0.15.9
       drizzle-orm:
         specifier: ^0.44.2
         version: 0.44.2(@libsql/client@0.15.9)(@types/pg@8.15.4)(pg@8.16.3)
@@ -166,9 +163,12 @@ importers:
         specifier: ^8.16.3
         version: 8.16.3
     devDependencies:
-      '@libsql/client':
-        specifier: ^0.15.9
-        version: 0.15.9
+      '@types/pg':
+        specifier: ^8.15.4
+        version: 8.15.4
+      drizzle-kit:
+        specifier: ^0.31.4
+        version: 0.31.4
 
 packages:
 
