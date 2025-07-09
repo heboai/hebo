@@ -24,7 +24,7 @@ type PostgresDb = NodePgDatabase<typeof postgresSchema>;
 export type UniversalDb = SqliteDb & PostgresDb;
 
 // Immediately-invoked function to build the correct DB instance.
-function initDb(): UniversalDb {
+const initDb = (): UniversalDb => {
   try {
     if (isLocal) {
       // Local development – SQLite via libsql client
