@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { SupportedModel } from '@/types/models';
 import { getSupportedModels } from '@/lib/models';
 import { Button } from '@/components/ui/button';
@@ -56,7 +57,7 @@ export default function NewAgentPage() {
       {/* Header with Logo */}
       <header className="px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center gap-2">
-          <img
+          <Image
             src="/hebo-icon.svg"
             alt="Hebo Logo"
             width={32}
@@ -84,10 +85,12 @@ export default function NewAgentPage() {
                 tabIndex={0}
               >
                 Use Case
-                <img
+                <Image
                   src="/square-arrow-out-up-right.svg"
                   alt="External link"
-                  className="w-[16px] h-[16px] inline-block align-middle text-[#4F46E5]"
+                  width={16}
+                  height={16}
+                  className="inline-block align-middle text-[#4F46E5]"
                   aria-hidden="true"
                 />
               </a>
