@@ -11,13 +11,13 @@ const global = new aws.rds.GlobalCluster("HeboDbGlobal", {
   globalClusterIdentifier:
     $app.stage === "production" ? "hebo-global" : `${$app.stage}-hebo-global`,
   engine: "aurora-postgresql",
-  engineVersion: "17.4",
+  engineVersion: "17.5",
   storageEncrypted: true,
 });
 
 const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   engine: "postgres",
-  version: "17.4",
+  version: "17.5",
   vpc: heboVpc,
   replicas: $app.stage === "production" ? 1 : 0,
   scaling: $app.stage === "production"

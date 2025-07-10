@@ -64,7 +64,7 @@ pnpm run db:push
 
 ```bash
 # Start dev with sst (Full stack)
-pnpm run dev:sst
+sst dev
 ```
 
 ```bash

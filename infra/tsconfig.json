@@ -13,6 +13,6 @@
     "skipLibCheck": true,
     "baseUrl": "."
   },
-  "include": ["**/*.ts", "apps/api/api.ts", "../sst.config.ts"],
+  "include": ["**/*.ts", "../apps/api/api.ts", "../sst.config.ts"],
   "exclude": ["node_modules"]
 } 
