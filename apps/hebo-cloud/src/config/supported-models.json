@@ -1,0 +1,22 @@
+{
+  "models": [
+    {
+      "id": "llama-4-scout",
+      "name": "Llama 4 Scout",
+      "provider": "Meta",
+      "freeTokensPerMonth": 40000000
+    },
+    {
+      "id": "claude-4",
+      "name": "Claude 4",
+      "provider": "Anthropic",
+      "freeTokensPerMonth": 40000000
+    },
+    {
+      "id": "voyage",
+      "name": "Voyage",
+      "provider": "Voyage AI",
+      "freeTokensPerMonth": 40000000
+    }
+  ]
+} 
