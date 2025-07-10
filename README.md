@@ -45,15 +45,15 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ### Installation
 
-1. Install dependencies:
-   ```bash
-   pnpm i
-   ```
+```bash
+# Install dependencies
+pnpm i
+```
 
-2. Set up your environment variables:
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+# Set up your environment variables
+cp .env.example .env
+```
 
 ### Development
 
