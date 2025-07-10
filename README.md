@@ -89,10 +89,10 @@ pnpm --filter @hebo/hebo-cloud run dev:local
 >
 > The web app reads `NEXT_PUBLIC_API_URL` at runtime:
 >
-> * If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use Zustand/Redux/TanStack Query cache only.
+> * If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
 > * For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `sst dev`, or the real API Gateway URL by `sst deploy`).
 >
-> This logic lives in `apps/hebo-cloud/src/lib/config.ts` and is **completely separated** from the database-selection code in `packages/db/`.
+> Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `...` [TBD].
 
 ### Building
 
