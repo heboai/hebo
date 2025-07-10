@@ -12,7 +12,12 @@ export default $config({
     };
   },
   async run() {
-    await import("./infra/stacks/stage/hebo-cloud");
-    await import("./infra/stacks/stage/api");
+    if ($dev) {
+      await import("./infra/stacks/dev/hebo-cloud");
+      await import("./infra/stacks/dev/api");
+    } else {
+      await import("./infra/stacks/stage/hebo-cloud");
+      await import("./infra/stacks/stage/api");
+    }
   },
 });
