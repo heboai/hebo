@@ -16,7 +16,6 @@ export default $config({
       await import("./infra/stacks/dev/hebo-cloud");
     } else {
       await import("./infra/stacks/stage/hebo-cloud");
-      await import("./infra/stacks/stage/api");
     }
   },
 });

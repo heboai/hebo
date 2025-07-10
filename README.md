@@ -124,12 +124,18 @@ Manual deployments:
 
 ```bash
 # Set secrets
-npx sst secret set HeboDatabasePassword <password>
-npx sst secret set HeboDatabaseUsername <username>
 
-# Deploy web app to staging
-npx sst deploy --stage staging
+sst secret set HeboDbUsername <username> --stage <stage>
+sst secret set HeboDbPassword <password> --stage <stage>
 
-# Deploy web app to production
-npx sst deploy --stage production
+# The same for StackProjectId, StackPublishableClientKey, StackSecretServerKey, PosthogKey, PosthogHost
+
+# Deploy a preview link
+sst deploy --stage PR-XX
+
+# Remove a preview link
+sst remove --stage PR-XX
+
+# Deploy to production
+sst deploy --stage production
 ```

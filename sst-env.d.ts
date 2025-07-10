@@ -5,20 +5,51 @@
 
 declare module "sst" {
   export interface Resource {
-    "HeboApi": {
-      "service": string
-      "type": "sst.aws.Service"
-    }
     "HeboCloudApp": {
       "type": "sst.aws.Nextjs"
       "url": string
     }
     "HeboDatabase": {
-      "SQLiteConnectionString": string
-      "type": "sst.sst.Linkable"
+      "clusterArn": string
+      "database": string
+      "host": string
+      "password": string
+      "port": number
+      "secretArn": string
+      "type": "sst.aws.Aurora"
+      "username": string
+    }
+    "HeboDbPassword": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "HeboDbUsername": {
+      "type": "sst.sst.Secret"
+      "value": string
     }
     "HeboVpc": {
+      "bastion": string
       "type": "sst.aws.Vpc"
+    }
+    "PosthogHost": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "PosthogKey": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "StackProjectId": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "StackPublishableClientKey": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "StackSecretServerKey": {
+      "type": "sst.sst.Secret"
+      "value": string
     }
   }
 }
