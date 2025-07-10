@@ -74,8 +74,25 @@ pnpm dev
 
 ```bash
 # Start only the hebo-cloud application Dev (FE-only)
-pnpm run dev:hebo-cloud
+pnpm --filter @hebo/hebo-cloud run dev:local
 ```
+
+### Run modes
+
+| # | Mode | Command | Database | API availability |
+|---|------|---------|----------|------------------|
+| 1 | **Frontend-only** (offline) | `pnpm --filter @hebo/hebo-cloud run dev:local` | — | none – UI relies on local state manager |
+| 2 | **Local full-stack** | `pnpm dev` *or* `sst dev` | SQLite (`packages/db/hebo.db`) | http://localhost:3001 |
+| 3 | **Remote full-stack** | `sst deploy` | Aurora PostgreSQL | HTTPS URL injected by SST |
+
+> **How the UI knows if the API is present**
+>
+> The web app reads `NEXT_PUBLIC_API_URL` at runtime:
+>
+> * If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use Zustand/Redux/TanStack Query cache only.
+> * For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `sst dev`, or the real API Gateway URL by `sst deploy`).
+>
+> This logic lives in `apps/hebo-cloud/src/lib/config.ts` and is **completely separated** from the database-selection code in `packages/db/`.
 
 ### Building
 
