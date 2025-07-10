@@ -1,3 +1,3 @@
-export { db, dialect, isLocal } from "./drizzle";
+export { db } from "./drizzle";
 export * from "./schema"; 
 export * from "./utils";
