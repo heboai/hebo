@@ -1,12 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../../.sst/platform/config.d.ts" />
 
-import heboDatabase from "./db";
+import heboApi from "./api";
 
 const heboCloudApp = new sst.aws.Nextjs("HeboCloudApp", {
   path: "apps/hebo-cloud",
-  domain: $app.stage === "production" ? "cloud.hebo.ai" : `${$app.stage}.cloud.hebo.ai`,
-  link: [heboDatabase],
+  link: [heboApi],
+  environment: $dev ? { NEXT_PUBLIC_API_URL: "http://localhost:3001" } : { NEXT_PUBLIC_API_URL: heboApi.url },
 });
 
-export default heboCloudApp; 
+export default heboCloudApp;

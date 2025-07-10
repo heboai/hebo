@@ -18,7 +18,6 @@ declare module "sst" {
       "type": "sst.sst.Linkable"
     }
     "HeboVpc": {
-      "bastion": string
       "type": "sst.aws.Vpc"
     }
   }
