@@ -18,7 +18,7 @@ The infrastructure consists of several key components:
 The Virtual Private Cloud provides network isolation and security for all resources:
 
 - **Production**: Standard VPC configuration
-- **Development/Preview**: Includes bastion host and NAT gateway for development access
+- **Preview**: Includes bastion host and NAT gateway for troubleshooting access from local
 
 ### Database (`stacks/db.ts`)
 
@@ -28,7 +28,7 @@ Aurora PostgreSQL database with advanced features:
 - **Global Clustering**: Multi-region replication for production
 - **Scaling**: 
   - Production: Aurora Serverless v2 with 1 replica
-  - Development: Auto-scaling with pause after 20 minutes of inactivity
+  - Preview: Auto-scaling with pause after 20 minutes of inactivity
 - **Security**: Encrypted storage and proxy connection
 - **Credentials**: Managed through SST secrets
 
@@ -49,7 +49,7 @@ Next.js application with edge deployment:
 - **Framework**: Next.js with edge rendering
 - **Domain**: 
   - Production: `cloud.hebo.ai`
-  - Development: `{stage}.cloud.hebo.ai`
+  - Preview: `{stage}.cloud.hebo.ai`
 - **Environment**: Connected to API and external services
 
 ## Docker Deployment Process
@@ -73,18 +73,6 @@ The API deployment follows a containerized approach:
    - Repository: `hebo-api`
    - Image: `public.ecr.aws/m1o3d3n5/hebo-api:latest`
    - Region: `us-east-1`
-
-### Local Development
-
-```bash
-# Run with Docker Compose
-cd infra/stacks/build-api
-docker-compose up --build
-
-# Or build manually
-docker build -t hebo-api -f infra/stacks/build-api/Dockerfile .
-docker run -p 3001:3001 hebo-api
-```
 
 ## Deployment
 
@@ -164,16 +152,9 @@ aws apprunner describe-service --service-arn <service-arn>
 aws rds describe-db-clusters --db-cluster-identifier <cluster-id>
 ```
 
-## Development Workflow
-
-1. **Local Development**: Use Docker Compose for API testing
-2. **Infrastructure Changes**: Modify SST stacks and deploy
-3. **API Updates**: Build new container image and publish to ECR
-4. **Production Deployment**: Deploy infrastructure, then publish container image
-
 ## Cost Optimization
 
-- **Development**: Database pauses after 20 minutes of inactivity
+- **Preview**: Database pauses after 20 minutes of inactivity
 - **Production**: Aurora Serverless v2 with minimum 0.5 ACU
 - **Container**: Multi-stage builds reduce image size
 - **Edge**: Global distribution reduces latency 
