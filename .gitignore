@@ -35,6 +35,7 @@ yarn-error.log*
 # sst
 .sst
 .open-next
+sst-env.d.ts
 
 # typescript
 *.tsbuildinfo
