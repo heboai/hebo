@@ -16,9 +16,11 @@ build
 # Environment files
 .env
 .env.local
+.env.prod
 .env.development.local
 .env.test.local
 .env.production.local
+.secrets
 
 # IDE files
 .vscode

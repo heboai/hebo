@@ -3,7 +3,7 @@ version: '3.8'
 services:
   hebo-api:
     build:
-      context: ../../
+      context: ../../../
       dockerfile: apps/api/Dockerfile
     ports:
       - "3001:3001"

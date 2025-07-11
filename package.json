@@ -15,7 +15,7 @@
     "db:migrate": "pnpm --filter @hebo/db exec drizzle-kit migrate",
     "db:push": "pnpm --filter @hebo/db exec drizzle-kit push",
     "db:studio": "pnpm --filter @hebo/db exec drizzle-kit studio",
-    "deploy": "turbo run deploy",
+    "deploy": "sst deploy",
     "dev": "turbo run dev --parallel",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
