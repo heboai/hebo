@@ -61,7 +61,7 @@ importers:
         specifier: ^6.2.0
         version: 6.2.6
 
-  apps/hebo-cloud:
+  apps/app:
     dependencies:
       '@radix-ui/react-dialog':
         specifier: ^1.1.14
