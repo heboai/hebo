@@ -6,8 +6,7 @@
   "scripts": {
     "build": "echo 'No build step needed - using Bun'",
     "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts",
-    "test:migration": "bun test-migration.js"
+    "start": "bun src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
