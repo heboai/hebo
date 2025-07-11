@@ -1,7 +1,7 @@
 {
   "name": "@hebo/infra",
   "version": "0.0.1",
-  "private": false,
+  "private": true,
   "scripts": {
     "docker:build": "cd ../ && docker build --no-cache -t hebo-api -f infra/stacks/build-api/Dockerfile .",
     "docker:run": "docker run -p 3001:3001 hebo-api",
