@@ -21,9 +21,9 @@ RUN adduser --system --ingroup bun appuser
 
 WORKDIR /repo
 
-COPY --from=deps /repo/node_modules ./node_modules
+COPY --chown=appuser:bun --from=deps /repo/node_modules ./node_modules
 
-COPY . .
+COPY --chown=appuser:bun . .
 
 USER appuser
 
