@@ -1,5 +1,4 @@
 import { Hono } from 'hono'
-import { serve } from '@hono/node-server'
 import { handleGetVersion } from './api'
 
 const app = new Hono()
@@ -13,10 +12,32 @@ app.get('/api/version', async (c) => {
   return c.json(result)
 })
 
-const port = 3001
-console.log(`Server is running on port ${port}`)
+// 404 handler
+app.notFound((c) => {
+  return c.json({
+    success: false,
+    error: 'I\'m a teapot',
+    timestamp: new Date().toISOString()
+  }, 418)
+})
 
-serve({
-  fetch: app.fetch,
-  port
-}) 
+// Error handler
+app.onError((err, c) => {
+  console.error('API Error:', err)
+  return c.json({
+    success: false,
+    error: 'Internal server error',
+    timestamp: new Date().toISOString()
+  }, 500)
+})
+
+const port = parseInt(process.env.PORT || '3001')
+console.log(`🚀 Hebo API server starting on port ${port}`)
+console.log(`📊 Runtime: Bun ${process.version}`)
+
+const server = {
+  port,
+  fetch: app.fetch
+}
+
+export default server 

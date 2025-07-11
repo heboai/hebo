@@ -34,7 +34,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ### Prerequisites
 
-- Node.js >= 18
+- Bun >= 1.2.18
 - pnpm >= 9.0.0
 - AWS CLI configured with appropriate credentials
 

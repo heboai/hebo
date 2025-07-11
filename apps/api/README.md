@@ -1,6 +1,6 @@
 # Hebo API
 
-A modern Hono-based API server designed for the Hebo platform.
+A modern Hono-based API server designed for the Hebo platform, powered by Bun runtime.
 
 ## Quick Start
 
@@ -15,11 +15,6 @@ pnpm run dev
 pnpm run build
 ```
 
-## API Endpoints
-
-- `GET /` - Health check
-- `GET /api/version` - Get version information
-
 ## Development
 
 ```bash
@@ -31,19 +26,23 @@ pnpm run dev
 
 # Build for production
 pnpm run build
+
+# Test Bun migration
+pnpm run test:migration
 ```
 
 ## Architecture
 
-- **Framework**: Hono.js
-- **Runtime**: Node.js 20
+- **Framework**: Hono.js 4.1.0
+- **Runtime**: Bun 1.2.18
 - **Language**: TypeScript
-- **Port**: 3001
+- **Port**: 3001 (configurable via PORT env var)
 
 ## Environment Variables
 
 The API expects the following environment variables when deployed:
 
+- `PORT`: Server port (default: 3001)
 - `PG_HOST`: PostgreSQL host
 - `PG_PORT`: PostgreSQL port
 - `PG_USER`: PostgreSQL username

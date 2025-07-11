@@ -37,8 +37,8 @@ Aurora PostgreSQL database with advanced features:
 Containerized API deployed on AWS App Runner:
 
 - **Container**: Docker image from ECR Public (`public.ecr.aws/m1o3d3n5/hebo-api:latest`)
-- **Runtime**: Node.js 20 with Hono.js framework
-- **Port**: 3001
+- **Runtime**: Bun 1.2.18 with Hono.js 4.1.0 framework
+- **Port**: 3001 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
 - **Auto-deployment**: Disabled for manual control
 
@@ -58,8 +58,8 @@ The API deployment follows a containerized approach:
 
 ### Build Process (`stacks/build-api/`)
 
-1. **Dockerfile**: Multi-stage build with Node.js 20 Alpine
-   - Dependencies stage with pnpm
+1. **Dockerfile**: Multi-stage build with Bun 1.2.18
+   - Dependencies stage with Bun
    - Runtime stage with non-root user
    - Optimized for production
 
