@@ -20,10 +20,6 @@
     },
     "clean": {
       "cache": false
-    },
-    "deploy": {
-      "dependsOn": ["build", "test", "lint"],
-      "outputs": []
     }
   }
 } 

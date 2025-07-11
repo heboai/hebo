@@ -11,15 +11,12 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "db:generate": "pnpm --filter @hebo/db exec sst shell drizzle-kit generate --config ../../sst.dev.config.ts",
-    "db:migrate": "pnpm --filter @hebo/db exec sst shell drizzle-kit migrate --config ../../sst.dev.config.ts",
-    "db:push": "pnpm --filter @hebo/db exec sst shell drizzle-kit push --config ../../sst.dev.config.ts",
-    "db:studio": "pnpm --filter @hebo/db exec sst shell drizzle-kit studio --config ../../sst.dev.config.ts",
-    "deploy": "turbo run deploy",
+    "db:generate": "pnpm --filter @hebo/db exec drizzle-kit generate",
+    "db:migrate": "pnpm --filter @hebo/db exec drizzle-kit migrate",
+    "db:push": "pnpm --filter @hebo/db exec drizzle-kit push",
+    "db:studio": "pnpm --filter @hebo/db exec drizzle-kit studio",
+    "deploy": "sst deploy",
     "dev": "turbo run dev --parallel",
-    "dev:hebo-cloud": "pnpm --filter @hebo/hebo-cloud run dev",
-    "dev:remove": "sst remove --config sst.dev.config.ts",
-    "dev:sst": "sst dev --config sst.dev.config.ts",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
     "test": "turbo run test"
@@ -32,10 +29,11 @@
     "prettier": "^3.2.5",
     "sst": "3.17.10",
     "turbo": "^1.12.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "cross-env": "^7.0.3"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "bun": ">=1.2.18",
     "pnpm": ">=9.0.0"
   }
 }

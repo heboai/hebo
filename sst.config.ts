@@ -8,10 +8,10 @@ export default $config({
       removal: input?.stage === "production" ? "retain" : "remove",
       protect: ["production"].includes(input?.stage),
       home: "aws",
-      region: "us-east-1"
+      region: "us-east-1",
     };
   },
   async run() {
-    await import("./infra/stacks/hebo-cloud");
+    await import("./infra/stacks/app");
   },
 });
