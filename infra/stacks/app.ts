@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../../../.sst/platform/config.d.ts" />
+/// <reference path="../../.sst/platform/config.d.ts" />
 
 import { heboApiUrl } from "./api";
 
@@ -10,8 +10,8 @@ const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 const posthogKey = new sst.Secret("PosthogKey", "fakeValue");
 const posthogHost = new sst.Secret("PosthogHost", "fakeValue");
 
-const heboCloudApp = new sst.aws.Nextjs("HeboCloudApp", {
-  path: "apps/hebo-cloud",
+const heboApp = new sst.aws.Nextjs("HeboApp", {
+  path: "apps/app",
   domain: $app.stage === "production" ? "cloud.hebo.ai" : `${$app.stage}.cloud.hebo.ai`,
   environment: { 
     NEXT_PUBLIC_API_URL: heboApiUrl,
@@ -23,4 +23,4 @@ const heboCloudApp = new sst.aws.Nextjs("HeboCloudApp", {
   },
 });
 
-export default heboCloudApp;
+export default heboApp;

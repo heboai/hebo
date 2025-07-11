@@ -1,6 +1,6 @@
 # Analytics Implementation
 
-This document outlines the analytics implementation using PostHog in the Hebo Cloud application.
+This document outlines the analytics implementation using PostHog in the Hebo FE application.
 
 ## Setup
 
