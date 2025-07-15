@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'export',
+  transpilePackages: ["@hebo/ui"],
   productionBrowserSourceMaps: true,
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,

@@ -1,0 +1,50 @@
+{
+  "name": "@hebo/ui",
+  "version": "0.0.1",
+  "private": true,
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "lint": "eslint . --max-warnings 0",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*",
+    "tailwindcss": "*"
+  },
+  "devDependencies": {
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "tailwindcss": "*",
+    "tailwindcss-animate": "*",
+    "tsup": "*"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-slot": "^1.2.3",
+    "class-variance-authority": "*",
+    "clsx": "*",
+    "lucide-react": "*",
+    "next-themes": "*",
+    "sonner": "*",
+    "tailwind-merge": "*",
+    "vaul": "*"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./globals.css": "./src/globals.css",
+    "./tailwind.preset": "./tailwind.preset.ts",
+    "./shadcn/button": "./src/shadcn/button.tsx",
+    "./shadcn/dialog": "./src/shadcn/dialog.tsx",
+    "./shadcn/drawer": "./src/shadcn/drawer.tsx",
+    "./shadcn/sonner": "./src/shadcn/sonner.tsx",
+    "./components/loading": "./src/components/loading.tsx"
+  }
+}

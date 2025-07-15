@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import HomeContent from '../HomeContent'
+import HomeContent from '../common/HomeContent'
 
 // Mock the child components
 jest.mock('@/components/auth/UserDisplay', () => ({

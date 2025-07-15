@@ -4,8 +4,17 @@ import UserDisplay from "@/components/auth/UserDisplay";
 import { Logo } from "@/components/common/Logo";
 import { InstallCommand } from "@/components/common/InstallCommand";
 import { NewButton } from "@/components/common/NewButton";
+import { useStackApp } from "@stackframe/stack";
+import { Loading } from "../ui/loading";
 
 export default function HomeContent() {
+  const app = useStackApp();
+  const user = app?.useUser({ or: 'redirect' });
+
+  if (!user) {
+    return <Loading size="md" variant="primary" fullPage />;
+  }
+
   return (
     <div className="flex w-full max-w-[640px] flex-col items-center gap-4">
       <Logo />

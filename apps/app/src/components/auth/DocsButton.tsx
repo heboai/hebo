@@ -1,3 +1,5 @@
+"use client"
+
 import { BookCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

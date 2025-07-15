@@ -19,21 +19,54 @@
     "dev": "turbo run dev --parallel",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
+    "lint:deps": "check-dependency-version-consistency .",
     "test": "turbo run test"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
+    "@changesets/cli": "*",
     "@hebo/db": "workspace:*",
-    "@types/aws-lambda": "8.10.150",
-    "eslint": "^9",
-    "prettier": "^3.2.5",
-    "sst": "3.17.10",
-    "turbo": "^1.12.4",
-    "typescript": "^5",
-    "cross-env": "^7.0.3"
+    "@hebo/ui": "workspace:*",
+    "check-dependency-version-consistency": "*",
+    "cross-env": "*",
+    "eslint": "9.5.0",
+    "prettier": "3.3.2",
+    "sst": "3.0.37",
+    "turbo": "2.0.6",
+    "typescript": "5.5.3"
   },
   "engines": {
     "bun": ">=1.2.18",
     "pnpm": ">=9.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "18.3.1",
+      "react-dom": "18.3.1",
+      "next": "15.3.2",
+      "@types/react": "18.3.23",
+      "@types/react-dom": "18.3.7",
+      "typescript": "5.5.3",
+      "eslint": "9.5.0",
+      "@typescript-eslint/parser": "8.10.0",
+      "@typescript-eslint/eslint-plugin": "8.10.0",
+      "eslint-plugin-react": "7.35.0",
+      "eslint-plugin-import": "2.29.1",
+      "eslint-plugin-jsx-a11y": "6.9.0",
+      "eslint-plugin-react-hooks": "5.2.0",
+      "tailwindcss": "4.1.11",
+      "prettier": "3.3.2",
+      "turbo": "2.0.6",
+      "sst": "3.0.37",
+      "tsup": "8.5.0",
+      "hono": "4.5.0",
+      "drizzle-orm": "0.31.2",
+      "drizzle-kit": "0.22.8",
+      "class-variance-authority": "0.7.1",
+      "clsx": "2.1.1",
+      "tailwind-merge": "3.3.1",
+      "tailwindcss-animate": "1.0.7",
+      "lucide-react": "0.525.0",
+      "buffer": "6.0.3"
+    }
   }
 }
