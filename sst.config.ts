@@ -13,6 +13,5 @@ export default $config({
   },
   async run() {
     await import("./infra/stacks/app");
-    await import("./infra/stacks/docs");
   },
 });
