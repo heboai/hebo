@@ -26,7 +26,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         // Custom gradient variant for special buttons
         gradient:
-          "bg-white border-2 border-transparent bg-gradient-to-br from-d1d5db to-4f46e5 bg-clip-border text-black font-bold py-2 px-4 rounded-[8px] relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
+          "hebo-gradient-border-btn text-black font-bold py-2 px-4 rounded-[8px] relative transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

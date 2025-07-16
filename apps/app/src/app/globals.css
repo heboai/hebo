@@ -273,3 +273,9 @@ input.stack-scope {
 .flex.items-center.gap-1 > .relative.flex.items-center.justify-center.border.rounded-md {
   background-color: #fff !important;
 }
+
+/* Hebo custom gradient border button */
+.hebo-gradient-border-btn {
+  background: linear-gradient(white, white) padding-box, linear-gradient(to top right, #d1d5db, #4f46e5) border-box;
+  border: 2px solid transparent;
+}
