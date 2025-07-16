@@ -6,9 +6,10 @@ import { useStackApp } from "@stackframe/stack";
 import { getSupportedModels } from '@/lib/models';
 import NewAgentContent from "@/components/ui/NewAgentContent";
 import { Footer } from '@/components/auth/Footer';
+import Image from "next/image";
 
 const ClientShell = () => {
-  const [models, setModels] = useState<any[]>([]);
+  const [models, setModels] = useState<{ modelName: string; freeTokensPerMonth: number }[]>([]);
   const app = useStackApp();
   const user = app?.useUser();
   const router = useRouter();
@@ -41,11 +42,12 @@ const ClientShell = () => {
       {/* Header with Logo */}
       <header className="px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center gap-2">
-          <img
+          <Image
             src="/hebo-icon.svg"
             alt="Hebo Logo"
             width={32}
             height={32}
+            priority
           />
           <span className="text-lg font-bold">Hebo</span>
         </div>

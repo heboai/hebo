@@ -163,7 +163,7 @@ const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
                     tabIndex={-1}
                     className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-[8px] shadow-lg max-h-60 overflow-auto"
                   >
-                    {models.map((model, idx) => (
+                    {models.map((model) => (
                       <button
                         key={model.modelName}
                         type="button"
