@@ -6,7 +6,7 @@ This document outlines the analytics implementation using PostHog in the Hebo FE
 
 The application uses PostHog for analytics tracking with the following configuration:
 - PostHog is initialized in the `PostHogProvider` component
-- Uses both client-side (`posthog-js`) and server-side (`posthog-node`) SDKs
+- Uses both client-side (`posthog-js`)
 - Configured to use the EU PostHog instance (`eu.posthog.com`)
 
 ## Tracked Events

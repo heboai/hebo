@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: true,
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
+  // Ensure static generation works properly
+  trailingSlash: false,
+  images: {
+    unoptimized: true,
+  },
   async rewrites() {
     return [
       {

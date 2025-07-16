@@ -10,7 +10,7 @@ export function UserDisplay() {
   const posthog = usePostHog();
   
   useEffect(() => {
-    if (user && posthog) {
+    if (user && posthog && typeof window !== "undefined") {
       posthog.identify(user.id, {
         name: user.displayName,
         email: user.primaryEmail

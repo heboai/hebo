@@ -25,7 +25,6 @@
     "next": "*",
     "next-themes": "*",
     "posthog-js": "*",
-    "posthog-node": "*",
     "react": "*",
     "react-dom": "*",
     "sonner": "*",

@@ -40,7 +40,6 @@ export default function SignIn() {
                   alt="No Credit Card Required"
                   width={24}
                   height={24}
-                  priority
                 />
                 <span className="text-base text-left">
                   No credit card required
