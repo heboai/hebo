@@ -1,3 +1,5 @@
+"use client";
+
 import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackApp } from "@/stack";
@@ -24,7 +26,7 @@ const stackTheme = {
   }
 };
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: "Hebo Cloud",
   description: "The fastest way to build & scale agents",
 };
