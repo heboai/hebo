@@ -29,7 +29,7 @@ overrides:
   class-variance-authority: 0.7.1
   clsx: 2.1.1
   tailwind-merge: 3.3.1
-  tailwindcss-animate: 1.0.7
+  tw-animate-css: ^1.3.2
   lucide-react: 0.525.0
   buffer: 6.0.3
 
@@ -237,6 +237,9 @@ importers:
       tailwind-merge:
         specifier: 3.3.1
         version: 3.3.1
+      tw-animate-css:
+        specifier: ^1.3.2
+        version: 1.3.5
       vaul:
         specifier: '*'
         version: 1.1.2(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -251,7 +254,7 @@ importers:
         specifier: 4.1.11
         version: 4.1.11
       tailwindcss-animate:
-        specifier: 1.0.7
+        specifier: '*'
         version: 1.0.7(tailwindcss@4.1.11)
       tsup:
         specifier: 8.5.0
@@ -5973,6 +5976,9 @@ packages:
   turbo@2.0.6:
     resolution: {integrity: sha512-/Ftmxd5Mq//a9yMonvmwENNUN65jOVTwhhBPQjEtNZutYT9YKyzydFGLyVM1nzhpLWahQSMamRc/RDBv5EapzA==}
     hasBin: true
+
+  tw-animate-css@1.3.5:
+    resolution: {integrity: sha512-t3u+0YNoloIhj1mMXs779P6MO9q3p3mvGn4k1n3nJPqJw/glZcuijG2qTSN4z4mgNRfW5ZC3aXJFLwDtiipZXA==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -12869,6 +12875,8 @@ snapshots:
       turbo-linux-arm64: 2.0.6
       turbo-windows-64: 2.0.6
       turbo-windows-arm64: 2.0.6
+
+  tw-animate-css@1.3.5: {}
 
   type-check@0.4.0:
     dependencies:

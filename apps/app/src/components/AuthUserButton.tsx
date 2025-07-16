@@ -2,11 +2,11 @@
 
 import { UserButton } from "@stackframe/stack";
 
-interface UserButtonWrapperProps {
+interface AuthUserButtonProps {
     className?: string;
 }
 
-export default function UserButtonWrapper({ className }: UserButtonWrapperProps) {
+export default function AuthUserButton({ className }: AuthUserButtonProps) {
     return (
         <div className={`w-10 h-10 ${className || ''}`}>
             <UserButton

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackServerApp } from "../stack";
+import { stackApp } from "@/stack";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from 'next-themes'
@@ -39,7 +39,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         <PostHogProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
-            <StackProvider app={stackServerApp}>
+            <StackProvider app={stackApp}>
               <StackTheme theme={stackTheme}>
                 <div className="min-h-screen">
                   {children}

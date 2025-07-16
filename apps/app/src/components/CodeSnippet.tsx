@@ -5,26 +5,26 @@ import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-interface InstallCommandProps {
-  cmd?: string; // default shown below
+interface CodeSnippetProps {
+  c: string;
 }
 
-export function InstallCommand({ cmd = "npm install -g hebo-eval@latest" }: InstallCommandProps) {
+export function CodeSnippet({ c }: CodeSnippetProps) {
   const [copied, setCopied] = React.useState(false);
 
   const copy = React.useCallback(() => {
-    navigator.clipboard.writeText(cmd).then(() => {
+    navigator.clipboard.writeText(c).then(() => {
       setCopied(true);
       toast.success("Copied to clipboard!");
       setTimeout(() => setCopied(false), 2500);
     });
-  }, [cmd]);
+  }, [c]);
 
   return (
     <div className="flex w-full max-w-[310px] md:max-w-[550px] h-[40px] md:h-[45px] items-center justify-between
                     rounded-lg bg-[#241050] px-4 md:px-6 py-2 md:py-3 text-sm md:text-base font-mono
                     text-white shadow-sm">
-      <span className="select-text">&gt; {cmd}</span>
+      <span className="select-text">&gt; {c}</span>
       <Button
         onClick={copy}
         variant="ghost"

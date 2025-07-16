@@ -35,6 +35,7 @@
     "next-themes": "*",
     "sonner": "*",
     "tailwind-merge": "*",
+    "tw-animate-css": "*",
     "vaul": "*"
   },
   "exports": {

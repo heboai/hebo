@@ -1,0 +1,23 @@
+import { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+
+interface ActionButtonProps {
+  variant?: "secondary" | "tertiary";
+  text: string;
+  icon?: ReactNode;
+  className?: string;
+}
+
+export function ActionButton({ 
+  variant = "secondary", 
+  text, 
+  icon, 
+  className 
+}: ActionButtonProps) {
+  return (
+    <Button variant={variant} className={className}>
+      {icon}
+      {text}
+    </Button>
+  );
+} 

@@ -1,11 +1,11 @@
 "use client";
 
-import UserButtonWrapper from "./UserButtonWrapper";
+import AuthUserButton from "./AuthUserButton";
 
 export function Footer() {
     return (
         <div className="flex flex-col items-left gap-2">
-            <UserButtonWrapper />
+            <AuthUserButton />
         </div>
     );
 } 
