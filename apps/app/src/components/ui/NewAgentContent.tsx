@@ -5,9 +5,9 @@ import { Button } from "./button";
 import { proxy, useSnapshot } from 'valtio';
 import { SquareArrowOutUpRight } from "lucide-react";
 import { agentStore } from "@/store/agentStore";
+import { createAgent } from "@/services/createAgent";
 import { Loading } from "./loading";
 import Link from "next/link";
-import { postStore } from "@/store/postStore"; // Adjust import path as needed
 
 export type NewAgentContentProps = {
   models: { modelName: string; freeTokensPerMonth: number }[];
@@ -66,7 +66,7 @@ const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
     }
   };
 
-  const handleCreateAgent = () => {
+  const handleCreateAgent = async () => {
     if (!snap.selectedModel) {
       alert('Please select a model');
       return;
@@ -75,7 +75,17 @@ const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
       alert('Please enter an agent name');
       return;
     }
-    postStore.enqueueAgentCreation({ name: snap.agentName, model: snap.selectedModel });
+    agentStore.newAgent = { name: snap.agentName, model: snap.selectedModel };
+    agentStore.saving = true;
+    agentStore.error = null;
+    try {
+      await createAgent({ name: snap.agentName, model: snap.selectedModel });
+      agentStore.saving = false;
+      // Optionally clear newAgent or redirect here
+    } catch (err) {
+      agentStore.saving = false;
+      agentStore.error = (err as Error).message;
+    }
   };
 
   return (
@@ -117,6 +127,7 @@ const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
               onChange={e => (state.agentName = e.target.value)}
               className="w-80 h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white"
               aria-label="Agent Name"
+              disabled={agentSnap.saving}
             />
           )}
         </div>
