@@ -8,8 +8,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 / (git root)
 ├── apps/                   # deployable targets
 │   ├── api/                # Hono API server
-│   ├── app/                # Next.js Front End application
-│   └── docs/               # Next.js application for the documentation
+│   └── app/                # Next.js Front End application
 │
 ├── packages/               # shareable libraries
 │   └── db/                 # Database schema and migrations
