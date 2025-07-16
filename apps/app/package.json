@@ -14,6 +14,7 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@hebo/ui": "workspace:*",
     "@radix-ui/react-dialog": "*",
     "@radix-ui/react-slot": "*",
     "@stackframe/stack": "*",
@@ -29,8 +30,7 @@
     "react-dom": "*",
     "sonner": "*",
     "tailwind-merge": "*",
-    "vaul": "*",
-    "@hebo/ui": "workspace:*"
+    "vaul": "*"
   },
   "devDependencies": {
     "@eslint/eslintrc": "*",
@@ -48,4 +48,4 @@
     "serve": "*",
     "tailwindcss": "*"
   }
-} 
+}
