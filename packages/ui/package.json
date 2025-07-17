@@ -32,11 +32,11 @@
     "class-variance-authority": "*",
     "clsx": "*",
     "lucide-react": "*",
-    "next-themes": "*",
-    "sonner": "*",
+    "next-themes": "^0.4.6",
+    "sonner": "^2.0.5",
     "tailwind-merge": "*",
     "tw-animate-css": "*",
-    "vaul": "*"
+    "vaul": "^1.1.2"
   },
   "exports": {
     ".": "./src/index.ts",
