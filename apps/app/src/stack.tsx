@@ -13,13 +13,14 @@ const useNavigate = () => {
 
 /**
  * Global StackAuth instance for the browser.
- * Tokens are stored in memory so the build can be fully static –
- * no cookies or server helpers are required.
+ * Tokens are stored in cookies to maintain session state across requests.
+ * This allows the application to be fully static without requiring server-side
+ * session management or additional server helpers.
  */
 export const stackApp = new StackClientApp({
     projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
     publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
-    tokenStore: "memory",
+    tokenStore: "cookie",
     urls: {
         signIn: "/signin",
         signUp: "/signin",
