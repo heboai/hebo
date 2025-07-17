@@ -1,8 +1,5 @@
 @import "@hebo/ui/globals.css";
 
-@import "tailwindcss/preflight";
-@tailwind utilities;
-
 
 input.stack-scope {
   background-color: #fff !important;

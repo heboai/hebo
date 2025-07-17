@@ -13,32 +13,22 @@ export default function Home() {
           <div className="flex w-full max-w-[640px] flex-col items-center gap-4">
             <Logo />
 
-            {/* User greeting section - static fallback with client enhancement */}
-            <div className="relative">
-              {/* Static fallback */}
-              <p className="text-secondary-foreground text-center text-xl-sm md:text-xl">
-                Hi User! Evaluate your custom <br /> agent or existing (fine-tuned) LLM
-              </p>
-
-              {/* Client component overlay */}
-              <div className="absolute inset-0">
-                <UserDisplay />
-              </div>
-            </div>
+            {/* User greeting section */}
+            <UserDisplay />
 
             {/* the blue command bar */}
             <CodeSnippet c="npm install -g hebo-eval@latest" />
 
             <div className="flex items-center gap-4">
-              <div className="hidden sm:block">
+              <div className="sm:flex hidden">
                 <ActionButton variant="tertiary" text="New" />
               </div>
               <p className="text-base text-[#666666] min-w-[333px]">
                 Works with any LLM / agent framework,{" "}
-                <a 
-                  href="https://docs.hebo.ai/hebo_eval" 
+                <a
+                  href="https://docs.hebo.ai/hebo_eval"
                   className="underline text-[#4758F5]"
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
                 >
                   learn more

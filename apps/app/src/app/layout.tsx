@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased stack-scope`} suppressHydrationWarning>
         <PostHogProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
             <StackProvider app={stackApp}>

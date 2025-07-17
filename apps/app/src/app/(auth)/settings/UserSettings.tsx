@@ -44,9 +44,7 @@ export const UserSettings = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <Suspense fallback={<Loading size="md" variant="primary" />}>
-                        <AccountSettings
-                            fullPage={false}
-                        />
+                        <AccountSettings fullPage={false} />
                     </Suspense>
                 </DialogContent>
             </Dialog>
@@ -63,9 +61,7 @@ export const UserSettings = () => {
                     </DrawerDescription>
                 </DrawerHeader>
                 <Suspense fallback={<Loading size="md" variant="primary" />}>
-                    <AccountSettings
-                        fullPage={false}
-                    />
+                    <AccountSettings fullPage={false} />
                 </Suspense>
             </DrawerContent>
         </Drawer>

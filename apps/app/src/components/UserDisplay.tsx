@@ -18,13 +18,9 @@ export function UserDisplay() {
     }
   }, [user, posthog]);
   
-  if (!user) {
-    return null;
-  }
-  
   return (
-    <p className="text-secondary-foreground text-center text-xl-sm md:text-xl bg-white">
-      Hi {user.displayName}! Evaluate your custom <br /> agent or existing (fine-tuned) LLM
+    <p className="text-secondary-foreground text-center text-xl-sm md:text-xl">
+      Hi {user?.displayName || 'User'}! Evaluate your custom <br /> agent or existing (fine-tuned) LLM
     </p>
   );
 } 

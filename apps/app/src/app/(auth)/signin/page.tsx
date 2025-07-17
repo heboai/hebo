@@ -52,7 +52,7 @@ export default function SignIn() {
 
       {/* Right side - Marketing Message */}
       <aside className="
-      hidden md:flex md:w-[61.875%]
+      md:flex md:w-[61.875%]
       items-center justify-center
       px-[clamp(1.5rem,12vw,15rem)]
       pt-[clamp(2rem,10vh,12.5rem)]
