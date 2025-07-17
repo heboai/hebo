@@ -17,7 +17,7 @@ import {
     DrawerHeader,
     DrawerTitle,
 } from "@/components/ui/drawer"
-import { AccountSettings } from '@stackframe/stack';
+import { AccountSettings } from '@stackframe/react';
 import { Suspense } from "react";
 import { Loading } from "@/components/ui/loading";
 

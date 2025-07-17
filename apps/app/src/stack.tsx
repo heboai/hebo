@@ -1,6 +1,15 @@
 "use client";
 
-import { StackClientApp } from "@stackframe/stack";
+import { StackClientApp } from "@stackframe/react";
+import { useRouter } from "next/navigation";
+
+/**
+ * Custom useNavigate function for Next.js App Router
+ */
+const useNavigate = () => {
+    const router = useRouter();
+    return (to: string) => router.push(to);
+};
 
 /**
  * Global StackAuth instance for the browser.
@@ -17,5 +26,7 @@ export const stackApp = new StackClientApp({
         accountSettings: "/settings",
         home: "/",
     },
-    redirectMethod: "window",
+    redirectMethod: {
+        useNavigate,
+    },
 });

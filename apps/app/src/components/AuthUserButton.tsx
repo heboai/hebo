@@ -1,12 +1,18 @@
 "use client";
 
-import { UserButton } from "@stackframe/stack";
+import { UserButton } from "@stackframe/react";
 
 interface AuthUserButtonProps {
     className?: string;
 }
 
 export default function AuthUserButton({ className }: AuthUserButtonProps) {
+    const handleOpenDocs = () => {
+        if (typeof window !== "undefined") {
+            window.open('https://docs.hebo.ai', '_blank');
+        }
+    };
+
     return (
         <div className={`w-10 h-10 ${className || ''}`}>
             <UserButton
@@ -14,7 +20,7 @@ export default function AuthUserButton({ className }: AuthUserButtonProps) {
                 extraItems={[{
                     text: 'Documentation',
                     icon: null,
-                    onClick: () => { window.open('https://docs.hebo.ai', '_blank'); }
+                    onClick: handleOpenDocs
                 }]}
             />
         </div>

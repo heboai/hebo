@@ -1,6 +1,6 @@
 "use client";
 
-import { useStackApp } from "@stackframe/stack";
+import { useStackApp } from "@stackframe/react";
 import { usePostHog } from 'posthog-js/react';
 import { useEffect } from 'react';
 

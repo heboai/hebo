@@ -2,7 +2,7 @@
 
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider, usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { POSTHOG_CONFIG } from "@/lib/posthog";
 
@@ -23,7 +23,9 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <PHProvider client={posthog}>
-      <PostHogPageView />
+      <Suspense fallback={null}>
+        <PostHogPageView />
+      </Suspense>
       {children}
     </PHProvider>
   );
@@ -36,7 +38,10 @@ function PostHogPageView() {
 
   useEffect(() => {
     if (pathname && posthog && typeof window !== "undefined") {
-      let url = window.origin + pathname;
+      // Use window.location.origin if available, otherwise construct from pathname
+      let url = typeof window !== "undefined" && window.origin 
+        ? window.origin + pathname 
+        : pathname;
       const search = searchParams.toString();
       if (search) {
         url += "?" + search;

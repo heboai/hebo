@@ -1,7 +1,7 @@
 "use client";
 
-import type { Metadata } from "next";
-import { StackProvider, StackTheme } from "@stackframe/stack";
+//import type { Metadata } from "next";
+import { StackProvider, StackTheme } from "@stackframe/react";
 import { stackApp } from "@/stack";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -26,10 +26,12 @@ const stackTheme = {
   }
 };
 
+/*
 const metadata: Metadata = {
   title: "Hebo Cloud",
   description: "The fastest way to build & scale agents",
 };
+*/
 
 export default function RootLayout({
   children,

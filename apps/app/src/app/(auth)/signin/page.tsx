@@ -1,4 +1,4 @@
-import { MagicLinkSignIn, OAuthButtonGroup } from "@stackframe/stack";
+import { MagicLinkSignIn, OAuthButtonGroup } from "@stackframe/react";
 import Image from "next/image";
 import Link from "next/link";
 import { BookCheck } from "lucide-react";

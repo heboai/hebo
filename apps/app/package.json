@@ -17,7 +17,7 @@
     "@hebo/ui": "workspace:*",
     "@radix-ui/react-dialog": "*",
     "@radix-ui/react-slot": "*",
-    "@stackframe/stack": "*",
+    "@stackframe/react": "*",
     "buffer": "*",
     "class-variance-authority": "*",
     "clsx": "*",
