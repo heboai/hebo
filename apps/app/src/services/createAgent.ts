@@ -1,6 +1,5 @@
 import { agentStore } from "@/store/agentStore";
-
-const isMockMode = !process.env.NEXT_PUBLIC_API_URL;
+import { isMockMode } from "@/lib/utils";
 
 export type CreateAgentInput = {
   name: string;

@@ -18,6 +18,8 @@ const state = proxy({
   selectedModel: '',
   agentName: '',
   isDropdownOpen: false,
+  agentNameError: '',
+  modelError: '',
 });
 
 const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
@@ -67,14 +69,20 @@ const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
   };
 
   const handleCreateAgent = async () => {
+    let hasError = false;
     if (!snap.selectedModel) {
-      alert('Please select a model');
-      return;
+      state.modelError = 'Please select a model';
+      hasError = true;
+    } else {
+      state.modelError = '';
     }
     if (!snap.agentName) {
-      alert('Please enter an agent name');
-      return;
+      state.agentNameError = 'Please enter an agent name';
+      hasError = true;
+    } else {
+      state.agentNameError = '';
     }
+    if (hasError) return;
     agentStore.newAgent = { name: snap.agentName, model: snap.selectedModel };
     agentStore.saving = true;
     agentStore.error = null;
@@ -119,16 +127,25 @@ const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
           {snap.isLoading ? (
             <Skeleton width={320} height={36} />
           ) : (
-            <input
-              type="text"
-              id="agent-name"
-              placeholder="Name"
-              value={snap.agentName}
-              onChange={e => (state.agentName = e.target.value)}
-              className="w-80 h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white"
-              aria-label="Agent Name"
-              disabled={agentSnap.saving}
-            />
+            <>
+              <input
+                type="text"
+                id="agent-name"
+                placeholder="Name"
+                value={snap.agentName}
+                onChange={e => {
+                  state.agentName = e.target.value;
+                  if (state.agentNameError) state.agentNameError = '';
+                }}
+                className="w-80 h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white"
+                aria-label="Agent Name"
+                aria-invalid={!!snap.agentNameError}
+                disabled={agentSnap.saving}
+              />
+              {snap.agentNameError && (
+                <div className="text-red-500 text-sm mt-1" aria-live="polite">{snap.agentNameError}</div>
+              )}
+            </>
           )}
         </div>
         {/* Model Selection */}
@@ -150,6 +167,7 @@ const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
                   aria-haspopup="listbox"
                   aria-expanded={snap.isDropdownOpen}
                   aria-controls="model-listbox"
+                  aria-invalid={!!snap.modelError}
                 >
                   {snap.selectedModel ? (
                     <span className="flex-1 min-w-0">
@@ -193,6 +211,9 @@ const NewAgentContent: React.FC<NewAgentContentProps> = ({ models }) => {
                       </button>
                     ))}
                   </div>
+                )}
+                {snap.modelError && (
+                  <div className="text-red-500 text-sm mt-1" aria-live="polite">{snap.modelError}</div>
                 )}
               </>
             )}
