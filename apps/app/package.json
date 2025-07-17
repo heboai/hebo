@@ -28,6 +28,7 @@
     "react-dom": "^18.3.0",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.3.0",
+    "valtio": "^2.1.5",
     "vaul": "^1.1.2"
   },
   "devDependencies": {
@@ -46,4 +47,4 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.2"
   }
-} 
+}
