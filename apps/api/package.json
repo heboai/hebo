@@ -14,7 +14,8 @@
     "esbuild": "*"
   },
   "dependencies": {
-    "hono": "*",
-    "@hebo/db": "workspace:*"
+    "@hebo/db": "workspace:*",
+    "hono": "^4.8.4",
+    "jose": "^6.0.12"
   }
 }
