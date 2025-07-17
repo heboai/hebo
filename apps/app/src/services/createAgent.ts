@@ -31,7 +31,7 @@ export const getAgents = async () => {
     return Promise.resolve({ mockMode: true, agents: agentStore.agents });
   }
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/agents`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/agents`);
     if (!res.ok) throw new Error("Failed to fetch agents");
     return await res.json();
   } catch (err) {

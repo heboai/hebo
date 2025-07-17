@@ -7,30 +7,56 @@ import { getSupportedModels } from '@/lib/models';
 import NewAgentContent from "@/components/ui/NewAgentContent";
 import { Footer } from '@/components/auth/Footer';
 import Image from "next/image";
+import { agentStore } from "@/store/agentStore";
+import { getAgents } from "@/services/createAgent";
+import { useSnapshot } from "valtio";
+import { isMockMode } from "@/lib/utils";
+import { Loading } from "@/components/ui/loading";
 
 const ClientShell = () => {
-  const [models, setModels] = useState<{ modelName: string; freeTokensPerMonth: number }[]>([]);
+  // Synchronously load models
+  const models = getSupportedModels();
   const app = useStackApp();
   const user = app?.useUser();
   const router = useRouter();
+  const [checkingAgent, setCheckingAgent] = useState(true);
+  const agentSnap = useSnapshot(agentStore);
 
   useEffect(() => {
     // Redirect to /signin if not authenticated
     if (user === undefined) return; // still loading
     if (!user) {
       router.replace("/signin");
+      return;
     }
-  }, [user, router]);
+    // Check if agent exists
+    const checkAgent = async () => {
+      if (isMockMode) {
+        if (agentStore.agents.length > 0) {
+          router.push("/");
+          return;
+        }
+        setCheckingAgent(false);
+      } else {
+        try {
+          const res = await getAgents();
+          const agents = res.agents || [];
+          if (agents.length > 0) {
+            router.push("/");
+            return;
+          }
+        } catch (err) {
+          agentStore.error = err instanceof Error ? err.message : String(err);
+        }
+        setCheckingAgent(false);
+      }
+    };
+    checkAgent();
+  }, [user, router, agentSnap.agents.length]);
 
-  useEffect(() => {
-    // Fetch models on the client
-    const models = getSupportedModels();
-    setModels(models);
-  }, []);
-
-  if (user === undefined) {
-    // Optionally, show a loading state while checking auth
-    return null;
+  if (user === undefined || checkingAgent) {
+    // Show a full-page loading spinner while checking auth/agent
+    return <Loading fullPage size="lg" />;
   }
   if (!user) {
     // Redirecting...
