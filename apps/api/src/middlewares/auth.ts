@@ -1,6 +1,6 @@
-import {MiddlewareHandler} from 'hono'
-import {env} from 'hono/adapter'
-import {HTTPException} from 'hono/http-exception'
+import { MiddlewareHandler } from 'hono'
+import { env } from 'hono/adapter'
+import { HTTPException } from 'hono/http-exception'
 import * as jose from 'jose'
 
 type StackAuthEnv = {
@@ -10,12 +10,12 @@ type StackAuthEnv = {
 
 export function authenticateUser(): MiddlewareHandler {
   return async (c, next) => {
-    const {NEXT_PUBLIC_STACK_PROJECT_ID: projectId, STACK_SECRET_SERVER_KEY: secretServerKey} = env(c) as StackAuthEnv
-    const {'Authorization': authHeader, 'X-Access-Token': accessToken} = c.req.header()
-    const unauthorizedResponse = new Response('Unauthorized', {status: 401})
+    const { NEXT_PUBLIC_STACK_PROJECT_ID: projectId, STACK_SECRET_SERVER_KEY: secretServerKey } = env(c) as StackAuthEnv
+    const { 'Authorization': authHeader, 'X-Access-Token': accessToken } = c.req.header()
+    const unauthorizedResponse = new Response('Unauthorized', { status: 401 })
 
     if (authHeader == null && accessToken == null) {
-      throw new HTTPException(401, {res: unauthorizedResponse})
+      throw new HTTPException(401, { res: unauthorizedResponse })
     }
 
     if (authHeader != null) {
@@ -28,12 +28,12 @@ export function authenticateUser(): MiddlewareHandler {
           'x-stack-project-id': projectId,
           'x-stack-secret-server-key': secretServerKey,
         },
-        body: JSON.stringify({api_key: authHeader.replace('Bearer ', '')}),
+        body: JSON.stringify({ api_key: authHeader.replace('Bearer ', '') }),
       };
 
       const response = await fetch(url, data);
       if (response.status !== 200) {
-        throw new HTTPException(401, {res: unauthorizedResponse})
+        throw new HTTPException(401, { res: unauthorizedResponse })
       }
     }
 
@@ -42,7 +42,7 @@ export function authenticateUser(): MiddlewareHandler {
       try {
         await jose.jwtVerify(accessToken, jwks)
       } catch {
-        throw new HTTPException(401, {res: unauthorizedResponse})
+        throw new HTTPException(401, { res: unauthorizedResponse })
       }
     }
 
