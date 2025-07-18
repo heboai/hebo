@@ -1,7 +1,11 @@
-import { Hono } from 'hono'
-import { handleGetVersion } from './api'
+import {Hono} from 'hono'
+import {handleGetVersion} from './api'
+import {authenticateUser} from './middlewares/auth'
+import {except} from 'hono/combine'
 
 const app = new Hono()
+
+app.use('/api/*', except('/api/verion', authenticateUser()))
 
 app.get('/', (c) => {
   return c.text('Hebo API says hello!')
