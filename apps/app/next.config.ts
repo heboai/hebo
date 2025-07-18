@@ -1,9 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'export',
+  transpilePackages: ["@hebo/ui"],
   productionBrowserSourceMaps: true,
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
+  // Ensure static generation works properly
+  trailingSlash: false,
+  images: {
+    unoptimized: true,
+  },
   async rewrites() {
     return [
       {
@@ -20,14 +27,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  webpack: (config, { dev }) => {
-    // Enable source maps in development
-    if (dev) {
-      config.devtool = 'source-map';
-    }
-    return config;
-  },
-  turbopack: {},
 };
 
 export default nextConfig;

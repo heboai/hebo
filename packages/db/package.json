@@ -15,12 +15,12 @@
   },
   "scripts": {},
   "dependencies": {
-    "drizzle-orm": "^0.44.2",
-    "pg": "^8.16.3",
-    "@libsql/client": "^0.15.9"
+    "drizzle-orm": "*",
+    "pg": "*",
+    "@libsql/client": "*"
   },
   "devDependencies": {
-    "@types/pg": "^8.15.4",
-    "drizzle-kit": "^0.31.4"
+    "@types/pg": "*",
+    "drizzle-kit": "*"
   }
 }
