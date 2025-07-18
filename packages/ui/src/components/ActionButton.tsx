@@ -1,5 +1,8 @@
+"use client";
+
+import * as React from "react";
 import { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "./dumb/button";
 
 interface ActionButtonProps {
   variant?: "secondary" | "tertiary";

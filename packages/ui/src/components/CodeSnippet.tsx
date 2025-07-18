@@ -2,14 +2,14 @@
 
 import * as React from "react";
 import { Copy, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "./dumb/button";
 import { toast } from "sonner";
 
 interface CodeSnippetProps {
   c: string;
 }
 
-export function CodeSnippet({ c }: CodeSnippetProps) {
+const CodeSnippetComponent = ({ c }: CodeSnippetProps) => {
   const [copied, setCopied] = React.useState(false);
 
   const copy = React.useCallback(() => {
@@ -40,4 +40,6 @@ export function CodeSnippet({ c }: CodeSnippetProps) {
       </Button>
     </div>
   );
-}
+};
+
+export const CodeSnippet = CodeSnippetComponent;

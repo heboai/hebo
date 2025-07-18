@@ -1,11 +1,13 @@
+"use client";
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@hebo/ui"
+import { cn } from "../../lib/utils"
 import {
   Button as ShadcnButton,
   buttonVariants as shadcnButtonVariants,
-} from "@hebo/ui/shadcn/button"
+} from "../../shadcn/button"
 
 const extendedButtonVariants = cva("", {
   variants: {

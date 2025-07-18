@@ -6,7 +6,7 @@ interface AuthUserButtonProps {
     className?: string;
 }
 
-export default function AuthUserButton({ className }: AuthUserButtonProps) {
+export function AuthUserButton({ className }: AuthUserButtonProps) {
     const handleOpenDocs = () => {
         if (typeof window !== "undefined") {
             window.open('https://docs.hebo.ai', '_blank');

@@ -2,8 +2,8 @@ import { MagicLinkSignIn, OAuthButtonGroup } from "@stackframe/react";
 import Image from "next/image";
 import Link from "next/link";
 import { BookCheck } from "lucide-react";
-import { ActionButton } from "@/components/ActionButton";
-import { Logo } from "@/components/Logo";
+import { ActionButton } from "@hebo/ui";
+import { Logo, StackProvider, stackApp } from "@/components";
 
 export default function SignIn() {
   return (
@@ -23,16 +23,18 @@ export default function SignIn() {
               </p>
 
               {/* Auth Components */}
-              <div className="space-y-4">
-                <OAuthButtonGroup type="sign-in" />
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 h-[1px] bg-gray-200" />
-                  <span className="text-sm whitespace-nowrap">or continue with</span>
-                  <div className="flex-1 h-[1px] bg-gray-200" />
+              <StackProvider app={stackApp}>
+                <div className="space-y-4">
+                  <OAuthButtonGroup type="sign-in" />
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 h-[1px] bg-gray-200" />
+                    <span className="text-sm whitespace-nowrap">or continue with</span>
+                    <div className="flex-1 h-[1px] bg-gray-200" />
+                  </div>
+                  <MagicLinkSignIn />
+                  <div className="w-full h-[1px] bg-gray-200 mt-4" />
                 </div>
-                <MagicLinkSignIn />
-                <div className="w-full h-[1px] bg-gray-200 mt-4" />
-              </div>
+              </StackProvider>
 
               <div className="flex items-center gap-2 mb-2 mt-4">
                 <Image

@@ -46,6 +46,7 @@
     "./shadcn/dialog": "./src/shadcn/dialog.tsx",
     "./shadcn/drawer": "./src/shadcn/drawer.tsx",
     "./shadcn/sonner": "./src/shadcn/sonner.tsx",
-    "./components/loading": "./src/components/loading.tsx"
+    "./components/": "./src/components/",
+    "./lib/utils": "./src/lib/utils.ts"
   }
 }

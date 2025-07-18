@@ -1,13 +1,6 @@
-"use client";
-
 //import type { Metadata } from "next";
-import { StackProvider, StackTheme } from "@stackframe/react";
-import { stackApp } from "@/stack";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from 'next-themes'
-import { Toaster } from "@/components/ui/sonner";
-import { PostHogProvider } from "@/components/PostHogProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,12 +12,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const stackTheme = {
-  light: {
-    primary: '#FCC44B',
-    primaryForeground: '#000000'
-  }
-};
 
 /*
 const metadata: Metadata = {
@@ -41,18 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased stack-scope`} suppressHydrationWarning>
-        <PostHogProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} forcedTheme="light">
-            <StackProvider app={stackApp}>
-              <StackTheme theme={stackTheme}>
-                <div className="min-h-screen">
-                  {children}
-                </div>
-                <Toaster richColors position="bottom-center" />
-              </StackTheme>
-            </StackProvider>
-          </ThemeProvider>
-        </PostHogProvider>
+        <div className="min-h-screen">
+          {children}
+        </div>
       </body>
     </html>
   );

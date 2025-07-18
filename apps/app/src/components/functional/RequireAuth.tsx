@@ -1,14 +1,15 @@
 "use client";
 
-import { PropsWithChildren, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { stackApp } from "@/stack";
+import { stackApp } from "@/components";
 
 /**
- * Wrap pages/components with <RequireAuth> to protect them.
+ * Use <RequireAuth /> at the beginning of a page to protect it.
  * Redirects to /signin when no user is present.
+ * Must be wrapped by stackProvider.
  */
-export function RequireAuth({ children }: PropsWithChildren) {
+export function RequireAuth() {
   const router = useRouter();
   const { useUser } = stackApp;
   const user = useUser();
@@ -20,10 +21,6 @@ export function RequireAuth({ children }: PropsWithChildren) {
     }
   }, [user, router]);
 
-  if (!user) {
-    // Could return a spinner or skeleton here.
-    return null;
-  }
-
-  return <>{children}</>;
+  // Return null since this is a self-closing component
+  return null;
 } 
