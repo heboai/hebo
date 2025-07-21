@@ -13,7 +13,9 @@
     "./schema/sqlite": "./schema/sqlite/index.ts",
     "./schema/postgresql": "./schema/postgresql/index.ts"
   },
-  "scripts": {},
+  "scripts": {
+    "clean": "rimraf .next .turbo node_modules"
+  },
   "dependencies": {
     "drizzle-orm": "*",
     "pg": "*",

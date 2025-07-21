@@ -30,6 +30,7 @@
     "cross-env": "*",
     "eslint": "9.5.0",
     "prettier": "3.3.2",
+    "rimraf": "*",
     "sst": "3.0.37",
     "turbo": "2.5.5",
     "typescript": "5.5.3"

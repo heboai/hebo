@@ -59,6 +59,9 @@ importers:
       prettier:
         specifier: 3.3.2
         version: 3.3.2
+      rimraf:
+        specifier: '*'
+        version: 5.0.10
       sst:
         specifier: 3.0.37
         version: 3.0.37(hono@4.5.0)

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "echo 'No build step needed - using Bun'",
     "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts"
+    "start": "bun src/index.ts",
+    "clean": "rimraf .next .turbo node_modules dist"
   },
   "devDependencies": {
     "@types/node": "*",
