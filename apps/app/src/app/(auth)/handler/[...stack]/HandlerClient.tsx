@@ -1,7 +1,7 @@
 "use client";
 
-import { StackHandler, StackProvider } from "@stackframe/react";
-import { stackApp } from "~/lib/auth";
+import { StackHandler } from "@stackframe/react";
+import { stackApp, StackProvider } from "~/lib/auth";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { Loading } from "@hebo/ui/components/base/Loading";

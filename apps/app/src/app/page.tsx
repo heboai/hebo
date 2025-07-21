@@ -1,5 +1,4 @@
-import { stackApp } from "~/lib/auth";
-import { StackProvider } from "@stackframe/react";
+import { stackApp, StackProvider } from "~/lib/auth";
 import { Logo } from "~/components/ui/Logo";
 import { UserButton } from "~/components/ui/UserButton";
 import { UserName } from "~/components/ui/UserName";

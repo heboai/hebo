@@ -3,9 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookCheck } from "lucide-react";
 import { ActionButton } from "@hebo/ui/components/ActionButton";
-import { Logo } from "@hebo/ui/components/Logo";
-import { stackApp } from "~/lib/auth";
-import { StackProvider } from "@stackframe/react";
+import { Logo } from "~/components/ui/Logo";
+import { stackApp, StackProvider } from "~/lib/auth";
 
 
 export default function SignIn() {

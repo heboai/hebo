@@ -1,5 +1,5 @@
-import { AccountSettings, StackProvider } from "@stackframe/react";
-import { stackApp } from "~/lib/auth";
+import { AccountSettings } from "@stackframe/react";
+import { stackApp, StackProvider } from "~/lib/auth";
 import { Suspense } from "react";
 import { Loading } from "@hebo/ui/components/base/Loading";
 
