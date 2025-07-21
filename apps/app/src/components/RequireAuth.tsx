@@ -1,15 +1,16 @@
-"use client";
+/*"use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { stackApp } from "@/components";
+import { stackApp } from "~/lib/auth";
+*/
 
 /**
  * Use <RequireAuth /> at the beginning of a page to protect it.
  * Redirects to /signin when no user is present.
  * Must be wrapped by stackProvider.
  */
-export function RequireAuth() {
+/*export function RequireAuth() {
   const router = useRouter();
   const { useUser } = stackApp;
   const user = useUser();
@@ -23,4 +24,4 @@ export function RequireAuth() {
 
   // Return null since this is a self-closing component
   return null;
-} 
+} */

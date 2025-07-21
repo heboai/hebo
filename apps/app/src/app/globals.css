@@ -1,4 +1,4 @@
-@import "@hebo/ui/globals.css";
+@import "./tailwind.css";
 
 
 input.stack-scope {

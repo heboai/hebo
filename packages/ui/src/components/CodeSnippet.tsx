@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Copy, Check } from "lucide-react";
-import { Button } from "./dumb/button";
+import { Button } from "./base/Button";
 import { toast } from "sonner";
 
 interface CodeSnippetProps {

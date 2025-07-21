@@ -1,10 +1,10 @@
 "use client";
 
-import { StackHandler } from "@stackframe/react";
+import { StackHandler, StackProvider } from "@stackframe/react";
+import { stackApp } from "~/lib/auth";
 import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { Loading } from "@hebo/ui";
-import { stackApp, StackProvider } from "@/components";
+import { Loading } from "@hebo/ui/components/base/Loading";
 
 export function HandlerClient() {
   const pathname = usePathname();

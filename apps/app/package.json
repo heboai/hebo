@@ -8,9 +8,6 @@
     "dev:local": "next dev --turbopack",
     "lint": "next lint",
     "start": "serve out -p 3000",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
@@ -24,26 +21,20 @@
     "lucide-react": "*",
     "next": "*",
     "next-themes": "*",
-    "posthog-js": "*",
     "react": "*",
     "react-dom": "*",
     "sonner": "*",
     "tailwind-merge": "*",
+    "tw-animate-css": "*",
     "vaul": "*"
   },
   "devDependencies": {
     "@eslint/eslintrc": "*",
     "@tailwindcss/postcss": "*",
-    "@testing-library/jest-dom": "*",
-    "@testing-library/react": "*",
-    "@testing-library/user-event": "*",
-    "@types/jest": "*",
     "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
     "eslint-config-next": "*",
-    "jest": "*",
-    "jest-environment-jsdom": "*",
     "serve": "*",
     "tailwindcss": "*"
   }

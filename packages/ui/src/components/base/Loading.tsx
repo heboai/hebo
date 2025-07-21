@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@hebo/ui/lib/utils"
+import { cn } from "../../lib/utils"
 import { RotateCw } from "lucide-react"
 
 interface LoadingProps {
