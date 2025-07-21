@@ -1,7 +1,10 @@
 import { Hono } from 'hono'
 import { handleGetVersion } from './api'
+import { authenticateUser } from './middlewares/auth'
 
 const app = new Hono()
+
+app.use('/api/*', authenticateUser())
 
 app.get('/', (c) => {
   return c.text('Hebo API says hello!')
