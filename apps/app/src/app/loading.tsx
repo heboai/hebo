@@ -1,4 +1,4 @@
-import { Loading } from "@hebo/ui"
+import { Loading } from "@hebo/ui/components/base/Loading"
 
 export default function LoadingPage() {
   // Stack uses React Suspense, which will render this page while user data is being fetched.

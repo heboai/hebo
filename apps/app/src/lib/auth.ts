@@ -1,5 +1,6 @@
-"use client";
-import { StackClientApp, StackProvider } from "@stackframe/react";
+"use client"
+
+import { StackClientApp } from "@stackframe/react";
 import { useRouter } from "next/navigation";
 
 /**
@@ -30,5 +31,3 @@ export const stackApp = new StackClientApp({
         useNavigate,
     },
 });
-
-export { StackProvider };

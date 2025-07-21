@@ -1,13 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@hebo/ui/tailwind.preset": ["./tailwind.preset.ts"]
-    }
+    "baseUrl": "src",
   },
-  "include": ["src", "*.ts", "*.mjs"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 } 

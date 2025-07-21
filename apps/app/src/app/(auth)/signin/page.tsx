@@ -2,8 +2,11 @@ import { MagicLinkSignIn, OAuthButtonGroup } from "@stackframe/react";
 import Image from "next/image";
 import Link from "next/link";
 import { BookCheck } from "lucide-react";
-import { ActionButton } from "@hebo/ui";
-import { Logo, StackProvider, stackApp } from "@/components";
+import { ActionButton } from "@hebo/ui/components/ActionButton";
+import { Logo } from "@hebo/ui/components/Logo";
+import { stackApp } from "~/lib/auth";
+import { StackProvider } from "@stackframe/react";
+
 
 export default function SignIn() {
   return (

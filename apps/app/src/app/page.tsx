@@ -1,6 +1,10 @@
-import { AuthUserButton, Logo, UserDisplay, RequireAuth, StackProvider, stackApp } from "@/components";
-import { ActionButton } from "@hebo/ui";
-import { CodeSnippetWrapper } from "@/components/CodeSnippetWrapper";
+import { stackApp } from "~/lib/auth";
+import { StackProvider } from "@stackframe/react";
+import { Logo } from "~/components/ui/Logo";
+import { UserButton } from "~/components/ui/UserButton";
+import { UserName } from "~/components/ui/UserName";
+import { ActionButton } from "@hebo/ui/components/ActionButton";
+import { CodeSnippet } from "@hebo/ui/components/CodeSnippet";
 
 export default function Home() {
   return (
@@ -11,12 +15,16 @@ export default function Home() {
 
           {/* User greeting section - needs auth */}
           <StackProvider app={stackApp}>
+            
             {/* <RequireAuth /> */}
-            <UserDisplay />
+            <p className="text-secondary-foreground text-center text-xl-sm md:text-xl">
+              Hi <UserName /> Evaluate your custom <br /> agent or existing (fine-tuned) LLM
+            </p>
+            
           </StackProvider>
 
           {/* the blue command bar */}
-          <CodeSnippetWrapper c="npm install -g hebo-eval@latest" />
+          <CodeSnippet c="npm install -g hebo-eval@latest" />
 
           <div className="flex items-center gap-4">
             <div className="sm:flex hidden">
@@ -40,7 +48,7 @@ export default function Home() {
       <footer className="w-full p-4">
         <div className="flex flex-col items-left gap-2">
           <StackProvider app={stackApp}>
-            <AuthUserButton />
+            <UserButton />
           </StackProvider>
         </div>
       </footer>
