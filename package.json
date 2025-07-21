@@ -31,7 +31,7 @@
     "eslint": "9.5.0",
     "prettier": "3.3.2",
     "sst": "3.0.37",
-    "turbo": "2.0.6",
+    "turbo": "2.5.5",
     "typescript": "5.5.3"
   },
   "engines": {
