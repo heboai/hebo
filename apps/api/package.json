@@ -4,10 +4,10 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "build": "echo 'No build step needed - using Bun'",
+    "build": "echo 'Build completed' > .build-complete",
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
-    "clean": "rimraf .next .turbo node_modules dist"
+    "clean": "rimraf .next .turbo node_modules dist .build-complete"
   },
   "devDependencies": {
     "@types/node": "*",

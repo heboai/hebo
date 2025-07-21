@@ -4,7 +4,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "out/**", "build/**"]
+      "outputs": ["dist/**", ".next/**", "out/**", "build/**", ".build-complete"],
+      "inputs": ["src/**/*.tsx", "src/**/*.ts", "src/**/*.js", "src/**/*.jsx", "package.json"]
     },
     "test": {
       "dependsOn": ["^build"],

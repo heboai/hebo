@@ -25,6 +25,7 @@
     "lucide-react": "*",
     "sonner": "^2.0.5",
     "tailwind-merge": "*",
-    "vaul": "^1.1.2"
+    "vaul": "^1.1.2",
+    "next-themes": "^0.4.6"
   }
 }
