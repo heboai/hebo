@@ -20,7 +20,7 @@ overrides:
   eslint-plugin-react-hooks: 5.2.0
   tailwindcss: 4.1.11
   prettier: 3.3.2
-  turbo: 2.0.6
+  turbo: 2.5.5
   sst: 3.0.37
   tsup: 8.5.0
   hono: 4.5.0
