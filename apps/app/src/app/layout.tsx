@@ -1,4 +1,4 @@
-//import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -12,13 +12,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
-/*
-const metadata: Metadata = {
-  title: "Hebo Cloud",
-  description: "The fastest way to build & scale agents",
+export const metadata: Metadata = {
+  title: {
+    default: 'Hebo Cloud',
+    template: '%s | Hebo Cloud'
+  },
+  description: 'The fastest way to build & scale agents',
+  openGraph: {
+    url: 'https://hebo.cloud',
+    siteName: 'Hebo Cloud',
+    type: 'website',
+  }
 };
-*/
 
 export default function RootLayout({
   children,
