@@ -17,7 +17,9 @@
     "incremental": false,
     "baseUrl": ".",
     "paths": {
-      "@hebo/ui/*": ["packages/ui/src/*"]
+      "@hebo/ui/*": ["packages/ui/src/*"],
+      "@hebo/ui/components/*": ["packages/ui/src/components/*"],
+      "@hebo/ui/lib/*": ["packages/ui/src/lib/*"]
     }
   },
   "exclude": ["node_modules"]
