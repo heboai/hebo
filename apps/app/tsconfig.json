@@ -4,9 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "~/*": [ "./src/*" ],
-      "@hebo/ui/*": ["../../packages/ui/src/*"],
-      "@hebo/ui/components/*": ["../../packages/ui/src/components/*"],
-      "@hebo/ui/lib/*": ["../../packages/ui/src/lib/*"]
+      "@hebo/ui/*": ["../../packages/ui/src/*"]
     },
     "plugins": [
       {
