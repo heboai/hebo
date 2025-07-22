@@ -1,13 +1,13 @@
 "use client";
 
-//import { useStackApp } from "@stackframe/react";
+import { useUser } from "@stackframe/react";
 
 export function UserName() {
-  //const app = useStackApp();
-  //const user = app?.useUser();
+  const user = useUser({
+    or: "redirect"
+  });
   
   return (
-    //<span>{user?.displayName || 'User'}</span>
-    <span>User</span>
+    <span>{user?.displayName || 'User'}</span>
   );
 } 
