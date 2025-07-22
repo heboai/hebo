@@ -1,9 +1,9 @@
 {
   "name": "@hebo/app",
   "version": "0.0.1",
-  "private": false,
+  "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "next build --turbopack",
     "dev": "cross-env NEXT_PUBLIC_API_URL=http://localhost:3001 next dev --turbopack",
     "dev:local": "next dev --turbopack",
     "lint": "next lint",
@@ -12,20 +12,13 @@
   },
   "dependencies": {
     "@hebo/ui": "workspace:*",
-    "@radix-ui/react-dialog": "*",
     "@radix-ui/react-slot": "*",
     "@stackframe/react": "*",
-    "buffer": "*",
-    "class-variance-authority": "*",
-    "clsx": "*",
     "lucide-react": "*",
     "next": "*",
+    "next-themes": "*",
     "react": "*",
-    "react-dom": "*",
-    "sonner": "*",
-    "tailwind-merge": "*",
-    "tw-animate-css": "*",
-    "vaul": "*"
+    "react-dom": "*"
   },
   "devDependencies": {
     "@eslint/eslintrc": "*",
@@ -33,8 +26,10 @@
     "@types/node": "*",
     "@types/react": "*",
     "@types/react-dom": "*",
+    "eslint": "*",
     "eslint-config-next": "*",
-    "serve": "*",
-    "tailwindcss": "*"
+    "seve": "*",
+    "tailwindcss": "*",
+    "typescript": "*"
   }
 }

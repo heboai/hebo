@@ -1,31 +1,32 @@
 {
   "name": "@hebo/ui",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "type": "module",
-  "sideEffects": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
     "lint": "eslint . --max-warnings 0"
   },
+  "dependencies": {
+    "class-variance-authority": "*",
+    "clsx": "*",
+    "sonner": "*",
+    "tailwind-merge": "*"
+  },
   "peerDependencies": {
+    "@radix-ui/react-slot": "*",
+    "lucide-react": "*",
+    "next-themes": "*",
     "react": "*",
     "react-dom": "*"
   },
   "devDependencies": {
-    "@types/react": "*",
-    "@types/react-dom": "*"
-  },
-  "dependencies": {
-    "@radix-ui/react-dialog": "^1.1.14",
-    "@radix-ui/react-slot": "^1.2.3",
-    "class-variance-authority": "*",
-    "clsx": "*",
+    "@radix-ui/react-slot": "*",
     "lucide-react": "*",
-    "sonner": "^2.0.5",
-    "tailwind-merge": "*",
-    "vaul": "^1.1.2",
-    "next-themes": "^0.4.6"
+    "next-themes": "*",
+    "react": "*",
+    "react-dom": "*",
+    "serve": "*"
   }
 }
