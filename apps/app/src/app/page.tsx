@@ -15,7 +15,7 @@ export default function Home() {
           {/* User greeting section - needs auth */}
           <StackProvider app={stackApp}>
             <p className="text-secondary-foreground text-center text-xl-sm md:text-xl">
-              Hi <UserName /> Evaluate your custom <br /> agent or existing (fine-tuned) LLM
+              Hi <UserName />, evaluate your custom <br /> agent or existing (fine-tuned) LLM
             </p>
           </StackProvider>
 
