@@ -6,7 +6,9 @@
   "scripts": {
     "build": "echo 'No build step needed - using Bun'",
     "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts"
+    "start": "bun src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "bun run src/db/migrate.ts"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
