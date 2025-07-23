@@ -191,7 +191,7 @@ importers:
         version: 3.3.1
     devDependencies:
       '@radix-ui/react-slot':
-        specifier: ^1.2.3
+        specifier: '*'
         version: 1.2.3(@types/react@19.0.0)(react@19.1.0)
       lucide-react:
         specifier: 0.525.0
