@@ -11,7 +11,7 @@
         "name": "next"
       }
     ],
-    "jsx": "preserve"
+    "jsx": "preserve",
   },
   "include": [
     "next-env.d.ts",
@@ -19,7 +19,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "../../packages/*/src/**/*"
-  ],
+   ],
   "exclude": [
     "node_modules"
   ]

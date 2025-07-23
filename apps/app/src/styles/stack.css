@@ -1,0 +1,31 @@
+
+.stack-scope {
+
+  /* Login: OAuth buttons */
+  .oauth-button,
+  [class*="oauth"],
+  [class*="OAuth"],
+  [class*="provider"] {
+    background-color: var(--color-background) !important;
+    color: var(--color-foreground) !important;
+    border: 1px solid var(--color-border) !important;
+  }
+  
+  .oauth-button:hover,
+  [class*="oauth"]:hover,
+  [class*="OAuth"]:hover,
+  [class*="provider"]:hover {
+    background-color: var(--color-secondary) !important;
+  }
+  
+  /* Login: Github Icon */
+  svg[viewBox="0 0 496 512"] path {
+    fill: var(--color-foreground) !important;
+  }
+
+  /* Login: E-Mail input field */
+  input {
+    background-color: var(--color-background) !important;
+  }
+
+}

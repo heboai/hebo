@@ -5,14 +5,17 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "src/globals.css",
+    "css": "src/styles/tailwind.css",
     "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
   },
   "aliases": {
-    "components": "@/shadcn",
-    "utils": "@/lib/utils",
-    "ui": "@/shadcn"
-  }
+    "components": "@hebo/ui/shadcn",
+    "utils": "@hebo/ui/lib/utils",
+    "ui": "@hebo/ui/shadcn/ui",
+    "lib": "@hebo/ui/lib",
+    "hooks": "@hebo/ui/hooks"
+  },
+  "iconLibrary": "lucide"
 } 
