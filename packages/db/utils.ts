@@ -58,11 +58,11 @@ export const isLocal: boolean = (() => {
 // ---------------------------------------------------------
 
 export type DbCredentials = {
-  host: string;
-  port: number;
-  user: string;
-  password: string;
-  database: string;
+  host: string
+  port: number
+  user: string
+  password: string
+  database: string
 }
 export type DbPath = {dataDir: string}
 export type LocalConfig = {
