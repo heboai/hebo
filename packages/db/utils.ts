@@ -1,6 +1,4 @@
 import { createRequire } from "module";
-import { fileURLToPath } from "url";
-import path from "path";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // ---------------------------------------------
@@ -55,36 +53,47 @@ export const isLocal: boolean = (() => {
   return true;
 })();
 
-/**
- * Selected Drizzle dialect based on the environment.
- */
-export const dialect: "sqlite" | "postgresql" = isLocal ? "sqlite" : "postgresql";
-
 // ---------------------------------------------------------
-// Unified helper that returns the credentials for Drizzle.
+// Unified helper that returns the config for Drizzle.
 // ---------------------------------------------------------
 
-export type LocalCredentials = { url: string };
-export type RemoteCredentials = {
+export type DbCredentials = {
   host: string;
   port: number;
   user: string;
   password: string;
   database: string;
+}
+export type DbPath = {dataDir: string}
+export type LocalConfig = {
+  driver: string,
+  dbCredentials: {
+    url: string
+  }
+};
+export type RemoteConfig = {
+  dbCredentials: DbCredentials
 };
 
-export function getDbCredentials(): LocalCredentials | RemoteCredentials {
+export function getDrizzleConfig(): LocalConfig | RemoteConfig {
+  const connectionConfig = getConnectionConfig();
+
   if (isLocal) {
-    // Prefer SST-provided SQLite string, else fall back to ENV, else a file.
-    const url =
-      safeRead(() => (heboDb as any).SQLiteConnectionString) ??
-      process.env.SQLITE_CONNECTION_STRING ??
-      (() => {
-        // Absolute path to hebo.db residing in the same package directory as this util.
-        const absPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "hebo.db");
-        return `file:${absPath}`;
-      })();
-    return { url };
+    return {driver: "pglite", dbCredentials: {url: (connectionConfig as DbPath).dataDir}} as LocalConfig;
+  }
+
+  return {
+    dbCredentials: {
+    ...(connectionConfig as DbCredentials)
+    }
+  } as RemoteConfig;
+}
+
+export function getConnectionConfig(): DbPath | DbCredentials {
+  if (isLocal) {
+    const dataDir = process.env.PGLITE_PATH ?? "./hebo.db"
+
+    return {dataDir}
   }
 
   // "Remote" – PostgreSQL.  Pull from SST first, then ENV.
@@ -94,5 +103,5 @@ export function getDbCredentials(): LocalCredentials | RemoteCredentials {
     user: safeRead(() => (heboDb as any).username) ?? process.env.PG_USER ?? "postgres",
     password: safeRead(() => (heboDb as any).password) ?? process.env.PG_PASSWORD ?? "",
     database: safeRead(() => (heboDb as any).database) ?? process.env.PG_DATABASE ?? "hebo",
-  } as RemoteCredentials;
-} 
+  }
+}

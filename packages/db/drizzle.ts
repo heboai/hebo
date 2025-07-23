@@ -1,41 +1,34 @@
-import { dialect, isLocal, getDbCredentials } from "./utils";
+import { isLocal, getConnectionConfig } from "./utils";
+import type { DbCredentials, DbPath } from "./utils"
 
 // Drizzle imports for both dialects
-import { drizzle as drizzlePostgres } from "drizzle-orm/node-postgres";
-import { drizzle as drizzleSqlite } from "drizzle-orm/libsql";
+import { drizzle as drizzlePostgres, NodePgDatabase } from "drizzle-orm/node-postgres";
+import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
 
 // Runtime clients
 import { Pool } from "pg";
-import { createClient } from "@libsql/client";
 
 // Schema imports
-import * as sqliteSchema from "./schema/sqlite";
-import * as postgresSchema from "./schema/postgresql";
-
-// Union type for the DB instance to provide proper TS hints
-import type { LibSQLDatabase } from "drizzle-orm/libsql";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import * as postgresSchema from "./schema";
 
 // Create an intersection type that contains the shared API surface of both drivers.
 // This removes the problematic union that prevented calling methods like `.select()`
 // while still preserving IntelliSense for the common Drizzle query-builder methods.
-type SqliteDb = LibSQLDatabase<typeof sqliteSchema>;
+type PgliteDb = PgliteDatabase<typeof postgresSchema>;
 type PostgresDb = NodePgDatabase<typeof postgresSchema>;
-export type UniversalDb = SqliteDb & PostgresDb;
+export type UniversalDb = PgliteDb & PostgresDb;
 
 // Immediately-invoked function to build the correct DB instance.
 const initDb = (): UniversalDb => {
   if (isLocal) {
-    // Local development – SQLite via libsql client
-    const { url } = getDbCredentials() as { url: string };
-    const client = createClient({ url });
-    return drizzleSqlite(client, { schema: sqliteSchema }) as unknown as UniversalDb;
+    // Local development – PGLite via pglite client
+    const { dataDir } = getConnectionConfig() as DbPath;
+
+    return drizzlePgLite({ schema: postgresSchema, connection: { dataDir } }) as unknown as UniversalDb;
   }
 
   // Remote/production – PostgreSQL via pg Pool
-  const { host, port, user, password, database } = getDbCredentials() as {
-    host: string; port: number; user: string; password: string; database: string;
-  };
+  const { host, port, user, password, database } = getConnectionConfig() as DbCredentials;
   const pool = new Pool({ host, port, user, password, database });
   return drizzlePostgres(pool, { schema: postgresSchema }) as unknown as UniversalDb;
 }
@@ -49,4 +42,4 @@ export const db = initDb();
 // type safety globally
 export const typedDb: UniversalDb = db;
 
-export { dialect, isLocal };
+export { isLocal };
