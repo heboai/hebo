@@ -30,6 +30,7 @@
     "eslint-config-next": "*",
     "seve": "*",
     "tailwindcss": "*",
+    "tw-animate-css": "*",
     "typescript": "*"
   }
 }

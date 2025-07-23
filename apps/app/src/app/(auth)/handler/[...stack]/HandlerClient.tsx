@@ -1,10 +1,12 @@
 "use client";
 
-import { StackHandler } from "@stackframe/react";
-import { stackApp, StackProvider } from "~/lib/auth";
 import { usePathname } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
-import { Loading } from "@hebo/ui/components/base/Loading";
+
+import { useEffect, useState } from "react";
+import { StackHandler } from "@stackframe/react";
+
+import { stackApp, StackProvider } from "~/lib/auth";
+
 
 export function HandlerClient() {
   const pathname = usePathname();
@@ -19,14 +21,12 @@ export function HandlerClient() {
 
   // During static generation, show loading
   if (!isClient) {
-    return <Loading size="md" variant="primary" />;
+    return <></>;
   }
-  
+
   return (
     <StackProvider app={stackApp}>
-      <Suspense fallback={<Loading size="md" variant="primary" />}>
-        <StackHandler app={stackApp} location={pathname} fullPage />
-      </Suspense>
+        <StackHandler app={stackApp} location={pathname} fullPage={true} />
     </StackProvider>
   );
 } 

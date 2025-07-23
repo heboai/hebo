@@ -1,17 +1,17 @@
-import { AccountSettings } from "@stackframe/react";
+import { AccountSettings, StackTheme } from "@stackframe/react";
+
 import { stackApp, StackProvider } from "~/lib/auth";
-import { Suspense } from "react";
-import { Loading } from "@hebo/ui/components/base/Loading";
 
 export default function Settings() {
     return (
-        <StackProvider app={stackApp}>
-
-            {/* <RequireAuth /> */}
-            <Suspense fallback={<Loading size="md" variant="primary" />}>
-                <AccountSettings fullPage={false} />
-            </Suspense>
-
-        </StackProvider>
+        <div className="w-full min-h-screen flex flex-col items-center p-4 md:py-12">
+            <div className="w-full max-h-xl max-w-3xl">
+                <StackProvider app={stackApp}>
+                    <StackTheme>
+                        <AccountSettings />
+                    </StackTheme>
+                </StackProvider>
+            </div>
+        </div>
     );
 }
