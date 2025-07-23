@@ -1,8 +1,10 @@
-import { MagicLinkSignIn, OAuthButtonGroup } from "@stackframe/react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookCheck, CreditCard, Ban } from "lucide-react";
+
+import { Ban, BookCheck, CreditCard } from "lucide-react";
+import { MagicLinkSignIn, OAuthButtonGroup } from "@stackframe/react";
 import { Button } from "@hebo/ui/components/Button";
+
 import { Logo } from "~/components/ui/Logo";
 import { stackApp, StackProvider, StackTheme } from "~/lib/auth";
 

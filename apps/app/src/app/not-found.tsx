@@ -2,11 +2,9 @@ import { Logo } from "~/components/ui/Logo";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col space-y-8 items-center justify-center text-center">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center text-center space-y-8 p-4">
       
-        <div className="mx-auto">
-          <Logo />
-        </div>
+        <Logo />
         
         <div className="space-y-4">
           <h1 className="text-4xl font-bold">404</h1>

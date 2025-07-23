@@ -132,5 +132,9 @@
     @apply text-foreground;
     @apply font-sans;
   }
+
+  a {
+    @apply text-indigo-700 underline decoration-dotted;
+  }
 }
 
