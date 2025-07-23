@@ -2,14 +2,14 @@
 
 import * as React from "react";
 import { Copy, Check } from "lucide-react";
-import { Button } from "./base/Button";
+import { Button } from "@hebo/ui/shadcn/ui/button";
 import { toast } from "sonner";
 
-interface CodeSnippetProps {
+interface CodeProps {
   c: string;
 }
 
-const CodeSnippetComponent = ({ c }: CodeSnippetProps) => {
+const CodeComponent = ({ c }: CodeProps) => {
   const [copied, setCopied] = React.useState(false);
 
   const copy = React.useCallback(() => {
@@ -42,4 +42,4 @@ const CodeSnippetComponent = ({ c }: CodeSnippetProps) => {
   );
 };
 
-export const CodeSnippet = CodeSnippetComponent;
+export const Code = CodeComponent;

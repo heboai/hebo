@@ -1,10 +1,10 @@
 import { MagicLinkSignIn, OAuthButtonGroup } from "@stackframe/react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookCheck } from "lucide-react";
-import { ActionButton } from "@hebo/ui/components/ActionButton";
+import { BookCheck, CreditCard, Ban } from "lucide-react";
+import { Button } from "@hebo/ui/components/Button";
 import { Logo } from "~/components/ui/Logo";
-import { stackApp, StackProvider } from "~/lib/auth";
+import { stackApp, StackProvider, StackTheme } from "~/lib/auth";
 
 
 export default function SignIn() {
@@ -27,24 +27,26 @@ export default function SignIn() {
               {/* Auth Components */}
               <StackProvider app={stackApp}>
                 <div className="space-y-4">
-                  <OAuthButtonGroup type="sign-in" />
+                  <StackTheme>
+                    <OAuthButtonGroup type="sign-in" />
+                  </StackTheme>
                   <div className="flex items-center gap-4">
                     <div className="flex-1 h-[1px] bg-gray-200" />
                     <span className="text-sm whitespace-nowrap">or continue with</span>
                     <div className="flex-1 h-[1px] bg-gray-200" />
                   </div>
-                  <MagicLinkSignIn />
+                  <StackTheme>
+                    <MagicLinkSignIn />
+                  </StackTheme>
                   <div className="w-full h-[1px] bg-gray-200 mt-4" />
                 </div>
               </StackProvider>
 
               <div className="flex items-center gap-2 mb-2 mt-4">
-                <Image
-                  src="/no-credit-card.svg"
-                  alt="No Credit Card Required"
-                  width={24}
-                  height={24}
-                />
+                <span className="flex items-center space-x-2">
+                  <CreditCard className="w-6 h-6" />
+                  <Ban className="w-6 h-6" />
+                </span>
                 <span className="text-base text-left">
                   No credit card required
                 </span>
@@ -61,7 +63,7 @@ export default function SignIn() {
       px-[clamp(1.5rem,12vw,15rem)]
       pt-[clamp(2rem,10vh,12.5rem)]
       pb-[clamp(2rem,8vh,10rem)]
-      bg-[var(--color-marketing-500)]
+      bg-blue-100
       relative
       ">
         <Link
@@ -70,10 +72,10 @@ export default function SignIn() {
           rel="noopener noreferrer"
           className="absolute top-6 right-6"
         >
-          <ActionButton 
-            variant="secondary" 
+          <Button 
             text="Docs" 
             icon={<BookCheck className="h-5 w-5 shrink-0" />}
+            className="bg-blue-200 hover:bg-blue-300 text-foreground"
           />
         </Link>
         <div className="max-w-[422px] space-y-6 text-left">

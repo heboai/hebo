@@ -1,9 +1,9 @@
-import { stackApp, StackProvider } from "~/lib/auth";
+import { stackApp, StackProvider, StackTheme } from "~/lib/auth";
 import { Logo } from "~/components/ui/Logo";
 import { UserButton } from "~/components/ui/UserButton";
 import { UserName } from "~/components/ui/UserName";
-import { ActionButton } from "@hebo/ui/components/ActionButton";
-import { CodeSnippet } from "@hebo/ui/components/CodeSnippet";
+import { Badge } from "@hebo/ui/components/Badge";
+import { Code } from "@hebo/ui/components/Code";
 
 export default function Home() {
   return (
@@ -14,17 +14,17 @@ export default function Home() {
 
           {/* User greeting section - needs auth */}
           <StackProvider app={stackApp}>
-            <p className="text-secondary-foreground text-center text-xl-sm md:text-xl">
-              Hi <UserName /> Evaluate your custom <br /> agent or existing (fine-tuned) LLM
-            </p>
+              <p className="text-secondary-foreground text-center text-xl-sm md:text-xl">
+                Hi <UserName /> Evaluate your custom <br /> agent or existing (fine-tuned) LLM
+              </p>
           </StackProvider>
 
           {/* the blue command bar */}
-          <CodeSnippet c="npm install -g hebo-eval@latest" />
+          <Code c="npm install -g hebo-eval@latest" />
 
           <div className="flex items-center gap-4">
             <div className="sm:flex hidden">
-              <ActionButton variant="tertiary" text="New" />
+              <Badge className="bg-green-600">New</Badge>
             </div>
             <p className="text-base text-[#666666] min-w-[333px]">
               Works with any LLM / agent framework,{" "}
@@ -44,7 +44,9 @@ export default function Home() {
       <footer className="w-full p-4">
         <div className="flex flex-col items-left gap-2">
           <StackProvider app={stackApp}>
-            <UserButton />
+            <StackTheme>
+              <UserButton />
+            </StackTheme>
           </StackProvider>
         </div>
       </footer>
