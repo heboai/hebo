@@ -8,9 +8,9 @@ import { authState } from "~/stores/auth";
 export function useAuth(redirect?: boolean) {
      if (isStackAuth) {
         if (redirect) {
-            stackApp.getUser({or: "redirect"})
+            stackApp.useUser({or: "redirect"})
         } else {
-            stackApp.getUser()
+            stackApp.useUser()
         }
     }
 
