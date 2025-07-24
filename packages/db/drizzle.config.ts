@@ -1,12 +1,11 @@
 import { defineConfig } from "drizzle-kit";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { dialect, getDbCredentials } from "./utils";
+import { getDrizzleConfig } from "./utils";
 
-const dbCredentials = getDbCredentials() as any;
+const dbConfig = getDrizzleConfig();
 
 export default defineConfig({
-    dialect,
-    schema: [`./schema/${dialect}/**/*.sql.ts`],
-    out: `./migrations/${dialect}`,
-    dbCredentials,
+    dialect: "postgresql",
+    schema: [`./schema`],
+    out: `./migrations`,
+    ...dbConfig
 });
