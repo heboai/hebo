@@ -64,7 +64,6 @@ export type DbCredentials = {
   password: string
   database: string
 }
-export type DbPath = {dataDir: string}
 export type LocalConfig = {
   driver: string,
   dbCredentials: {
@@ -79,21 +78,19 @@ export function getDrizzleConfig(): LocalConfig | RemoteConfig {
   const connectionConfig = getConnectionConfig();
 
   if (isLocal) {
-    return {driver: "pglite", dbCredentials: {url: (connectionConfig as DbPath).dataDir}} as LocalConfig;
+    return { driver: "pglite", dbCredentials: { url: (connectionConfig as string) } } as LocalConfig;
   }
 
   return {
     dbCredentials: {
-    ...(connectionConfig as DbCredentials)
+      ...(connectionConfig as DbCredentials)
     }
   } as RemoteConfig;
 }
 
-export function getConnectionConfig(): DbPath | DbCredentials {
+export function getConnectionConfig(): DbCredentials | string {
   if (isLocal) {
-    const dataDir = process.env.PGLITE_PATH ?? "./hebo.db"
-
-    return {dataDir}
+    return process.env.PGLITE_PATH ?? "./hebo.db"
   }
 
   // "Remote" – PostgreSQL.  Pull from SST first, then ENV.

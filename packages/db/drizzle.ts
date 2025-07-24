@@ -1,5 +1,5 @@
 import { isLocal, getConnectionConfig } from "./utils";
-import type { DbCredentials, DbPath } from "./utils"
+import type { DbCredentials } from "./utils"
 
 // Drizzle imports for both dialects
 import { drizzle as drizzlePostgres, NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -22,7 +22,7 @@ export type UniversalDb = PgliteDb & PostgresDb;
 const initDb = (): UniversalDb => {
   if (isLocal) {
     // Local development – PGLite via pglite client
-    const { dataDir } = getConnectionConfig() as DbPath;
+    const dataDir = getConnectionConfig() as string;
 
     return drizzlePgLite({ schema: postgresSchema, connection: { dataDir } }) as unknown as UniversalDb;
   }
