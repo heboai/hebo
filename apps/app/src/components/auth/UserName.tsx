@@ -3,7 +3,11 @@
 import { useAuth } from "~/hooks/auth";
 
 export function UserName() {
-  const auth = useAuth();
+  const { user } = useAuth();
 
-  return <span>{auth.user.name}</span>;
+  if (!user) {
+    return null;
+  }
+
+  return <span>{user.name}</span>;
 }

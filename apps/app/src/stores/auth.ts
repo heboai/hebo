@@ -12,11 +12,12 @@ export const authState = proxy<{
   user: {
     email: "not@authenticated",
     name: "Not Authenticated",
-
     get initials() {
+      if (!this.name) return "";
       return this.name
-        .split(" ")
-        .map((word) => word[0]?.toUpperCase())
+        .trim()
+        .split(/\s+/)
+        .map((word) => word[0]!.toUpperCase())
         .join("");
     },
   },

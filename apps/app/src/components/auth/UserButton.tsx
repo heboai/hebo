@@ -29,7 +29,7 @@ export function UserButton() {
 
   // No auth configured, show dummy
   return (
-    <div className="w-10 h-10 rounded-4xl flex justify-center items-center text-xs font-semibold bg-gray-200 ">
+    <div className="w-10 h-10 rounded-full flex justify-center items-center text-xs font-semibold bg-gray-200 ">
       {auth.user.initials}
     </div>
   );
