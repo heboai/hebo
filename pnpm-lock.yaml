@@ -38,31 +38,16 @@ importers:
 
   apps/api:
     dependencies:
-      '@electric-sql/pglite':
-        specifier: ^0.3.5
-        version: 0.3.5
       '@hebo/db':
         specifier: workspace:*
         version: link:../../packages/db
-      drizzle-orm:
-        specifier: ^0.44.2
-        version: 0.44.2(@electric-sql/pglite@0.3.5)(@libsql/client@0.15.9)(@types/pg@8.15.4)(pg@8.16.3)
       hono:
         specifier: ^4.8.4
         version: 4.8.4
-      pg:
-        specifier: ^8.16.3
-        version: 8.16.3
     devDependencies:
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.2
-      '@types/pg':
-        specifier: ^8.15.4
-        version: 8.15.4
-      drizzle-kit:
-        specifier: ^0.31.4
-        version: 0.31.4
       esbuild:
         specifier: ^0.21.4
         version: 0.21.5
@@ -170,7 +155,7 @@ importers:
         version: 0.15.9
       drizzle-orm:
         specifier: ^0.44.2
-        version: 0.44.2(@electric-sql/pglite@0.3.5)(@libsql/client@0.15.9)(@types/pg@8.15.4)(pg@8.16.3)
+        version: 0.44.2(@libsql/client@0.15.9)(@types/pg@8.15.4)(pg@8.16.3)
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -459,9 +444,6 @@ packages:
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
-
-  '@electric-sql/pglite@0.3.5':
-    resolution: {integrity: sha512-fhODErXJjOrnsJj5f1A8sH/Zj0INpLUbqOCiskufIUImUsFOBNHE6/FApY656Q2VSOp46wkXX3rvbBBO8O8Cag==}
 
   '@emnapi/core@1.4.3':
     resolution: {integrity: sha512-4m62DuCE07lw01soJwPiBGC0nAww0Q+RY70VZ+n49yDIO13yyinhbWCeNnaob0lakDtWQzSdtNWzJeOJt2ma+g==}
@@ -6062,8 +6044,6 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
-  '@electric-sql/pglite@0.3.5': {}
-
   '@emnapi/core@1.4.3':
     dependencies:
       '@emnapi/wasi-threads': 1.0.2
@@ -8654,9 +8634,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.2(@electric-sql/pglite@0.3.5)(@libsql/client@0.15.9)(@types/pg@8.15.4)(pg@8.16.3):
+  drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/pg@8.15.4)(pg@8.16.3):
     optionalDependencies:
-      '@electric-sql/pglite': 0.3.5
       '@libsql/client': 0.15.9
       '@types/pg': 8.15.4
       pg: 8.16.3
