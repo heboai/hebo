@@ -6,7 +6,7 @@ import { isStackAuth, stackApp } from "~/lib/auth";
 import { authState } from "~/stores/auth";
 
 export function useAuth(redirect?: boolean) {
-  isStackAuth ?? stackApp.useUser(redirect ? { or: "redirect" } : undefined);
+  isStackAuth ? stackApp.useUser(redirect ? { or: "redirect" } : undefined) : null;
 
   return useSnapshot(authState);
 }
