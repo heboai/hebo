@@ -4,24 +4,17 @@ import { useRouter } from "next/navigation";
 
 import { StackClientApp } from "@stackframe/react";
 
-/**
- * Custom useNavigate function for Next.js App Router
- */
-const useNavigate = () => {
-    const router = useRouter();
-    return (to: string) => router.push(to);
-};
+import { authState } from "~/stores/auth";
 
-/**
- * Global StackAuth instance for the browser.
- * Tokens are stored in cookies to maintain session state across requests.
- * This allows the application to be fully static without requiring server-side
- * session management or additional server helpers.
- */
-export const stackApp = new StackClientApp({
+export const isStackAuth = process.env.NEXT_PUBLIC_STACK_PROJECT_ID
+
+let stackApp: StackClientApp;
+
+if (isStackAuth) {
+  stackApp = new StackClientApp({
     projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
     publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
-    tokenStore: "cookie",
+    tokenStore: "cookie", // Client-side cookies
     urls: {
         signIn: "/signin",
         signUp: "/signin",
@@ -29,7 +22,22 @@ export const stackApp = new StackClientApp({
         home: "/",
     },
     redirectMethod: {
-        useNavigate,
+        /* Custom useNavigate function for Next.js App Router */
+        useNavigate: () => {
+            const router = useRouter();
+            return router.push;
+        },
     },
-});
+  });
 
+  stackApp.getUser()?.then(result => { 
+    authState.user.name = result?.displayName ?? "Not Authenticated";
+    authState.user.email = result?.primaryEmail ?? "not@authenticated";
+  })
+  
+} else {
+  authState.user.name = "Dummy User";
+  authState.user.email = "dummy@user";
+}
+
+export { stackApp };

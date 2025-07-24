@@ -2,8 +2,7 @@
 
 import { AccountSettings, MagicLinkSignIn, OAuthButtonGroup, StackProvider, StackTheme } from "@stackframe/react";
 
-import { stackApp } from "~/lib/auth";
-import { isStackAuth } from "~/lib/utils";
+import { isStackAuth, stackApp } from "~/lib/auth";
 
 export function AuthProvider({
   children,

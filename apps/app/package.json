@@ -18,7 +18,8 @@
     "next": "*",
     "next-themes": "*",
     "react": "*",
-    "react-dom": "*"
+    "react-dom": "*",
+    "valtio": "^2.1.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "*",

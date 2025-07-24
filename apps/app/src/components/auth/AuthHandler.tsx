@@ -26,7 +26,6 @@ export function AuthHandler() {
   return (
     <StackProvider app={stackApp}>
         <StackHandler app={stackApp} location={pathname} fullPage={true} />
-        {/* ToDo: Set global user store */}
     </StackProvider>
   );
 } 
