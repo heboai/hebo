@@ -7,32 +7,32 @@ import { Logo } from "~/components/ui/Logo";
 
 export default function Home() {
   return (
-      <div className="flex flex-col max-w-3xl mx-auto items-center justify-center text-center gap-4">
-        <Logo />
+    <div className="flex flex-col max-w-3xl mx-auto items-center justify-center text-center gap-4">
+      <Logo />
 
-        <AuthProvider>
-            <p className="max-w-sm text-xl">
-              Hi <UserName />! Evaluate your custom agent or existing (fine-tuned) LLM
-            </p>
-        </AuthProvider>
+      <AuthProvider>
+        <p className="max-w-sm text-xl">
+          Hi <UserName />! Evaluate your custom agent or existing (fine-tuned)
+          LLM
+        </p>
+      </AuthProvider>
 
-        <Code c="npm install -g hebo-eval@latest" />
+      <Code c="npm install -g hebo-eval@latest" />
 
-        <div className="flex shrink gap-2">
+      <div className="flex shrink gap-2">
+        <Badge className="hidden sm:flex bg-green-600">New</Badge>
 
-          <Badge className="hidden sm:flex bg-green-600">New</Badge>
-
-          <span className="text-base">
-            Works with any LLM / agent framework,{" "}
-            <a
-              href="https://docs.hebo.ai/hebo_eval"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              learn more
-            </a>
-          </span>
-        </div>
+        <span className="text-base">
+          Works with any LLM / agent framework,{" "}
+          <a
+            href="https://docs.hebo.ai/hebo_eval"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            learn more
+          </a>
+        </span>
       </div>
+    </div>
   );
 }

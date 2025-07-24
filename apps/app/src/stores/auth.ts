@@ -14,7 +14,10 @@ export const authState = proxy<{
     name: "Not Authenticated",
 
     get initials() {
-      return this.name.split(' ').map(word => word[0]?.toUpperCase()).join('');
+      return this.name
+        .split(" ")
+        .map((word) => word[0]?.toUpperCase())
+        .join("");
     },
-  }
+  },
 });

@@ -13,7 +13,7 @@ export function AuthHandler() {
 
   useEffect(() => {
     // Check if we're in a browser environment
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       setIsClient(true);
     }
   }, []);
@@ -26,8 +26,8 @@ export function AuthHandler() {
   return (
     <StackProvider app={stackApp}>
       <StackTheme>
-          <StackHandler app={stackApp} location={pathname} fullPage={true} />
+        <StackHandler app={stackApp} location={pathname} fullPage={true} />
       </StackTheme>
     </StackProvider>
   );
-} 
+}

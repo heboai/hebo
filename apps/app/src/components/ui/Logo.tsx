@@ -1,12 +1,8 @@
 import Image from "next/image";
 
-interface LogoProps {
-  className?: string;
-}
-
-export const Logo = ({ className = "" }: LogoProps) => {
+export function Logo() {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className="flex items-center gap-2">
       <Image
         src="/hebo-icon.png"
         alt="Hebo AI Logo"
@@ -17,4 +13,4 @@ export const Logo = ({ className = "" }: LogoProps) => {
       <span className="text-lg font-semibold">hebo.ai</span>
     </div>
   );
-}; 
+}
