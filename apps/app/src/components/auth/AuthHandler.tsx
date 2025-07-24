@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 
 import { useEffect, useState } from "react";
-import { StackHandler, StackProvider } from "@stackframe/react";
+import { StackHandler, StackProvider, StackTheme } from "@stackframe/react";
 
 import { stackApp } from "~/lib/auth";
 
@@ -25,7 +25,9 @@ export function AuthHandler() {
 
   return (
     <StackProvider app={stackApp}>
-        <StackHandler app={stackApp} location={pathname} fullPage={true} />
+      <StackTheme>
+          <StackHandler app={stackApp} location={pathname} fullPage={true} />
+      </StackTheme>
     </StackProvider>
   );
 } 

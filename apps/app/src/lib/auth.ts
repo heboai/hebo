@@ -8,7 +8,7 @@ import { authState } from "~/stores/auth";
 
 export const isStackAuth = process.env.NEXT_PUBLIC_STACK_PROJECT_ID
 
-let stackApp: StackClientApp;
+let stackApp: StackClientApp<true, string>;
 
 if (isStackAuth) {
   stackApp = new StackClientApp({
@@ -22,18 +22,17 @@ if (isStackAuth) {
         home: "/",
     },
     redirectMethod: {
-        /* Custom useNavigate function for Next.js App Router */
-        useNavigate: () => {
-            const router = useRouter();
-            return router.push;
-        },
+        // Custom useNavigate function for Next.js App Router
+        useNavigate: () => { return useRouter().push; },
     },
   });
 
-  stackApp.getUser()?.then(result => { 
-    authState.user.name = result?.displayName ?? "Not Authenticated";
-    authState.user.email = result?.primaryEmail ?? "not@authenticated";
-  })
+  if (typeof window !== 'undefined') {
+    stackApp.getUser()?.then(result => { 
+      authState.user.name = result?.displayName ?? "Not Authenticated";
+      authState.user.email = result?.primaryEmail ?? "not@authenticated";
+    })
+  }
   
 } else {
   authState.user.name = "Dummy User";

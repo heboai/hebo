@@ -19,12 +19,12 @@ export function AuthProvider({
         </StackProvider>
       );
 
-    } else {
-      {/* Dummy component */}
-      return (
-        <div>{children}</div>
-      );
     }
+
+    // No auth configured, show dummy
+    return (
+      <div>{children}</div>
+    );
 
 }
 

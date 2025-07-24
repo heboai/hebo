@@ -1,14 +1,13 @@
 "use client";
 
-import { useSnapshot } from "valtio";
-import { authState } from "~/stores/auth";
+import { useAuth } from "~/hooks/auth";
 
 export function UserName() {
 
-  const snap = useSnapshot(authState);
+  const auth = useAuth();
 
   return (
-    <span>{snap.user.name}</span>
+    <span>{auth.user.name}</span>
   );
 
 }
