@@ -1,20 +1,20 @@
 import { Badge } from "@hebo/ui/components/Badge";
 import { Code } from "@hebo/ui/components/Code";
 
+import { AuthProvider } from "~/components/auth/AuthProvider";
+import { UserName } from "~/components/auth/UserName";
 import { Logo } from "~/components/ui/Logo";
-import { UserName } from "~/components/ui/UserName";
-import { stackApp, StackProvider } from "~/lib/auth";
 
 export default function Home() {
   return (
       <div className="flex flex-col max-w-3xl mx-auto items-center justify-center text-center gap-4">
         <Logo />
 
-        <StackProvider app={stackApp}>
+        <AuthProvider>
             <p className="max-w-sm text-xl">
               Hi <UserName />! Evaluate your custom agent or existing (fine-tuned) LLM
             </p>
-        </StackProvider>
+        </AuthProvider>
 
         <Code c="npm install -g hebo-eval@latest" />
 

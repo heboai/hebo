@@ -1,7 +1,8 @@
 "use client"
 
-import { StackClientApp, StackProvider, StackTheme } from "@stackframe/react";
 import { useRouter } from "next/navigation";
+
+import { StackClientApp } from "@stackframe/react";
 
 /**
  * Custom useNavigate function for Next.js App Router
@@ -32,4 +33,3 @@ export const stackApp = new StackClientApp({
     },
 });
 
-export { StackProvider, StackTheme };

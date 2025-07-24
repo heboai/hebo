@@ -1,5 +1,5 @@
-import { UserButton } from "~/components/ui/UserButton";
-import { stackApp, StackProvider, StackTheme } from "~/lib/auth";
+import { AuthProvider } from "~/components/auth/AuthProvider";
+import { UserButton } from "~/components/auth/UserButton";
 
 export default function RootLayout({
   children,
@@ -12,11 +12,9 @@ export default function RootLayout({
         {children}
       </main>
       <footer className="w-full flex flex-col items-left gap-2">
-        <StackProvider app={stackApp}>
-          <StackTheme>
-            <UserButton />
-          </StackTheme>
-        </StackProvider>
+        <AuthProvider>
+          <UserButton />
+        </AuthProvider>
       </footer>
     </div>
   );

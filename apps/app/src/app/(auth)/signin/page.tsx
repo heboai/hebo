@@ -1,11 +1,10 @@
 import { Ban, BookOpen, CreditCard } from "lucide-react";
-import { MagicLinkSignIn, OAuthButtonGroup } from "@stackframe/react";
 
 import { Badge } from "@hebo/ui/components/Badge";
 import { Button } from "@hebo/ui/components/Button";
 
+import { AuthProvider, MagicLinkSignIn, OAuthButtonGroup } from "~/components/auth/AuthProvider";
 import { Logo } from "~/components/ui/Logo";
-import { stackApp, StackProvider, StackTheme } from "~/lib/auth";
 
 export default function SignIn() {
   return (
@@ -55,19 +54,17 @@ export default function SignIn() {
             The fastest way to build & scale agents
           </p>
 
-          <StackProvider app={stackApp}>
-            <StackTheme>
-              <div className="w-full space-y-4">
-                <OAuthButtonGroup type="sign-in" />
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 h-[1px] bg-gray-300" />
-                  <span className="text-sm whitespace-nowrap">or</span>
-                  <div className="flex-1 h-[1px] bg-gray-300" />
-                </div>
-                <MagicLinkSignIn />
+          <AuthProvider>
+            <div className="w-full space-y-4">
+              <OAuthButtonGroup type="sign-in" />
+              <div className="flex items-center gap-4">
+                <div className="flex-1 h-[1px] bg-gray-300" />
+                <span className="text-sm whitespace-nowrap">or</span>
+                <div className="flex-1 h-[1px] bg-gray-300" />
               </div>
-            </StackTheme>
-          </StackProvider>
+              <MagicLinkSignIn />
+            </div>
+          </AuthProvider>
 
           <div className="flex items-center gap-2">
             <span className="relative">

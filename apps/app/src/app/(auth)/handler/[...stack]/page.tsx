@@ -1,4 +1,4 @@
-import { HandlerClient } from "./HandlerClient";
+import { AuthHandler } from "~/components/auth/AuthHandler";
 
 // Generate static params for StackFrame handler routes
 export function generateStaticParams() {
@@ -17,5 +17,5 @@ export function generateStaticParams() {
 }
 
 export default function Handler() {
-  return <HandlerClient />;
+  return <AuthHandler />;
 }
