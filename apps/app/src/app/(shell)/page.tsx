@@ -12,7 +12,7 @@ export default function Home() {
 
         <StackProvider app={stackApp}>
             <p className="max-w-sm text-xl">
-              Hi <UserName /> Evaluate your custom agent or existing (fine-tuned) LLM
+              Hi <UserName />! Evaluate your custom agent or existing (fine-tuned) LLM
             </p>
         </StackProvider>
 

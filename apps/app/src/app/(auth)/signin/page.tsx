@@ -9,10 +9,10 @@ import { stackApp, StackProvider, StackTheme } from "~/lib/auth";
 
 export default function SignIn() {
   return (
-    <div className="min-h-screen flex flex-row">
+    <div className="min-h-screen relative">
 
       {/* Marketing Message */}
-      <aside className="hidden lg:block max-w-lg w-full  bg-blue-100 bg-[url(/login-bg.png)] bg-bottom-left bg-no-repeat">
+      <aside className="fixed w-128 min-h-screen bg-blue-100 bg-[url(/login-bg.png)] bg-bottom-left bg-no-repeat transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full">
 
         <Button 
           asChild
@@ -46,7 +46,7 @@ export default function SignIn() {
       </aside>
 
       {/* Login Components */}
-      <main className="w-full min-h-screen flex flex-1 items-center justify-center">
+      <main className="lg:ml-128 min-h-screen flex flex-1 items-center justify-center transition-all duration-300">
     
         <div className="w-xs flex flex-col gap-4 items-center">
 

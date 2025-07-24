@@ -26,7 +26,6 @@
     "lucide-react": "*",
     "next-themes": "*",
     "react": "*",
-    "react-dom": "*",
-    "serve": "*"
+    "react-dom": "*"
   }
 }

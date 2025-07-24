@@ -8,7 +8,7 @@ export const Logo = ({ className = "" }: LogoProps) => {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <Image
-        src="/hebo-icon.svg"
+        src="/hebo-icon.png"
         alt="Hebo AI Logo"
         width={32}
         height={32}

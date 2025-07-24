@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     url: 'https://hebo.cloud',
     siteName: 'Hebo Cloud',
     type: 'website',
+  },
+  icons: {
+    icon: "hebo-icon.png",
   }
 };
 
