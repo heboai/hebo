@@ -4,6 +4,7 @@ export interface User {
   email?: string;
   name?: string;
   initials?: string;
+  avatar?: string;
 }
 
 export const authState = proxy<{
@@ -20,5 +21,6 @@ export const authState = proxy<{
         .map((word) => word[0]!.toUpperCase())
         .join("");
     },
+    avatar: "about:blank",
   },
 });

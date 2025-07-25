@@ -1,3 +1,7 @@
+import Link from "next/link";
+
+import { Logo } from "~/components/ui/Logo";
+
 import {
   Sidebar,
   SidebarContent,
@@ -29,7 +33,11 @@ export default function ShellLayout({
         }
       >
         <Sidebar collapsible="icon">
-          <SidebarHeader />
+        <SidebarHeader>
+          <Link href="/">
+            <Logo />
+          </Link>
+        </SidebarHeader>
           <SidebarContent>
             <SidebarGroup />
             <SidebarGroup />

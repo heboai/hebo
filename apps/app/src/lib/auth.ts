@@ -33,12 +33,13 @@ if (isStackAuth) {
     stackApp.getUser()?.then((result) => {
       authState.user.name = result?.displayName ?? "Not Authenticated";
       authState.user.email = result?.primaryEmail ?? "not@authenticated";
+      authState.user.avatar = result?.profileImageUrl ?? "about:blank";
     });
   }
-  
 } else {
   authState.user.name = "Dummy User";
   authState.user.email = "dummy@user";
+  authState.user.avatar = "about:blank";
 }
 
 export { isStackAuth, stackApp };

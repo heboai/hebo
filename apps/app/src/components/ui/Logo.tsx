@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function Logo() {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 overflow-hidden">
       <Image
         src="/hebo-icon.png"
         alt="Hebo AI Logo"
