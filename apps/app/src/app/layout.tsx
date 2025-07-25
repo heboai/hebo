@@ -18,15 +18,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Hebo Cloud',
-    template: '%s | Hebo Cloud'
+    default: "Hebo Cloud",
+    template: "%s | Hebo Cloud",
   },
-  description: 'The fastest way to build & scale agents',
+  description: "The fastest way to build & scale agents",
   openGraph: {
-    url: 'https://hebo.cloud',
-    siteName: 'Hebo Cloud',
-    type: 'website',
-  }
+    url: "https://hebo.cloud",
+    siteName: "Hebo Cloud",
+    type: "website",
+  },
+  icons: {
+    icon: "/hebo-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -36,10 +39,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <div className="min-h-screen">
-          {children}
-        </div>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <div className="min-h-screen">{children}</div>
       </body>
     </html>
   );

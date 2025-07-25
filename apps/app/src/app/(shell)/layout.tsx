@@ -1,23 +1,93 @@
-import { UserButton } from "~/components/ui/UserButton";
-import { stackApp, StackProvider, StackTheme } from "~/lib/auth";
+import Link from "next/link";
 
-export default function RootLayout({
+// @ts-expect-error experimental react feature
+import { unstable_ViewTransition as ViewTransition } from "react";
+
+import { BookOpen, ExternalLink } from "lucide-react";
+
+import { Logo } from "~/components/ui/Logo";
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+} from "@hebo/ui/components/Sidebar";
+
+import { AuthProvider } from "~/components/auth/AuthProvider";
+import { UserButton } from "~/components/auth/UserButton";
+
+import { getCookie } from "~/lib/utils";
+
+export default function ShellLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // This only works properly for build not for dev
+  const defaultOpen = getCookie("sidebar_state") === "true";
+
   return (
-    <div className="min-h-screen flex flex-col p-4 gap-4">
-      <main className="w-full flex flex-1">
-        {children}
-      </main>
-      <footer className="w-full flex flex-col items-left gap-2">
-        <StackProvider app={stackApp}>
-          <StackTheme>
-            <UserButton />
-          </StackTheme>
-        </StackProvider>
-      </footer>
+    <div className="min-h-screen flex flex-col gap-4">
+      <SidebarProvider
+        defaultOpen={defaultOpen}
+        style={
+          {
+            "--sidebar-width": "12rem",
+            "--sidebar-width-mobile": "12rem",
+            "--sidebar-width-icon": "4rem",
+          } as React.CSSProperties
+        }
+      >
+        <Sidebar collapsible="icon">
+          <div className="w-full h-full flex flex-col p-2">
+            <SidebarHeader>
+              <Link href="/">
+                <Logo />
+              </Link>
+            </SidebarHeader>
+            <SidebarContent />
+            <SidebarFooter>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Documentation &#x21D7;">
+                    <a
+                      href="https://docs.hebo.ai"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <BookOpen />
+                      Documentation
+                    </a>
+                  </SidebarMenuButton>
+                  <SidebarMenuBadge>
+                    <ExternalLink size={12} />
+                  </SidebarMenuBadge>
+                </SidebarMenuItem>
+              </SidebarMenu>
+              <SidebarSeparator className="mx-0" />
+              <AuthProvider>
+                <UserButton />
+              </AuthProvider>
+            </SidebarFooter>
+            <SidebarRail />
+          </div>
+        </Sidebar>
+
+        <main className="w-full flex flex-1 p-2">
+          <SidebarTrigger />
+
+          <ViewTransition default="fade-in">{children}</ViewTransition>
+        </main>
+      </SidebarProvider>
     </div>
   );
 }

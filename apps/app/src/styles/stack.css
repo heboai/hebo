@@ -24,7 +24,8 @@
   }
 
   /* Login: E-Mail input field */
-  input {
+  #email,
+  [data-input-otp-container="true"] div div {
     background-color: var(--color-background) !important;
   }
 

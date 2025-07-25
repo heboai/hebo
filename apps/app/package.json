@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "next build --turbopack",
+    "build": "next build",
     "dev": "cross-env NEXT_PUBLIC_API_URL=http://localhost:3001 next dev --turbopack",
     "dev:local": "next dev --turbopack",
     "lint": "next lint",
@@ -12,23 +12,22 @@
   },
   "dependencies": {
     "@hebo/ui": "workspace:*",
-    "@radix-ui/react-slot": "*",
-    "@stackframe/react": "*",
-    "lucide-react": "*",
-    "next": "*",
-    "next-themes": "*",
-    "react": "*",
-    "react-dom": "*"
+    "@stackframe/react": "^2.8.25",
+    "lucide-react": "^0.525.0",
+    "next": "~15.4.4",
+    "react": "^19.1",
+    "react-dom": "^19.1",
+    "valtio": "^2.1.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "*",
     "@tailwindcss/postcss": "*",
     "@types/node": "*",
-    "@types/react": "*",
-    "@types/react-dom": "*",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "eslint": "*",
     "eslint-config-next": "*",
-    "seve": "*",
+    "serve": "*",
     "tailwindcss": "*",
     "tw-animate-css": "*",
     "typescript": "*"

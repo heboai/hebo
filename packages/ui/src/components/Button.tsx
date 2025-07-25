@@ -1,1 +1,1 @@
-export { Button } from "@hebo/ui/shadcn/ui/button";;
+export { Button } from "@hebo/ui/shadcn/ui/button";

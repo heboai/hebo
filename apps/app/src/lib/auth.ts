@@ -1,35 +1,45 @@
-"use client"
+"use client";
 
-import { StackClientApp, StackProvider, StackTheme } from "@stackframe/react";
 import { useRouter } from "next/navigation";
 
-/**
- * Custom useNavigate function for Next.js App Router
- */
-const useNavigate = () => {
-    const router = useRouter();
-    return (to: string) => router.push(to);
-};
+import { StackClientApp } from "@stackframe/react";
 
-/**
- * Global StackAuth instance for the browser.
- * Tokens are stored in cookies to maintain session state across requests.
- * This allows the application to be fully static without requiring server-side
- * session management or additional server helpers.
- */
-export const stackApp = new StackClientApp({
+import { authState } from "~/stores/auth";
+
+const isStackAuth = process.env.NEXT_PUBLIC_STACK_PROJECT_ID;
+
+let stackApp: StackClientApp<true, string>;
+
+if (isStackAuth) {
+  stackApp = new StackClientApp({
     projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
     publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
-    tokenStore: "cookie",
+    tokenStore: "cookie", // Client-side cookies
     urls: {
-        signIn: "/signin",
-        signUp: "/signin",
-        accountSettings: "/settings",
-        home: "/",
+      signIn: "/signin",
+      signUp: "/signin",
+      accountSettings: "/settings",
+      home: "/",
     },
     redirectMethod: {
-        useNavigate,
+      // Custom useNavigate function for Next.js App Router
+      useNavigate: () => {
+        return useRouter().push;
+      },
     },
-});
+  });
 
-export { StackProvider, StackTheme };
+  if (typeof window !== "undefined") {
+    stackApp.getUser()?.then((result) => {
+      authState.user.name = result?.displayName ?? "Not Authenticated";
+      authState.user.email = result?.primaryEmail ?? "not@authenticated";
+      authState.user.avatar = result?.profileImageUrl ?? "about:blank";
+    });
+  }
+} else {
+  authState.user.name = "Dummy User";
+  authState.user.email = "dummy@user";
+  authState.user.avatar = "about:blank";
+}
+
+export { isStackAuth, stackApp };
