@@ -4,17 +4,18 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "build": "echo 'No build step needed - using Bun'",
+    "build": "echo 'Build completed' > .build-complete",
     "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts"
+    "start": "bun src/index.ts",
+    "clean": "rimraf .next .turbo node_modules dist .build-complete"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "esbuild": "^0.21.4",
-    "npm-run-all2": "^6.2.0"
+    "@types/node": "*",
+    "esbuild": "*",
+    "npm-run-all2": "*"
   },
   "dependencies": {
-    "hono": "^4.8.4",
+    "hono": "*",
     "@hebo/db": "workspace:*"
   }
 }

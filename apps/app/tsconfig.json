@@ -3,14 +3,15 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "~/*": [ "./src/*" ],
+      "@hebo/ui/*": ["../../packages/ui/src/*"]
     },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "jsx": "preserve",
   },
   "include": [
     "next-env.d.ts",
@@ -18,6 +19,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "../../packages/*/src/**/*"
-  ],
-  "exclude": ["node_modules"]
-} 
+   ],
+  "exclude": [
+    "node_modules"
+  ]
+}

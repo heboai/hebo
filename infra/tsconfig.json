@@ -1,16 +1,11 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "esnext",
-    "target": "es2020",
     "moduleResolution": "node",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
     "baseUrl": "."
   },
   "include": ["**/*.ts", "../apps/api/api.ts", "../sst.config.ts"],

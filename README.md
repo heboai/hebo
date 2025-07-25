@@ -63,8 +63,8 @@ pnpm dev
 ```
 
 ```bash
-# Start only the app in dev (FE-only)
-pnpm --filter @hebo/app run dev:local
+# Start only the app in dev
+pnpm --filter @hebo/app run dev
 ```
 
 ### Run modes

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "../../apps/app/src/styles/tailwind.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@hebo/ui/shadcn",
+    "utils": "@hebo/ui/lib/utils",
+    "ui": "@hebo/ui/shadcn/ui",
+    "lib": "@hebo/ui/lib",
+    "hooks": "@hebo/ui/hooks"
+  },
+  "iconLibrary": "lucide"
+} 

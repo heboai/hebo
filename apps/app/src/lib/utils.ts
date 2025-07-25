@@ -1,6 +1,10 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+export const isDev = process.env.NODE_ENV === "development";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+export function getCookie(name: string): string | undefined {
+  if (typeof document !== "undefined") {
+    const value = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(name + "="));
+    return value?.split("=")[1];
+  }
 }
