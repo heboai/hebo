@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "~/hooks/auth";
 import { isStackAuth } from "~/lib/auth";
 
-import { BookOpen, ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
 
 import {
   Avatar,
@@ -53,7 +53,7 @@ export function UserButton() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) m-2 min-w-56 rounded-lg"
             side="bottom"
             align="end"
             sideOffset={4}
@@ -72,30 +72,15 @@ export function UserButton() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              {isStackAuth &&
+            {isStackAuth && (
+              <DropdownMenuGroup>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/settings">
                     <Settings />
                     Settings
                   </Link>
                 </DropdownMenuItem>
-              }
-              <DropdownMenuItem asChild>
-                <a
-                  href="https://docs.hebo.ai"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <BookOpen />
-                  Documentation
-                </a>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            
-            {isStackAuth &&
-              <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/handler/sign-out">
@@ -103,8 +88,8 @@ export function UserButton() {
                     Log out
                   </Link>
                 </DropdownMenuItem>
-              </>
-            }
+              </DropdownMenuGroup>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

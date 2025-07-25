@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@hebo/ui"],
   experimental: {
     esmExternals: true,
+    // Enable page transitions via react
+    viewTransition: true,
   },
   // Ensure static generation works properly
   trailingSlash: false,
