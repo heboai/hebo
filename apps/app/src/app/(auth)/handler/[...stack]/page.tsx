@@ -6,6 +6,7 @@ export function generateStaticParams() {
     { stack: ["oauth-callback"] },
     { stack: ["magic-link-callback"] },
     { stack: ["sign-out"] },
+    { stack: ["error"] },
   ];
 }
 
