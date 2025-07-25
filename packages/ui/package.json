@@ -6,7 +6,8 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "clean": "rimraf .turbo node_modules"
   },
   "dependencies": {
     "class-variance-authority": "0.7.1",
@@ -22,8 +23,8 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
     "lucide-react": "^0.525.0",
-    "react": "19.1",
-    "react-dom": "19.1"
+    "react": "^19.1",
+    "react-dom": "^19.1"
   },
   "devDependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
@@ -31,8 +32,10 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@types/react": "^19.1",
+    "@types/react-dom": "^19.1",
     "lucide-react": "^0.525.0",
-    "react": "19.1",
-    "react-dom": "19.1"
+    "react": "^19.1",
+    "react-dom": "^19.1"
   }
 }
