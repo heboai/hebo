@@ -1,4 +1,5 @@
-import { AuthProvider, AccountSettings } from "~/components/auth/AuthProvider";
+import { AccountSettings } from "~/components/auth/AccountSettings";
+import { AuthProvider } from "~/components/auth/AuthProvider";
 
 export default function Settings() {
   return (

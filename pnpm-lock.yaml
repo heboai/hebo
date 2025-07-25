@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@stackframe/react': 2.8.21
+  '@stackframe/react': 2.8.25
   '@types/react': 19.0.0
   '@types/react-dom': 19.0.0
   '@typescript-eslint/eslint-plugin': 8.10.0
@@ -102,8 +102,8 @@ importers:
         specifier: '*'
         version: 1.2.3(@types/react@19.0.0)(react@19.1.0)
       '@stackframe/react':
-        specifier: 2.8.21
-        version: 2.8.21(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)
+        specifier: 2.8.25
+        version: 2.8.25(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)
       lucide-react:
         specifier: 0.525.0
         version: 0.525.0(react@19.1.0)
@@ -2011,8 +2011,8 @@ packages:
     resolution: {integrity: sha512-IHk53BVw6MPMi2Gsn+hCng8rFA3ZmR3Rk7GllxDUW9qFJl/hiSvskn7XldkECapQVkIg/1dHpMAxI9xSTaLLSA==}
     engines: {node: '>=14.0.0'}
 
-  '@stackframe/react@2.8.21':
-    resolution: {integrity: sha512-ObYIcJnreISAaLeprssbPUt916jpdjvznoSZjHXqexnnOWzEdsR8WVU94ZuzwdfGTB6ryS1ibb3bqJ+qpDHEtA==}
+  '@stackframe/react@2.8.25':
+    resolution: {integrity: sha512-4dcwL5Ff4fyx1g9jQvaHOLRfw/haaHT/qqmO+VEXzYKC5XSe78q8vnf4i9X6+DrxdW+F1IZVjNaamrtfeDFiQg==}
     peerDependencies:
       '@types/react': 19.0.0
       react: 19.1.0
@@ -2020,8 +2020,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@stackframe/stack-shared@2.8.21':
-    resolution: {integrity: sha512-9i2Fq9LzAf1y3rdBMLb1NwxKxBpWXxQU3OW3JfiUkA8m1PoqS8Xqls5xD5PFpTBm7Lbi/h5hzKHSiSucgwniVg==}
+  '@stackframe/stack-shared@2.8.25':
+    resolution: {integrity: sha512-4PGV00jgBm05Hq4xMv3+yam35uDDcAg7nTdXO16ZWCYCDDlb+xxNOY+L89bV9hjLqK7DGUr7Qufe8XEhIeJy2g==}
     peerDependencies:
       '@types/react': 19.0.0
       '@types/react-dom': 19.0.0
@@ -2038,8 +2038,8 @@ packages:
       yup:
         optional: true
 
-  '@stackframe/stack-ui@2.8.21':
-    resolution: {integrity: sha512-EtI7dFYIw/K0SdAM6XCnH1gmpJUQzqxxVQ1t1Mc7eB8UDTuxawhCsTWVTm9Ae+vrfbRFu+iMDwc7aKsjfuBrEg==}
+  '@stackframe/stack-ui@2.8.25':
+    resolution: {integrity: sha512-vR0Bnlnc96UqrWpJszRbqUSDyqRkZrJUlfiTMVrZRKh8IA079J9oUrGnUNpKOyPuuY9uLHwIGnAm1sX8Wx5VCw==}
     peerDependencies:
       '@types/react': 19.0.0
       '@types/react-dom': 19.0.0
@@ -7008,13 +7008,13 @@ snapshots:
       '@smithy/types': 2.12.0
       tslib: 2.8.1
 
-  '@stackframe/react@2.8.21(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)':
+  '@stackframe/react@2.8.25(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.1.11)':
     dependencies:
       '@hookform/resolvers': 3.10.0(react-hook-form@7.59.0(react@19.1.0))
       '@oslojs/otp': 1.1.0
       '@simplewebauthn/browser': 11.0.0
-      '@stackframe/stack-shared': 2.8.21(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)
-      '@stackframe/stack-ui': 2.8.21(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)
+      '@stackframe/stack-shared': 2.8.25(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)
+      '@stackframe/stack-ui': 2.8.25(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)
       '@tanstack/react-table': 8.21.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       browser-image-compression: 2.0.2
       color: 4.2.3
@@ -7039,7 +7039,7 @@ snapshots:
       - react-dom
       - tailwindcss
 
-  '@stackframe/stack-shared@2.8.21(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)':
+  '@stackframe/stack-shared@2.8.25(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)':
     dependencies:
       '@simplewebauthn/browser': 11.0.0
       async-mutex: 0.5.0
@@ -7061,7 +7061,7 @@ snapshots:
     transitivePeerDependencies:
       - buffer
 
-  '@stackframe/stack-ui@2.8.21(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)':
+  '@stackframe/stack-ui@2.8.25(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)':
     dependencies:
       '@radix-ui/react-accordion': 1.2.11(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-alert-dialog': 1.1.14(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -7092,7 +7092,7 @@ snapshots:
       '@radix-ui/react-toggle': 1.1.9(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-toggle-group': 1.1.10(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-tooltip': 1.2.7(@types/react-dom@19.0.0)(@types/react@19.0.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@stackframe/stack-shared': 2.8.21(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)
+      '@stackframe/stack-shared': 2.8.25(@types/react-dom@19.0.0)(@types/react@19.0.0)(buffer@6.0.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(yup@1.6.1)
       '@tanstack/react-table': 8.21.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       class-variance-authority: 0.7.1
       clsx: 2.1.1

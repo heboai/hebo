@@ -3,11 +3,9 @@ import { Ban, BookOpen, CreditCard } from "lucide-react";
 import { Badge } from "@hebo/ui/components/Badge";
 import { Button } from "@hebo/ui/components/Button";
 
-import {
-  AuthProvider,
-  MagicLinkSignIn,
-  OAuthButtonGroup,
-} from "~/components/auth/AuthProvider";
+import { MagicLinkSignIn } from "~/components/auth/MagicLinkSignIn";
+import { OAuthSignIn } from "~/components/auth/OAuthSignIn";
+import { AuthProvider } from "~/components/auth/AuthProvider";
 import { Logo } from "~/components/ui/Logo";
 
 export default function SignIn() {
@@ -69,7 +67,7 @@ export default function SignIn() {
 
           <AuthProvider>
             <div className="w-full space-y-4">
-              <OAuthButtonGroup type="sign-in" />
+              <OAuthSignIn type="sign-in" />
               <div className="flex items-center gap-4">
                 <div className="flex-1 h-[1px] bg-gray-300" />
                 <span className="text-sm whitespace-nowrap">or</span>

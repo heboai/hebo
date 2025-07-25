@@ -44,7 +44,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@stackframe/react": "2.8.21",
+      "@stackframe/react": "2.8.25",
       "@types/react": "19.0.0",
       "@types/react-dom": "19.0.0",
       "@typescript-eslint/eslint-plugin": "8.10.0",
