@@ -5,7 +5,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
 /* === Default Tailwind === */
 @theme inline {
   --color-background: var(--background);
@@ -72,7 +71,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: var(--color-gray-50);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -116,11 +115,10 @@
   --sidebar-ring : oklch(0.556 0 0);
 }
 
-
 /* === Hebo Styles === */
 @theme {
   --color-background-gradient: linear-gradient(0deg, #F8F9D2 0%, #F5F7FA 100%);
-  --color-foreground: #333333;
+  --color-foreground: var(--color-neutral-800);
 }
 
 @layer base {
@@ -137,4 +135,3 @@
     @apply text-indigo-700 underline decoration-dotted;
   }
 }
-

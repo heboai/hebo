@@ -9,23 +9,27 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "class-variance-authority": "*",
-    "clsx": "*",
-    "sonner": "*",
-    "tailwind-merge": "*"
+    "class-variance-authority": "0.7.1",
+    "clsx": "^2.1.1",
+    "sonner": "~2.0.6",
+    "tailwind-merge": "^3.3.1"
   },
   "peerDependencies": {
-    "@radix-ui/react-slot": "*",
-    "lucide-react": "*",
-    "next-themes": "*",
-    "react": "*",
-    "react-dom": "*"
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "lucide-react": "^0.525.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "@radix-ui/react-slot": "*",
-    "lucide-react": "*",
-    "next-themes": "*",
-    "react": "*",
-    "react-dom": "*"
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "lucide-react": "0.525.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }
