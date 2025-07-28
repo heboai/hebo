@@ -122,6 +122,7 @@
 }
 
 @layer base {
+  /* Default Tailwind styles */
   * {
     @apply border-border outline-ring/50;
   }
@@ -131,13 +132,33 @@
     @apply font-sans;
   }
 
+  /* Underline links by default */
   a:not([href^="/"]) {
     @apply text-indigo-700 underline decoration-dotted;
   }
 
+  /* Add square arrow next to every link */
+  main a:not([href^="/"])::after {
+    content: '';
+    display: inline-block;
+    width: 0.75em;
+    height: 0.75em;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>');
+    background-repeat: no-repeat;
+    vertical-align: middle;
+  }
+
+  /* Add cursor pointer to all buttons */
   button:not(:disabled),
   [role="button"]:not(:disabled),
   [role="menuitem"]:not(:disabled) {
     cursor: pointer !important;
+  }
+
+  /* Markdown styles */
+  h1 {
+    @apply font-semibold
   }
 }

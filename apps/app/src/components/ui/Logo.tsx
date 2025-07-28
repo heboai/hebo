@@ -10,7 +10,7 @@ export function Logo() {
         height={32}
         priority
       />
-      <span className="text-lg font-semibold">hebo.ai</span>
+      <span className="text-2xl font-semibold">hebo.ai</span>
     </div>
   );
 }
