@@ -13,14 +13,11 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
+    "jsx": "react-jsx",
+    "incremental": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@hebo/": ["*"],
-      "@hebo/db": ["packages/db/"],
-      "@hebo/db/*": ["packages/db/*/"]
+      "@hebo/ui/*": ["packages/ui/src/*"]
     }
   },
   "exclude": ["node_modules"]
