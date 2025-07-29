@@ -11,6 +11,7 @@ export async function copyToClipboard(
     console.error(
       "The Clipboard API was unavailable. The Clipboard API is only available client-side in browsers using HTTPS.",
     );
+    return "error";
   }
 
   try {

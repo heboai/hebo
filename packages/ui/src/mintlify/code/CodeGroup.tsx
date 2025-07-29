@@ -39,6 +39,8 @@ export const CodeGroup = forwardRef(function CodeGroup(
   { onCopied, children, className }: CodeGroupProps,
   ref: ForwardedRef<HTMLDivElement> | undefined,
 ) {
+  const [activeTab, setActiveTab] = useState("0");
+
   if (children == null) {
     // Hide the frame when no children were passed
     console.warn(
@@ -51,8 +53,6 @@ export const CodeGroup = forwardRef(function CodeGroup(
   } else if (children.length === 0) {
     return null;
   }
-
-  const [activeTab, setActiveTab] = useState("0");
 
   const childArr = React.Children.toArray(children) as Array<
     Exclude<React.ReactElement<CodeBlockProps>, boolean | null | undefined>
