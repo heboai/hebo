@@ -86,9 +86,8 @@ export const CodeGroup = forwardRef(function CodeGroup(
         <Tabs.Content
           key={tabIndex.toString()}
           value={tabIndex.toString()}
-          className={clsx("flex-none code-in-gray-frame")}
         >
-          {child}
+          <pre className="code-in-gray-frame">{child?.props?.children}</pre>
         </Tabs.Content>
       ))}
     </Tabs.Root>

@@ -32,12 +32,9 @@ const withMDX = createMDX({
           langs: ["ts", "python", "bash"],
           // Add code block metadata as HTML attributes
           addLanguageClass: true,
-          parseMetaString: (str: string): Record<string, string | boolean> =>
-            Object.fromEntries(
-              [...str.matchAll(/([a-zA-Z0-9]+)(?:=(?:"([^"]*)"|([^\s]+)))?/g)].map(
-                ([, key, quoted, unquoted]) => [key, quoted ?? unquoted ?? true]
-              )
-            )
+          parseMetaString: (str: string): Record<string, string> => ({
+            title: str.trim(),
+          })
         }
       ]
     ]
