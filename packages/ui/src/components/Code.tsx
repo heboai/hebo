@@ -13,30 +13,38 @@ const extractTextFromNode = (node: any): string => {
 };
 
 export function Code({ children }: { children: React.ReactNode }) {
-  const [copied, setCopied] = useState(false);
 
-  const copy = useCallback(() => {
-    navigator.clipboard.writeText(extractTextFromNode(children)).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    });
-  }, [children]);
+  function CopyButton({ children }: { children: React.ReactNode }) {
+    const [copied, setCopied] = useState(false);
+
+    const copy = useCallback(() => {
+      navigator.clipboard.writeText(extractTextFromNode(children)).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      });
+    }, [children]);
+
+    return (
+      <Button
+      onClick={copy}
+      variant="ghost"
+      size="icon"
+      className="absolute right-0 top-0 bg-background "
+      aria-label="Copy"
+    >
+      {copied ? (
+        <Check className="h-4 w-4 text-green-600" />
+      ) : (
+        <Copy className="h-4 w-4" />
+      )}
+    </Button>
+    )
+  }
 
   return (
     <pre className="relative w-full overflow-x-auto break-words rounded-lg bg-background text-sm ">
-      <Button
-        onClick={copy}
-        variant="ghost"
-        size="icon"
-        className="absolute right-0 top-0 bg-background "
-        aria-label="Copy"
-      >
-        {copied ? (
-          <Check className="h-4 w-4 text-green-600" />
-        ) : (
-          <Copy className="h-4 w-4" />
-        )}
-      </Button>
+
+      <CopyButton>${children}</CopyButton>
 
       <div className="p-2">$ {children}</div>
     </pre>
