@@ -1,14 +1,12 @@
-
 import type { NextConfig } from "next";
 
-import createMDX from '@next/mdx'
-import rehypeShiki from '@shikijs/rehype';
-
+import createMDX from "@next/mdx";
+import rehypeShiki from "@shikijs/rehype";
 
 const nextConfig: NextConfig = {
   output: "export",
   // Support Type Script and Markdown pages
-  pageExtensions: ['mdx', 'ts', 'tsx'],
+  pageExtensions: ["mdx", "ts", "tsx"],
   // Enable transpile packages for ui lib
   transpilePackages: ["@hebo/ui"],
   experimental: {
@@ -30,12 +28,12 @@ const withMDX = createMDX({
       [
         rehypeShiki,
         {
-          theme: 'vitesse-light',
-          langs: ['ts', 'python', 'bash'],
+          theme: "vitesse-light",
+          langs: ["ts", "python", "bash"],
         },
       ],
     ],
-  }
-})
+  },
+});
 
 export default withMDX(nextConfig);

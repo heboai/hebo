@@ -26,14 +26,15 @@ Then, create the following code:
 
 ```ts
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+import { generateText } from 'ai';
 
 const provider = createOpenAICompatible({
   name: 'gato/main/default',
-  apiKey: ${process.env.API_KEY}⁠,
+  apiKey: 'YOUR_API_KEY',
   baseURL: 'https://cloud.hebo.ai/api',
 });
 
-console.log(await generateText({prompt: 'Hello World.'}));
+console.log(await generateText(model: provider, {prompt: 'Hello World.'}));
 ```
 
 

@@ -1,20 +1,21 @@
 "use client";
 
-import * as React from "react";
+import { useState, useCallback } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "@hebo/ui/shadcn/ui/button";
 
 const extractTextFromNode = (node: any): string => {
-  if (['string', 'number'].includes(typeof node)) return node.toString();
-  if (node instanceof Array) return node.map(extractTextFromNode).join('');
-  if (typeof node === 'object' && node?.props?.children) return extractTextFromNode(node.props.children);
-  return '';
+  if (["string", "number"].includes(typeof node)) return node.toString();
+  if (node instanceof Array) return node.map(extractTextFromNode).join("");
+  if (typeof node === "object" && node?.props?.children)
+    return extractTextFromNode(node.props.children);
+  return "";
 };
 
 export function Code({ children }: { children: React.ReactNode }) {
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const copy = React.useCallback(() => {
+  const copy = useCallback(() => {
     navigator.clipboard.writeText(extractTextFromNode(children)).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
@@ -22,15 +23,12 @@ export function Code({ children }: { children: React.ReactNode }) {
   }, [children]);
 
   return (
-    <pre
-      className="relative w-full overflow-x-auto break-words rounded-lg bg-background text-sm "
-    >
-      
+    <pre className="relative w-full overflow-x-auto break-words rounded-lg bg-background text-sm ">
       <Button
         onClick={copy}
         variant="ghost"
         size="icon"
-        className="absolute right-0 top-0 bg-background"
+        className="absolute right-0 top-0 bg-background "
         aria-label="Copy"
       >
         {copied ? (
@@ -41,7 +39,6 @@ export function Code({ children }: { children: React.ReactNode }) {
       </Button>
 
       <div className="p-2">$ {children}</div>
-
     </pre>
   );
 }

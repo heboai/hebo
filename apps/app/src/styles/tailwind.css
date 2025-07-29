@@ -159,6 +159,6 @@
 
   /* Markdown styles */
   h1 {
-    @apply font-semibold
+    @apply font-semibold;
   }
 }
