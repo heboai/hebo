@@ -85,7 +85,7 @@ export default function ShellLayout({
           <SidebarTrigger />
 
           <div className="max-w-4xl min-w-0 w-full flex flex-col mx-auto md:py-12 gap-4">
-            <ViewTransition default="fade-in">{children}</ViewTransition>
+            <ViewTransition enter="fade-in">{children}</ViewTransition>
           </div>
         </main>
       </SidebarProvider>

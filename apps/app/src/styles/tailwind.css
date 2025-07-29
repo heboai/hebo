@@ -161,4 +161,21 @@
   h1 {
     @apply font-semibold;
   }
+
+  /* Code boxes */
+  .gray-frame {
+    @apply text-sm rounded-md overflow-hidden bg-background;
+  }
+
+  .code-in-gray-frame {
+    @apply overflow-x-auto pl-3 py-2;
+  }
+
+  .codeblock-tabs {
+    @apply bg-slate-200 pl-3;
+  }
+  
+  .codeblock-tabs button[data-state="active"] {
+    @apply border-slate-500;
+  }
 }
