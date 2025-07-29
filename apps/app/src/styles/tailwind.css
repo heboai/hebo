@@ -168,7 +168,7 @@
   }
 
   .code-in-gray-frame {
-    @apply overflow-x-auto pl-3 py-2;
+    @apply pl-3 py-2 overflow-x-auto;
   }
 
   .codeblock-tabs {

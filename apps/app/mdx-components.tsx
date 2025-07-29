@@ -5,7 +5,7 @@ import { CodeGroup } from "@hebo/ui/mintlify/code/CodeGroup";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    CodeBlock: CodeBlock,
+    pre: CodeBlock,
     CodeGroup: CodeGroup,
     ...components,
   };
