@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation";
 import { stackApp } from "~/lib/auth";
 import { getSupportedModels } from '~/services/loadModels';
 import CreateAgentContent from "~/app/create-agent/CreateAgentContent";
-import { SidebarFooter } from "@hebo/ui/components/Sidebar";
 import Image from "next/image";
 import { agentStore } from "~/stores/agentStore";
 import { getAgents } from "~/services/createAgent";
 import { useSnapshot } from "valtio";
 import { isMockMode } from "~/lib/utils";
 import { Loading } from "~/components/ui/LoadingSpinner";
-import { Logo } from "~/components/ui/Logo";
+import { Footer } from "@hebo/ui/shadcn/ui/footer";
 
 const ClientShell = () => {
   // Synchronously load models
@@ -83,7 +82,7 @@ const ClientShell = () => {
         <CreateAgentContent models={models} />
       </main>
       <footer className="w-full p-4">
-        <SidebarFooter />
+        <Footer />
       </footer>
     </div>
   );

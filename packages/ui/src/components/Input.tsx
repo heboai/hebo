@@ -1,0 +1,1 @@
+export { Input } from "@hebo/ui/shadcn/ui/input"; 

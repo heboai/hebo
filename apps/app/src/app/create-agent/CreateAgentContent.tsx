@@ -2,8 +2,15 @@
 import React, { useRef, useEffect } from "react";
 import { Skeleton } from "@hebo/ui/components/Skeleton";
 import { Button } from "@hebo/ui/components/Button";
+import { Input } from "@hebo/ui/components/Input";
+import { 
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem
+} from "@hebo/ui/components/DropdownMenu";
 import { proxy, useSnapshot } from 'valtio';
-import { SquareArrowOutUpRight } from "lucide-react";
+import { SquareArrowOutUpRight, ChevronDown } from "lucide-react";
 import { agentStore } from "~/stores/agentStore";
 import { createAgent } from "~/services/createAgent";
 import { Loading } from "~/components/ui/LoadingSpinner";
@@ -17,7 +24,6 @@ const state = proxy({
   isLoading: false,
   selectedModel: '',
   agentName: '',
-  isDropdownOpen: false,
   agentNameError: '',
   modelError: '',
 });
@@ -25,8 +31,6 @@ const state = proxy({
 const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
   const snap = useSnapshot(state);
   const agentSnap = useSnapshot(agentStore);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  // Remove useRouter import and usage
 
   // Reset loading states on mount
   useEffect(() => {
@@ -39,34 +43,6 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
       state.selectedModel = models[0].modelName;
     }
   }, [models, snap.selectedModel]);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        state.isDropdownOpen = false;
-      }
-    }
-    if (snap.isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [snap.isDropdownOpen]);
-
-  // Keyboard navigation for dropdown
-  const handleDropdownKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      state.isDropdownOpen = true;
-    }
-    if (e.key === "Escape") {
-      state.isDropdownOpen = false;
-    }
-  };
 
   const handleCreateAgent = async () => {
     let hasError = false;
@@ -128,7 +104,7 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
             <Skeleton className="w-80 h-[36px]" />
           ) : (
             <>
-              <input
+              <Input
                 type="text"
                 id="agent-name"
                 placeholder="Name"
@@ -137,7 +113,7 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
                   state.agentName = e.target.value;
                   if (state.agentNameError) state.agentNameError = '';
                 }}
-                className="w-80 h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white"
+                className="w-80 h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white text-gray-900"
                 aria-label="Agent Name"
                 aria-invalid={!!snap.agentNameError}
                 disabled={agentSnap.saving}
@@ -153,65 +129,54 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
           <label htmlFor="model-select" className="text-base font-semibold text-gray-700">
             Default Model
           </label>
-          <div className="relative w-80" ref={dropdownRef}>
+          <div className="w-80">
             {snap.isLoading ? (
               <Skeleton className="w-80 h-[36px]" />
             ) : (
               <>
-                <button
-                  type="button"
-                  id="model-select"
-                  onClick={() => (state.isDropdownOpen = !snap.isDropdownOpen)}
-                  onKeyDown={handleDropdownKeyDown}
-                  className="w-full h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white text-left flex items-center justify-between"
-                  aria-haspopup="listbox"
-                  aria-expanded={snap.isDropdownOpen}
-                  aria-controls="model-listbox"
-                  aria-invalid={!!snap.modelError}
-                >
-                  {snap.selectedModel ? (
-                    <span className="flex-1 min-w-0">
-                      <span className="font-medium text-base">
-                        {models.find((m) => m.modelName === snap.selectedModel)?.modelName}
-                      </span>{' '}
-                      <span className="font-normal text-xs text-gray-500">
-                        ({Math.floor((models.find((m) => m.modelName === snap.selectedModel)?.freeTokensPerMonth || 0) / 1000000)}M Free Tokens/Month)
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="text-gray-500 flex-1">Select a model</span>
-                  )}
-                  <svg className="h-5 w-5 text-black flex-shrink-0 ml-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {snap.isDropdownOpen && (
-                  <div
-                    id="model-listbox"
-                    role="listbox"
-                    tabIndex={-1}
-                    className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-[8px] shadow-lg max-h-60 overflow-auto"
-                  >
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      id="model-select"
+                      className="w-full h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white text-left flex items-center justify-between"
+                      aria-label="Select a model"
+                      aria-invalid={!!snap.modelError}
+                      disabled={agentSnap.saving}
+                    >
+                      {snap.selectedModel ? (
+                        <span className="flex-1 min-w-0">
+                          <span className="font-medium text-base">
+                            {models.find((m) => m.modelName === snap.selectedModel)?.modelName}
+                          </span>{' '}
+                          <span className="font-normal text-xs text-gray-500">
+                            ({Math.floor((models.find((m) => m.modelName === snap.selectedModel)?.freeTokensPerMonth || 0) / 1000000)}M Free Tokens/Month)
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 flex-1">Select a model</span>
+                      )}
+                      <ChevronDown className="h-5 w-5 text-black flex-shrink-0 ml-2" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-80 max-h-60 overflow-auto">
                     {models.map((model) => (
-                      <button
+                      <DropdownMenuItem
                         key={model.modelName}
-                        type="button"
-                        role="option"
-                        aria-selected={snap.selectedModel === model.modelName}
                         onClick={() => {
                           state.selectedModel = model.modelName;
-                          state.isDropdownOpen = false;
+                          if (state.modelError) state.modelError = '';
                         }}
-                        className={`w-full px-3 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none text-base flex items-center ${snap.selectedModel === model.modelName ? 'bg-gray-100' : ''}`}
+                        className="flex items-center justify-between py-2"
                       >
-                        <span className="font-medium text-base">{model.modelName}</span>{' '}
-                        <span className="font-normal text-xs text-gray-500 ml-1">
+                        <span className="font-medium text-base">{model.modelName}</span>
+                        <span className="font-normal text-xs text-gray-500">
                           ({Math.floor(model.freeTokensPerMonth / 1000000)}M Free Tokens/Month)
                         </span>
-                      </button>
+                      </DropdownMenuItem>
                     ))}
-                  </div>
-                )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 {snap.modelError && (
                   <div className="text-red-500 text-sm mt-1" aria-live="polite">{snap.modelError}</div>
                 )}
