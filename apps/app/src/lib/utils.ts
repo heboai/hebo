@@ -8,3 +8,5 @@ export function getCookie(name: string): string | undefined {
     return value?.split("=")[1];
   }
 }
+
+export const isMockMode = !process.env.NEXT_PUBLIC_API_URL

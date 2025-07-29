@@ -7,3 +7,9 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* Hebo custom gradient border button */
+.hebo-gradient-border-btn {
+  background: linear-gradient(white, white) padding-box, linear-gradient(to top right, #d1d5db, #4f46e5) border-box;
+  border: 2px solid transparent;
+}
