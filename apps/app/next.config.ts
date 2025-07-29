@@ -33,7 +33,7 @@ const withMDX = createMDX({
           // Add code block metadata as HTML attributes
           addLanguageClass: true,
           parseMetaString: (str: string): Record<string, string> => ({
-            title: str.replace(/^"|"$/g, '').trim(),
+            title: str.trim(),
           })
         }
       ]
