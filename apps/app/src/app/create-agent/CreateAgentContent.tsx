@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Skeleton } from "@hebo/ui/components/Skeleton";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
