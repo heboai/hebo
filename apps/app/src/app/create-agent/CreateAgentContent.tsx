@@ -82,7 +82,7 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
             href="https://docs.hebo.ai"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[#4F46E5] font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-[#4F46E5] rounded"
+            className="inline-flex items-center gap-1 text-[#4F46E5] font-semibold hover:underline rounded"
             aria-label="Learn more about which model to choose based on Use Case (opens in a new tab)"
             tabIndex={0}
           >
@@ -101,7 +101,7 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
             Agent Name
           </label>
           {snap.isLoading ? (
-            <Skeleton className="w-80 h-[36px]" />
+            <Skeleton className="w-80 h-10" />
           ) : (
             <>
               <Input
@@ -113,7 +113,7 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
                   state.agentName = e.target.value;
                   if (state.agentNameError) state.agentNameError = '';
                 }}
-                className="w-80 h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white text-gray-900"
+                className="w-80 h-10 px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white text-gray-900"
                 aria-label="Agent Name"
                 aria-invalid={!!snap.agentNameError}
                 disabled={agentSnap.saving}
@@ -131,33 +131,34 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
           </label>
           <div className="w-80">
             {snap.isLoading ? (
-              <Skeleton className="w-80 h-[36px]" />
+              <Skeleton className="w-80 h-10" />
             ) : (
               <>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
                       id="model-select"
-                      className="w-full h-[36px] px-3 py-2 border border-gray-300 rounded-[8px] shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base bg-white text-left flex items-center justify-between"
                       aria-label="Select a model"
                       aria-invalid={!!snap.modelError}
                       disabled={agentSnap.saving}
+                      className="w-80 h-10 justify-between"
                     >
                       {snap.selectedModel ? (
-                        <span className="flex-1 min-w-0">
-                          <span className="font-medium text-base">
+                        <div className="flex-1 min-w-0 text-left flex items-center">
+                          <span className="font-medium text-base flex-1 min-w-0 truncate">
                             {models.find((m) => m.modelName === snap.selectedModel)?.modelName}
-                          </span>{' '}
-                          <span className="font-normal text-xs text-gray-500">
+                          </span>
+                          <span className="font-normal text-xs text-gray-500 whitespace-nowrap ml-2">
                             ({Math.floor((models.find((m) => m.modelName === snap.selectedModel)?.freeTokensPerMonth || 0) / 1000000)}M Free Tokens/Month)
                           </span>
-                        </span>
+                        </div>
                       ) : (
-                        <span className="text-gray-500 flex-1">Select a model</span>
+                        <span className="text-gray-500 flex-1 text-left">Select a model</span>
                       )}
-                      <ChevronDown className="h-5 w-5 text-black flex-shrink-0 ml-2" />
-                    </button>
+                      <ChevronDown className="h-5 w-5 text-black flex-shrink-0" />
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-80 max-h-60 overflow-auto">
                     {models.map((model) => (
@@ -187,7 +188,7 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
         {/* Create Button */}
         <div className="pt-4 flex justify-end">
           {snap.isLoading ? (
-            <Skeleton className="w-[100px] h-[40px]" />
+            <Skeleton className="w-20 h-10" />
           ) : (
             <Link href="/" passHref>
               <Button

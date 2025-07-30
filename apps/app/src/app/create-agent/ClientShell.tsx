@@ -11,7 +11,7 @@ import { getAgents } from "~/services/createAgent";
 import { useSnapshot } from "valtio";
 import { isMockMode } from "~/lib/utils";
 import { Loading } from "~/components/ui/LoadingSpinner";
-import { Footer } from "@hebo/ui/shadcn/ui/footer";
+import { Footer } from "~/components/ui/Footer";
 
 const ClientShell = () => {
   // Synchronously load models
@@ -63,9 +63,9 @@ const ClientShell = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col px-4 sm:px-6 lg:px-8">
       {/* Header with Logo */}
-      <header className="px-4 sm:px-6 lg:px-8 py-6">
+      <header className="py-6">
         <div className="flex items-center gap-2">
           <Image
             src="/hebo-icon.png"
@@ -78,10 +78,10 @@ const ClientShell = () => {
         </div>
       </header>
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 flex items-center justify-center">
         <CreateAgentContent models={models} />
       </main>
-      <footer className="w-full p-4">
+      <footer className="fixed bottom-4 left-4 w-10 h-10">
         <Footer />
       </footer>
     </div>
