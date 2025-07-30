@@ -27,7 +27,6 @@
   "devDependencies": {
     "@changesets/cli": "*",
     "@hebo/db": "workspace:*",
-    "@hebo/ui": "workspace:*",
     "check-dependency-version-consistency": "*",
     "cross-env": "*",
     "eslint": "9.5.0",

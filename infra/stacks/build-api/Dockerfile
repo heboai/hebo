@@ -9,7 +9,6 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 # Copy other package manifests that api depends on (db + itself)
 COPY apps/api/package.json apps/api/package.json
 COPY packages/db/package.json packages/db/package.json
-COPY packages/ui/package.json packages/ui/package.json
 COPY infra/package.json infra/package.json
 
 RUN bun install --filter '@hebo/api' --frozen-lockfile --production
