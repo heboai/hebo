@@ -71,7 +71,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: var(--color-gray-50);
+  --sidebar: theme('colors.gray.50');
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -121,6 +121,7 @@
 }
 
 @layer base {
+
   /* Default Tailwind styles */
   * {
     @apply border-border outline-ring/50;
@@ -146,6 +147,7 @@
     margin-right: 0.25em;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>');
     background-repeat: no-repeat;
+    background-size: contain;
     vertical-align: middle;
     speak: none;
   }
@@ -164,7 +166,7 @@
 
   /* Code boxes */
   .gray-frame {
-    @apply text-sm rounded-md overflow-hidden bg-background border-1 shadow-xs;
+    @apply text-sm rounded-md overflow-hidden bg-background border shadow-xs;
   }
 
   .code-in-gray-frame {
