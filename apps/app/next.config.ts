@@ -34,11 +34,11 @@ const withMDX = createMDX({
           addLanguageClass: true,
           parseMetaString: (str: string): Record<string, string> => ({
             title: str.trim(),
-          })
-        }
-      ]
-    ]
-  }
+          }),
+        },
+      ],
+    ],
+  },
 });
 
 export default withMDX(nextConfig);

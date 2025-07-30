@@ -66,7 +66,7 @@ export const CodeGroup = forwardRef(function CodeGroup(
       onValueChange={setActiveTab}
       className={clsx("not-prose gray-frame", className)}
     >
-      <Tabs.List className="flex leading-6 codeblock-tabs space-x-4">
+      <Tabs.List className="flex codeblock-tabs space-x-4">
         {childArr.map((child, tabIndex: number) => (
           <TabItem key={tabIndex.toString()} value={tabIndex.toString()}>
             {child?.props?.title ?? "Title Missing"}
@@ -78,15 +78,12 @@ export const CodeGroup = forwardRef(function CodeGroup(
               childArr[parseInt(activeTab)]?.props?.children,
             )}
             onCopied={onCopied}
-            className={"relative"}
+            className={clsx("relative p-2")}
           />
         </div>
       </Tabs.List>
       {childArr.map((child, tabIndex: number) => (
-        <Tabs.Content
-          key={tabIndex.toString()}
-          value={tabIndex.toString()}
-        >
+        <Tabs.Content key={tabIndex.toString()} value={tabIndex.toString()}>
           <pre className="code-in-gray-frame">{child?.props?.children}</pre>
         </Tabs.Content>
       ))}

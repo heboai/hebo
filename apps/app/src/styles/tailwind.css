@@ -49,22 +49,22 @@
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: theme(colors.neutral.700);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: theme(colors.gray.50);
+  --primary-foreground: theme(colors.neutral.700);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: var(--color-gray-50);
+  --accent: var(--color-gray-100);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: var(--color-gray-300);
+  --input: var(--color-gray-300);
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -118,7 +118,6 @@
 /* === Hebo Styles === */
 @theme {
   --color-background-gradient: linear-gradient(0deg, #F8F9D2 0%, #F5F7FA 100%);
-  --color-foreground: var(--color-neutral-800);
 }
 
 @layer base {
@@ -159,12 +158,12 @@
 
   /* Markdown styles */
   h1 {
-    @apply font-semibold;
+    @apply font-semibold pt-2 text-lg;
   }
 
   /* Code boxes */
   .gray-frame {
-    @apply text-sm rounded-md overflow-hidden bg-background;
+    @apply text-sm rounded-md overflow-hidden bg-background border-1 shadow-xs;
   }
 
   .code-in-gray-frame {
@@ -178,4 +177,5 @@
   .codeblock-tabs button[data-state="active"] {
     @apply border-slate-500;
   }
+
 }

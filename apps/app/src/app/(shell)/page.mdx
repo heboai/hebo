@@ -1,5 +1,6 @@
 import { UserName } from "~/components/auth/UserName";
 import { Logo } from "~/components/ui/Logo";
+import { GenerateAPIKey } from "~/components/ui/GenerateAPIKey";
 
 <Logo className="hidden md:flex"/>
 
@@ -8,7 +9,9 @@ import { Logo } from "~/components/ui/Logo";
 Start using our playground or code your first agent.
 
 # Step 1: Create your first API key
-Navigate to User Settings -> API Keys and create your first API key.
+
+<GenerateAPIKey />
+Copy your key once generated, for security reasons you won’t be able to see it again.
 
 
 # Step 2: Connect using your favorite framework

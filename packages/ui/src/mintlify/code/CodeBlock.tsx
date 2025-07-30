@@ -33,6 +33,7 @@ export const CodeBlock = forwardRef(function CodeBlock(
     <CopyToClipboardButton
       textToCopy={getNodeText(children)}
       onCopied={onCopied}
+      className={className}
       {...props}
     />
   );
@@ -43,12 +44,12 @@ export const CodeBlock = forwardRef(function CodeBlock(
       ref={ref}
       {...props}
     >
-      {title? (
+      {title ? (
         <CodeTabBar title={title}>
-          <Button className="relative" />
+          <Button className="relative p-2" />
         </CodeTabBar>
       ) : (
-        <Button className="absolute top-0 right-0" />
+        <Button className="absolute top-0 right-0 p-2" />
       )}
       <pre className="code-in-gray-frame">{children}</pre>
     </div>
@@ -67,7 +68,7 @@ function CodeTabBar({
   children?: ReactElement;
 }) {
   return (
-    <div className="flex leading-6 codeblock-tabs space-x-3">
+    <div className="flex codeblock-tabs space-x-3">
       <div className="flex-none flex items-center">{title}</div>
       {children && (
         <div className="flex-auto flex items-center justify-end">

@@ -35,13 +35,13 @@ export function CopyToClipboardButton({
           }, 2000);
         }
       }}
-      className={clsx("group bg-inherit p-2 ", className)}
+      className={clsx("group bg-inherit", className)}
       {...props}
     >
       {!hidden ? (
-        <Check className="h-4 w-4 text-green-600" />
+        <Check size={16} className="text-green-600" />
       ) : (
-        <Copy className="h-4 w-4 text-foreground/60 hover:text-foreground" />
+        <Copy size={16} className="text-foreground/60 hover:text-foreground" />
       )}
     </button>
   );
