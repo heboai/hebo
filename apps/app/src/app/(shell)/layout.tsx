@@ -82,7 +82,7 @@ export default function ShellLayout({
         <main className="w-full flex flex-col flex-1 p-4 gap-4">
           <AuthProvider redirect={true} />
 
-          <SidebarTrigger className="-m-1.5" />
+          <SidebarTrigger className="fixed -m-1.5" />
 
           <div className="max-w-4xl min-w-0 w-full flex flex-col mx-auto md:py-4 gap-2">
             <ViewTransition default="fade-in">{children}</ViewTransition>
