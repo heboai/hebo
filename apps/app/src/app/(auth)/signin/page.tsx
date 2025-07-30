@@ -15,6 +15,7 @@ export default function SignIn() {
       <aside className="fixed w-128 min-h-screen bg-blue-100 bg-[url(/login-bg.png)] bg-bottom-left bg-no-repeat transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full">
         <Button
           asChild
+          variant="ghost"
           className="absolute left-6 top-5 bg-blue-200 hover:bg-blue-300 text-foreground no-underline"
         >
           <a

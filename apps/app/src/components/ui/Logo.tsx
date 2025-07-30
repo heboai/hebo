@@ -1,8 +1,10 @@
 import Image from "next/image";
 
-export function Logo() {
+import { cn } from "@hebo/ui/lib/utils";
+
+export function Logo({ className }: { className?: string }) {
   return (
-    <div className="flex items-center gap-2 overflow-hidden">
+    <div className={cn("flex items-center gap-2 overflow-hidden", className)}>
       <Image
         src="/hebo-icon.png"
         alt="Hebo AI Logo"
@@ -10,7 +12,7 @@ export function Logo() {
         height={32}
         priority
       />
-      <span className="text-lg font-semibold">hebo.ai</span>
+      <span className="text-2xl font-semibold">hebo.ai</span>
     </div>
   );
 }

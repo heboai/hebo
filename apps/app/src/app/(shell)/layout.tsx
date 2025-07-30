@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-// @ts-expect-error experimental react feature
 import { unstable_ViewTransition as ViewTransition } from "react";
 
 import { BookOpen, ExternalLink } from "lucide-react";
@@ -74,18 +73,20 @@ export default function ShellLayout({
                 </SidebarMenuItem>
               </SidebarMenu>
               <SidebarSeparator className="mx-0" />
-              <AuthProvider>
-                <UserButton />
-              </AuthProvider>
+              <UserButton />
             </SidebarFooter>
             <SidebarRail />
           </div>
         </Sidebar>
 
-        <main className="w-full flex flex-1 p-2">
-          <SidebarTrigger />
+        <main className="w-full flex flex-col flex-1 p-4 gap-4">
+          <AuthProvider redirect={true} />
 
-          <ViewTransition default="fade-in">{children}</ViewTransition>
+          <SidebarTrigger className="fixed -m-1.5" />
+
+          <div className="max-w-4xl min-w-0 w-full flex flex-col mx-auto md:py-4 gap-2">
+            <ViewTransition default="fade-in">{children}</ViewTransition>
+          </div>
         </main>
       </SidebarProvider>
     </div>

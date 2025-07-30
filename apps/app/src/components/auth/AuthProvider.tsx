@@ -2,12 +2,17 @@
 
 import { StackProvider, StackTheme } from "@stackframe/react";
 
-import { isStackAuth, stackApp } from "~/lib/auth";
+import { isStackAuthEnabled, stackApp } from "~/lib/auth";
 
 export function AuthProvider({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
-  if (isStackAuth) {
+  redirect = false,
+}: Readonly<{ children?: React.ReactNode; redirect?: boolean }>) {
+  
+  if (isStackAuthEnabled) {
+    // This violates unconditional hook rule, but we're OK with that right now
+    stackApp.useUser(redirect ? { or: "redirect" } : undefined)
+
     return (
       <StackProvider app={stackApp}>
         <StackTheme>{children}</StackTheme>

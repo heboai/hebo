@@ -2,13 +2,13 @@
 
 import { useSnapshot } from "valtio";
 
-import { isStackAuth, stackApp } from "~/lib/auth";
-import { authState } from "~/stores/auth";
+import { authService } from "~/lib/auth";
+import { userStore } from "~/stores/userStore";
 
-export function useAuth(redirect?: boolean) {
-  if (isStackAuth) {
-    stackApp.useUser(redirect ? { or: "redirect" } : undefined);
-  }
+export function useAuth() {
+  const snap = useSnapshot(userStore);
 
-  return useSnapshot(authState);
+  authService.ensureSignedIn();
+
+  return { user: snap.user };
 }
