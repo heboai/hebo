@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  output: "standalone",
   // Enable transpile packages for ui lib
   transpilePackages: ["@hebo/ui"],
   experimental: {
