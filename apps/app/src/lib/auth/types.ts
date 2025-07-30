@@ -11,15 +11,8 @@ export interface User {
 }
 
 export const guestUser: User = {
-  name: "Guest",
+  name: "Guest User",
   email: "guest@example.com",
-  get initials() {
-    if (!this.name) return "";
-    return this.name
-      .trim()
-      .split(/\s+/)
-      .map((word) => word[0]!.toUpperCase())
-      .join("");
-  },
+  initials: "GU",
   avatar: "about:blank",
 };

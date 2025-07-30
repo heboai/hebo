@@ -39,12 +39,19 @@ export function GenerateApiKey({ className }: { className?: string }) {
         error ? "text-destructive" : "text-foreground",
       )}
     >
-      <Input readOnly icon={KeyRound} copy={true} value={key} />
+      <Input 
+        readOnly
+        icon={KeyRound}
+        copy={true}
+        value={key}
+        aria-label="Generated API key"
+      />
       <Button
         disabled={loading}
         onClick={() => {
           handleGenerateAPIKey();
         }}
+        aria-label="Generate new API key"
       >
         {loading && <Loader2Icon className="animate-spin" />}
         Generate

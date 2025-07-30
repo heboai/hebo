@@ -8,8 +8,9 @@ export function AuthProvider({
   children,
   redirect = false,
 }: Readonly<{ children?: React.ReactNode; redirect?: boolean }>) {
+  
   if (isStackAuthEnabled) {
-    stackApp.useUser(redirect ? { or: "redirect" } : undefined);
+    stackApp.useUser(redirect ? { or: "redirect" } : undefined)
 
     return (
       <StackProvider app={stackApp}>
