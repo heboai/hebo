@@ -7,29 +7,19 @@ import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
 import { cn } from "@hebo/ui/lib/utils";
 
+import { authService } from "~/lib/auth";
+
 export function GenerateAPIKey({ className }: { className?: string }) {
   const [loading, setLoading] = useState(false);
   const [key, setKey] = useState("Generate API Key ..");
 
-  function handleGenerateAPIKey() {
+  async function handleGenerateAPIKey() {
     setLoading(true);
 
-    setTimeout(() => {
-      // TODO: connect to Stack Auth
-      const generatedApiKey = Array.from(
-        crypto.getRandomValues(new Uint8Array(32)),
-      )
-        .map(
-          (x) =>
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[
-              x % 62
-            ],
-        )
-        .join("");
-      setKey(generatedApiKey);
+    const newKey = await authService.generateAPIKey?.();
+    setKey(newKey ?? "Failed to generate key");
 
-      setLoading(false);
-    }, 2000);
+    setLoading(false);
   }
 
   return (
