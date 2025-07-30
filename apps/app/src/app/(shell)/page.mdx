@@ -18,9 +18,15 @@ Copy your key once generated, for security reasons you won’t be able to see it
 
 First, install the required package:
 
+<CodeGroup>
 ```bash Vercel AI SDK
-npm install ai
+$ npm install ai
 ```
+
+```bash Langchain
+$ pip install -U langchain-openai portkey-ai
+```
+</CodeGroup>
 
 Then, create the following code:
 
@@ -35,7 +41,30 @@ const provider = createOpenAICompatible({
   baseURL: 'https://cloud.hebo.ai/api',
 });
 
-console.log(await generateText(model: provider, {prompt: 'Hello World.'}));
+const response = await generateText(
+  model: provider, 
+  { prompt: 'Tell me a joke about AI.' }
+);
+
+console.log(result);
+```
+
+```python Langchain
+from langchain_openai import ChatOpenAI
+import os
+
+portkey_headers = createHeaders(
+    api_key="YOUR_API_KEY",
+    provider="openai"
+)
+
+llm = ChatOpenAI(
+    base_url="https://cloud.hebo.ai/api",
+    model="YOUR_MODEL_ALIAS"
+)
+
+response = llm.invoke("Tell me a joke about AI.")
+print(response.content)
 ```
 </CodeGroup>
 
