@@ -18,7 +18,7 @@ export function CopyToClipboardButton({
   textToCopy: string;
   onCopied?: (result: CopyToClipboardResult, textToCopy?: string) => void;
 } & ComponentPropsWithoutRef<"button">) {
-  const [hidden, setHidden] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   return (
     <button
@@ -29,16 +29,16 @@ export function CopyToClipboardButton({
           onCopied(result, textToCopy);
         }
         if (result === "success") {
-          setHidden(false);
+          setShowSuccess(false);
           setTimeout(() => {
-            setHidden(true);
+            setShowSuccess(true);
           }, 2000);
         }
       }}
       className={clsx("group bg-inherit", className)}
       {...props}
     >
-      {!hidden ? (
+      {showSuccess ? (
         <Check size={16} className="text-green-600" />
       ) : (
         <Copy size={16} className="text-foreground/60 hover:text-foreground" />

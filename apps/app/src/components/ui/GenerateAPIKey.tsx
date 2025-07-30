@@ -11,7 +11,7 @@ export function GenerateAPIKey({ className }: { className?: string }) {
   const [loading, setLoading] = useState(false);
   const [key, setKey] = useState("Generate API Key ..");
 
-  function generateAPIKey() {
+  function handleGenerateAPIKey() {
     setLoading(true);
 
     setTimeout(() => {
@@ -37,9 +37,7 @@ export function GenerateAPIKey({ className }: { className?: string }) {
       <Input readOnly icon={KeyRound} copy={true} value={key} />
       <Button
         disabled={loading}
-        onClick={async () => {
-          generateAPIKey();
-        }}
+        onClick={() => { handleGenerateAPIKey() }}
       >
         {loading && <Loader2Icon className="animate-spin" />}
         Generate

@@ -147,6 +147,7 @@
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>');
     background-repeat: no-repeat;
     vertical-align: middle;
+    speak: none;
   }
 
   /* Add cursor pointer to all buttons */
@@ -170,11 +171,11 @@
     @apply pl-3 py-2 overflow-x-auto;
   }
 
-  .codeblock-tabs {
+  .codeblock-header {
     @apply bg-slate-200 pl-3;
   }
   
-  .codeblock-tabs button[data-state="active"] {
+  .codeblock-header button[data-state="active"] {
     @apply border-slate-500;
   }
 

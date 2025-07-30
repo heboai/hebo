@@ -41,13 +41,15 @@ export const CodeBlock = forwardRef(function CodeBlock(
   return (
     <div
       className={clsx("relative not-prose gray-frame", className)}
+      role="region"
+      aria-label={`Code block: ${title}`}
       ref={ref}
       {...props}
     >
       {title ? (
-        <CodeTabBar title={title}>
+        <CodeTitleBar title={title}>
           <Button className="relative p-2" />
-        </CodeTabBar>
+        </CodeTitleBar>
       ) : (
         <Button className="absolute top-0 right-0 p-2" />
       )}
@@ -60,7 +62,7 @@ export const CodeBlock = forwardRef(function CodeBlock(
  * Different from CodeGroup because we cannot use Headless UI's Tab component outside a Tab.Group
  * Styling should look the same though.
  */
-function CodeTabBar({
+function CodeTitleBar({
   title,
   children,
 }: {
@@ -68,7 +70,7 @@ function CodeTabBar({
   children?: ReactElement;
 }) {
   return (
-    <div className="flex codeblock-tabs space-x-3">
+    <div className="flex codeblock-header space-x-3">
       <div className="flex-none flex items-center">{title}</div>
       {children && (
         <div className="flex-auto flex items-center justify-end">

@@ -29,7 +29,7 @@ const withMDX = createMDX({
         rehypeShiki,
         {
           theme: "vitesse-light",
-          langs: ["ts", "python", "bash"],
+          langs: ["bash", "python", "ts"],
           // Add code block metadata as HTML attributes
           addLanguageClass: true,
           parseMetaString: (str: string): Record<string, string> => ({

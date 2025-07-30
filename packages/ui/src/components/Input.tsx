@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@hebo/ui/lib/utils";

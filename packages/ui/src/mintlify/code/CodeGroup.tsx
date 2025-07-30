@@ -66,7 +66,7 @@ export const CodeGroup = forwardRef(function CodeGroup(
       onValueChange={setActiveTab}
       className={clsx("not-prose gray-frame", className)}
     >
-      <Tabs.List className="flex codeblock-tabs space-x-4">
+      <Tabs.List className="flex codeblock-header space-x-4">
         {childArr.map((child, tabIndex: number) => (
           <TabItem key={tabIndex.toString()} value={tabIndex.toString()}>
             {child?.props?.title ?? "Title Missing"}
