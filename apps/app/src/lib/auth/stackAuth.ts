@@ -40,21 +40,24 @@ const authService: AuthService = {
     }
   },
 
-  async generateAPIKey() {
-    await new Promise(resolve => setTimeout(resolve, 2000));
+  async generateApiKey() {
+    const user = await stackApp.getUser();
     
-    const key = Array.from(
-      crypto.getRandomValues(new Uint8Array(32)),
-    )
-      .map(
-        (x) =>
-          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"[
-            x % 62
-          ],
-      )
-      .join("");
+    // TODO: handle / throw errors
 
-    return "DUMMY-" + key;
+    let keyId = "";
+
+    if (user) {
+      const apiKey = await user.createApiKey({
+        description: "On-boarding API key",
+        expiresAt: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)), // 30 days
+        isPublic: false,
+      });
+
+      keyId = apiKey.id;
+    }
+
+    return keyId;
   }
 };
 

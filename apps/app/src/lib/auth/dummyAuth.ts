@@ -5,7 +5,7 @@ export const authService: AuthService = {
     // NoOp
   },
 
-  async generateAPIKey() {
+  async generateApiKey() {
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     const key = Array.from(

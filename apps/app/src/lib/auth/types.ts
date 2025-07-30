@@ -1,6 +1,6 @@
 export interface AuthService {
   ensureSignedIn(redirect?: boolean): Promise<void>;
-  generateAPIKey() : Promise<string>;
+  generateApiKey() : Promise<string>;
 }
 
 export interface User {

@@ -9,14 +9,14 @@ import { cn } from "@hebo/ui/lib/utils";
 
 import { authService } from "~/lib/auth";
 
-export function GenerateAPIKey({ className }: { className?: string }) {
+export function GenerateApiKey({ className }: { className?: string }) {
   const [loading, setLoading] = useState(false);
   const [key, setKey] = useState("Generate API Key ..");
 
   async function handleGenerateAPIKey() {
     setLoading(true);
 
-    const newKey = await authService.generateAPIKey?.();
+    const newKey = await authService.generateApiKey?.();
     setKey(newKey ?? "Failed to generate key");
 
     setLoading(false);
