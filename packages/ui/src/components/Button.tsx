@@ -20,7 +20,7 @@ export function Button({
   return (
     <ShadCNButton
       variant={variant}
-      className={cn(className, extraClass)}
+      className={cn(extraClass, className)}
       {...props}
     />
   );
