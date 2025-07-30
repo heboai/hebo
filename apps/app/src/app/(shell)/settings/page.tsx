@@ -6,7 +6,7 @@ import { AccountSettings } from "~/components/auth/AccountSettings";
 import { AuthProvider } from "~/components/auth/AuthProvider";
 
 export default function Settings() {
-  // AccountSettings may a while to load
+  // AccountSettings may take a while to load
   return (
     <Suspense
       fallback={

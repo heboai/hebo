@@ -6,8 +6,11 @@ import { isStackAuthEnabled, stackApp } from "~/lib/auth";
 
 export function AuthProvider({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  redirect = false,
+}: Readonly<{ children?: React.ReactNode; redirect?: boolean }>) {
   if (isStackAuthEnabled) {
+    stackApp.useUser(redirect ? { or: "redirect" } : undefined);
+
     return (
       <StackProvider app={stackApp}>
         <StackTheme>{children}</StackTheme>

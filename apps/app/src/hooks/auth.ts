@@ -5,8 +5,10 @@ import { useSnapshot } from "valtio";
 import { authService } from "~/lib/auth";
 import { userStore } from "~/stores/userStore";
 
-export function useAuth(redirect?: boolean) {
-  authService.ensureSignedIn(redirect);
+export function useAuth() {
+  const snap = useSnapshot(userStore);
 
-  return useSnapshot(userStore);
+  authService.ensureSignedIn();
+
+  return { user: snap.user };
 }

@@ -24,41 +24,33 @@ const stackApp = new StackClientApp({
 });
 
 const authService: AuthService = {
-  async ensureSignedIn(redirect?: boolean) {
+  async ensureSignedIn() {
     if (typeof window !== "undefined") {
-      stackApp
-        .getUser(redirect ? { or: "redirect" } : undefined)
-        ?.then((result) => {
-          if (result) {
-            userStore.user = {
-              email: result.primaryEmail ?? "",
-              name: result.displayName ?? "",
-              avatar: result.profileImageUrl ?? "",
-            };
-          }
-        });
+      const user = await stackApp.getUser({ or: "redirect" });
+
+      if (user) {
+        userStore.user = {
+          email: user.primaryEmail ?? "",
+          name: user.displayName ?? "",
+          avatar: user.profileImageUrl ?? "",
+        };
+      }
     }
   },
 
   async generateApiKey() {
     const user = await stackApp.getUser();
-    
-    // TODO: handle / throw errors
-
-    let keyId = "";
-
     if (user) {
       const apiKey = await user.createApiKey({
         description: "On-boarding API key",
-        expiresAt: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)), // 30 days
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
         isPublic: false,
       });
-
-      keyId = apiKey.id;
+      return apiKey.id;
+    } else {
+      return "Error: Not authenticated";
     }
-
-    return keyId;
-  }
+  },
 };
 
 export { stackApp, authService };

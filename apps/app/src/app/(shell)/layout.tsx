@@ -73,19 +73,19 @@ export default function ShellLayout({
                 </SidebarMenuItem>
               </SidebarMenu>
               <SidebarSeparator className="mx-0" />
-              <AuthProvider>
-                <UserButton />
-              </AuthProvider>
+              <UserButton />
             </SidebarFooter>
             <SidebarRail />
           </div>
         </Sidebar>
 
         <main className="w-full flex flex-col flex-1 p-4 gap-4">
+          <AuthProvider redirect={true} />
+
           <SidebarTrigger className="-m-1.5" />
 
           <div className="max-w-4xl min-w-0 w-full flex flex-col mx-auto md:py-4 gap-2">
-            <ViewTransition enter="fade-in">{children}</ViewTransition>
+            <ViewTransition default="fade-in">{children}</ViewTransition>
           </div>
         </main>
       </SidebarProvider>

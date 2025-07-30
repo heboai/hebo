@@ -12,18 +12,33 @@ import { authService } from "~/lib/auth";
 export function GenerateApiKey({ className }: { className?: string }) {
   const [loading, setLoading] = useState(false);
   const [key, setKey] = useState("Generate API Key ..");
+  const [error, setError] = useState("");
 
   async function handleGenerateAPIKey() {
     setLoading(true);
 
-    const newKey = await authService.generateApiKey?.();
-    setKey(newKey ?? "Failed to generate key");
+    setError("");
+    setKey("Generating API Key ...");
+
+    try {
+      const newKey = await authService.generateApiKey?.();
+      setKey(newKey ?? "Failed to generate key");
+    } catch (err) {
+      setError((err as Error).message);
+      setKey((err as Error).message);
+    }
 
     setLoading(false);
   }
 
   return (
-    <div className={cn("flex flex-row gap-2", className)}>
+    <div
+      className={cn(
+        "flex flex-row gap-2",
+        className,
+        error ? "text-destructive" : "text-foreground",
+      )}
+    >
       <Input readOnly icon={KeyRound} copy={true} value={key} />
       <Button
         disabled={loading}
