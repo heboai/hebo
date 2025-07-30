@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { useAuth } from "~/hooks/auth";
-import { isStackAuth } from "~/lib/auth";
+import { isStackAuthEnabled } from "~/lib/auth";
 
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
 
@@ -72,7 +72,7 @@ export function UserButton() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            {isStackAuth && (
+            {isStackAuthEnabled && (
               <DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>

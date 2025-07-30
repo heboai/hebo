@@ -37,7 +37,9 @@ export function GenerateAPIKey({ className }: { className?: string }) {
       <Input readOnly icon={KeyRound} copy={true} value={key} />
       <Button
         disabled={loading}
-        onClick={() => { handleGenerateAPIKey() }}
+        onClick={() => {
+          handleGenerateAPIKey();
+        }}
       >
         {loading && <Loader2Icon className="animate-spin" />}
         Generate
