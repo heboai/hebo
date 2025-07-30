@@ -29,9 +29,9 @@ export function CopyToClipboardButton({
           onCopied(result, textToCopy);
         }
         if (result === "success") {
-          setShowSuccess(false);
+          setShowSuccess(true);
           setTimeout(() => {
-            setShowSuccess(true);
+            setShowSuccess(false);
           }, 2000);
         }
       }}
