@@ -33,6 +33,7 @@
     "@types/react-dom": "^19",
     "eslint": "*",
     "eslint-config-next": "*",
+    "inflected": "^2.1.0",
     "msw": "^2.10.4",
     "serve": "*",
     "shiki": "^3.8.1",
