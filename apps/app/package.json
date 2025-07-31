@@ -2,6 +2,7 @@
   "name": "@hebo/app",
   "version": "0.0.1",
   "private": true,
+  "sideEffects": [ "*.css" ],
   "scripts": {
     "build": "next build",
     "dev": "next dev",

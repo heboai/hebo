@@ -39,7 +39,7 @@ export function GenerateApiKey({ className }: { className?: string }) {
         error ? "text-destructive" : "text-foreground",
       )}
     >
-      <Input 
+      <Input
         readOnly
         icon={KeyRound}
         copy={true}

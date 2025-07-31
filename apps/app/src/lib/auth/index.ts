@@ -1,8 +1,17 @@
-import { authService as stackAuthService, stackApp } from "./stackAuth";
-import { authService as dummyAuthService } from "./dummyAuth";
+import type { AuthService } from "./types";
+import { isStackAuthEnabled } from "~/lib/utils";
 
-const isStackAuthEnabled = !!process.env.NEXT_PUBLIC_STACK_PROJECT_ID;
+// FUTURE: use dynamic imports to enable tree shaking
+import * as stack from "./stackAuth";
+import * as dummy from "./dummyAuth";
 
-const authService = isStackAuthEnabled ? stackAuthService : dummyAuthService;
+let authService: AuthService;
 
-export { authService, isStackAuthEnabled, stackApp };
+if (isStackAuthEnabled) {
+  authService = stack.authService;
+} else {
+  console.log(" ⚠️ No auth configured, using dummy")
+  authService = dummy.authService;
+}
+
+export { authService };

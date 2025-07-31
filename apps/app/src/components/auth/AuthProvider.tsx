@@ -1,18 +1,32 @@
 "use client";
 
-import { StackProvider, StackTheme } from "@stackframe/react";
+import dynamic from "next/dynamic";
 
-import { isStackAuthEnabled, stackApp } from "~/lib/auth";
+import { isStackAuthEnabled } from "~/lib/utils";
+import { getStackApp } from "~/lib/auth/stackAuth";
+
+const StackProvider = dynamic(() =>
+  import("@stackframe/react").then((mod) => mod.StackProvider),
+);
+const StackTheme = dynamic(() =>
+  import("@stackframe/react").then((mod) => mod.StackTheme),
+);
+
+function useRedirectIfNotSignedIn(redirect: boolean) {
+  if (isStackAuthEnabled) {
+    return getStackApp().useUser(redirect ? { or: "redirect" } : undefined);
+  }
+  return undefined;
+}
 
 export function AuthProvider({
   children,
   redirect = false,
 }: Readonly<{ children?: React.ReactNode; redirect?: boolean }>) {
-  
-  if (isStackAuthEnabled) {
-    // This violates unconditional hook rule, but we're OK with that right now
-    stackApp.useUser(redirect ? { or: "redirect" } : undefined)
+  useRedirectIfNotSignedIn(redirect);
 
+  if (isStackAuthEnabled) {
+    const stackApp = getStackApp(); 
     return (
       <StackProvider app={stackApp}>
         <StackTheme>{children}</StackTheme>
@@ -20,6 +34,5 @@ export function AuthProvider({
     );
   }
 
-  // No auth configured, show dummy
-  return <div>{children}</div>;
+  return <>{children}</>;
 }

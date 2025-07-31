@@ -5,28 +5,36 @@ import { userStore } from "~/stores/userStore";
 
 import { StackClientApp } from "@stackframe/react";
 
-const stackApp = new StackClientApp({
-  projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
-  publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
-  tokenStore: "cookie", // Client-side cookies
-  urls: {
-    signIn: "/signin",
-    signUp: "/signin",
-    accountSettings: "/settings",
-    home: "/",
-  },
-  redirectMethod: {
-    // Custom useNavigate function for Next.js App Router
-    useNavigate: () => {
-      return useRouter().push;
-    },
-  },
-});
+let _stackApp: StackClientApp<true, string> | undefined;
+
+function getStackApp(): StackClientApp<true, string> {
+  if (!_stackApp) {
+    _stackApp = new StackClientApp({
+      projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
+      publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
+      tokenStore: "cookie", // Client-side cookies
+      urls: {
+        signIn: "/signin",
+        signUp: "/signin",
+        accountSettings: "/settings",
+        home: "/",
+      },
+      redirectMethod: {
+        // Custom useNavigate function for Next.js App Router
+        useNavigate: () => {
+          return useRouter().push;
+        },
+      },
+    });
+  }
+
+  return _stackApp;
+}
 
 const authService: AuthService = {
   async ensureSignedIn() {
     if (typeof window !== "undefined") {
-      const user = await stackApp.getUser({ or: "redirect" });
+      const user = await getStackApp().getUser({ or: "redirect" });
 
       if (user) {
         userStore.user = {
@@ -39,7 +47,7 @@ const authService: AuthService = {
   },
 
   async generateApiKey() {
-    const user = await stackApp.getUser();
+    const user = await getStackApp().getUser();
     if (user) {
       const apiKey = await user.createApiKey({
         description: "On-boarding API key",
@@ -53,4 +61,4 @@ const authService: AuthService = {
   },
 };
 
-export { stackApp, authService };
+export { authService, getStackApp };

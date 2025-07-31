@@ -68,7 +68,7 @@ export default function SignIn() {
 
           <AuthProvider>
             <div className="w-full space-y-4">
-              <OAuthSignIn type="sign-in" />
+              <OAuthSignIn />
               <div className="flex items-center gap-4">
                 <div className="flex-1 h-[1px] bg-gray-300" />
                 <span className="text-sm whitespace-nowrap">or</span>
