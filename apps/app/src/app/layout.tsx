@@ -5,6 +5,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "~/styles/tailwind.css";
 import "~/styles/stack.css";
 
+if (process.env.NEXT_PUBLIC_API_URL) {
+  const { worker } = await import('~/mocks/browser');
+  worker.start();
+}
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
