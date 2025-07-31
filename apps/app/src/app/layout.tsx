@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import "~/styles/tailwind.css";
+import "~/styles/global.css";
 import "~/styles/stack.css";
 
 const geistSans = Geist({

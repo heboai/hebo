@@ -1,0 +1,10 @@
+
+/* Default View Transition */
+::view-transition-group(.fade-in) {
+    animation: 300ms ease-in fade-in; 
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
