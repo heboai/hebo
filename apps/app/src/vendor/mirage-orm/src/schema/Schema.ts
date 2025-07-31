@@ -4,11 +4,11 @@ import {
   type DbCollection,
   type DbRecord,
   type IdentityManager,
-} from '@src/db';
-import { type FactoryInstance } from '@src/factory';
-import { Inflector } from '@src/inflector';
-import { Model, type ModelAttrs, type ModelClass } from '@src/model';
-import { Registry } from '@src/registry';
+} from '../db';
+import { type FactoryInstance } from '../factory';
+import { Inflector } from '../inflector';
+import { Model, type ModelAttrs, type ModelClass } from '../model';
+import { Registry } from '../registry';
 
 import SchemaCollection from './SchemaCollection';
 

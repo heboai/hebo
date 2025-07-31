@@ -1,5 +1,5 @@
-import { type AllowedIdTypes } from '@src/db';
-import type { ModelAttrs } from '@src/model';
+import { type AllowedIdTypes } from '../db';
+import type { ModelAttrs } from '../model';
 
 import BaseFactory, { type FactoryAttrs, type FactoryDefinition } from './BaseFactory';
 

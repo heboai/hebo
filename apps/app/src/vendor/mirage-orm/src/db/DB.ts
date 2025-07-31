@@ -1,4 +1,4 @@
-import { MirageError } from '@src/utils';
+import { MirageError } from '../utils';
 
 import DbCollection, { type DbRecord, type DbRecordInput } from './DbCollection';
 import IdentityManager, { type AllowedIdTypes } from './IdentityManager';

@@ -1,6 +1,6 @@
-import { type AllowedIdTypes } from '@src/db';
-import type { ModelAttrs, ModelInstance } from '@src/model';
-import { MirageError } from '@src/utils';
+import { type AllowedIdTypes } from '../db';
+import type { ModelAttrs, ModelInstance } from '../model';
+import { MirageError } from '../utils';
 
 /**
  * Base factory that builds model attributes.

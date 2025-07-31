@@ -1,6 +1,6 @@
-import IdentityManager from '@src/db/IdentityManager';
-import type { FactoryInstance } from '@src/factory';
-import type { ModelClass } from '@src/model';
+import IdentityManager from '../db/IdentityManager';
+import type { FactoryInstance } from '../factory';
+import type { ModelClass } from '../model';
 
 class RegistryItemManager<T> extends Map<string, T> {
   get<R extends T>(name: string): R {

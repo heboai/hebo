@@ -1,4 +1,4 @@
-import { type AllowedIdTypes } from '@src/db';
+import { type AllowedIdTypes } from '../db';
 
 import type { ModelInstance, ModelAttrs } from './BaseModel';
 

@@ -1,5 +1,5 @@
-import type { AllowedIdTypes, DbCollection, DbRecordInput } from '@src/db';
-import type { FactoryInstance } from '@src/factory';
+import type { AllowedIdTypes, DbCollection, DbRecordInput } from '../db';
+import type { FactoryInstance } from '../factory';
 import {
   List,
   type ModelAttrs,
@@ -7,7 +7,7 @@ import {
   type ModelInstance,
   type SavedModelAttrs,
   type SavedModelInstance,
-} from '@src/model';
+} from '../model';
 
 import { Inflector } from '../inflector';
 

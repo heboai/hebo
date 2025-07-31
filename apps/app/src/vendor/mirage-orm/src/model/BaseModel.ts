@@ -1,6 +1,6 @@
-import { DbCollection, DbRecordInput, type AllowedIdTypes } from '@src/db';
-import { Inflector } from '@src/inflector';
-import { camelize } from '@src/utils/string';
+import { DbCollection, DbRecordInput, type AllowedIdTypes } from '../db';
+import { Inflector } from '../inflector';
+import { camelize } from '../utils/string';
 
 /**
  * Base model class that handles core functionality
