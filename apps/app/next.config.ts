@@ -20,11 +20,12 @@ const nextConfig: NextConfig = {
   },
 };
 
-// FUTURE: Use turbopack compatible plugin style
 const withMDX = createMDX({
   options: {
     rehypePlugins: [
       [
+        // FUTURE: Get turbopack compatible plugin style working
+        // https://nextjs.org/docs/app/guides/mdx#using-plugins-with-turbopack
         rehypeShiki,
         {
           theme: "vitesse-light",
