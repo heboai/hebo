@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { stackApp } from "~/lib/auth";
-import { getSupportedModels } from '~/services/loadModels';
+import { getSupportedModels } from '~/config';
 import CreateAgentContent from "./CreateAgentContent";
 
 const ClientShell = () => {
