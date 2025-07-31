@@ -80,8 +80,6 @@ export default function ShellLayout({
         </Sidebar>
 
         <main className="w-full flex flex-col flex-1 p-4 gap-4">
-          <AuthProvider />
-
           <SidebarTrigger className="fixed -m-1.5" />
 
           <div className="max-w-4xl min-w-0 w-full flex flex-col mx-auto py-8 gap-2">
