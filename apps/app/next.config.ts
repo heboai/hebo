@@ -10,7 +10,6 @@ const nextConfig: NextConfig = {
   // Enable transpile packages for ui lib
   transpilePackages: ["@hebo/ui"],
   experimental: {
-    esmExternals: true,
     // Enable page transitions via react
     viewTransition: true,
   },
@@ -21,7 +20,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-// I'm currently not able to make this work with turbopack
+// FUTURE: Use turbopack compatible plugin style
 const withMDX = createMDX({
   options: {
     rehypePlugins: [
