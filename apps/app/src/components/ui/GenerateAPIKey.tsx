@@ -11,7 +11,7 @@ import { authService } from "~/lib/auth";
 
 export function GenerateApiKey({ className }: { className?: string }) {
   const [loading, setLoading] = useState(false);
-  const [key, setKey] = useState("Generate API Key ..");
+  const [key, setKey] = useState("Generate API Key ...");
   const [error, setError] = useState("");
 
   async function handleGenerateAPIKey() {
