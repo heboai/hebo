@@ -35,6 +35,7 @@ export function UserButton() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
+            {/* FUTURE: implement skeleton loading state */}
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
@@ -72,7 +73,6 @@ export function UserButton() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            {isStackAuthEnabled && (
               <DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
@@ -81,15 +81,18 @@ export function UserButton() {
                     Settings
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/handler/sign-out">
-                    <LogOut />
-                    Log out
-                  </Link>
-                </DropdownMenuItem>
+                {isStackAuthEnabled && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/handler/sign-out">
+                      <LogOut />
+                      Log out
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+                )}
               </DropdownMenuGroup>
-            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

@@ -12,6 +12,9 @@ export function AccountSettings() {
   return isStackAuthEnabled ? (
     <StackAccountSettings />
   ) : (
-    <>Not implemented for Dummy Auth</>
+    <>
+      <h1>Account Settings</h1>
+      <div>Not implemented for Dummy Auth</div>
+    </>
   );
 }

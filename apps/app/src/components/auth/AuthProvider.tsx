@@ -13,10 +13,10 @@ const StackTheme = dynamic(() =>
 );
 
 function useRedirectIfNotSignedIn(redirect: boolean) {
-  if (isStackAuthEnabled) {
-    return getStackApp().useUser(redirect ? { or: "redirect" } : undefined);
-  }
-  return undefined;
+  const user = isStackAuthEnabled 
+    ? getStackApp().useUser(redirect ? { or: "redirect" } : undefined)
+    : undefined;
+  return user;
 }
 
 export function AuthProvider({
