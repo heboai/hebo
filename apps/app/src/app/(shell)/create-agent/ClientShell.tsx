@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { stackApp } from "~/lib/auth";
 import { getSupportedModels } from '~/services/loadModels';
-import CreateAgentContent from "~/app/create-agent/CreateAgentContent";
+import CreateAgentContent from "./CreateAgentContent";
 
 const ClientShell = () => {
   const models = getSupportedModels();
