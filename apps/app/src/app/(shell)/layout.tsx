@@ -21,7 +21,6 @@ import {
   SidebarTrigger,
 } from "@hebo/ui/components/Sidebar";
 
-import { AuthProvider } from "~/components/auth/AuthProvider";
 import { UserButton } from "~/components/auth/UserButton";
 
 import { getCookie } from "~/lib/utils";
