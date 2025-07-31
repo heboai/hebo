@@ -27,13 +27,31 @@ const CreateAgentContent: React.FC<CreateAgentContentProps> = ({ models }) => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    // Submission logic will be added in the next step
-    // For now, just log the data
-    console.log("Create Agent:", data);
-    router.push('/');
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const response = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentName: data.agentName,
+          models: [data.selectedModel],
+        }),
+      });
+  
+      if (!response.ok) {
+        const err = await response.json();
+        alert(`Failed to create agent: ${err.error}`);
+        return;
+      }
+  
+      const newAgent = await response.json();
+      console.log('Created agent:', newAgent);
+      router.push('/');
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert('Something went wrong.');
+    }
   };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
