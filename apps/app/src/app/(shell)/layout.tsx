@@ -80,7 +80,7 @@ export default function ShellLayout({
         </Sidebar>
 
         <main className="w-full flex flex-col flex-1 p-4 gap-4">
-          <AuthProvider redirect={true} />
+          <AuthProvider />
 
           <SidebarTrigger className="fixed -m-1.5" />
 

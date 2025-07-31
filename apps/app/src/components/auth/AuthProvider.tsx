@@ -12,18 +12,9 @@ const StackTheme = dynamic(() =>
   import("@stackframe/react").then((mod) => mod.StackTheme),
 );
 
-function useRedirectIfNotSignedIn(redirect: boolean) {
-  const user = isStackAuthEnabled 
-    ? getStackApp().useUser(redirect ? { or: "redirect" } : undefined)
-    : undefined;
-  return user;
-}
-
 export function AuthProvider({
   children,
-  redirect = false,
 }: Readonly<{ children?: React.ReactNode; redirect?: boolean }>) {
-  useRedirectIfNotSignedIn(redirect);
 
   if (isStackAuthEnabled) {
     const stackApp = getStackApp(); 

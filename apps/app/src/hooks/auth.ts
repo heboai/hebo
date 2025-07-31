@@ -6,9 +6,9 @@ import { authService } from "~/lib/auth";
 import { userStore } from "~/stores/userStore";
 
 export function useAuth() {
-  const snap = useSnapshot(userStore);
-
   authService.ensureSignedIn();
+
+  const snap = useSnapshot(userStore);
 
   return { user: snap.user };
 }

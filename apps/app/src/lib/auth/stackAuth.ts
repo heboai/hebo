@@ -32,17 +32,15 @@ function getStackApp(): StackClientApp<true, string> {
 }
 
 const authService: AuthService = {
-  async ensureSignedIn() {
-    if (typeof window !== "undefined") {
-      const user = await getStackApp().getUser({ or: "redirect" });
+  ensureSignedIn() {
+    const user = getStackApp().useUser({ or: "redirect" });
 
-      if (user) {
-        userStore.user = {
-          email: user.primaryEmail ?? "",
-          name: user.displayName ?? "",
-          avatar: user.profileImageUrl ?? "",
-        };
-      }
+    if (user) {
+      userStore.user = {
+        email: user.primaryEmail ?? "",
+        name: user.displayName ?? "",
+        avatar: user.profileImageUrl ?? "",
+      };
     }
   },
 

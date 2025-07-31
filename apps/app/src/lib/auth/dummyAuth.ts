@@ -3,7 +3,7 @@ import type { AuthService } from "./types";
 import { userStore } from "~/stores/userStore";
 
 export const authService: AuthService = {
-  async ensureSignedIn() {
+  ensureSignedIn() {
     userStore.user = {
       name: "Dummy User",
       email: "dummy@user.com",
