@@ -30,6 +30,7 @@ export const CodeBlock = forwardRef(function CodeBlock(
   const Button = (
     props: Partial<ComponentPropsWithoutRef<typeof CopyToClipboardButton>>,
   ) => (
+    /* FIXME: getNodeText is not picking 100% of text since some nodes are React promises */
     <CopyToClipboardButton
       textToCopy={getNodeText(children)}
       onCopied={onCopied}
