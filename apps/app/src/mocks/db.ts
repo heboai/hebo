@@ -1,4 +1,4 @@
-import DB from '~/vendor/mirage-orm/src/db/DB';
+import DB from '~/miragejs/orm/db/DB';
 
 const db = new DB();
 db.createCollection('agents');
