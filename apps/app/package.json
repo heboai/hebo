@@ -40,5 +40,10 @@
     "tailwindcss": "*",
     "tw-animate-css": "*",
     "typescript": "*"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
