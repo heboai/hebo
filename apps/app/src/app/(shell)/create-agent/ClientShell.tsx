@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { stackApp } from "~/lib/auth";
-import { getSupportedModels } from '~/config';
+import { getSupportedModels } from '~/config/models';
 
 import CreateAgentForm from "./CreateAgentForm";
 
