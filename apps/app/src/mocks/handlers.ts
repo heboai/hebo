@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import db from './db';
+import db from '~/mocks/db';
 
 interface AgentData {
   agentName: string;
