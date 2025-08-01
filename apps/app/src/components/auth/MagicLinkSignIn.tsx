@@ -1,14 +1,14 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
+import { lazy } from "react";
 
 import { Button } from "@hebo/ui/components/Button";
 
 import { isStackAuthEnabled } from "~/lib/utils";
 
-const StackMagicLinkSignIn = dynamic(() =>
-  import("@stackframe/react").then((mod) => mod.MagicLinkSignIn),
+const StackMagicLinkSignIn = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.MagicLinkSignIn })),
 );
 
 export function MagicLinkSignIn() {

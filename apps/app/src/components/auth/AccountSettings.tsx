@@ -1,11 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { lazy } from "react";
 
 import { isStackAuthEnabled } from "~/lib/utils";
 
-const StackAccountSettings = dynamic(() =>
-  import("@stackframe/react").then((mod) => mod.AccountSettings),
+const StackAccountSettings = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.AccountSettings })),
 );
 
 export function AccountSettings() {

@@ -1,21 +1,21 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { lazy, useLayoutEffect, useState } from "react";
 
 import { isStackAuthEnabled } from "~/lib/utils";
 import { getStackApp } from "~/lib/auth/stackAuth";
-import { useLayoutEffect, useState } from "react";
 
-const StackProvider = dynamic(() =>
-  import("@stackframe/react").then((mod) => mod.StackProvider),
+const StackProvider = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackProvider })),
 );
-const StackTheme = dynamic(() =>
-  import("@stackframe/react").then((mod) => mod.StackTheme),
+
+const StackTheme = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackTheme })),
 );
 
 export function AuthProvider({
   children,
-}: Readonly<{ children?: React.ReactNode; redirect?: boolean }>) {
+}: Readonly<{ children?: React.ReactNode }>) {
   // Prevent rendering during static export
   const [isClient, setIsClient] = useState(false);
   useLayoutEffect(() => {

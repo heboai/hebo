@@ -1,18 +1,17 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 
-import { useLayoutEffect, useState } from "react";
+import { lazy, useLayoutEffect, useState } from "react";
 
-const StackHandler = dynamic(() =>
-  import("@stackframe/react").then((mod) => mod.StackHandler),
+const StackHandler = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackHandler })),
 );
-const StackProvider = dynamic(() =>
-  import("@stackframe/react").then((mod) => mod.StackProvider),
+const StackProvider = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackProvider })),
 );
-const StackTheme = dynamic(() =>
-  import("@stackframe/react").then((mod) => mod.StackTheme),
+const StackTheme = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackTheme })),
 );
 
 import { isStackAuthEnabled } from "~/lib/utils";

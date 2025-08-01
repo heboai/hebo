@@ -1,14 +1,16 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Link from "next/link";
+import { lazy } from "react";
 
 import { Button } from "@hebo/ui/components/Button";
 
 import { isStackAuthEnabled } from "~/lib/utils";
 
-const StackOAuthSignIn = dynamic(() =>
-  import("@stackframe/react").then((mod) => mod.OAuthButtonGroup),
+const StackOAuthSignIn = lazy(() =>
+  import("@stackframe/react").then((mod) => ({
+    default: mod.OAuthButtonGroup,
+  })),
 );
 
 export function OAuthSignIn() {
