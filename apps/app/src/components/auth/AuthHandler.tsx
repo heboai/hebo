@@ -28,6 +28,7 @@ export function AuthHandler() {
       setIsClient(true);
     }
   }, []);
+  if (!isClient) return null;
 
   if (isStackAuthEnabled && isClient) {
     const stackApp = getStackApp();
@@ -40,5 +41,5 @@ export function AuthHandler() {
     )
   }
 
-  return null;
+  return <></>;
 }
