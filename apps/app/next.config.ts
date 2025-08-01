@@ -26,6 +26,7 @@ const withMDX = createMDX({
       [
         // FUTURE: Get turbopack compatible plugin style working
         // https://nextjs.org/docs/app/guides/mdx#using-plugins-with-turbopack
+        // @heiwen will submit a patch to @shikijs/rehype
         rehypeShiki,
         {
           theme: "vitesse-light",

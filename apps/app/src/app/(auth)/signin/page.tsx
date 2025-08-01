@@ -64,6 +64,8 @@ export default function SignIn() {
       {/* Login Components */}
       <main className="lg:ml-128 min-h-screen flex flex-1 items-center justify-center transition-all duration-300">
         <div className="w-xs flex flex-col gap-4 items-center">
+
+          {/* AuthComponents may take a few seconds to load */}
           <Suspense fallback={<Skeleton className="w-full h-10" count={5} />}>
             <AuthProvider>
               <Logo />
