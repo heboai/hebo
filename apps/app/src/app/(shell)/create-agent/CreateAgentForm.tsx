@@ -1,10 +1,10 @@
 'use client';
 
 import React from "react";
-
 import { useForm } from "react-hook-form";
-
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "~/lib/queryClient"; // adjust path if needed
 
 export type CreateAgentFormProps = {
   models: { modelName: string; freeTokensPerMonth: number }[];
@@ -30,8 +30,8 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
     },
   });
 
-  const onSubmit = async (data: FormValues) => {
-    try {
+  const createAgentMutation = useMutation({
+    mutationFn: async (data: FormValues) => {
       const response = await fetch('/api/agents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -40,21 +40,28 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
           models: [data.selectedModel],
         }),
       });
-  
+
       if (!response.ok) {
         const err = await response.json();
-        alert(`Failed to create agent: ${err.error}`);
-        return;
+        throw new Error(err.error || 'Failed to create agent');
       }
-  
-      const newAgent = await response.json();
+
+      return response.json();
+    },
+    onSuccess: (newAgent) => {
       console.log('Created agent:', newAgent);
+      queryClient.invalidateQueries({ queryKey: ['agents'] }); // optional if you query agents list somewhere
       router.push('/');
-    } catch (error) {
-      console.error('Submission error:', error);
-      alert('Something went wrong.');
+    },
+    onError: (error: any) => {
+      alert(error.message || 'Something went wrong');
     }
+  });
+
+  const onSubmit = (data: FormValues) => {
+    createAgentMutation.mutate(data);
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
@@ -70,6 +77,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
           <div role="alert">{errors.agentName.message}</div>
         )}
       </div>
+
       <div>
         <label htmlFor="model-select">Default Model</label>
         <select
@@ -88,13 +96,14 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
           <div role="alert">{errors.selectedModel.message}</div>
         )}
       </div>
+
       <div>
-        <button type="submit" aria-label="Create Agent and go to home">
-          Create
+        <button type="submit" aria-label="Create Agent and go to home" disabled={createAgentMutation.isPending}>
+          {createAgentMutation.isPending ? 'Creating...' : 'Create'}
         </button>
       </div>
     </form>
   );
 };
 
-export default CreateAgentForm; 
+export default CreateAgentForm;
