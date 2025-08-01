@@ -6,17 +6,9 @@ import { AccountSettings } from "~/components/auth/AccountSettings";
 import { AuthProvider } from "~/components/auth/AuthProvider";
 
 export default function Settings() {
-  // AccountSettings may take a while to load
   return (
-    <Suspense
-      fallback={
-        <>
-          <Skeleton className="w-full h-20 m-4" />
-          <Skeleton className="w-full h-20 m-4" />
-          <Skeleton className="w-full h-20 m-4" />
-        </>
-      }
-    >
+    // AccountSettings may take a while to load
+    <Suspense fallback={<Skeleton count={3} className="w-full h-20 m-4" />}>
       <AuthProvider>
         <AccountSettings />
       </AuthProvider>

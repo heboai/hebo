@@ -10,7 +10,7 @@ let authService: AuthService;
 if (isStackAuthEnabled) {
   authService = stack.authService;
 } else {
-  console.warn(" ⚠️ No auth configured, using dummy")
+  console.warn(" ⚠️ No auth configured, using dummy");
   authService = dummy.authService;
 }
 

@@ -14,8 +14,7 @@ export function Button({
   className,
   ...props
 }: ExtendedButtonProps) {
-  const extraClass =
-    variant === "default" ? "border-2 border-indigo-600 hover:bg-accent" : "";
+  const extraClass = variant === "default" ? "" : "";
 
   return (
     <ShadCNButton

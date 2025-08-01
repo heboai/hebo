@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 import { isStackAuthEnabled } from "~/lib/utils";
 import { getStackApp } from "~/lib/auth/stackAuth";
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 const StackProvider = dynamic(() =>
   import("@stackframe/react").then((mod) => mod.StackProvider),
@@ -16,10 +16,9 @@ const StackTheme = dynamic(() =>
 export function AuthProvider({
   children,
 }: Readonly<{ children?: React.ReactNode; redirect?: boolean }>) {
-
   // Prevent rendering during static export
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window !== "undefined") {
       setIsClient(true);
     }

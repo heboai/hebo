@@ -11,7 +11,8 @@ function getStackApp(): StackClientApp<true, string> {
   if (!_stackApp) {
     _stackApp = new StackClientApp({
       projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
-      publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
+      publishableClientKey:
+        process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
       tokenStore: "cookie", // Client-side cookies
       urls: {
         signIn: "/signin",

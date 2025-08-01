@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 const StackHandler = dynamic(() =>
   import("@stackframe/react").then((mod) => mod.StackHandler),
@@ -23,7 +23,7 @@ export function AuthHandler() {
 
   // Prevent rendering during redirect and static export
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (typeof window !== "undefined") {
       setIsClient(true);
     }
@@ -38,7 +38,7 @@ export function AuthHandler() {
           <StackHandler app={stackApp} location={pathname} fullPage />
         </StackTheme>
       </StackProvider>
-    )
+    );
   }
 
   return <></>;
