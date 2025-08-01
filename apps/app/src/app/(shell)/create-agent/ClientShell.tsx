@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { stackApp } from "~/lib/auth";
 import { getSupportedModels } from '~/config';
-import CreateAgentContent from "./CreateAgentContent";
+import CreateAgentForm from "./CreateAgentForm";
 
 const ClientShell = () => {
   const models = getSupportedModels();
@@ -35,7 +35,7 @@ const ClientShell = () => {
         <span>Hebo</span>
       </header>
       <main>
-        <CreateAgentContent models={models} />
+        <CreateAgentForm models={models} />
       </main>
     </div>
   );
