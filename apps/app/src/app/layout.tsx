@@ -1,14 +1,9 @@
 import type { Metadata, Viewport } from "next";
-
 import { Geist, Geist_Mono } from "next/font/google";
 
 import "~/styles/tailwind.css";
 import "~/styles/stack.css";
-
-if (process.env.NEXT_PUBLIC_API_URL) {
-  const { worker } = await import('~/mocks/browser');
-  worker.start();
-}
+import { MSWProvider } from "~/components/MSWProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +48,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <MSWProvider />
         <div className="min-h-screen">{children}</div>
       </body>
     </html>
