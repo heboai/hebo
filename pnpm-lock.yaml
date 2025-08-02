@@ -35,9 +35,6 @@ importers:
       '@hebo/db':
         specifier: workspace:*
         version: link:packages/db
-      '@hebo/ui':
-        specifier: workspace:*
-        version: link:packages/ui
       check-dependency-version-consistency:
         specifier: '*'
         version: 5.0.1
