@@ -81,10 +81,10 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
   return (
     <div className="max-w-lg w-full p-6">
       {/* Title */}
-      <h1 className="text-3xl font-semibold mb-4">Create a new agent</h1>
+      <h1 className="mb-4">Create a new agent</h1>
       
       {/* Description */}
-      <p className="text-gray-600 mb-8 text-[16px]">
+      <p className="text-gray-600 mb-8">
         Each agent has its own model configuration and API keys. Learn more about which model to choose based on Use Case
       </p>
 
@@ -92,7 +92,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
       <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-6">
         {/* Agent Name Field */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <label htmlFor="agent-name" className="w-full sm:w-32 text-sm font-medium">
+          <label htmlFor="agent-name" className="w-full sm:w-32">
             Agent Name
           </label>
           <div className="flex-1 max-w-[320px]">
@@ -106,14 +106,14 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
               {...register("agentName", { required: "Please enter an agent name" })}
             />
             {errors.agentName && (
-              <div role="alert" className="text-red-600 text-sm mt-1">{errors.agentName.message}</div>
+              <div role="alert" className="text-red-600 mt-1">{errors.agentName.message}</div>
             )}
           </div>
         </div>
 
         {/* Default Model Field */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <label htmlFor="model-select" className="w-full sm:w-32 text-sm font-medium">
+          <label htmlFor="model-select" className="w-full sm:w-32">
             Default Model
           </label>
           <div className="flex-1 max-w-[320px]">
@@ -146,7 +146,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
               </DropdownMenuContent>
             </DropdownMenu>
             {errors.selectedModel && (
-              <div role="alert" className="text-red-600 text-sm mt-1">{errors.selectedModel.message}</div>
+              <div role="alert" className="text-red-600 mt-1">{errors.selectedModel.message}</div>
             )}
           </div>
         </div>
