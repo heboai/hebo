@@ -2,9 +2,8 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import { Loader2Icon } from "lucide-react";
-import { useCreateAgent } from "~/lib/data/agents";
+import { useCreateAgent, useAgentAwareness } from "~/lib/data/agents";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
 import { 
@@ -25,7 +24,6 @@ type FormValues = {
 };
 
 const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
-  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -43,6 +41,12 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
   const selectedModelData = models.find(model => model.modelName === selectedModel);
 
   const createAgentMutation = useCreateAgent();
+  const { activeAgent } = useAgentAwareness();
+
+  // If agent already exists, don't render the form
+  if (activeAgent) {
+    return null;
+  }
 
   const handleSubmitForm = (data: FormValues) => {
     createAgentMutation.mutate(
@@ -51,9 +55,6 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
         models: [data.selectedModel],
       },
       {
-        onSuccess: () => {
-          router.push('/');
-        },
         onError: (error: any) => {
           alert(error.message || 'Something went wrong');
         }
