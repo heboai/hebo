@@ -1,13 +1,32 @@
 "use client";
 
-import { StackProvider, StackTheme } from "@stackframe/react";
+import { lazy, useLayoutEffect, useState } from "react";
 
-import { isStackAuth, stackApp } from "~/lib/auth";
+import { isStackAuthEnabled } from "~/lib/utils";
+import { getStackApp } from "~/lib/auth/stackAuth";
+
+const StackProvider = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackProvider })),
+);
+
+const StackTheme = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackTheme })),
+);
 
 export function AuthProvider({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
-  if (isStackAuth) {
+}: Readonly<{ children?: React.ReactNode }>) {
+  // Prevent rendering during static export
+  const [isClient, setIsClient] = useState(false);
+  useLayoutEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsClient(true);
+    }
+  }, []);
+  if (!isClient) return null;
+
+  if (isStackAuthEnabled) {
+    const stackApp = getStackApp();
     return (
       <StackProvider app={stackApp}>
         <StackTheme>{children}</StackTheme>
@@ -15,6 +34,5 @@ export function AuthProvider({
     );
   }
 
-  // No auth configured, show dummy
-  return <div>{children}</div>;
+  return <>{children}</>;
 }

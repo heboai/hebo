@@ -1,4 +1,5 @@
 
+/* Default View Transition */
 ::view-transition-group(.fade-in) {
     animation: 300ms ease-in fade-in; 
 }

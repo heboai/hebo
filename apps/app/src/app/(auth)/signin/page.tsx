@@ -2,11 +2,14 @@ import { Ban, BookOpen, CreditCard } from "lucide-react";
 
 import { Badge } from "@hebo/ui/components/Badge";
 import { Button } from "@hebo/ui/components/Button";
+import { Skeleton } from "@hebo/ui/components/Skeleton";
 
 import { MagicLinkSignIn } from "~/components/auth/MagicLinkSignIn";
 import { OAuthSignIn } from "~/components/auth/OAuthSignIn";
 import { AuthProvider } from "~/components/auth/AuthProvider";
 import { Logo } from "~/components/ui/Logo";
+
+import { Suspense } from "react";
 
 export default function SignIn() {
   return (
@@ -15,6 +18,7 @@ export default function SignIn() {
       <aside className="fixed w-128 min-h-screen bg-blue-100 bg-[url(/login-bg.png)] bg-bottom-left bg-no-repeat transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full">
         <Button
           asChild
+          variant="ghost"
           className="absolute left-6 top-5 bg-blue-200 hover:bg-blue-300 text-foreground no-underline"
         >
           <a
@@ -60,30 +64,34 @@ export default function SignIn() {
       {/* Login Components */}
       <main className="lg:ml-128 min-h-screen flex flex-1 items-center justify-center transition-all duration-300">
         <div className="w-xs flex flex-col gap-4 items-center">
-          <Logo />
-          <p className="text-base text-center">
-            The fastest way to build & scale agents
-          </p>
 
-          <AuthProvider>
-            <div className="w-full space-y-4">
-              <OAuthSignIn type="sign-in" />
-              <div className="flex items-center gap-4">
-                <div className="flex-1 h-[1px] bg-gray-300" />
-                <span className="text-sm whitespace-nowrap">or</span>
-                <div className="flex-1 h-[1px] bg-gray-300" />
+          {/* AuthComponents may take a few seconds to load */}
+          <Suspense fallback={<Skeleton className="w-full h-10" count={5} />}>
+            <AuthProvider>
+              <Logo />
+              <p className="text-base text-center">
+                The fastest way to build & scale agents
+              </p>
+
+              <div className="w-full space-y-4">
+                <OAuthSignIn />
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-[1px] bg-gray-300" />
+                  <span className="text-sm whitespace-nowrap">or</span>
+                  <div className="flex-1 h-[1px] bg-gray-300" />
+                </div>
+                <MagicLinkSignIn />
               </div>
-              <MagicLinkSignIn />
-            </div>
-          </AuthProvider>
 
-          <div className="flex items-center gap-2">
-            <span className="relative">
-              <Ban className="w-4 h-4" />
-              <CreditCard className="w-2 h-2 absolute left-1 top-1" />
-            </span>
-            <span className="text-sm">No credit card required</span>
-          </div>
+              <div className="flex items-center gap-2">
+                <span className="relative">
+                  <Ban className="w-4 h-4" />
+                  <CreditCard className="w-2 h-2 absolute left-1 top-1" />
+                </span>
+                <span className="text-sm">No credit card required</span>
+              </div>
+            </AuthProvider>
+          </Suspense>
         </div>
       </main>
     </div>

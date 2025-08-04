@@ -49,29 +49,29 @@
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: theme('colors.neutral.700');
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: theme('colors.amber.300');
+  --primary-foreground: theme('colors.neutral.700');
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: var(--color-gray-50);
+  --accent: theme('colors.gray.100');
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: theme('colors.gray.300');
+  --input: theme('colors.gray.300');
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: var(--color-gray-50);
+  --sidebar: theme('colors.gray.50');
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -118,10 +118,11 @@
 /* === Hebo Styles === */
 @theme {
   --color-background-gradient: linear-gradient(0deg, #F8F9D2 0%, #F5F7FA 100%);
-  --color-foreground: var(--color-neutral-800);
 }
 
 @layer base {
+
+  /* Default Tailwind styles */
   * {
     @apply border-border outline-ring/50;
   }
@@ -131,13 +132,53 @@
     @apply font-sans;
   }
 
+  /* Underline links by default */
   a:not([href^="/"]) {
     @apply text-indigo-700 underline decoration-dotted;
   }
 
+  /* Add square arrow next to every link */
+  main a:not([href^="/"])::after {
+    content: '';
+    display: inline-block;
+    width: 0.75em;
+    height: 0.75em;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/><path d="m21 3-9 9"/><path d="M15 3h6v6"/></svg>');
+    background-repeat: no-repeat;
+    background-size: contain;
+    vertical-align: middle;
+    speak: none;
+  }
+
+  /* Add cursor pointer to all buttons */
   button:not(:disabled),
   [role="button"]:not(:disabled),
   [role="menuitem"]:not(:disabled) {
     cursor: pointer !important;
   }
+
+  /* Markdown styles */
+  h1 {
+    @apply font-semibold pt-2 text-lg;
+  }
+
+  /* Code boxes */
+  .gray-frame {
+    @apply text-sm rounded-md overflow-hidden bg-background border shadow-xs;
+  }
+
+  .code-in-gray-frame {
+    @apply pl-3 py-2 overflow-x-auto;
+  }
+
+  .codeblock-header {
+    @apply bg-slate-200 pl-3;
+  }
+  
+  .codeblock-header button[data-state="active"] {
+    @apply border-slate-500;
+  }
+
 }

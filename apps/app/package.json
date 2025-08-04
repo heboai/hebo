@@ -2,9 +2,10 @@
   "name": "@hebo/app",
   "version": "0.0.1",
   "private": true,
+  "sideEffects": [ "*.css" ],
   "scripts": {
     "build": "next build",
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "lint": "next lint",
     "start": "serve out -p 3000",
     "clean": "rimraf .next .turbo node_modules out"
@@ -20,13 +21,19 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "*",
+    "@mdx-js/loader": "^3.1.0",
+    "@mdx-js/react": "^3.1.0",
+    "@next/mdx": "^15.4.4",
+    "@shikijs/rehype": "^3.8.1",
     "@tailwindcss/postcss": "*",
+    "@types/mdx": "^2.0.13",
     "@types/node": "*",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "*",
     "eslint-config-next": "*",
     "serve": "*",
+    "shiki": "^3.8.1",
     "tailwindcss": "*",
     "tw-animate-css": "*",
     "typescript": "*"
