@@ -9,7 +9,7 @@ export type Agent = {
   id: string;
   agentName: string;
   models: string[];
-  // Add other agent properties as needed
+  branches: string[];
 };
 
 export type CreateAgentData = {
