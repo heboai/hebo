@@ -132,6 +132,23 @@
     @apply font-sans;
   }
 
+  /* Form Typography - Consistent styling across all forms */
+  form h1 {
+    @apply text-3xl font-semibold;
+  }
+
+  form p {
+    @apply text-[16px];
+  }
+
+  form label {
+    @apply text-sm font-medium;
+  }
+
+  form [role="alert"] {
+    @apply text-sm;
+  }
+
   /* Underline links by default */
   a:not([href^="/"]) {
     @apply text-indigo-700 underline decoration-dotted;
