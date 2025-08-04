@@ -9,7 +9,9 @@ export default function CreateAgentPage() {
 
   return (
     <ReactQueryProvider>
-      <CreateAgentForm models={models} />
+      <div className="h-screen flex items-center justify-center overflow-hidden">
+        <CreateAgentForm models={models} />
+      </div>
     </ReactQueryProvider>
   );
 } 

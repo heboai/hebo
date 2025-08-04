@@ -79,8 +79,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center overflow-hidden">
-      <div className="max-w-lg w-full p-6">
+    <div className="max-w-lg w-full p-6">
       {/* Title */}
       <h1 className="text-3xl font-semibold mb-4">Create a new agent</h1>
       
@@ -163,7 +162,6 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
           </Button>
         </div>
       </form>
-      </div>
     </div>
   );
 };
