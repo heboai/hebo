@@ -91,11 +91,11 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
       {/* Form */}
       <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-6">
         {/* Agent Name Field */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <label htmlFor="agent-name" className="w-full sm:w-32">
+        <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
+          <label htmlFor="agent-name" className="sm:w-32">
             Agent Name
           </label>
-          <div className="flex-1 max-w-[320px]">
+          <div>
             <Input
               id="agent-name"
               type="text"
@@ -112,11 +112,11 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
         </div>
 
         {/* Default Model Field */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <label htmlFor="model-select" className="w-full sm:w-32">
+        <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
+          <label htmlFor="model-select" className="sm:w-32">
             Default Model
           </label>
-          <div className="flex-1 max-w-[320px]">
+          <div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
