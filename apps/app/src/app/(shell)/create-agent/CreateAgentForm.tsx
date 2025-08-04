@@ -3,8 +3,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "~/lib/queryClient"; 
+import { useCreateAgent } from "~/lib/data/agents";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
 import { 
@@ -42,36 +41,23 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
   const selectedModel = watch("selectedModel");
   const selectedModelData = models.find(model => model.modelName === selectedModel);
 
-  const createAgentMutation = useMutation({
-    mutationFn: async (data: FormValues) => {
-      const response = await fetch('/api/agents', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          agentName: data.agentName,
-          models: [data.selectedModel],
-        }),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Failed to create agent');
-      }
-
-      return response.json();
-    },
-    onSuccess: (newAgent) => {
-      console.log('Created agent:', newAgent);
-      queryClient.invalidateQueries({ queryKey: ['agents'] }); // optional if you query agents list somewhere
-      router.push('/');
-    },
-    onError: (error: any) => {
-      alert(error.message || 'Something went wrong');
-    }
-  });
+  const createAgentMutation = useCreateAgent();
 
   const handleSubmitForm = (data: FormValues) => {
-    createAgentMutation.mutate(data);
+    createAgentMutation.mutate(
+      {
+        agentName: data.agentName,
+        models: [data.selectedModel],
+      },
+      {
+        onSuccess: () => {
+          router.push('/');
+        },
+        onError: (error: any) => {
+          alert(error.message || 'Something went wrong');
+        }
+      }
+    );
   };
 
   const handleModelSelect = (modelName: string) => {
