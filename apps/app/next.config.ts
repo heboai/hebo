@@ -4,7 +4,7 @@ import createMDX from "@next/mdx";
 import rehypeShiki from "@shikijs/rehype";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  output: "standalone",
   // Support Type Script and Markdown pages
   pageExtensions: ["mdx", "ts", "tsx"],
   // Enable transpile packages for ui lib

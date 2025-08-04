@@ -11,7 +11,7 @@ COPY apps/api/package.json apps/api/package.json
 COPY packages/db/package.json packages/db/package.json
 COPY infra/package.json infra/package.json
 
-RUN bun install --frozen-lockfile --production
+RUN bun install --filter '@hebo/api' --frozen-lockfile --production
 
 ########################  runner stage  ########################
 FROM oven/bun:1.2.18 AS runner
