@@ -3,6 +3,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { Loader2Icon } from "lucide-react";
 import { useCreateAgent } from "~/lib/data/agents";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
@@ -137,6 +138,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
             disabled={createAgentMutation.isPending}
             aria-label="Create Agent and go to home"
           >
+            {createAgentMutation.isPending && <Loader2Icon className="animate-spin" />}
             {createAgentMutation.isPending ? 'Creating...' : 'Create'}
           </Button>
         </div>
