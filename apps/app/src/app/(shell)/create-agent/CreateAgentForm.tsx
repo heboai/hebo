@@ -95,7 +95,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
           <label htmlFor="agent-name" className="sm:w-32">
             Agent Name
           </label>
-          <div>
+          <div className="space-y-1">
             <Input
               id="agent-name"
               type="text"
@@ -106,7 +106,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
               {...register("agentName", { required: "Please enter an agent name" })}
             />
             {errors.agentName && (
-              <div role="alert" className="text-red-600 mt-1">{errors.agentName.message}</div>
+              <div role="alert" className="text-destructive">{errors.agentName.message}</div>
             )}
           </div>
         </div>
@@ -116,7 +116,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
           <label htmlFor="model-select" className="sm:w-32">
             Default Model
           </label>
-          <div>
+          <div className="space-y-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -133,7 +133,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
                   <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-full min-w-[300px]">
+              <DropdownMenuContent className="w-full min-w-xs">
                 {models.map((model) => (
                   <DropdownMenuItem
                     key={model.modelName}
@@ -146,7 +146,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
               </DropdownMenuContent>
             </DropdownMenu>
             {errors.selectedModel && (
-              <div role="alert" className="text-red-600 mt-1">{errors.selectedModel.message}</div>
+              <div role="alert" className="text-destructive">{errors.selectedModel.message}</div>
             )}
           </div>
         </div>
