@@ -8,12 +8,12 @@ import { queryClient } from "~/lib/queryClient";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
 import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger 
-} from "@hebo/ui/components/DropdownMenu";
-import { ChevronDown } from "lucide-react";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue 
+} from "@hebo/ui/components/Select";
 
 export type CreateAgentFormProps = {
   models: { modelName: string; freeTokensPerMonth: number }[];
@@ -117,34 +117,27 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
             Default Model
           </label>
           <div className="space-y-1">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-between"
-                  aria-label="Select a model"
-                  aria-invalid={!!errors.selectedModel}
-                >
-                  {selectedModelData ? (
-                    `${selectedModelData.modelName} (${Math.floor(selectedModelData.freeTokensPerMonth / 1000000)}M Free Tokens / Month)`
-                  ) : (
-                    "Select a model"
-                  )}
-                  <ChevronDown className="h-4 w-4 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-full min-w-xs">
+            <Select value={selectedModel} onValueChange={handleModelSelect}>
+              <SelectTrigger 
+                id="model-select"
+                className="w-full max-w-80 bg-white"
+                aria-label="Select a model"
+                aria-invalid={!!errors.selectedModel}
+              >
+                <SelectValue placeholder="Select a model" className="truncate" />
+              </SelectTrigger>
+              <SelectContent className="w-full min-w-xs">
                 {models.map((model) => (
-                  <DropdownMenuItem
+                  <SelectItem
                     key={model.modelName}
-                    onClick={() => handleModelSelect(model.modelName)}
-                    className="cursor-pointer"
+                    value={model.modelName}
+                    className="truncate"
                   >
                     {model.modelName} ({Math.floor(model.freeTokensPerMonth / 1000000)}M Free Tokens / Month)
-                  </DropdownMenuItem>
+                  </SelectItem>
                 ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </SelectContent>
+            </Select>
             {errors.selectedModel && (
               <div role="alert" className="text-destructive">{errors.selectedModel.message}</div>
             )}
