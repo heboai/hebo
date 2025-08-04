@@ -1,14 +1,14 @@
 'use client'
 
 import { useEffect } from 'react';
-import { mockMode } from '~/lib/utils';
+import { isDevLocal } from '~/lib/utils';
 
 export function MSWProvider() {
   useEffect(() => {
     // Only run MSW in browser and when no real API URL is set
     if (typeof window === 'undefined') return;
 
-    if (mockMode) {
+    if (isDevLocal) {
       import('~/mocks/browser')
         .then(({ worker }) => worker.start({ onUnhandledRequest: 'bypass' }))
         .then(() => {
