@@ -75,7 +75,7 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
   return (
     <Card className="bg-transparent border-none shadow-none card p-0">
       <CardHeader className="pb-4">
-        <CardTitle>Create a new agent</CardTitle>
+        <CardTitle className="text-xl font-medium">Create a new agent</CardTitle>
         <CardDescription>
           Each agent has its own model configuration and API keys. Learn more about which model to choose based on Use Case
         </CardDescription>
@@ -90,16 +90,18 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
                 Agent Name
               </Label>
               <div className="space-y-1 max-w-xs w-full">
-                <Input
-                  id="agent-name"
-                  type="text"
-                  placeholder="Name"
-                  className="bg-white w-full"
-                  aria-invalid={!!errors.agentName}
-                  {...register("agentName", { required: "Please enter an agent name" })}
-                />
+                <div className="bg-white w-full">
+                  <Input
+                    id="agent-name"
+                    type="text"
+                    placeholder="Name"
+                    className="w-full"
+                    aria-invalid={!!errors.agentName}
+                    {...register("agentName", { required: "Please enter an agent name" })}
+                  />
+                </div>
                 {errors.agentName && (
-                  <div role="alert" className="text-destructive">{errors.agentName.message}</div>
+                  <div className="text-destructive" role="alert">{errors.agentName.message}</div>
                 )}
               </div>
             </div>
@@ -110,28 +112,30 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
                 Default Model
               </Label>
               <div className="space-y-1 max-w-xs w-full">
-                <Select value={selectedModel} onValueChange={handleModelSelect}>
-                  <SelectTrigger 
-                    id="model-select"
-                    className="bg-white w-full"
-                    aria-invalid={!!errors.selectedModel}
-                  >
-                    <SelectValue placeholder="Select a model" className="truncate" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {models.map((model) => (
-                      <SelectItem
-                        key={model.modelName}
-                        value={model.modelName}
-                        className="truncate"
-                      >
-                        {model.modelName} ({Math.floor(model.freeTokensPerMonth / 1000000)}M Free Tokens / Month)
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="bg-white w-full">
+                  <Select value={selectedModel} onValueChange={handleModelSelect}>
+                    <SelectTrigger 
+                      id="model-select"
+                      className="w-full"
+                      aria-invalid={!!errors.selectedModel}
+                    >
+                      <SelectValue placeholder="Select a model" className="truncate" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {models.map((model) => (
+                        <SelectItem
+                          key={model.modelName}
+                          value={model.modelName}
+                          className="truncate"
+                        >
+                          {model.modelName} ({Math.floor(model.freeTokensPerMonth / 1000000)}M Free Tokens / Month)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 {errors.selectedModel && (
-                  <div role="alert" className="text-destructive">{errors.selectedModel.message}</div>
+                  <div className="text-destructive" role="alert">{errors.selectedModel.message}</div>
                 )}
               </div>
             </div>
@@ -141,7 +145,7 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
               <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
                 <div className="sm:w-32"></div>
                 <div className="space-y-1">
-                  <div role="alert" className="text-destructive">{mutationError}</div>
+                  <div className="text-destructive" role="alert">{mutationError}</div>
                 </div>
               </div>
             )}
