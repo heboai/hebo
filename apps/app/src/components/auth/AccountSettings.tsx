@@ -2,7 +2,7 @@
 
 import { lazy } from "react";
 
-import { isStackAuthEnabled } from "~/lib/utils";
+import { isStackAuthEnabled } from "~/lib/env";
 
 const StackAccountSettings = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.AccountSettings })),

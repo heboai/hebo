@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { useAuth } from "~/hooks/auth";
-import { isStackAuthEnabled } from "~/lib/utils";
+import { isStackAuthEnabled } from "~/lib/env";
 
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
 
