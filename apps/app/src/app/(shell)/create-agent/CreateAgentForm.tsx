@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '~/lib/data/queryClient';
-import { useCreateAgent, useAgentAwareness } from "~/lib/data/agents";
+import { useCreateAgent } from "~/lib/data/agents";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
 import { Label } from "@hebo/ui/components/Label";
@@ -52,12 +52,6 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
   const selectedModel = watch("selectedModel");
 
   const createAgentMutation = useCreateAgent();
-  const { activeAgent } = useAgentAwareness();
-
-  // If agent already exists, don't render the form
-  if (activeAgent) {
-    return null;
-  }
 
   const handleSubmitForm = (data: FormValues) => {
     setMutationError(null); // Clear any previous errors
