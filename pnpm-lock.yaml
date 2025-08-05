@@ -163,20 +163,20 @@ importers:
   packages/db:
     dependencies:
       '@libsql/client':
-        specifier: '*'
+        specifier: ^0.15.9
         version: 0.15.10
       drizzle-orm:
         specifier: 0.31.2
-        version: 0.31.2(@libsql/client@0.15.10)(@types/pg@8.15.4)(@types/react@19.1.8)(pg@8.16.3)(react@19.1.0)
+        version: 0.31.2(@electric-sql/pglite@0.3.7)(@libsql/client@0.15.10)(@types/pg@8.15.4)(@types/react@19.1.8)(pg@8.16.3)(react@19.1.0)
       pg:
-        specifier: '*'
+        specifier: ^8.16.3
         version: 8.16.3
     devDependencies:
       '@electric-sql/pglite':
         specifier: ^0.3.7
         version: 0.3.7
       '@types/pg':
-        specifier: '*'
+        specifier: ^8.15.4
         version: 8.15.4
       drizzle-kit:
         specifier: 0.22.8
@@ -415,6 +415,9 @@ packages:
 
   '@date-fns/tz@1.2.0':
     resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
+
+  '@electric-sql/pglite@0.3.7':
+    resolution: {integrity: sha512-5c3mybVrhxu5s47zFZtIGdG8YHkKCBENOmqxnNBjY53ZoDhADY/c5UqBDl159b7qtkzNPtbbb893wL9zi1kAuw==}
 
   '@emnapi/core@1.4.5':
     resolution: {integrity: sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q==}
@@ -5882,6 +5885,8 @@ snapshots:
 
   '@date-fns/tz@1.2.0': {}
 
+  '@electric-sql/pglite@0.3.7': {}
+
   '@emnapi/core@1.4.5':
     dependencies:
       '@emnapi/wasi-threads': 1.0.4
@@ -8419,8 +8424,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.31.2(@libsql/client@0.15.10)(@types/pg@8.15.4)(@types/react@19.1.8)(pg@8.16.3)(react@19.1.0):
+  drizzle-orm@0.31.2(@electric-sql/pglite@0.3.7)(@libsql/client@0.15.10)(@types/pg@8.15.4)(@types/react@19.1.8)(pg@8.16.3)(react@19.1.0):
     optionalDependencies:
+      '@electric-sql/pglite': 0.3.7
       '@libsql/client': 0.15.10
       '@types/pg': 8.15.4
       '@types/react': 19.1.8
