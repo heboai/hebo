@@ -54,7 +54,7 @@ export const isLocal: boolean = (() => {
 })();
 
 // ---------------------------------------------------------
-// Unified helper that returns the config for Drizzle.
+// Unified helper that returns the Drizzle configuration for local or remote environments.
 // ---------------------------------------------------------
 
 export type DbCredentials = {
