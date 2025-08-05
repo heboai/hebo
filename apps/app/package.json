@@ -16,7 +16,6 @@
     "@hebo/ui": "workspace:*",
     "@stackframe/react": "^2.8.25",
     "@tanstack/react-query": "^5.84.1",
-    "inflected": "^2.1.0",
     "lucide-react": "^0.525.0",
     "next": "~15.4.4",
     "react": "^19.1",
@@ -34,6 +33,7 @@
     "@types/node": "^24.2.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "inflected": "^2.1.0",
     "msw": "^2.10.4",
     "shiki": "^3.8.1",
     "tw-animate-css": "^1.3.6"
