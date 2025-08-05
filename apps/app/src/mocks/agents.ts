@@ -4,10 +4,10 @@ import db from '~/mocks/db';
 interface AgentData {
   agentName: string;
   models: string[];
-  branches?: string[]; // make it optional in case frontend doesn’t send it
+  branches?: string[]; // make it optional in case frontend doesn't send it
 }
 
-export const handlers = [
+export const agentHandlers = [
   // Create a new agent
   http.post('/api/agents', async ({ request }) => {
     const body = await request.json() as AgentData;
@@ -28,4 +28,4 @@ export const handlers = [
     await delay(1000);
     return HttpResponse.json(agents);
   }),
-];
+]; 

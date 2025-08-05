@@ -1,4 +1,4 @@
 import { setupWorker } from 'msw/browser';
-import { handlers } from '~/mocks/handlers';
+import { agentHandlers } from '~/mocks/agents';
 
-export const worker = setupWorker(...handlers);
+export const worker = setupWorker(...agentHandlers);
