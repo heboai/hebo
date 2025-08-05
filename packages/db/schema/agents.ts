@@ -1,4 +1,4 @@
-import { jsonb, text, serial, pgTable } from "drizzle-orm/pg-core";
+import { text, serial, pgTable } from "drizzle-orm/pg-core";
 import { timestamps } from "./timestamps"
 
 export const agents = pgTable("agents", {
