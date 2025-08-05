@@ -70,91 +70,93 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
   };
 
   return (
-    <div className="max-w-lg w-full p-6">
+    <div className="max-w-lg w-full p-6 space-y-4">
       {/* Title */}
-      <h1 className="mb-4">Create a new agent</h1>
+      <h1>Create a new agent</h1>
       
       {/* Description */}
-      <p className="text-gray-600 mb-8">
+      <p>
         Each agent has its own model configuration and API keys. Learn more about which model to choose based on Use Case
       </p>
 
       {/* Form */}
-      <form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-6">
-        {/* Agent Name Field */}
-        <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
-          <label htmlFor="agent-name" className="sm:w-32">
-            Agent Name
-          </label>
-          <div className="space-y-1">
-            <Input
-              id="agent-name"
-              type="text"
-              placeholder="Name"
-              className="bg-white"
-              aria-label="Agent Name"
-              aria-invalid={!!errors.agentName}
-              {...register("agentName", { required: "Please enter an agent name" })}
-            />
-            {errors.agentName && (
-              <div role="alert" className="text-destructive">{errors.agentName.message}</div>
-            )}
-          </div>
-        </div>
-
-        {/* Default Model Field */}
-        <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
-          <label htmlFor="model-select" className="sm:w-32">
-            Default Model
-          </label>
-          <div className="space-y-1">
-            <Select value={selectedModel} onValueChange={handleModelSelect}>
-              <SelectTrigger 
-                id="model-select"
-                className="w-full max-w-80 bg-white"
-                aria-label="Select a model"
-                aria-invalid={!!errors.selectedModel}
-              >
-                <SelectValue placeholder="Select a model" className="truncate" />
-              </SelectTrigger>
-              <SelectContent className="w-full min-w-xs">
-                {models.map((model) => (
-                  <SelectItem
-                    key={model.modelName}
-                    value={model.modelName}
-                    className="truncate"
-                  >
-                    {model.modelName} ({Math.floor(model.freeTokensPerMonth / 1000000)}M Free Tokens / Month)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.selectedModel && (
-              <div role="alert" className="text-destructive">{errors.selectedModel.message}</div>
-            )}
-          </div>
-        </div>
-
-        {/* Mutation Error Display */}
-        {mutationError && (
-          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
-            <div className="sm:w-32"></div>
+      <form onSubmit={handleSubmit(handleSubmitForm)}>
+        <div className="grid grid-cols-1 gap-4">
+          {/* Agent Name Field */}
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-start gap-2 sm:gap-4">
+            <label htmlFor="agent-name" className="sm:w-32">
+              Agent Name
+            </label>
             <div className="space-y-1">
-              <div role="alert" className="text-destructive">{mutationError}</div>
+              <Input
+                id="agent-name"
+                type="text"
+                placeholder="Name"
+                className="bg-white"
+                aria-label="Agent Name"
+                aria-invalid={!!errors.agentName}
+                {...register("agentName", { required: "Please enter an agent name" })}
+              />
+              {errors.agentName && (
+                <div role="alert" className="text-destructive">{errors.agentName.message}</div>
+              )}
             </div>
           </div>
-        )}
 
-        {/* Submit Button */}
-        <div className="flex justify-end pt-4">
-          <Button 
-            type="submit" 
-            disabled={createAgentMutation.isPending}
-            aria-label="Create Agent and go to home"
-          >
-            {createAgentMutation.isPending && <Loader2Icon className="animate-spin" />}
-            {createAgentMutation.isPending ? 'Creating...' : 'Create'}
-          </Button>
+          {/* Default Model Field */}
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-start gap-2 sm:gap-4">
+            <label htmlFor="model-select" className="sm:w-32">
+              Default Model
+            </label>
+            <div className="space-y-1 max-w-xs">
+              <Select value={selectedModel} onValueChange={handleModelSelect}>
+                <SelectTrigger 
+                  id="model-select"
+                  className="bg-white"
+                  aria-label="Select a model"
+                  aria-invalid={!!errors.selectedModel}
+                >
+                  <SelectValue placeholder="Select a model" className="truncate" />
+                </SelectTrigger>
+                <SelectContent>
+                  {models.map((model) => (
+                    <SelectItem
+                      key={model.modelName}
+                      value={model.modelName}
+                      className="truncate"
+                    >
+                      {model.modelName} ({Math.floor(model.freeTokensPerMonth / 1000000)}M Free Tokens / Month)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.selectedModel && (
+                <div role="alert" className="text-destructive">{errors.selectedModel.message}</div>
+              )}
+            </div>
+          </div>
+
+          {/* Mutation Error Display */}
+          {mutationError && (
+            <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
+              <div className="sm:w-32"></div>
+              <div className="space-y-1">
+                <div role="alert" className="text-destructive">{mutationError}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <div className="flex justify-end">
+            <Button 
+              type="submit" 
+              disabled={createAgentMutation.isPending}
+              aria-label="Create Agent and go to home"
+            >
+              {createAgentMutation.isPending && <Loader2Icon className="animate-spin" />}
+              {createAgentMutation.isPending ? 'Creating...' : 'Create'}
+            </Button>
+          </div>
         </div>
       </form>
     </div>
