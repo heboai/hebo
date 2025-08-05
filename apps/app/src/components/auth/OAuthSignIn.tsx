@@ -5,7 +5,7 @@ import { lazy } from "react";
 
 import { Button } from "@hebo/ui/components/Button";
 
-import { isStackAuthEnabled } from "~/lib/utils";
+import { isStackAuthEnabled } from "~/lib/env";
 
 const StackOAuthSignIn = lazy(() =>
   import("@stackframe/react").then((mod) => ({

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { isDevLocal } from '~/lib/utils';
+import { isDevLocal } from '~/lib/env';
 
 export function MSWProvider() {
   useEffect(() => {
