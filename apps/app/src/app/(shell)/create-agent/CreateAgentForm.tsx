@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '~/lib/data/queryClient';
 import { useCreateAgent, useAgentAwareness } from "~/lib/data/agents";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
@@ -23,7 +25,7 @@ type FormValues = {
   selectedModel: string;
 };
 
-const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
+const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
   const [mutationError, setMutationError] = useState<string | null>(null);
   
   const {
@@ -160,6 +162,14 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
         </div>
       </form>
     </div>
+  );
+};
+
+const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <CreateAgentFormContent models={models} />
+    </QueryClientProvider>
   );
 };
 
