@@ -156,7 +156,7 @@
 
   /* Card general styling */
   .card {
-    @apply p-6;
+    @apply max-w-lg w-full p-6 space-y-4;
   }
 
   /* Underline links by default */
