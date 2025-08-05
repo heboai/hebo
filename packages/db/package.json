@@ -9,15 +9,20 @@
     ".": "./index.ts"
   },
   "scripts": {
-    "clean": "rimraf .next .turbo node_modules"
+    "clean": "rimraf .next .turbo node_modules",
+    "migrate": "drizzle-kit migrate",
+    "generate": "drizzle-kit generate",
+    "studio": "drizzle-kit studio",
+    "check": "drizzle-kit check"
   },
   "dependencies": {
-    "drizzle-orm": "*",
-    "pg": "*",
-    "@libsql/client": "*"
+    "@libsql/client": "^0.15.9",
+    "drizzle-orm": "^0.44.4",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
-    "@types/pg": "*",
-    "drizzle-kit": "*"
+    "@electric-sql/pglite": "^0.3.7",
+    "@types/pg": "^8.15.4",
+    "drizzle-kit": "^0.31.4"
   }
 }
