@@ -31,7 +31,9 @@ const safeRead = <T>(fn: () => T): T | undefined => {
 };
 
 // Cached view of the HeboDatabase resource (if present & accessible).
-const heboDb = ResourceSafe ? safeRead(() => ResourceSafe.HeboDatabase) ?? {} : {};
+const heboDb = ResourceSafe
+  ? safeRead(() => ResourceSafe.HeboDatabase) ?? {}
+  : {};
 
 /**
  * Determines if the current runtime should be considered "local".
@@ -58,47 +60,62 @@ export const isLocal: boolean = (() => {
 // ---------------------------------------------------------
 
 export type DbCredentials = {
-  host: string
-  port: number
-  user: string
-  password: string
-  database: string
-}
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
+};
 export type LocalConfig = {
-  driver: string,
+  driver: string;
   dbCredentials: {
-    url: string
-  }
+    url: string;
+  };
 };
 export type RemoteConfig = {
-  dbCredentials: DbCredentials
+  dbCredentials: DbCredentials;
 };
 
 export function getDrizzleConfig(): LocalConfig | RemoteConfig {
   const connectionConfig = getConnectionConfig();
 
   if (isLocal) {
-    return { driver: "pglite", dbCredentials: { url: (connectionConfig as string) } } as LocalConfig;
+    return {
+      driver: "pglite",
+      dbCredentials: { url: connectionConfig as string },
+    } as LocalConfig;
   }
 
   return {
     dbCredentials: {
-      ...(connectionConfig as DbCredentials)
-    }
+      ...(connectionConfig as DbCredentials),
+    },
   } as RemoteConfig;
 }
 
 export function getConnectionConfig(): DbCredentials | string {
   if (isLocal) {
-    return process.env.PGLITE_PATH ?? "./hebo.db"
+    return process.env.PGLITE_PATH ?? "./hebo.db";
   }
 
   // "Remote" – PostgreSQL.  Pull from SST first, then ENV.
   return {
-    host: safeRead(() => (heboDb as any).host) ?? process.env.PG_HOST ?? "localhost",
-    port: safeRead(() => (heboDb as any).port) ?? Number(process.env.PG_PORT ?? 5432),
-    user: safeRead(() => (heboDb as any).username) ?? process.env.PG_USER ?? "postgres",
-    password: safeRead(() => (heboDb as any).password) ?? process.env.PG_PASSWORD ?? "",
-    database: safeRead(() => (heboDb as any).database) ?? process.env.PG_DATABASE ?? "hebo",
-  }
+    host:
+      safeRead(() => (heboDb as any).host) ??
+      process.env.PG_HOST ??
+      "localhost",
+    port:
+      safeRead(() => (heboDb as any).port) ??
+      Number(process.env.PG_PORT ?? 5432),
+    user:
+      safeRead(() => (heboDb as any).username) ??
+      process.env.PG_USER ??
+      "postgres",
+    password:
+      safeRead(() => (heboDb as any).password) ?? process.env.PG_PASSWORD ?? "",
+    database:
+      safeRead(() => (heboDb as any).database) ??
+      process.env.PG_DATABASE ??
+      "hebo",
+  };
 }

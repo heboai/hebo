@@ -1,4 +1,11 @@
-import { Models, Model, validateModelsSchema, validateSingleModel, validateModelsAddition, type Routing } from "./models";
+import {
+  Models,
+  Model,
+  validateModelsSchema,
+  validateSingleModel,
+  validateModelsAddition,
+  type Routing,
+} from "./models";
 
 /**
  * Helper function to create a model with routing
@@ -6,7 +13,7 @@ import { Models, Model, validateModelsSchema, validateSingleModel, validateModel
 export const createModel = (
   alias: string,
   LLM: string,
-  routing: Routing
+  routing: Routing,
 ): Model => {
   return {
     alias,
@@ -45,24 +52,26 @@ export const addModel = (existingModels: Models, newModel: unknown): Models => {
  * @throws Error if validation fails or model not found
  */
 export const updateModel = (
-  existingModels: Models, 
-  alias: string, 
-  updatedModel: unknown
+  existingModels: Models,
+  alias: string,
+  updatedModel: unknown,
 ): Models => {
   const validatedModel = validateSingleModel(updatedModel);
-  
-  const modelIndex = existingModels.findIndex(model => model.alias === alias);
+
+  const modelIndex = existingModels.findIndex((model) => model.alias === alias);
   if (modelIndex === -1) {
     throw new Error(`Model with alias "${alias}" not found`);
   }
-  
+
   // Check if the new alias conflicts with other models (excluding the current one)
   const otherModels = existingModels.filter((_, index) => index !== modelIndex);
-  const otherAliases = otherModels.map(model => model.alias);
+  const otherAliases = otherModels.map((model) => model.alias);
   if (otherAliases.includes(validatedModel.alias)) {
-    throw new Error(`Model with alias "${validatedModel.alias}" already exists`);
+    throw new Error(
+      `Model with alias "${validatedModel.alias}" already exists`,
+    );
   }
-  
+
   const updatedModels = [...existingModels];
   updatedModels[modelIndex] = validatedModel;
   return updatedModels;
@@ -76,17 +85,19 @@ export const updateModel = (
  * @throws Error if model not found or if it would leave no models
  */
 export const removeModel = (existingModels: Models, alias: string): Models => {
-  const modelIndex = existingModels.findIndex(model => model.alias === alias);
+  const modelIndex = existingModels.findIndex((model) => model.alias === alias);
   if (modelIndex === -1) {
     throw new Error(`Model with alias "${alias}" not found`);
   }
-  
-  const updatedModels = existingModels.filter((_, index) => index !== modelIndex);
-  
+
+  const updatedModels = existingModels.filter(
+    (_, index) => index !== modelIndex,
+  );
+
   if (updatedModels.length === 0) {
     throw new Error("Cannot remove the last model from a branch");
   }
-  
+
   return updatedModels;
 };
 
@@ -96,8 +107,11 @@ export const removeModel = (existingModels: Models, alias: string): Models => {
  * @param alias - Alias of the model to find
  * @returns The model if found, null otherwise
  */
-export const getModel = (existingModels: Models, alias: string): Model | null => {
-  return existingModels.find(model => model.alias === alias) || null;
+export const getModel = (
+  existingModels: Models,
+  alias: string,
+): Model | null => {
+  return existingModels.find((model) => model.alias === alias) || null;
 };
 
 /**
@@ -107,5 +121,5 @@ export const getModel = (existingModels: Models, alias: string): Model | null =>
  * @returns True if model exists, false otherwise
  */
 export const hasModel = (existingModels: Models, alias: string): boolean => {
-  return existingModels.some(model => model.alias === alias);
-}; 
+  return existingModels.some((model) => model.alias === alias);
+};

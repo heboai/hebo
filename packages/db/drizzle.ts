@@ -1,8 +1,11 @@
 import { isLocal, getConnectionConfig } from "./utils";
-import type { DbCredentials } from "./utils"
+import type { DbCredentials } from "./utils";
 
 // Drizzle imports for both dialects
-import { drizzle as drizzlePostgres, NodePgDatabase } from "drizzle-orm/node-postgres";
+import {
+  drizzle as drizzlePostgres,
+  NodePgDatabase,
+} from "drizzle-orm/node-postgres";
 import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
 
 // Runtime clients
@@ -24,14 +27,20 @@ const initDb = (): UniversalDb => {
     // Local development – PGLite via pglite client
     const dataDir = getConnectionConfig() as string;
 
-    return drizzlePgLite({ schema: postgresSchema, connection: { dataDir } }) as unknown as UniversalDb;
+    return drizzlePgLite({
+      schema: postgresSchema,
+      connection: { dataDir },
+    }) as unknown as UniversalDb;
   }
 
   // Remote/production – PostgreSQL via pg Pool
-  const { host, port, user, password, database } = getConnectionConfig() as DbCredentials;
+  const { host, port, user, password, database } =
+    getConnectionConfig() as DbCredentials;
   const pool = new Pool({ host, port, user, password, database });
-  return drizzlePostgres(pool, { schema: postgresSchema }) as unknown as UniversalDb;
-}
+  return drizzlePostgres(pool, {
+    schema: postgresSchema,
+  }) as unknown as UniversalDb;
+};
 
 // By default we expose `db` with its inferred type from `initDb()` to maintain
 // type safety while allowing universal usage of the query builder regardless

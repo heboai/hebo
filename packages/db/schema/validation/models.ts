@@ -10,7 +10,7 @@ export const SupportedProviders = z.enum([
   "cohere",
   "mistral",
   "perplexity",
-  "custom"
+  "custom",
 ]);
 
 // Custom endpoint schema
@@ -62,13 +62,18 @@ export const validateSingleModel = (data: unknown): Model => {
   return ModelSchema.parse(data);
 };
 
-export const validateModelsAddition = (existingModels: Models, newModel: unknown): Models => {
+export const validateModelsAddition = (
+  existingModels: Models,
+  newModel: unknown,
+): Models => {
   const validatedNewModel = validateSingleModel(newModel);
 
   // Check for duplicate aliases
-  const existingAliases = existingModels.map(model => model.alias);
+  const existingAliases = existingModels.map((model) => model.alias);
   if (existingAliases.includes(validatedNewModel.alias)) {
-    throw new Error(`Model with alias "${validatedNewModel.alias}" already exists`);
+    throw new Error(
+      `Model with alias "${validatedNewModel.alias}" already exists`,
+    );
   }
 
   return [...existingModels, validatedNewModel];

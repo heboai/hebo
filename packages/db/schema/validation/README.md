@@ -50,9 +50,9 @@ const models = [
     alias: "default",
     LLM: "gpt-4o",
     routing: {
-      type: "fastest"
-    }
-  }
+      type: "fastest",
+    },
+  },
 ];
 
 try {
@@ -68,13 +68,15 @@ try {
 ```typescript
 import { addModel } from "@hebo/db";
 
-const existingModels = [/* existing models */];
+const existingModels = [
+  /* existing models */
+];
 const newModel = {
   alias: "summarizer",
   LLM: "gpt-3.5-turbo",
   routing: {
-    type: "cheapest"
-  }
+    type: "cheapest",
+  },
 };
 
 try {
@@ -94,8 +96,8 @@ const updatedModels = updateModel(existingModels, "default", {
   alias: "vision",
   LLM: "gpt-4o",
   routing: {
-    type: "fastest"
-  }
+    type: "fastest",
+  },
 });
 ```
 
@@ -113,24 +115,22 @@ const modelsAfterRemoval = removeModel(existingModels, "default");
 import { createModel } from "@hebo/db";
 
 // Create a model with cheapest routing
-const modelWithCheapest = createModel("condense", "gpt-3.5-turbo", { type: "cheapest" });
+const modelWithCheapest = createModel("condense", "gpt-3.5-turbo", {
+  type: "cheapest",
+});
 
 // Create a model with fastest routing
 const modelWithFastest = createModel("default", "gpt-4o", { type: "fastest" });
 
 // Create a model with custom endpoint
-const modelWithCustomEndpoint = createModel(
-  "summarizer",
-  "claude-3-sonnet",
-  {
-    type: "custom",
-    customEndpoint: {
-      url: "https://api.anthropic.com/v1/messages",
-      provider: "anthropic",
-      apiKey: "sk-ant-api03-..."
-    }
-  }
-);
+const modelWithCustomEndpoint = createModel("summarizer", "claude-3-sonnet", {
+  type: "custom",
+  customEndpoint: {
+    url: "https://api.anthropic.com/v1/messages",
+    provider: "anthropic",
+    apiKey: "sk-ant-api03-...",
+  },
+});
 ```
 
 ## Validation Rules
@@ -158,8 +158,8 @@ All schemas include TypeScript types for full type safety:
 ```typescript
 import type { Models, Model, SupportedProvider } from "@hebo/db";
 
-const models: Models = [/* ... */];
+const models: Models = [
+  /* ... */
+];
 const provider: SupportedProvider = "openai";
 ```
-
- 
