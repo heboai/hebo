@@ -15,6 +15,13 @@ import {
   SelectTrigger,
   SelectValue 
 } from "@hebo/ui/components/Select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@hebo/ui/components/Card";
 
 export type CreateAgentFormProps = {
   models: { modelName: string; freeTokensPerMonth: number }[];
@@ -72,7 +79,7 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
   };
 
   return (
-    <div className="max-w-lg w-full p-6 space-y-4">
+    <Card className="max-w-lg w-full bg-transparent border-none shadow-none p-6 space-y-4">
       {/* Title */}
       <h1>Create a new agent</h1>
       
@@ -161,7 +168,7 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
           </div>
         </div>
       </form>
-    </div>
+    </Card>
   );
 };
 

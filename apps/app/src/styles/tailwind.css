@@ -154,6 +154,11 @@
     @apply gap-4 sm:gap-4;
   }
 
+  /* Card general styling */
+  .card {
+    @apply p-6;
+  }
+
   /* Underline links by default */
   a:not([href^="/"]) {
     @apply text-indigo-700 underline decoration-dotted;
