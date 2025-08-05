@@ -8,6 +8,7 @@ import { queryClient } from '~/lib/data/queryClient';
 import { useCreateAgent, useAgentAwareness } from "~/lib/data/agents";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
+import { Label } from "@hebo/ui/components/Label";
 import { 
   Select,
   SelectContent,
@@ -49,7 +50,6 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
   });
 
   const selectedModel = watch("selectedModel");
-  const selectedModelData = models.find(model => model.modelName === selectedModel);
 
   const createAgentMutation = useCreateAgent();
   const { activeAgent } = useAgentAwareness();
@@ -79,95 +79,93 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
   };
 
   return (
-    <Card className="max-w-lg w-full bg-transparent border-none shadow-none p-6 space-y-4">
-      {/* Title */}
-      <h1>Create a new agent</h1>
+    <Card className="bg-transparent border-none shadow-none card p-0">
+      <CardHeader className="pb-4">
+        <CardTitle>Create a new agent</CardTitle>
+        <CardDescription>
+          Each agent has its own model configuration and API keys. Learn more about which model to choose based on Use Case
+        </CardDescription>
+      </CardHeader>
       
-      {/* Description */}
-      <p>
-        Each agent has its own model configuration and API keys. Learn more about which model to choose based on Use Case
-      </p>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit(handleSubmitForm)}>
-        <div className="grid grid-cols-1 gap-4">
-          {/* Agent Name Field */}
-          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-start gap-2 sm:gap-4">
-            <label htmlFor="agent-name" className="sm:w-32">
-              Agent Name
-            </label>
-            <div className="space-y-1">
-              <Input
-                id="agent-name"
-                type="text"
-                placeholder="Name"
-                className="bg-white"
-                aria-label="Agent Name"
-                aria-invalid={!!errors.agentName}
-                {...register("agentName", { required: "Please enter an agent name" })}
-              />
-              {errors.agentName && (
-                <div role="alert" className="text-destructive">{errors.agentName.message}</div>
-              )}
-            </div>
-          </div>
-
-          {/* Default Model Field */}
-          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-start gap-2 sm:gap-4">
-            <label htmlFor="model-select" className="sm:w-32">
-              Default Model
-            </label>
-            <div className="space-y-1 max-w-xs">
-              <Select value={selectedModel} onValueChange={handleModelSelect}>
-                <SelectTrigger 
-                  id="model-select"
-                  className="bg-white"
-                  aria-label="Select a model"
-                  aria-invalid={!!errors.selectedModel}
-                >
-                  <SelectValue placeholder="Select a model" className="truncate" />
-                </SelectTrigger>
-                <SelectContent>
-                  {models.map((model) => (
-                    <SelectItem
-                      key={model.modelName}
-                      value={model.modelName}
-                      className="truncate"
-                    >
-                      {model.modelName} ({Math.floor(model.freeTokensPerMonth / 1000000)}M Free Tokens / Month)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.selectedModel && (
-                <div role="alert" className="text-destructive">{errors.selectedModel.message}</div>
-              )}
-            </div>
-          </div>
-
-          {/* Mutation Error Display */}
-          {mutationError && (
-            <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
-              <div className="sm:w-32"></div>
-              <div className="space-y-1">
-                <div role="alert" className="text-destructive">{mutationError}</div>
+      <CardContent>
+        <form onSubmit={handleSubmit(handleSubmitForm)}>
+          <div className="grid grid-cols-1 gap-4">
+            {/* Agent Name Field */}
+            <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-start gap-2 sm:gap-4">
+              <Label htmlFor="agent-name" className="sm:w-32">
+                Agent Name
+              </Label>
+              <div className="space-y-1 max-w-xs w-full">
+                <Input
+                  id="agent-name"
+                  type="text"
+                  placeholder="Name"
+                  className="bg-white w-full"
+                  aria-invalid={!!errors.agentName}
+                  {...register("agentName", { required: "Please enter an agent name" })}
+                />
+                {errors.agentName && (
+                  <div role="alert" className="text-destructive">{errors.agentName.message}</div>
+                )}
               </div>
             </div>
-          )}
 
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <Button 
-              type="submit" 
-              disabled={createAgentMutation.isPending}
-              aria-label="Create Agent and go to home"
-            >
-              {createAgentMutation.isPending && <Loader2Icon className="animate-spin" />}
-              {createAgentMutation.isPending ? 'Creating...' : 'Create'}
-            </Button>
+            {/* Default Model Field */}
+            <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-start gap-2 sm:gap-4">
+              <Label htmlFor="model-select" className="sm:w-32">
+                Default Model
+              </Label>
+              <div className="space-y-1 max-w-xs w-full">
+                <Select value={selectedModel} onValueChange={handleModelSelect}>
+                  <SelectTrigger 
+                    id="model-select"
+                    className="bg-white w-full"
+                    aria-invalid={!!errors.selectedModel}
+                  >
+                    <SelectValue placeholder="Select a model" className="truncate" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {models.map((model) => (
+                      <SelectItem
+                        key={model.modelName}
+                        value={model.modelName}
+                        className="truncate"
+                      >
+                        {model.modelName} ({Math.floor(model.freeTokensPerMonth / 1000000)}M Free Tokens / Month)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.selectedModel && (
+                  <div role="alert" className="text-destructive">{errors.selectedModel.message}</div>
+                )}
+              </div>
+            </div>
+
+            {/* Mutation Error Display */}
+            {mutationError && (
+              <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
+                <div className="sm:w-32"></div>
+                <div className="space-y-1">
+                  <div role="alert" className="text-destructive">{mutationError}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="flex justify-end">
+              <Button 
+                type="submit" 
+                disabled={createAgentMutation.isPending}
+                aria-label="Create Agent and go to home"
+              >
+                {createAgentMutation.isPending && <Loader2Icon className="animate-spin" />}
+                {createAgentMutation.isPending ? 'Creating...' : 'Create'}
+              </Button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </CardContent>
     </Card>
   );
 };
