@@ -61,7 +61,7 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
         models: [data.selectedModel],
       },
       {
-        onError: (error: any) => {
+        onError: (error: Error) => {
           setMutationError(error.message || 'Something went wrong');
         }
       }
