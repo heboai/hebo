@@ -1,6 +1,6 @@
 'use client';
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
 import { useCreateAgent, useAgentAwareness } from "~/lib/data/agents";
@@ -24,6 +24,8 @@ type FormValues = {
 };
 
 const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
+  const [mutationError, setMutationError] = useState<string | null>(null);
+  
   const {
     register,
     handleSubmit,
@@ -49,6 +51,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
   }
 
   const handleSubmitForm = (data: FormValues) => {
+    setMutationError(null); // Clear any previous errors
     createAgentMutation.mutate(
       {
         agentName: data.agentName,
@@ -56,7 +59,7 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
       },
       {
         onError: (error: any) => {
-          alert(error.message || 'Something went wrong');
+          setMutationError(error.message || 'Something went wrong');
         }
       }
     );
@@ -131,6 +134,16 @@ const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
             )}
           </div>
         </div>
+
+        {/* Mutation Error Display */}
+        {mutationError && (
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-center gap-2 sm:gap-4">
+            <div className="sm:w-32"></div>
+            <div className="space-y-1">
+              <div role="alert" className="text-destructive">{mutationError}</div>
+            </div>
+          </div>
+        )}
 
         {/* Submit Button */}
         <div className="flex justify-end pt-4">
