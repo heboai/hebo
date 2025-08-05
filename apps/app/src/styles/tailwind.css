@@ -149,6 +149,11 @@
     @apply text-sm;
   }
 
+  /* Form spacing */
+  form {
+    @apply gap-4 sm:gap-4;
+  }
+
   /* Underline links by default */
   a:not([href^="/"]) {
     @apply text-indigo-700 underline decoration-dotted;
