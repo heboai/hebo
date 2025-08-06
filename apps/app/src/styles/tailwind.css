@@ -208,4 +208,9 @@
     @apply border-slate-500;
   }
 
+  /* Card Title utility class for consistent font size and weight */
+  .card-title {
+    @apply text-xl font-medium;
+  }
+
 }
