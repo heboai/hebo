@@ -1,4 +1,3 @@
-// src/index.ts
 import { Elysia } from 'elysia';
 import { authenticateUser } from './middlewares/auth';
 import { handleGetVersion } from './api';
