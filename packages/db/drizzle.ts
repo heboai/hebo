@@ -12,7 +12,17 @@ import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
 import { Pool } from "pg";
 
 // Schema imports
-import * as postgresSchema from "./schema";
+import { agents } from "./schema/agents";
+import { branches } from "./schema/branches";
+import { timestamps } from "./schema/timestamps";
+import * as models from "./schema/types/models";
+
+const postgresSchema = {
+  agents,
+  branches,
+  timestamps,
+  ...models,
+};
 
 // Create an intersection type that contains the shared API surface of both drivers.
 // This removes the problematic union that prevented calling methods like `.select()`

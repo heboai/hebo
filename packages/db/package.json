@@ -3,11 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "main": "./index.ts",
-  "types": "./index.ts",
-  "exports": {
-    ".": "./index.ts"
-  },
+  "main": "./drizzle.ts",
+  "types": "./drizzle.ts",
   "scripts": {
     "clean": "rimraf .next .turbo node_modules",
     "migrate": "drizzle-kit migrate",
