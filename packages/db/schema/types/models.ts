@@ -13,9 +13,13 @@ export const SupportedProviders = Type.Union([
 // Supported LLM models literal union
 export const SupportedLLMs = Type.Union([
   // Todo: add more LLMs over time
+  // Anthropic models
   Type.Literal("claude-3-5-sonnet-20241022"),
   Type.Literal("claude-3-haiku-20240307"),
   Type.Literal("claude-3-5-haiku-20241022"),
+  // Voyage models
+  Type.Literal("voyage-multimodal-3"),
+  Type.Literal("voyage-3-large"),
 ]);
 
 // Endpoint schema
