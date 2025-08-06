@@ -165,15 +165,15 @@ importers:
       '@libsql/client':
         specifier: ^0.15.9
         version: 0.15.10
+      '@sinclair/typebox':
+        specifier: ^0.32.35
+        version: 0.32.35
       drizzle-orm:
         specifier: ^0.44.4
         version: 0.44.4(@electric-sql/pglite@0.3.7)(@libsql/client@0.15.10)(@types/pg@8.15.4)(pg@8.16.3)
       pg:
         specifier: ^8.16.3
         version: 8.16.3
-      zod:
-        specifier: ^4.0.14
-        version: 4.0.14
     devDependencies:
       '@electric-sql/pglite':
         specifier: ^0.3.7
@@ -1790,6 +1790,9 @@ packages:
 
   '@simplewebauthn/types@11.0.0':
     resolution: {integrity: sha512-b2o0wC5u2rWts31dTgBkAtSNKGX0cvL6h8QedNsKmj8O4QoLFQFR3DBVBUlpyVEhYKA+mXGUaXbcOc4JdQ3HzA==}
+
+  '@sinclair/typebox@0.32.35':
+    resolution: {integrity: sha512-Ul3YyOTU++to8cgNkttakC0dWvpERr6RYoHO2W47DLbFvrwBDJUY31B1sImH6JZSYc4Kt4PyHtoPNu+vL2r2dA==}
 
   '@sindresorhus/merge-streams@2.3.0':
     resolution: {integrity: sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==}
@@ -5230,9 +5233,6 @@ packages:
   yup@1.6.1:
     resolution: {integrity: sha512-JED8pB50qbA4FOkDol0bYF/p60qSEDQqBD0/qeIrUCG1KbPBIQ776fCUNb9ldbPcSTxA69g/47XTo4TqWiuXOA==}
 
-  zod@4.0.14:
-    resolution: {integrity: sha512-nGFJTnJN6cM2v9kXL+SOBq3AtjQby3Mv5ySGFof5UGRHrRioSJ5iG680cYNjE/yWk671nROcpPj4hAS8nyLhSw==}
-
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
@@ -7043,6 +7043,8 @@ snapshots:
       '@simplewebauthn/types': 11.0.0
 
   '@simplewebauthn/types@11.0.0': {}
+
+  '@sinclair/typebox@0.32.35': {}
 
   '@sindresorhus/merge-streams@2.3.0': {}
 
@@ -11147,7 +11149,5 @@ snapshots:
       tiny-case: 1.0.3
       toposort: 2.0.2
       type-fest: 2.19.0
-
-  zod@4.0.14: {}
 
   zwitch@2.0.4: {}

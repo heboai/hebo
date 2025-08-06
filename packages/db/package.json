@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "@libsql/client": "^0.15.9",
+    "@sinclair/typebox": "^0.32.35",
     "drizzle-orm": "^0.44.4",
-    "pg": "^8.16.3",
-    "zod": "^4.0.14"
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.7",

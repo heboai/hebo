@@ -1,80 +1,53 @@
-import { z } from "zod";
+import { Type, Static } from "@sinclair/typebox";
 
-// Supported providers enum
-export const SupportedProviders = z.enum([
-  "openai",
-  "anthropic",
-  "google",
-  "azure",
-  "aws",
-  "cohere",
-  "mistral",
-  "perplexity",
-  "custom",
+// -----------------------------------------------------------------------------
+// TypeBox Schemas
+// -----------------------------------------------------------------------------
+// Supported providers literal union
+export const SupportedProviders = Type.Union([
+  // Todo: add more providers over time
+  Type.Literal("aws"),
+  Type.Literal("custom"),
 ]);
 
 // Custom endpoint schema
-export const CustomEndpointSchema = z.object({
-  url: z.url(),
+export const CustomEndpointSchema = Type.Object({
+  url: Type.String({ format: "uri" }),
   provider: SupportedProviders,
-  apiKey: z.string().min(1),
-  headers: z.record(z.string(), z.string()).optional(),
+  apiKey: Type.String({ minLength: 1 }),
 });
 
-// Routing schema with three types: cheapest, fastest, or custom
-export const RoutingSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("cheapest"),
-  }),
-  z.object({
-    type: z.literal("fastest"),
-  }),
-  z.object({
-    // When using custom, you must provide a customEndpoint
-    type: z.literal("custom"),
-    customEndpoint: CustomEndpointSchema,
-  }),
+// Routing schemas
+export const RoutingDefaultSchema = Type.Object({
+  // Todo: enable cheapest and fastest routing options in the future
+  type: Type.Literal("default"),
+});
+
+export const RoutingCustomSchema = Type.Object({
+  type: Type.Literal("custom"),
+  customEndpoint: CustomEndpointSchema,
+});
+
+export const RoutingSchema = Type.Union([
+  RoutingDefaultSchema,
+  RoutingCustomSchema,
 ]);
 
-// Individual model schema
-export const ModelSchema = z.object({
-  alias: z.string().min(1),
-  LLM: z.string().min(1),
+// Model schema
+export const ModelSchema = Type.Object({
+  alias: Type.String({ minLength: 1 }),
+  LLM: Type.String({ minLength: 1 }),
   routing: RoutingSchema,
 });
 
-// Models array schema
-export const ModelsSchema = z.array(ModelSchema).min(1);
+// Collection of models must contain at least one entry
+export const ModelsSchema = Type.Array(ModelSchema, { minItems: 1 });
 
-// Type exports for use in other parts of the application
-export type SupportedProvider = z.infer<typeof SupportedProviders>;
-export type CustomEndpoint = z.infer<typeof CustomEndpointSchema>;
-export type Routing = z.infer<typeof RoutingSchema>;
-export type Model = z.infer<typeof ModelSchema>;
-export type Models = z.infer<typeof ModelsSchema>;
-
-// Validation functions
-export const validateModelsSchema = (data: unknown): Models => {
-  return ModelsSchema.parse(data);
-};
-
-export const validateSingleModel = (data: unknown): Model => {
-  return ModelSchema.parse(data);
-};
-
-export const validateModelsAddition = (
-  existingModels: Models,
-  newModel: unknown,
-): Models => {
-  const validatedNewModel = validateSingleModel(newModel);
-
-  // Check for duplicate aliases
-  const existingAliases = existingModels.map((model) => model.alias);
-  if (existingAliases.includes(validatedNewModel.alias)) {
-    throw new Error(
-      `Model with alias "${validatedNewModel.alias}" already exists`,
-    );
-  }
-
-  return [...existingModels, validatedNewModel];
-};
+// -----------------------------------------------------------------------------
+// Inferred Types
+// -----------------------------------------------------------------------------
+export type SupportedProvider = Static<typeof SupportedProviders>;
+export type CustomEndpoint = Static<typeof CustomEndpointSchema>;
+export type Routing = Static<typeof RoutingSchema>;
+export type Model = Static<typeof ModelSchema>;
+export type Models = Static<typeof ModelsSchema>;
