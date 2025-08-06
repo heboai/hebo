@@ -19,6 +19,7 @@ dist
 *.pem
 .env*
 !.env.example
+.build-complete
 
 # debug
 npm-debug.log*
