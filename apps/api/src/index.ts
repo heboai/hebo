@@ -11,15 +11,7 @@ const app = new Elysia()
       a.use(authenticateUser()).get("/version", () => handleGetVersion()),
     ),
   )
-  .onError(({ code, error, set }) => {
-    if (code === "NOT_FOUND") {
-      set.status = 418;
-      return {
-        success: false,
-        error: "I'm a teapot",
-        timestamp: new Date().toISOString(),
-      };
-    }
+  .onError(({ error, set }) => {
     console.error("API Error:", error);
     set.status = 500;
     return {
