@@ -11,13 +11,10 @@ const app = new Elysia()
       a.use(authenticateUser()).get("/version", () => handleGetVersion()),
     ),
   )
-  .onError(({ error, set }) => {
+  .onError(({ error }) => {
     console.error("API Error:", error);
-    set.status = 500;
     return {
-      success: false,
-      error: "Internal server error",
-      timestamp: new Date().toISOString(),
+      error,
     };
   });
 
@@ -27,5 +24,4 @@ Bun.serve({
   development: false,
 });
 
-console.log(`🚀  Hebo API listening on port ${PORT}`);
-console.log(`📊 Runtime: Bun ${process.version}`);
+console.log(`🚀 Hebo API listening on port ${PORT} (Bun ${process.version})`);
