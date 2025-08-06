@@ -73,9 +73,9 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
   };
 
   return (
-    <Card className="bg-transparent border-none shadow-none card p-0">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-medium">Create a new agent</CardTitle>
+    <Card className="bg-transparent border-none shadow-none card">
+      <CardHeader>
+        <CardTitle className="card-title">Create a new agent</CardTitle>
         <CardDescription>
           Each agent has its own model configuration and API keys. Learn more about which model to choose based on Use Case
         </CardDescription>
@@ -170,9 +170,7 @@ const CreateAgentFormContent: React.FC<CreateAgentFormProps> = ({ models }) => {
 
 const CreateAgentForm: React.FC<CreateAgentFormProps> = ({ models }) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <CreateAgentFormContent models={models} />
-    </QueryClientProvider>
+    <CreateAgentFormContent models={models} />
   );
 };
 
