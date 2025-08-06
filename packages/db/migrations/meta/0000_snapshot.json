@@ -1,5 +1,5 @@
 {
-  "id": "e6b530dc-73ea-4f0a-a160-715316741386",
+  "id": "a2e1551b-3716-4a47-ba5b-c7d10aaa7fb7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,7 +10,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigserial",
           "primaryKey": true,
           "notNull": true
         },
@@ -61,13 +61,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "bigserial",
           "primaryKey": true,
           "notNull": true
         },
         "agent_id": {
           "name": "agent_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -123,6 +123,7 @@
             }
           ],
           "isUnique": true,
+          "where": "\"branches\".\"deleted_at\" is null",
           "concurrently": false,
           "method": "btree",
           "with": {}
