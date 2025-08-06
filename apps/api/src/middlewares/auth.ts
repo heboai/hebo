@@ -1,9 +1,9 @@
-import { Elysia } from 'elysia'
-import * as jose from 'jose'
+import { Elysia } from "elysia";
+import * as jose from "jose";
 
 interface StackAuthEnv {
-  NEXT_PUBLIC_STACK_PROJECT_ID?: string
-  STACK_SECRET_SERVER_KEY?: string
+  NEXT_PUBLIC_STACK_PROJECT_ID?: string;
+  STACK_SECRET_SERVER_KEY?: string;
 }
 
 /**
@@ -19,42 +19,44 @@ interface StackAuthEnv {
  *     app.group('/api', (api) => api.use(authenticateUser()))
  */
 export function authenticateUser() {
-  return new Elysia({ name: 'authenticate-user' }).onBeforeHandle(
+  return new Elysia({ name: "authenticate-user" }).onBeforeHandle(
     async ({ headers, set }) => {
       const {
         NEXT_PUBLIC_STACK_PROJECT_ID: projectId,
         STACK_SECRET_SERVER_KEY: secretServerKey,
-      } = process.env as unknown as StackAuthEnv
+      } = process.env as unknown as StackAuthEnv;
 
-      const authHeader = headers['authorization']
-      const accessToken = headers['x-access-token']
+      const authHeader = headers["authorization"];
+      const accessToken = headers["x-access-token"];
 
-      const unauthorizedBody = 'Unauthorized'
+      const unauthorizedBody = "Unauthorized";
 
       if (!authHeader && !accessToken) {
-        set.status = 401
-        return unauthorizedBody
+        set.status = 401;
+        return unauthorizedBody;
       }
 
       // Validate API key via Stack Auth REST endpoint
       if (authHeader) {
         const response = await fetch(
-          'https://api.stack-auth.com/api/v1/user-api-keys/check',
+          "https://api.stack-auth.com/api/v1/user-api-keys/check",
           {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'content-type': 'application/json',
-              'x-stack-access-type': 'server',
-              'x-stack-project-id': projectId ?? '',
-              'x-stack-secret-server-key': secretServerKey ?? '',
+              "content-type": "application/json",
+              "x-stack-access-type": "server",
+              "x-stack-project-id": projectId ?? "",
+              "x-stack-secret-server-key": secretServerKey ?? "",
             },
-            body: JSON.stringify({ api_key: authHeader.replace('Bearer ', '') }),
-          }
-        )
+            body: JSON.stringify({
+              api_key: authHeader.replace("Bearer ", ""),
+            }),
+          },
+        );
 
         if (response.status !== 200) {
-          set.status = 401
-          return unauthorizedBody
+          set.status = 401;
+          return unauthorizedBody;
         }
       }
 
@@ -62,17 +64,17 @@ export function authenticateUser() {
       if (accessToken) {
         const jwks = jose.createRemoteJWKSet(
           new URL(
-            `https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`
-          )
-        )
+            `https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`,
+          ),
+        );
 
         try {
-          await jose.jwtVerify(accessToken, jwks)
+          await jose.jwtVerify(accessToken, jwks);
         } catch {
-          set.status = 401
-          return unauthorizedBody
+          set.status = 401;
+          return unauthorizedBody;
         }
       }
-    }
-  )
+    },
+  );
 }

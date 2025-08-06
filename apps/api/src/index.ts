@@ -1,24 +1,32 @@
-import { Elysia } from 'elysia';
-import { authenticateUser } from './middlewares/auth';
-import { handleGetVersion } from './api';
+import { Elysia } from "elysia";
+import { authenticateUser } from "./middlewares/auth";
+import { handleGetVersion } from "./api";
 
-const PORT = parseInt(process.env.PORT ?? '3001', 10);
+const PORT = parseInt(process.env.PORT ?? "3001", 10);
 
 const app = new Elysia()
-  .get('/', () => 'Hebo API says hello!')
-  .group('/api', api =>
-    api.guard({}, a =>
-      a.use(authenticateUser()).get('/version', () => handleGetVersion()),
+  .get("/", () => "Hebo API says hello!")
+  .group("/api", (api) =>
+    api.guard({}, (a) =>
+      a.use(authenticateUser()).get("/version", () => handleGetVersion()),
     ),
   )
   .onError(({ code, error, set }) => {
-    if (code === 'NOT_FOUND') {
+    if (code === "NOT_FOUND") {
       set.status = 418;
-      return { success: false, error: "I'm a teapot", timestamp: new Date().toISOString() };
+      return {
+        success: false,
+        error: "I'm a teapot",
+        timestamp: new Date().toISOString(),
+      };
     }
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     set.status = 500;
-    return { success: false, error: 'Internal server error', timestamp: new Date().toISOString() };
+    return {
+      success: false,
+      error: "Internal server error",
+      timestamp: new Date().toISOString(),
+    };
   });
 
 Bun.serve({
