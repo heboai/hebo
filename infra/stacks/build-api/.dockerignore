@@ -5,8 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Don't ignore workspace files
-!pnpm-workspace.yaml
-!pnpm-lock.yaml
+!bun.lock
 !package.json
 
 # Build outputs

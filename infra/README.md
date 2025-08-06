@@ -86,10 +86,10 @@ The API deployment follows a containerized approach:
 
 ```bash
 # From project root
-pnpm run deploy
+bun run deploy
 
 # Or specific stage
-pnpm run deploy --stage production
+bun run deploy --stage production
 ```
 
 ### Publish API Container Image

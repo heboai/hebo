@@ -2,7 +2,7 @@
   "name": "hebo",
   "version": "0.0.1",
   "private": true,
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "bun@1.2.19",
   "workspaces": [
     "apps/*",
     "packages/*",
@@ -13,10 +13,10 @@
     "clean": "npm-run-all clean:workspaces clean:root",
     "clean:workspaces": "turbo run clean",
     "clean:root": "rimraf .next .turbo node_modules",
-    "db:generate": "pnpm --filter @hebo/db generate",
-    "db:migrate": "pnpm --filter @hebo/db migrate",
-    "db:studio": "pnpm --filter @hebo/db studio",
-    "db:check": "pnpm --filter @hebo/db check",
+    "db:generate": "bun run --filter @hebo/db generate",
+    "db:migrate": "bun run --filter @hebo/db migrate",
+    "db:studio": "bun run --filter @hebo/db studio",
+    "db:check": "bun run --filter @hebo/db check",
     "deploy": "sst deploy",
     "dev": "turbo run dev --parallel",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -38,6 +38,7 @@
     "typescript": "5.5.3"
   },
   "engines": {
+<<<<<<< HEAD
     "bun": ">=1.2.18",
     "pnpm": ">=9.0.0"
   },
@@ -63,5 +64,8 @@
       "tsup": "8.5.0",
       "typescript": "5.5.3"
     }
+=======
+    "bun": ">=1.2.19"
+>>>>>>> acf3443 (Change to bun as package manager for mono repo to (i) remove one dependency (ii) speed up repo scripts)
   }
 }
