@@ -11,8 +11,7 @@
   },
   "devDependencies": {
     "@types/node": "*",
-    "esbuild": "*",
-    "npm-run-all2": "*"
+    "esbuild": "*"
   },
   "dependencies": {
     "hono": "*",
