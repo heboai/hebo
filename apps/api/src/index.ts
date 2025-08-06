@@ -21,11 +21,10 @@ const app = new Elysia()
     return { success: false, error: 'Internal server error', timestamp: new Date().toISOString() };
   });
 
-// explicitly start the server
 Bun.serve({
   port: PORT,
   fetch: app.fetch,
-  development: false, // optional – mirrors your previous flag
+  development: false,
 });
 
 console.log(`🚀  Hebo API listening on port ${PORT}`);
