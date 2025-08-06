@@ -1,4 +1,6 @@
 import { Elysia } from "elysia";
+import { bearer } from "@elysiajs/bearer";
+import { jwt as elysiaJwt } from "@elysiajs/jwt";
 import * as jose from "jose";
 
 interface StackAuthEnv {
@@ -7,74 +9,115 @@ interface StackAuthEnv {
 }
 
 /**
- * Authentication & authorization plugin.
+ * Authentication & authorization plugin using Elysia's Bearer + JWT plugins.
  *
- * 1. Accepts either:
- *    - Bearer token via `Authorization` header (Stack user API key)
- *    - JWT via `X-Access-Token` header (Stack session token)
- * 2. Validates the credential against Stack Auth backend or JWKS.
- * 3. Returns 401 for any invalid or missing credential.
+ * The caller MUST supply **either**:
+ *   • `Authorization: Bearer <api-key>`  (Stack user API-key)
+ *   • `X-Access-Token: <jwt>`           (Stack session JWT)
  *
- * Designed to be mounted under a specific prefix, e.g.
- *     app.group('/api', (api) => api.use(authenticateUser()))
+ * Behaviour
+ *   • Missing credential               → 401
+ *   • Both credentials supplied        → 401
+ *   • Supplied but invalid credential  → 403
+ *
+ * On success the plugin decorates `ctx.store` with:
+ *   • `apiKeyOwnerId`  – when a valid API-key is provided
+ *   • `userId`         – when a valid JWT is provided (payload.sub)
  */
 export function authenticateUser() {
-  return new Elysia({ name: "authenticate-user" }).onBeforeHandle(
-    async ({ headers, set }) => {
-      const {
-        NEXT_PUBLIC_STACK_PROJECT_ID: projectId,
-        STACK_SECRET_SERVER_KEY: secretServerKey,
-      } = process.env as unknown as StackAuthEnv;
+  const {
+    NEXT_PUBLIC_STACK_PROJECT_ID: projectId,
+    STACK_SECRET_SERVER_KEY: secretServerKey,
+  } = process.env as unknown as StackAuthEnv;
 
-      const authHeader = headers["authorization"];
-      const accessToken = headers["x-access-token"];
+  /* Remote JWKS for JWT validation */
+  const jwks = jose.createRemoteJWKSet(
+    new URL(
+      `https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`,
+    ),
+  );
 
-      const unauthorizedBody = "Unauthorized";
+  return (
+    new Elysia({
+      name: "authenticate-user",
+    })
+      /* ──────────────────────────────────────────────────────────────── */
+      /* 1) Bearer plugin                                                */
+      /* ──────────────────────────────────────────────────────────────── */
+      .use(bearer())
 
-      if (!authHeader && !accessToken) {
-        set.status = 401;
-        return unauthorizedBody;
-      }
+      /* ──────────────────────────────────────────────────────────────── */
+      /* 2) JWT plugin                                                   */
+      /* ──────────────────────────────────────────────────────────────── */
+      .use(
+        elysiaJwt({
+          name: "jwt",
+          secret: jwks as unknown as any, // Remote JWKS resolver (jose)
+        }),
+      )
 
-      // Validate API key via Stack Auth REST endpoint
-      if (authHeader) {
-        const response = await fetch(
-          "https://api.stack-auth.com/api/v1/user-api-keys/check",
-          {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-              "x-stack-access-type": "server",
-              "x-stack-project-id": projectId ?? "",
-              "x-stack-secret-server-key": secretServerKey ?? "",
+      /* ──────────────────────────────────────────────────────────────── */
+      /* 3) Accept exactly one credential                                */
+      /* ──────────────────────────────────────────────────────────────── */
+      .onBeforeHandle({ as: "global" }, async (ctx) => {
+        const { headers, bearer: bearerToken, jwt, set, store } = ctx as any;
+
+        const authHeader = headers["authorization"];
+        const accessToken = headers["x-access-token"] as string | undefined;
+
+        // No credential
+        if (!authHeader && !accessToken) {
+          set.status = 401;
+          return "Unauthorized";
+        }
+
+        // Both credentials
+        if (authHeader && accessToken) {
+          set.status = 401;
+          return "Send either Authorization or X-Access-Token header";
+        }
+
+        /* ───────── Validate JWT ───────── */
+        if (accessToken) {
+          try {
+            const payload: any = await jwt.verify(accessToken);
+            store.userId = payload?.sub;
+          } catch {
+            set.status = 403;
+            return "Invalid or expired JWT";
+          }
+        }
+
+        /* ───────── Validate API-key ───── */
+        if (authHeader) {
+          const token = bearerToken as string | undefined;
+          if (!token) {
+            set.status = 403;
+            return "Invalid API key";
+          }
+
+          const response = await fetch(
+            "https://api.stack-auth.com/api/v1/user-api-keys/check",
+            {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+                "x-stack-access-type": "server",
+                "x-stack-project-id": projectId ?? "",
+                "x-stack-secret-server-key": secretServerKey ?? "",
+              },
+              body: JSON.stringify({ api_key: token }),
             },
-            body: JSON.stringify({
-              api_key: authHeader.replace("Bearer ", ""),
-            }),
-          },
-        );
+          );
 
-        if (response.status !== 200) {
-          set.status = 401;
-          return unauthorizedBody;
+          if (response.status !== 200) {
+            set.status = 403;
+            return "Invalid API key";
+          }
+
+          const { userId: apiKeyOwnerId } = await response.json();
+          store.apiKeyOwnerId = apiKeyOwnerId;
         }
-      }
-
-      // Validate JWT using remote JWKS
-      if (accessToken) {
-        const jwks = jose.createRemoteJWKSet(
-          new URL(
-            `https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`,
-          ),
-        );
-
-        try {
-          await jose.jwtVerify(accessToken, jwks);
-        } catch {
-          set.status = 401;
-          return unauthorizedBody;
-        }
-      }
-    },
+      })
   );
 }
