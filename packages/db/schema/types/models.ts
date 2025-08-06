@@ -28,7 +28,7 @@ export const EndpointSchema = Type.Object({
 // Model schema
 export const ModelSchema = Type.Object({
   alias: Type.String({ minLength: 1 }),
-  LLM: SupportedLLMs, 
+  LLM: SupportedLLMs,
   endpoint: Type.Optional(EndpointSchema),
 });
 
