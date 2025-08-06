@@ -1,46 +1,33 @@
-import { Hono } from 'hono'
-import { handleGetVersion } from './api'
-import { authenticateUser } from './middlewares/auth'
+// src/index.ts
+import { Elysia } from 'elysia';
+import { authenticateUser } from './middlewares/auth';
+import { handleGetVersion } from './api';
 
-const app = new Hono()
+const PORT = parseInt(process.env.PORT ?? '3001', 10);
 
-app.use('/api/*', authenticateUser())
+const app = new Elysia()
+  .get('/', () => 'Hebo API says hello!')
+  .group('/api', api =>
+    api.guard({}, a =>
+      a.use(authenticateUser()).get('/version', () => handleGetVersion()),
+    ),
+  )
+  .onError(({ code, error, set }) => {
+    if (code === 'NOT_FOUND') {
+      set.status = 418;
+      return { success: false, error: "I'm a teapot", timestamp: new Date().toISOString() };
+    }
+    console.error('API Error:', error);
+    set.status = 500;
+    return { success: false, error: 'Internal server error', timestamp: new Date().toISOString() };
+  });
 
-app.get('/', (c) => {
-  return c.text('Hebo API says hello!')
-})
+// explicitly start the server
+Bun.serve({
+  port: PORT,
+  fetch: app.fetch,
+  development: false, // optional – mirrors your previous flag
+});
 
-app.get('/api/version', async (c) => {
-  const result = await handleGetVersion()
-  return c.json(result)
-})
-
-// 404 handler
-app.notFound((c) => {
-  return c.json({
-    success: false,
-    error: 'I\'m a teapot',
-    timestamp: new Date().toISOString()
-  }, 418)
-})
-
-// Error handler
-app.onError((err, c) => {
-  console.error('API Error:', err)
-  return c.json({
-    success: false,
-    error: 'Internal server error',
-    timestamp: new Date().toISOString()
-  }, 500)
-})
-
-const port = parseInt(process.env.PORT || '3001')
-console.log(`🚀 Hebo API server starting on port ${port}`)
-console.log(`📊 Runtime: Bun ${process.version}`)
-
-const server = {
-  port,
-  fetch: app.fetch
-}
-
-export default server 
+console.log(`🚀  Hebo API listening on port ${PORT}`);
+console.log(`📊 Runtime: Bun ${process.version}`);

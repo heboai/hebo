@@ -1,6 +1,6 @@
 # Hebo API
 
-A modern Hono-based API server designed for the Hebo platform, powered by Bun runtime.
+A modern Elysia-based API server designed for the Hebo platform, powered by Bun runtime.
 
 ## Quick Start
 
@@ -26,14 +26,11 @@ bun run dev
 
 # Build for production
 bun run build
-
-# Test Bun migration
-bun run test:migration
 ```
 
 ## Architecture
 
-- **Framework**: Hono.js 4.1.0
+- **Framework**: Elysia 1.3.8
 - **Runtime**: Bun 1.2.18
 - **Language**: TypeScript
 - **Port**: 3001 (configurable via PORT env var)

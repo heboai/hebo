@@ -6,12 +6,13 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ```
 / (git root)
-├── apps/                   # deployable targets
-│   ├── api/                # Hono API server
+├── apps/                   # Deployable targets
+│   ├── api/                # Elysia API server
 │   └── app/                # Next.js web application
 │
-├── packages/               # shareable libraries
-│   └── db/                 # Database schema and migrations
+├── packages/               # Shareable libraries
+│   ├── db/                 # Database schema and migrations
+│   └── ui/                 # Common UI components
 │
 ├── infra/                  # SST infrastructure stacks
 │   └── stacks/

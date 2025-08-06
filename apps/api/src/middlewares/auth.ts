@@ -1,52 +1,78 @@
-import { MiddlewareHandler } from 'hono'
-import { env } from 'hono/adapter'
-import { HTTPException } from 'hono/http-exception'
+import { Elysia } from 'elysia'
 import * as jose from 'jose'
 
-type StackAuthEnv = {
-  NEXT_PUBLIC_STACK_PROJECT_ID: string
-  STACK_SECRET_SERVER_KEY: string
+interface StackAuthEnv {
+  NEXT_PUBLIC_STACK_PROJECT_ID?: string
+  STACK_SECRET_SERVER_KEY?: string
 }
 
-export function authenticateUser(): MiddlewareHandler {
-  return async (c, next) => {
-    const { NEXT_PUBLIC_STACK_PROJECT_ID: projectId, STACK_SECRET_SERVER_KEY: secretServerKey } = env(c) as StackAuthEnv
-    const { 'Authorization': authHeader, 'X-Access-Token': accessToken } = c.req.header()
-    const unauthorizedResponse = new Response('Unauthorized', { status: 401 })
+/**
+ * Authentication & authorization plugin.
+ *
+ * 1. Accepts either:
+ *    - Bearer token via `Authorization` header (Stack user API key)
+ *    - JWT via `X-Access-Token` header (Stack session token)
+ * 2. Validates the credential against Stack Auth backend or JWKS.
+ * 3. Returns 401 for any invalid or missing credential.
+ *
+ * Designed to be mounted under a specific prefix, e.g.
+ *     app.group('/api', (api) => api.use(authenticateUser()))
+ */
+export function authenticateUser() {
+  return new Elysia({ name: 'authenticate-user' }).onBeforeHandle(
+    async ({ headers, set }) => {
+      const {
+        NEXT_PUBLIC_STACK_PROJECT_ID: projectId,
+        STACK_SECRET_SERVER_KEY: secretServerKey,
+      } = process.env as unknown as StackAuthEnv
 
-    if (authHeader == null && accessToken == null) {
-      throw new HTTPException(401, { res: unauthorizedResponse })
-    }
+      const authHeader = headers['authorization']
+      const accessToken = headers['x-access-token']
 
-    if (authHeader != null) {
-      const url = 'https://api.stack-auth.com/api/v1/user-api-keys/check';
-      const data = {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-stack-access-type': 'server',
-          'x-stack-project-id': projectId,
-          'x-stack-secret-server-key': secretServerKey,
-        },
-        body: JSON.stringify({ api_key: authHeader.replace('Bearer ', '') }),
-      };
+      const unauthorizedBody = 'Unauthorized'
 
-      const response = await fetch(url, data);
-      if (response.status !== 200) {
-        throw new HTTPException(401, { res: unauthorizedResponse })
+      if (!authHeader && !accessToken) {
+        set.status = 401
+        return unauthorizedBody
+      }
+
+      // Validate API key via Stack Auth REST endpoint
+      if (authHeader) {
+        const response = await fetch(
+          'https://api.stack-auth.com/api/v1/user-api-keys/check',
+          {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              'x-stack-access-type': 'server',
+              'x-stack-project-id': projectId ?? '',
+              'x-stack-secret-server-key': secretServerKey ?? '',
+            },
+            body: JSON.stringify({ api_key: authHeader.replace('Bearer ', '') }),
+          }
+        )
+
+        if (response.status !== 200) {
+          set.status = 401
+          return unauthorizedBody
+        }
+      }
+
+      // Validate JWT using remote JWKS
+      if (accessToken) {
+        const jwks = jose.createRemoteJWKSet(
+          new URL(
+            `https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`
+          )
+        )
+
+        try {
+          await jose.jwtVerify(accessToken, jwks)
+        } catch {
+          set.status = 401
+          return unauthorizedBody
+        }
       }
     }
-
-    if (accessToken != null) {
-      const jwks = jose.createRemoteJWKSet(new URL('https://api.stack-auth.com/api/v1/projects/' + projectId + '/.well-known/jwks.json'));
-      try {
-        await jose.jwtVerify(accessToken, jwks)
-      } catch {
-        throw new HTTPException(401, { res: unauthorizedResponse })
-      }
-    }
-
-    await next()
-  }
+  )
 }
-
