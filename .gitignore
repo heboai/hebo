@@ -20,6 +20,7 @@ dist
 .env*
 !.env.example
 .build-complete
+.eslintcache
 
 # debug
 npm-debug.log*
