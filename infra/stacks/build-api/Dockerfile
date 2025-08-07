@@ -13,6 +13,22 @@ COPY infra/package.json infra/package.json
 
 RUN bun install --filter '@hebo/api' --frozen-lockfile --production
 
+########################  builder stage  ########################
+FROM oven/bun:1.2.18 AS builder
+
+WORKDIR /repo
+
+# Copy dependencies from deps stage
+COPY --from=deps /repo/node_modules ./node_modules
+
+# Copy source code
+COPY . .
+
+WORKDIR /repo/apps/api
+
+# Build the application
+RUN bun run build
+
 ########################  runner stage  ########################
 FROM oven/bun:1.2.18 AS runner
 
@@ -21,16 +37,15 @@ RUN adduser --system --ingroup bun appuser
 
 WORKDIR /repo
 
+# Copy only production dependencies from deps stage
 COPY --chown=appuser:bun --from=deps /repo/node_modules ./node_modules
 
-COPY --chown=appuser:bun . .
+# Copy built application from builder stage
+COPY --chown=appuser:bun --from=builder /repo/apps/api/dist ./apps/api/dist
 
 USER appuser
 
 WORKDIR /repo/apps/api
-
-# Build the application
-RUN bun run build
 
 EXPOSE 3001
 
