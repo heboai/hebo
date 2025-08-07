@@ -44,34 +44,6 @@
     "typescript": "^5.9.2"
   },
   "engines": {
-<<<<<<< HEAD
-    "bun": ">=1.2.18",
-    "pnpm": ">=9.0.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "@typescript-eslint/eslint-plugin": "8.10.0",
-      "@typescript-eslint/parser": "8.10.0",
-      "buffer": "6.0.3",
-      "class-variance-authority": "0.7.1",
-      "clsx": "2.1.1",
-      "drizzle-kit": "^0.31.4",
-      "drizzle-orm": "^0.44.4",
-      "eslint": "9.5.0",
-      "eslint-plugin-import": "2.29.1",
-      "eslint-plugin-jsx-a11y": "6.9.0",
-      "hono": "4.5.0",
-      "next": "15.4.3",
-      "prettier": "3.3.2",
-      "sst": "3.0.37",
-      "tailwindcss": "4.1.11",
-      "tailwind-merge": "3.3.1",
-      "turbo": "2.5.5",
-      "tsup": "8.5.0",
-      "typescript": "5.5.3"
-    }
-=======
     "bun": ">=1.2.19"
->>>>>>> acf3443 (Change to bun as package manager for mono repo to (i) remove one dependency (ii) speed up repo scripts)
   }
 }
