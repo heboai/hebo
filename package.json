@@ -19,9 +19,12 @@
     "db:check": "bun run --filter @hebo/db check",
     "deploy": "sst deploy",
     "dev": "turbo run dev --parallel",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write .",
+    "format:staged": "prettier --write",
     "lint": "turbo run lint",
     "lint:deps": "check-dependency-version-consistency .",
+    "lint:staged": "bunx eslint --cache --fix",
+    "postinstall": "lefthook install",
     "test": "turbo run test"
   },
   "devDependencies": {
@@ -31,6 +34,7 @@
     "eslint": "^9.32.0",
     "eslint-config-next": "^15.4.4",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "lefthook": "^1.12.2",
     "npm-run-all2": "^8.0.4",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
