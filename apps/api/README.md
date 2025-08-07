@@ -1,6 +1,6 @@
 # Hebo API
 
-A modern Hono-based API server designed for the Hebo platform, powered by Bun runtime.
+A modern Elysia-based API server designed for the Hebo platform, powered by Bun runtime.
 
 ## Quick Start
 
@@ -26,14 +26,11 @@ bun run dev
 
 # Build for production
 bun run build
-
-# Test Bun migration
-bun run test:migration
 ```
 
 ## Architecture
 
-- **Framework**: Hono.js 4.1.0
+- **Framework**: Elysia 1.3.8
 - **Runtime**: Bun 1.2.18
 - **Language**: TypeScript
 - **Port**: 3001 (configurable via PORT env var)
@@ -52,3 +49,11 @@ The API expects the following environment variables when deployed:
 ## Deployment
 
 The API is deployed as a containerized application on AWS App Runner. For Docker build and deployment instructions, see the [infra/README.md](../infra/README.md) documentation.
+
+## Authentication
+
+Most API endpoints require authentication and accepts Bearer Token (API Key) or Access Token (JWT) authentication.
+
+To authenticate via Bearer Token, add an `Authorization: Bearer <your token>` to the header.
+
+To authenticate via Access Token, add a `X-Access-Token: <your token>` to the header.

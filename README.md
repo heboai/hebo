@@ -6,12 +6,13 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ```
 / (git root)
-├── apps/                   # deployable targets
-│   ├── api/                # Hono API server
+├── apps/                   # Deployable targets
+│   ├── api/                # Elysia API server
 │   └── app/                # Next.js web application
 │
-├── packages/               # shareable libraries
-│   └── db/                 # Database schema and migrations
+├── packages/               # Shareable libraries
+│   ├── db/                 # Database schema and migrations
+│   └── ui/                 # Common UI components
 │
 ├── infra/                  # SST infrastructure stacks
 │   └── stacks/
@@ -115,6 +116,9 @@ For deployments, we utilize the SST framework (http://sst.dev/).
 You can either install the SST CLI locally or use `bunx` to execute deployment commands manually.
 
 ```bash
+# Install providers
+sst install
+
 # Set secrets
 
 sst secret set HeboDbUsername <username> --stage <stage>

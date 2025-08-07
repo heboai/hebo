@@ -55,3 +55,6 @@ next-env.d.ts
 # db
 local-db
 hebo.db
+
+#eslint
+.eslintcache

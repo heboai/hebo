@@ -37,7 +37,7 @@ Aurora PostgreSQL database with advanced features:
 Containerized API deployed on AWS App Runner:
 
 - **Container**: Docker image from ECR Public (`public.ecr.aws/m1o3d3n5/hebo-api:latest`)
-- **Runtime**: Bun 1.2.18 with Hono.js 4.1.0 framework
+- **Runtime**: Bun 1.2.18 with Elysia 1.3.8 framework
 - **Port**: 3001 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
 - **Auto-deployment**: Disabled for manual control

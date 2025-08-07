@@ -3,13 +3,15 @@
 
 import { heboApiUrl } from "./api";
 
-// Create SST secrets for the required environment variables
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackPublishableClientKey = new sst.Secret("StackPublishableClientKey");
 
 const heboApp = new sst.aws.Nextjs("HeboApp", {
   path: "apps/app",
-  domain: $app.stage === "production" ? "cloud.hebo.ai" : `${$app.stage}.cloud.hebo.ai`,
+  domain:
+    $app.stage === "production"
+      ? "cloud.hebo.ai"
+      : `${$app.stage}.cloud.hebo.ai`,
   environment: {
     NEXT_PUBLIC_API_URL: heboApiUrl,
     NEXT_PUBLIC_STACK_PROJECT_ID: stackProjectId.value,
