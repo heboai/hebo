@@ -7,11 +7,11 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
+    "lint": "bunx eslint . --max-warnings 0",
     "clean": "rimraf .turbo node_modules"
   },
   "dependencies": {
-    "class-variance-authority": "0.7.1",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.3.1"
   },

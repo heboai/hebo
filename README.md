@@ -25,24 +25,23 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 │       ├── deploy.yml
 │       └── quality.yml
 │
+├── bunfig.toml             # Bun configuration
 ├── sst.config.ts           # SST configuration
-├── turbo.json              # Turborepo configuration
-└── pnpm-workspace.yaml     # pnpm workspace configuration
+└── turbo.json              # Turborepo configuration
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Bun >= 1.2.18
-- pnpm >= 9.0.0
+- Bun >= 1.2.19
 - AWS CLI (only required for deployment)
 
 ### Installation
 
 ```bash
 # Install dependencies
-pnpm i
+bun i
 ```
 
 ```bash
@@ -54,33 +53,33 @@ cp .env.example .env
 
 ```bash
 # Init the development database
-pnpm run db:push
+bun run db:push
 ```
 
 ```bash
 # Run the entire stack locally
-pnpm dev
+bun run dev
 ```
 
 ```bash
 # Start only the app in dev
-pnpm --filter @hebo/app run dev
+bun run -F @hebo/app dev
 ```
 
 ### Run modes
 
-| # | Mode | Command | Database | API availability |
-|---|------|---------|----------|------------------|
-| 1 | **Frontend-only** (offline) | `pnpm --filter @hebo/app run dev:local` | — | none – UI relies on local state manager |
-| 2 | **Local full-stack** | `pnpm dev` | SQLite (`packages/db/hebo.db`) | http://localhost:3001 |
-| 3 | **Remote full-stack** | `sst deploy` | Aurora PostgreSQL | HTTPS URL injected by SST |
+| #   | Mode                        | Command                    | Database                       | API availability                        |
+| --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
+| 1   | **Frontend-only** (offline) | `bun run -F @hebo/app dev` | —                              | none – UI relies on local state manager |
+| 2   | **Local full-stack**        | `bun run dev`              | SQLite (`packages/db/hebo.db`) | http://localhost:3001                   |
+| 3   | **Remote full-stack**       | `sst deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
 
 > **How the UI knows if the API is present**
 >
 > The web app reads `NEXT_PUBLIC_API_URL` at runtime:
 >
-> * If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
-> * For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `pnpm dev`, or the real API Gateway URL by `sst deploy`).
+> - If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
+> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun dev`, or the real API Gateway URL by `sst deploy`).
 >
 > Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `...` [TBD].
 
@@ -88,20 +87,20 @@ pnpm --filter @hebo/app run dev
 
 ```bash
 # Build all packages and apps
-pnpm build
+bun run build
 
 # Build specific package/app
-pnpm --filter @hebo/app build
+bun run -F @hebo/app build
 ```
 
 ### Testing
 
 ```bash
 # Run all tests
-pnpm test
+bun run test
 
 # Test specific package/app
-pnpm --filter @hebo/app test
+bun run -F @hebo/app test
 ```
 
 ### Deployment
@@ -113,7 +112,7 @@ The repository uses GitHub Actions for CI/CD:
 #### Manual deployments:
 
 For deployments, we utilize the SST framework (http://sst.dev/).
-You can either install the SST CLI locally or use `npx` to execute deployment commands manually.
+You can either install the SST CLI locally or use `bunx` to execute deployment commands manually.
 
 ```bash
 # Set secrets

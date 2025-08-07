@@ -6,29 +6,29 @@ A modern Hono-based API server designed for the Hebo platform, powered by Bun ru
 
 ```bash
 # Install dependencies
-pnpm install
+bun install
 
 # Run in development mode
-pnpm run dev
+bun run dev
 
 # Build the application
-pnpm run build
+bun run build
 ```
 
 ## Development
 
 ```bash
 # Install dependencies
-pnpm install
+bun install
 
 # Run in development mode
-pnpm run dev
+bun run dev
 
 # Build for production
-pnpm run build
+bun run build
 
 # Test Bun migration
-pnpm run test:migration
+bun run test:migration
 ```
 
 ## Architecture
