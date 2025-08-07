@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '~/lib/data/queryClient';
+import { SupportedModel } from "~/config/models";
 import { useCreateAgent } from "~/lib/data/agents";
+import { queryClient } from '~/lib/data/queryClient';
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
 import { Label } from "@hebo/ui/components/Label";
@@ -25,7 +25,7 @@ import {
 } from "@hebo/ui/components/Card";
 
 export type CreateAgentFormProps = {
-  models: { modelName: string; freeTokensPerMonth: number }[];
+  models: SupportedModel[];
 };
 
 type FormValues = {
