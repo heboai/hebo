@@ -1,17 +1,16 @@
 {
   "name": "@hebo/api",
   "version": "0.0.1",
-  "private": false,
+  "private": true,
   "type": "module",
   "scripts": {
-    "build": "echo 'Build completed' > .build-complete",
+    "build": "bun build src/index.ts --target=bun --outdir=dist",
     "dev": "bun --hot src/index.ts",
-    "start": "bun src/index.ts",
-    "clean": "rimraf .next .turbo node_modules dist .build-complete hebo.db"
+    "start": "bun -e \"import { existsSync } from 'fs'; if (!existsSync('dist/index.js')) { console.log('❌ Build not found. Please run \\'bun run build\\' first.'); process.exit(1); }\" && bun dist/index.js",
+    "clean": "rimraf .next .turbo node_modules dist hebo.db"
   },
   "devDependencies": {
-    "bun-types": "^1.2.19",
-    "esbuild": "^0.21.4"
+    "bun-types": "^1.2.19"
   },
   "dependencies": {
     "@elysiajs/bearer": "^1.3.0",
