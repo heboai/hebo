@@ -58,7 +58,7 @@ bun run db:push
 
 ```bash
 # Run the entire stack locally
-bun dev
+bun run dev
 ```
 
 ```bash
@@ -68,11 +68,11 @@ bun run -F @hebo/app dev
 
 ### Run modes
 
-| #   | Mode                        | Command                | Database                       | API availability                        |
-| --- | --------------------------- | ---------------------- | ------------------------------ | --------------------------------------- |
-| 1   | **Frontend-only** (offline) | `bun run -F @hebo/app` | —                              | none – UI relies on local state manager |
-| 2   | **Local full-stack**        | `bun dev`              | SQLite (`packages/db/hebo.db`) | http://localhost:3001                   |
-| 3   | **Remote full-stack**       | `sst deploy`           | Aurora PostgreSQL              | HTTPS URL injected by SST               |
+| #   | Mode                        | Command                    | Database                       | API availability                        |
+| --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
+| 1   | **Frontend-only** (offline) | `bun run -F @hebo/app dev` | —                              | none – UI relies on local state manager |
+| 2   | **Local full-stack**        | `bun run dev`              | SQLite (`packages/db/hebo.db`) | http://localhost:3001                   |
+| 3   | **Remote full-stack**       | `sst deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
 
 > **How the UI knows if the API is present**
 >
@@ -90,7 +90,7 @@ bun run -F @hebo/app dev
 bun run build
 
 # Build specific package/app
-bun -F @hebo/app build
+bun run -F @hebo/app build
 ```
 
 ### Testing
@@ -100,7 +100,7 @@ bun -F @hebo/app build
 bun run test
 
 # Test specific package/app
-bun -F @hebo/app test
+bun run -F @hebo/app test
 ```
 
 ### Deployment
