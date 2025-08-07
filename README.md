@@ -63,16 +63,16 @@ bun dev
 
 ```bash
 # Start only the app in dev
-bun run filter @hebo/app dev
+bun run -F @hebo/app dev
 ```
 
 ### Run modes
 
-| #   | Mode                        | Command                                | Database                       | API availability                        |
-| --- | --------------------------- | -------------------------------------- | ------------------------------ | --------------------------------------- |
-| 1   | **Frontend-only** (offline) | `bun run --filter @hebo/app dev:local` | —                              | none – UI relies on local state manager |
-| 2   | **Local full-stack**        | `bun dev`                              | SQLite (`packages/db/hebo.db`) | http://localhost:3001                   |
-| 3   | **Remote full-stack**       | `sst deploy`                           | Aurora PostgreSQL              | HTTPS URL injected by SST               |
+| #   | Mode                        | Command                | Database                       | API availability                        |
+| --- | --------------------------- | ---------------------- | ------------------------------ | --------------------------------------- |
+| 1   | **Frontend-only** (offline) | `bun run -F @hebo/app` | —                              | none – UI relies on local state manager |
+| 2   | **Local full-stack**        | `bun dev`              | SQLite (`packages/db/hebo.db`) | http://localhost:3001                   |
+| 3   | **Remote full-stack**       | `sst deploy`           | Aurora PostgreSQL              | HTTPS URL injected by SST               |
 
 > **How the UI knows if the API is present**
 >
@@ -87,20 +87,20 @@ bun run filter @hebo/app dev
 
 ```bash
 # Build all packages and apps
-bun build
+bun run build
 
 # Build specific package/app
-bun --filter @hebo/app build
+bun -F @hebo/app build
 ```
 
 ### Testing
 
 ```bash
 # Run all tests
-bun test
+bun run test
 
 # Test specific package/app
-bun --filter @hebo/app test
+bun -F @hebo/app test
 ```
 
 ### Deployment
