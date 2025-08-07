@@ -25,17 +25,19 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "eslint": "^9.32.0",
     "@eslint/eslintrc": "^3.3.1",
     "@next/eslint-plugin-next": "^15.4.4",
     "check-dependency-version-consistency": "^5.0.1",
+    "eslint": "^9.32.0",
     "eslint-config-next": "^15.4.4",
     "eslint-plugin-react-hooks": "^5.2.0",
     "npm-run-all2": "^8.0.4",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
+    "serve": "^14.2.4",
     "sst": "^3.17.10",
-    "turbo": "^2.5.5"
+    "turbo": "^2.5.5",
+    "typescript": "^5.9.2"
   },
   "engines": {
 <<<<<<< HEAD
