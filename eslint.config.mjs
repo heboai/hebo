@@ -124,7 +124,7 @@ const eslintConfig = [
           'newlines-between': 'always',
         },
       ],
-      // TODO: Remoe these (turning them to errors), once fixed 
+      // TODO: Remove these (turning them to errors), once fixed 
       'import/default': 'warn',
       'import/named': 'warn',
       'react-perf/jsx-no-new-function-as-prop': 'warn',
