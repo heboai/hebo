@@ -30,7 +30,7 @@ const eslintConfig = [
       // Point to the correct tsconfig
       'import/resolver': {
         typescript: {
-          project: ['./*/*/tsconfig.json'], 
+          project: ['**/tsconfig.json'], 
           noWarnOnMultipleProjects: true,
         },
       },
