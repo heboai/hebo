@@ -25,7 +25,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 │       ├── deploy.yml
 │       └── quality.yml
 │
-├── bunfig.toml                # Bun configuration
+├── bunfig.toml             # Bun configuration
 ├── sst.config.ts           # SST configuration
 └── turbo.json              # Turborepo configuration
 ```
