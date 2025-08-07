@@ -29,7 +29,6 @@
     "@types/node": "^24.2.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9.32.0",
     "serve": "^14.2.4",
     "shiki": "^3.8.1",
     "tailwindcss": "^4.1.11",
