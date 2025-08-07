@@ -4,10 +4,10 @@
   "private": false,
   "type": "module",
   "scripts": {
-    "build": "echo 'Build completed' > .build-complete",
+    "build": "bun build src/index.ts --target=bun --outdir=dist",
     "dev": "bun --hot src/index.ts",
     "start": "bun src/index.ts",
-    "clean": "rimraf .next .turbo node_modules dist .build-complete hebo.db"
+    "clean": "rimraf .next .turbo node_modules dist hebo.db"
   },
   "devDependencies": {
     "bun-types": "^1.2.19",

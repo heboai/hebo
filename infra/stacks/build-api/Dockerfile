@@ -29,6 +29,9 @@ USER appuser
 
 WORKDIR /repo/apps/api
 
+# Build the application
+RUN bun run build
+
 EXPOSE 3001
 
-CMD ["bun", "run", "src/index.ts"] 
+CMD ["bun", "run", "dist/index.js"] 
