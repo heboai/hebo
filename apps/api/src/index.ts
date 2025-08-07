@@ -7,7 +7,20 @@ const PORT = parseInt(process.env.PORT ?? "3001", 10);
 const app = new Elysia()
   .get("/", () => "Hebo API says hello!")
   .use(authenticateUser)
-  .get("/version", () => handleGetVersion())
+  .group("v1", (app) =>
+    app.guard(
+      {
+        /* Ensure request is authenticated */
+        beforeHandle: ({ store, set }) => {
+          if (!store.userId) {
+            set.status = 401;
+            return "Unauthorized";
+          }
+        },
+      },
+      (app) => app.get("/version", () => handleGetVersion()),
+    ),
+  )
   .onError(({ error }) => {
     console.error("API Error:", error);
     return {
