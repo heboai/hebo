@@ -8,6 +8,7 @@
         "@next/eslint-plugin-next": "^15.4.4",
         "check-dependency-version-consistency": "^5.0.1",
         "eslint-config-next": "^15.4.4",
+        "eslint-plugin-react-hooks": "^5.2.0",
         "npm-run-all2": "^8.0.4",
         "prettier": "^3.6.2",
         "rimraf": "^6.0.1",
@@ -329,7 +330,7 @@
 
     "@next/env": ["@next/env@15.4.5", "", {}, "sha512-ruM+q2SCOVCepUiERoxOmZY9ZVoecR3gcXNwCYZRvQQWRjhOiPJGmQ2fAiLR6YKWXcSAh7G79KEFxN3rwhs4LQ=="],
 
-    "@next/eslint-plugin-next": ["@next/eslint-plugin-next@15.4.5", "", { "dependencies": { "fast-glob": "3.3.1" } }, "sha512-YhbrlbEt0m4jJnXHMY/cCUDBAWgd5SaTa5mJjzOt82QwflAFfW/h3+COp2TfVSzhmscIZ5sg2WXt3MLziqCSCw=="],
+    "@next/eslint-plugin-next": ["@next/eslint-plugin-next@15.4.6", "", { "dependencies": { "fast-glob": "3.3.1" } }, "sha512-2NOu3ln+BTcpnbIDuxx6MNq+pRrCyey4WSXGaJIyt0D2TYicHeO9QrUENNjcf673n3B1s7hsiV5xBYRCK1Q8kA=="],
 
     "@next/mdx": ["@next/mdx@15.4.5", "", { "dependencies": { "source-map": "^0.7.0" }, "peerDependencies": { "@mdx-js/loader": ">=0.15.0", "@mdx-js/react": ">=0.15.0" }, "optionalPeers": ["@mdx-js/loader", "@mdx-js/react"] }, "sha512-VQKJDAj/oRUG4vkxigCEEHalvXfTVtQyNsmIkXpFF+xSfN7GPnbvri2kzmMepWDA4ctaHKNEmvvEK53F4ZG3xg=="],
 
@@ -1982,6 +1983,8 @@
     "cross-spawn/which": ["which@2.0.2", "", { "dependencies": { "isexe": "^2.0.0" }, "bin": { "node-which": "./bin/node-which" } }, "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA=="],
 
     "eslint/chalk": ["chalk@4.1.2", "", { "dependencies": { "ansi-styles": "^4.1.0", "supports-color": "^7.1.0" } }, "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA=="],
+
+    "eslint-config-next/@next/eslint-plugin-next": ["@next/eslint-plugin-next@15.4.5", "", { "dependencies": { "fast-glob": "3.3.1" } }, "sha512-YhbrlbEt0m4jJnXHMY/cCUDBAWgd5SaTa5mJjzOt82QwflAFfW/h3+COp2TfVSzhmscIZ5sg2WXt3MLziqCSCw=="],
 
     "eslint-import-resolver-node/debug": ["debug@3.2.7", "", { "dependencies": { "ms": "^2.1.1" } }, "sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ=="],
 
