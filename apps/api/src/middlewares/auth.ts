@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import { bearer } from "@elysiajs/bearer";
-import * as jose from "jose";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
 interface StackAuthEnv {
   NEXT_PUBLIC_STACK_PROJECT_ID?: string;
@@ -28,7 +28,7 @@ const {
 } = process.env as unknown as StackAuthEnv;
 
 /* Remote JWKS for JWT validation */
-const jwks = jose.createRemoteJWKSet(
+const jwks = createRemoteJWKSet(
   new URL(
     `https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`,
   ),
@@ -67,7 +67,7 @@ export const authenticateUser = new Elysia({
       /* ───────── Validate JWT ───────── */
       if (accessToken) {
         try {
-          const { payload } = await jose.jwtVerify(accessToken, jwks);
+          const { payload } = await jwtVerify(accessToken, jwks);
           store.userId = payload?.sub;
         } catch {
           set.status = 403;
