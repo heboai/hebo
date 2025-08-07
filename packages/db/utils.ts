@@ -39,9 +39,9 @@ const heboDb = ResourceSafe
  * Determines if the current runtime should be considered "local".
  *
  * Logic hierarchy:
- * 1. If we can safely detect an SST-provided SQLite connection string, assume
- *    we are in the SST dev environment.
- * 2. If SST isn't available, default to local.
+ * 1. If PG_HOST environment variable is set, assume remote (not local).
+ * 2. If we detect an SST-provided PostgreSQL host, assume remote (not local).
+ * 3. Otherwise, treat as local environment.
  */
 export const isLocal: boolean = (() => {
   // If an explicit PostgreSQL host env is set, assume remote.

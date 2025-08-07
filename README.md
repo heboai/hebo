@@ -71,7 +71,7 @@ bun run -F @hebo/app dev
 | #   | Mode                        | Command                    | Database                       | API availability                        |
 | --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
 | 1   | **Frontend-only** (offline) | `bun run -F @hebo/app dev` | —                              | none – UI relies on local state manager |
-| 2   | **Local full-stack**        | `bun run dev`              | SQLite (`packages/db/hebo.db`) | http://localhost:3001                   |
+| 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | http://localhost:3001                   |
 | 3   | **Remote full-stack**       | `sst deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
 
 > **How the UI knows if the API is present**
