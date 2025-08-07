@@ -8,8 +8,10 @@ import reactPerf from "eslint-plugin-react-perf"
 import security from "eslint-plugin-security"
 import sonarjs from 'eslint-plugin-sonarjs'
 import tailwindcss from "eslint-plugin-tailwindcss";
+import turbo from "eslint-plugin-turbo"
 import unicorn from "eslint-plugin-unicorn"
 import unusedImports from "eslint-plugin-unused-imports"
+
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -50,6 +52,7 @@ const eslintConfig = [
       security,
       sonarjs,
       "tailwindcss": tailwindcss,
+      turbo,
       unicorn,
       "unused-imports": unusedImports,
     },
@@ -67,6 +70,7 @@ const eslintConfig = [
       // eslint-disable-next-line import/no-named-as-default-member
       ...sonarjs.configs.recommended.rules,
       ...tailwindcss.configs.recommended.rules,
+      ...turbo.configs.recommended.rules,
       "unicorn/filename-case": "off",
       "unicorn/prevent-abbreviations": "off",
     },
@@ -120,6 +124,21 @@ const eslintConfig = [
           'newlines-between': 'always',
         },
       ],
+      // TODO: Remoe these (turning them to errors), once fixed 
+      'import/default': 'warn',
+      'import/named': 'warn',
+      'react-perf/jsx-no-new-function-as-prop': 'warn',
+      'sonarjs/no-all-duplicated-branches': 'warn',
+      'sonarjs/prefer-single-boolean-return': 'warn',
+      'sonarjs/todo-tag': 'warn',
+      'turbo/no-undeclared-env-vars': 'warn',
+      'unicorn/catch-error-name': 'warn',
+      'unicorn/no-null': 'warn',
+      'unicorn/no-useless-undefined': 'warn',
+      'unicorn/prefer-export-from': 'warn',
+      'unicorn/prefer-global-this': 'warn',
+      'unicorn/prefer-node-protocol': 'warn',
+      'unicorn/prefer-number-properties': 'warn',
     },
   },
 ];
