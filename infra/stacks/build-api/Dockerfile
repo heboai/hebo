@@ -5,7 +5,7 @@ FROM oven/bun:1.2.18 AS deps
 
 WORKDIR /repo
 
-COPY bun.lock package.json ./
+COPY bun.lock bunfig.toml package.json ./
 # Copy other package manifests that api depends on (db + itself)
 COPY apps/api/package.json apps/api/package.json
 COPY packages/db/package.json packages/db/package.json

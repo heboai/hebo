@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "clean": "npm-run-all clean:workspaces clean:root",
+    "clean": "npm-run-all2 clean:workspaces clean:root",
     "clean:workspaces": "turbo run clean",
     "clean:root": "rimraf .next .turbo node_modules",
     "db:generate": "bun --filter @hebo/db exec drizzle-kit generate",
