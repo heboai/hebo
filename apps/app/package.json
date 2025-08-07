@@ -2,7 +2,9 @@
   "name": "@hebo/app",
   "version": "0.0.1",
   "private": true,
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -30,7 +32,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "shiki": "^3.8.1",
-    "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.6"
   }
 }

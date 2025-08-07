@@ -1,7 +1,7 @@
 import {
   Button as ShadCNButton,
   buttonVariants,
-} from "@hebo/ui/shadcn/ui/button";
+} from "@hebo/ui/_shadcn/ui/button";
 
 import { cn } from "@hebo/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";

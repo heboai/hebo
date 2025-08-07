@@ -1,8 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@hebo/ui/lib/utils";
-import { CopyToClipboardButton } from "@hebo/ui/mintlify/code/CopyToClipboardButton";
-import { Input as ShadCNInput } from "@hebo/ui/shadcn/ui/input";
+import { CopyToClipboardButton } from "@hebo/ui/_mintlify/code/CopyToClipboardButton";
+import { Input as ShadCNInput } from "@hebo/ui/_shadcn/ui/input";
 
 interface InputProps extends React.ComponentProps<"input"> {
   icon?: LucideIcon;
