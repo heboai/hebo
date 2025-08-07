@@ -3,7 +3,7 @@ name: Deploy to Production
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   quality:
@@ -16,7 +16,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          version: '1.2.19'
+          version: "1.2.19"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -43,7 +43,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          version: '1.2.19'
+          version: "1.2.19"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -59,4 +59,4 @@ jobs:
         env:
           NEXT_PUBLIC_STACK_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_STACK_PROJECT_ID }}
           NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY: ${{ secrets.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY }}
-        run: npx sst deploy --stage production 
+        run: npx sst deploy --stage production
