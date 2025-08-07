@@ -1,10 +1,21 @@
 import { Elysia } from "elysia";
+import { swagger } from "@elysiajs/swagger";
 import { authenticateUser } from "./middlewares/auth";
 import { handleGetVersion } from "./api";
 
 const PORT = parseInt(process.env.PORT ?? "3001", 10);
 
 new Elysia()
+  .use(
+    swagger({
+      documentation: {
+        info: {
+          title: "Hebo API",
+          version: "0.0.1",
+        },
+      },
+    }),
+  )
   .get("/", () => "Hebo API says hello!")
   .use(authenticateUser)
   .guard({
