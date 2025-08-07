@@ -6,7 +6,7 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ['packages/ui/src/mintlify/','packages/ui/src/shadcn/'],
+    ignores: ['**/_*/**'],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {

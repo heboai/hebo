@@ -23,4 +23,4 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-} from "@hebo/ui/shadcn/ui/sidebar";
+} from "@hebo/ui/_shadcn/ui/sidebar";
