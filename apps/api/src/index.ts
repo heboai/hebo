@@ -4,11 +4,11 @@ import { handleGetVersion } from "./api";
 
 const PORT = parseInt(process.env.PORT ?? "3001", 10);
 
-const app = new Elysia()
+new Elysia()
   .get("/", () => "Hebo API says hello!")
   .use(authenticateUser)
-  .group("v1", (app) =>
-    app.guard(
+  .group("/v1", (api) =>
+    api.guard(
       {
         /* Ensure request is authenticated */
         beforeHandle: ({ store, set }) => {
@@ -18,7 +18,7 @@ const app = new Elysia()
           }
         },
       },
-      (app) => app.get("/version", () => handleGetVersion()),
+      (api) => api.get("/version", () => handleGetVersion()),
     ),
   )
   .onError(({ error }) => {
@@ -26,12 +26,7 @@ const app = new Elysia()
     return {
       error,
     };
-  });
-
-Bun.serve({
-  port: PORT,
-  fetch: app.fetch,
-  development: false,
-});
+  })
+  .listen(PORT);
 
 console.log(`🚀 Hebo API listening on port ${PORT} (Bun ${process.version})`);
