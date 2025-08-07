@@ -25,6 +25,7 @@
     "test": "turbo run test"
   },
   "devDependencies": {
+    "eslint": "^9.32.0",
     "@eslint/eslintrc": "^3.3.1",
     "@next/eslint-plugin-next": "^15.4.4",
     "check-dependency-version-consistency": "^5.0.1",
