@@ -11,9 +11,7 @@ import { authenticateUser } from "../middlewares/auth";
 
 const { createSelectSchema } = createSchemaFactory({ typeboxInstance: t });
 
-// -----------------------------------------------------------------------------
 // Safe response schemas (omit apiKey from endpoint)
-// -----------------------------------------------------------------------------
 const ResponseEndpointSchema = t.Object({
   url: t.String({ format: "uri" }),
   provider: t.String(),

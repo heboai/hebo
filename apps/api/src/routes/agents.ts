@@ -11,17 +11,26 @@ const { createSelectSchema } = createSchemaFactory({ typeboxInstance: t });
 
 const AgentSelect = createSelectSchema(agents);
 
-const CreateAgentBody = t.Object({
-  name: t.String({ minLength: 1, maxLength: 128, examples: ["Hebo"] }),
-});
+const CreateAgentBody = t.Object(
+  {
+    name: t.String({ minLength: 1, maxLength: 128, examples: ["Hebo"] }),
+  },
+  { additionalProperties: false },
+);
 
-const UpdateAgentParams = t.Object({
-  id: t.Number(),
-});
+const UpdateAgentParams = t.Object(
+  {
+    id: t.Numeric(),
+  },
+  { additionalProperties: false },
+);
 
-const UpdateAgentBody = t.Object({
-  name: t.String({ minLength: 1, maxLength: 128, examples: ["Hebo"] }),
-});
+const UpdateAgentBody = t.Object(
+  {
+    name: t.String({ minLength: 1, maxLength: 128, examples: ["Hebo"] }),
+  },
+  { additionalProperties: false },
+);
 
 const ErrorResponse = t.Object({ error: t.String() });
 
@@ -88,7 +97,13 @@ export const agentRoutes = new Elysia({
       const [updated] = await db
         .update(agents)
         .set({ name: body.name })
-        .where(and(eq(agents.id, params.id), eq(agents.user_id, userId)))
+        .where(
+          and(
+            eq(agents.id, params.id),
+            eq(agents.user_id, userId),
+            isNull(agents.deleted_at),
+          ),
+        )
         .returning();
 
       if (!updated) {
