@@ -10,7 +10,7 @@ interface AgentData {
 
 export const agentHandlers = [
   // Create a new agent
-  http.post("/api/agents", async ({ request }) => {
+  http.post("https://mock.hebo.ai/agents", async ({ request }) => {
     const body = (await request.json()) as AgentData;
 
     if (body.agentName.toLowerCase() === "error") {
@@ -30,7 +30,7 @@ export const agentHandlers = [
   }),
 
   // Get all agents
-  http.get("/api/agents", async () => {
+  http.get("https://mock.hebo.ai/agents", async () => {
     const agents = db.getCollection("agents").records;
 
     await delay(1000);
