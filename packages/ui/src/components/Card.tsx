@@ -5,4 +5,4 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
-} from "../_shadcn/ui/card"; 
+} from "@hebo/ui/_shadcn/ui/card";
