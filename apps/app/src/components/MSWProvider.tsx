@@ -22,4 +22,6 @@ export function MSWProvider() {
         });
     }
   }, []);
+
+  return <></>;
 }

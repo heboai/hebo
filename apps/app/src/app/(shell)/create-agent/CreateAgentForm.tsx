@@ -62,7 +62,7 @@ export function CreateAgentForm() {
       });
 
       if (response.ok) {
-        router.push("/");
+        router.replace("/");
       } else {
         const json = await response.json();
         setError(json.error);
@@ -174,7 +174,9 @@ export function CreateAgentForm() {
               disabled={isSubmitting}
               aria-label="Create Agent and go to home"
             >
-              {isSubmitting && <Loader2Icon className="animate-spin" />}
+              {isSubmitting && (
+                <Loader2Icon className="animate-spin" aria-hidden="true" />
+              )}
               {isSubmitting ? "Creating..." : "Create"}
             </Button>
           </div>
