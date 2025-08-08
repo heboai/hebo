@@ -27,6 +27,10 @@ const {
   STACK_SECRET_SERVER_KEY: secretServerKey,
 } = process.env as unknown as StackAuthEnv;
 
+if (!projectId || !secretServerKey) {
+  throw new Error("STACK auth env vars missing");
+}
+
 /* Remote JWKS for JWT validation */
 const jwks = createRemoteJWKSet(
   new URL(
