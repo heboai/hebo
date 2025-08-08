@@ -27,6 +27,10 @@
     "postinstall": "lefthook install",
     "test": "turbo run test"
   },
+  "peerDependencies": {
+    "drizzle-orm": "0.44.4",
+    "@sinclair/typebox": "latest"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@next/eslint-plugin-next": "^15.4.4",
@@ -56,14 +60,11 @@
     "sst": "^3.17.10",
     "tailwindcss": "^4.1.11",
     "turbo": "^2.5.5",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "drizzle-typebox": "latest",
+    "@sinclair/typebox": "latest"
   },
   "engines": {
     "bun": ">=1.2.19"
-  },
-  "catalog": {
-    "drizzle-orm": "0.44.4",
-    "drizzle-typebox": "0.3.3",
-    "@sinclair/typebox": "0.34.33"
   }
 }

@@ -17,9 +17,9 @@
     "@elysiajs/jwt": "^1.3.2",
     "@elysiajs/swagger": "^1.3.1",
     "@hebo/db": "workspace:*",
-    "@sinclair/typebox": "catalog:",
-    "drizzle-orm": "catalog:",
-    "drizzle-typebox": "catalog:",
+    "@sinclair/typebox": "^0.34.38",
+    "drizzle-orm": "0.44.4",
+    "drizzle-typebox": "0.3.3",
     "elysia": "^1.3.8",
     "jose": "^5.3.0"
   }
