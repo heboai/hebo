@@ -25,6 +25,7 @@ import {
 
 import { supportedModels } from "~/config/models";
 
+// FUTURE: Implement TypeBox Validation
 type FormData = {
   agentName: string;
   defaultModel: string;
@@ -110,7 +111,7 @@ export function CreateAgentForm() {
               Default Model
             </Label>
             <div className="max-w-xs">
-              {/* TODO: Consider to generalize Controller into Select component */}
+              {/* FUTURE: Consider to generalize Controller into Select component */}
               <Controller
                 control={control}
                 name="defaultModel"
@@ -159,7 +160,7 @@ export function CreateAgentForm() {
 
           {/* Submit Button */}
           <div className="flex justify-end">
-            {/* TODO: Generalize spinner into Button prop */}
+            {/* FUTURE: Consider to generalize spinner into Button prop */}
             <Button
               type="submit"
               disabled={isSubmitting}
