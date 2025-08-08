@@ -6,16 +6,14 @@ export interface SupportedModel {
 export const supportedModels: SupportedModel[] = [
   {
     modelName: "LLaMA 4 Scout",
-    freeTokensPerMonth: 40000000
+    freeTokensPerMonth: 40_000_000,
   },
   {
     modelName: "Claude 4",
-    freeTokensPerMonth: 40000000
+    freeTokensPerMonth: 40_000_000,
   },
   {
     modelName: "Voyage",
-    freeTokensPerMonth: 40000000
-  }
+    freeTokensPerMonth: 40_000_000,
+  },
 ];
-
-export const getSupportedModels = (): SupportedModel[] => supportedModels; 

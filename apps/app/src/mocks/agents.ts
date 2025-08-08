@@ -1,20 +1,21 @@
-import { http, HttpResponse, delay } from 'msw';
-import db from '~/mocks/db';
+import { http, HttpResponse, delay } from "msw";
+
+import db from "~/mocks/db";
 
 interface AgentData {
   agentName: string;
-  models: string[];
-  branches?: string[]; // make it optional in case frontend doesn't send it
+  models: string;
+  branches?: string[];
 }
 
 export const agentHandlers = [
   // Create a new agent
-  http.post('/api/agents', async ({ request }) => {
-    const body = await request.json() as AgentData;
+  http.post("/api/agents", async ({ request }) => {
+    const body = (await request.json()) as AgentData;
 
-    const newAgent = db.getCollection('agents').insert({
+    const newAgent = db.getCollection("agents").insert({
       ...body,
-      branches: ['main'], // always set to ['main'] on creation
+      branches: ["main"], // always set to ['main'] on creation
     });
 
     await delay(1500);
@@ -22,10 +23,10 @@ export const agentHandlers = [
   }),
 
   // Get all agents
-  http.get('/api/agents', async () => {
-    const agents = db.getCollection('agents').records;
+  http.get("/api/agents", async () => {
+    const agents = db.getCollection("agents").records;
 
     await delay(1000);
     return HttpResponse.json(agents);
   }),
-]; 
+];
