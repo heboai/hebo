@@ -74,6 +74,7 @@ const eslintConfig = [
       // eslint-disable-next-line import/no-named-as-default-member
       ...sonarjs.configs.recommended.rules,
       ...tailwindcss.configs.recommended.rules,
+      // eslint-disable-next-line import/no-named-as-default-member
       ...turbo.configs.recommended.rules,
       "unicorn/filename-case": "off",
       "unicorn/prevent-abbreviations": "off",
@@ -128,13 +129,13 @@ const eslintConfig = [
           'newlines-between': 'always',
         },
       ],
+      'sonarjs/todo-tag': 'off',
       // TODO: Remove these (turning them to errors), once fixed 
       'import/default': 'warn',
       'import/named': 'warn',
       'react-perf/jsx-no-new-function-as-prop': 'warn',
       'sonarjs/no-all-duplicated-branches': 'warn',
       'sonarjs/prefer-single-boolean-return': 'warn',
-      'sonarjs/todo-tag': 'warn',
       'turbo/no-undeclared-env-vars': 'warn',
       'unicorn/catch-error-name': 'warn',
       'unicorn/no-null': 'warn',

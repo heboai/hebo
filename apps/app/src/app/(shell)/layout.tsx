@@ -1,5 +1,5 @@
 import { BookOpen, ExternalLink } from "lucide-react";
-import Link from "next/link";
+// eslint-disable-next-line import/named
 import { unstable_ViewTransition as ViewTransition } from "react";
 
 import {
@@ -18,7 +18,7 @@ import {
 } from "@hebo/ui/components/Sidebar";
 
 import { UserButton } from "~/components/auth/UserButton";
-import { Logo } from "~/components/ui/Logo";
+import { AgentSelector } from "~/components/ui/AgentSelector";
 import { getCookie } from "~/lib/utils";
 
 export default function ShellLayout({
@@ -44,9 +44,7 @@ export default function ShellLayout({
         <Sidebar collapsible="icon">
           <div className="flex h-full w-full flex-col p-2">
             <SidebarHeader>
-              <Link href="/">
-                <Logo />
-              </Link>
+              <AgentSelector />
             </SidebarHeader>
             <SidebarContent />
             <SidebarFooter>

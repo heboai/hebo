@@ -1,7 +1,9 @@
 import { proxy } from "valtio";
 
 export const agentStore = proxy<{
-  activeAgent: string | null;
+  agents: string[];
+  activeAgent: string | undefined;
 }>({
-  activeAgent: null,
+  agents: [],
+  activeAgent: undefined,
 });
