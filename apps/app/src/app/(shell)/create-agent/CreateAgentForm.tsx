@@ -85,11 +85,11 @@ export function CreateAgentForm() {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Agent Name Field */}
-          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-start">
+          <div className="flex flex-col sm:grid sm:grid-cols-[auto_1fr]">
             <Label htmlFor="agent-name" className="sm:w-32">
               Agent Name
             </Label>
-            <div className="max-w-xs">
+            <div className="sm:max-w-xs">
               <Input
                 id="agent-name"
                 type="text"
@@ -110,7 +110,7 @@ export function CreateAgentForm() {
             <Label htmlFor="model-select" className="sm:w-32">
               Default Model
             </Label>
-            <div className="max-w-xs">
+            <div className="sm:max-w-xs">
               {/* FUTURE: Consider to generalize Controller into Select component */}
               <Controller
                 control={control}
