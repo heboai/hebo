@@ -182,15 +182,15 @@
 
   /* Form general styling */
   form {
-    @apply space-y-4;
+    @apply space-y-6;
   }
 
   form div {
-    @apply gap-4;
+    @apply gap-2 sm:gap-4;
   }
 
   form label {
-    @apply py-1;
+    @apply pt-2;
   }
 
   input,
