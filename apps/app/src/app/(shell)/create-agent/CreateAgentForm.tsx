@@ -24,6 +24,7 @@ import {
 } from "@hebo/ui/components/Select";
 
 import { supportedModels } from "~/config/models";
+import { agentStore } from "~/stores/agentStore";
 
 // FUTURE: Implement TypeBox Validation
 type FormData = {
@@ -61,10 +62,12 @@ export function CreateAgentForm() {
         }),
       });
 
+      const json = await response.json();
       if (response.ok) {
+        // TODO: replace with Eden Query Client Reactivity
+        agentStore.agents.push(json.agentName);
         router.replace("/");
       } else {
-        const json = await response.json();
         setError(json.error);
       }
     } catch {

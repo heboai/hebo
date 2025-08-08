@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname , useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSnapshot } from "valtio";
 
@@ -18,7 +18,6 @@ export function AgentSelector() {
     if (agentSnap.agents.length === 0 && pathname !== "/create-agent") {
       router.push("/create-agent");
     }
-    // TODO: Listen to Agent updates
   }, [agentSnap.agents.length, pathname, router]);
 
   return agentSnap.agents.length > 0 ? (

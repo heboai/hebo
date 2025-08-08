@@ -13,6 +13,13 @@ export const agentHandlers = [
   http.post("/api/agents", async ({ request }) => {
     const body = (await request.json()) as AgentData;
 
+    if (body.agentName.toLowerCase() === "error") {
+      return HttpResponse.json(
+        { error: "Agent name already exists" },
+        { status: 400 },
+      );
+    }
+
     const newAgent = db.getCollection("agents").insert({
       ...body,
       branches: ["main"], // always set to ['main'] on creation
