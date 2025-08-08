@@ -1,10 +1,6 @@
-import Link from "next/link";
-
-import { unstable_ViewTransition as ViewTransition } from "react";
-
 import { BookOpen, ExternalLink } from "lucide-react";
-
-import { Logo } from "~/components/ui/Logo";
+import Link from "next/link";
+import { unstable_ViewTransition as ViewTransition } from "react";
 
 import {
   Sidebar,
@@ -22,7 +18,7 @@ import {
 } from "@hebo/ui/components/Sidebar";
 
 import { UserButton } from "~/components/auth/UserButton";
-
+import { Logo } from "~/components/ui/Logo";
 import { getCookie } from "~/lib/utils";
 
 export default function ShellLayout({
@@ -34,7 +30,7 @@ export default function ShellLayout({
   const defaultOpen = getCookie("sidebar_state") === "true";
 
   return (
-    <div className="min-h-screen flex flex-col gap-4">
+    <div className="flex min-h-screen flex-col gap-4">
       <SidebarProvider
         defaultOpen={defaultOpen}
         style={
@@ -46,7 +42,7 @@ export default function ShellLayout({
         }
       >
         <Sidebar collapsible="icon">
-          <div className="w-full h-full flex flex-col p-2">
+          <div className="flex h-full w-full flex-col p-2">
             <SidebarHeader>
               <Link href="/">
                 <Logo />
@@ -78,10 +74,10 @@ export default function ShellLayout({
           </div>
         </Sidebar>
 
-        <main className="w-full flex flex-col flex-1 p-4 gap-4">
+        <main className="relative flex w-full flex-1 flex-col gap-4 p-4">
           <SidebarTrigger className="fixed -m-1.5" />
 
-          <div className="max-w-4xl min-w-0 w-full flex flex-col mx-auto py-8 gap-2">
+          <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
             <ViewTransition default="fade-in">{children}</ViewTransition>
           </div>
         </main>
