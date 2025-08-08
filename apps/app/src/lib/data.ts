@@ -1,3 +1,6 @@
 import { edenTreaty } from "@elysiajs/eden";
 
-export const api = edenTreaty(process.env.NEXT_PUBLIC_API_URL!);
+import { isDevLocal } from "~/lib/env";
+
+const url = isDevLocal ? "/api" : process.env.NEXT_PUBLIC_API_URL!;
+export const api = edenTreaty(url);
