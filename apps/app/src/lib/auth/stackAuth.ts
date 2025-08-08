@@ -1,18 +1,19 @@
+import { StackClientApp } from "@stackframe/react";
 import { useRouter } from "next/navigation";
 
-import type { AuthService } from "./types";
 import { userStore } from "~/stores/userStore";
-import { STACK_PROJECT_ID, STACK_PUBLISHABLE_CLIENT_KEY } from "~/lib/env";
 
-import { StackClientApp } from "@stackframe/react";
+import type { AuthService } from "./types";
+
 
 let _stackApp: StackClientApp<true, string> | undefined;
 
 function getStackApp(): StackClientApp<true, string> {
   if (!_stackApp) {
     _stackApp = new StackClientApp({
-      projectId: STACK_PROJECT_ID,
-      publishableClientKey: STACK_PUBLISHABLE_CLIENT_KEY,
+      projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID,
+      publishableClientKey:
+        process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY,
       tokenStore: "cookie", // Client-side cookies
       urls: {
         signIn: "/signin",
