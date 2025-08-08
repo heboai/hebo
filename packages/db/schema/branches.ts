@@ -10,7 +10,8 @@ import {
 
 import { agents } from "./agents";
 import { timestamps } from "./timestamps";
-import { Models } from "./types/models";
+
+import type { Models } from "./types/models";
 
 export const branches = pgTable(
   "branches",
