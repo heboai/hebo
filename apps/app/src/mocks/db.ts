@@ -1,6 +1,6 @@
-import DB from '~/mocks/miragejs/orm/db/DB';
+import DB from "~/mocks/_miragejs/orm/db/DB";
 
 const db = new DB();
-db.createCollection('agents');
+db.createCollection("agents");
 
 export default db;
