@@ -5,15 +5,14 @@ import { userStore } from "~/stores/userStore";
 
 import type { AuthService } from "./types";
 
-
 let _stackApp: StackClientApp<true, string> | undefined;
 
 function getStackApp(): StackClientApp<true, string> {
   if (!_stackApp) {
     _stackApp = new StackClientApp({
-      projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID,
+      projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
       publishableClientKey:
-        process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY,
+        process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
       tokenStore: "cookie", // Client-side cookies
       urls: {
         signIn: "/signin",
