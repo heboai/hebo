@@ -44,6 +44,7 @@ export const agentRoutes = new Elysia({
     "/",
     async ({ body, store, set }) => {
       const userId = store.userId as string | undefined;
+      // TODO: implement guards to reduce code duplication
       if (!userId) {
         set.status = 401;
         return { error: "Unauthorized" } as const;
@@ -69,6 +70,7 @@ export const agentRoutes = new Elysia({
     "/",
     async ({ store, set }) => {
       const userId = store.userId as string | undefined;
+      // TODO: implement guards to reduce code duplication
       if (!userId) {
         set.status = 401;
         return { error: "Unauthorized" } as const;
@@ -89,6 +91,7 @@ export const agentRoutes = new Elysia({
     "/:id",
     async ({ params, body, store, set }) => {
       const userId = store.userId as string | undefined;
+      // TODO: implement guards to reduce code duplication
       if (!userId) {
         set.status = 401;
         return { error: "Unauthorized" } as const;
