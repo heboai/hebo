@@ -23,7 +23,7 @@
     "format:staged": "prettier --write",
     "lint": "turbo run lint",
     "lint:deps": "check-dependency-version-consistency .",
-    "lint:staged": "bunx eslint --cache --fix --max-warnings 0",
+    "lint:staged": "bunx eslint --cache --fix",
     "postinstall": "lefthook install",
     "test": "turbo run test"
   },

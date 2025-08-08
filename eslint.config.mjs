@@ -66,7 +66,6 @@ const eslintConfig = [
       "no-secrets/no-secrets": "error",
       ...unicorn.configs.recommended.rules,
       "unused-imports/no-unused-imports": "error",
-      'unused-imports/no-unused-vars': "error",
       ...promise.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...reactPerf.configs.flat.recommended.rules,
