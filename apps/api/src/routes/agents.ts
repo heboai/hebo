@@ -1,14 +1,18 @@
 import { and, eq, isNull } from "drizzle-orm";
+import { createSchemaFactory } from "drizzle-typebox";
 import { Elysia, t } from "elysia";
 
 import { db } from "@hebo/db/drizzle";
 import { agents } from "@hebo/db/schema/agents";
 
 import { authenticateUser } from "../middlewares/auth";
-import { AgentSelect } from "../schema/agents.schemas";
+
+const { createSelectSchema } = createSchemaFactory({ typeboxInstance: t });
+
+const AgentSelect = createSelectSchema(agents);
 
 const CreateAgentBody = t.Object({
-  name: t.String({ minLength: 1, maxLength: 128 }),
+  name: t.String({ minLength: 1, maxLength: 128, examples: ["Hebo"] }),
 });
 
 const UpdateAgentParams = t.Object({
@@ -16,7 +20,7 @@ const UpdateAgentParams = t.Object({
 });
 
 const UpdateAgentBody = t.Object({
-  name: t.String({ minLength: 1, maxLength: 128 }),
+  name: t.String({ minLength: 1, maxLength: 128, examples: ["Hebo"] }),
 });
 
 const ErrorResponse = t.Object({ error: t.String() });
@@ -42,11 +46,13 @@ export const agentRoutes = new Elysia({
       };
 
       const [row] = await db.insert(agents).values(payload).returning();
+      set.status = 201;
+      (set.headers as Record<string, string>)["Location"] = `/agents/${row.id}`;
       return row;
     },
     {
       body: CreateAgentBody,
-      response: { 200: AgentSelect, 401: ErrorResponse },
+      response: { 201: AgentSelect, 401: ErrorResponse },
     },
   )
   // Get all agents for current user

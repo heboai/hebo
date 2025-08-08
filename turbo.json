@@ -1,11 +1,24 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [".env"],
+  "globalEnv": ["PORT"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "out/**", "build/**", ".build-complete"],
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "src/**/*.js", "src/**/*.jsx", "package.json"]
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "out/**",
+        "build/**",
+        ".build-complete"
+      ],
+      "inputs": [
+        "src/**/*.tsx",
+        "src/**/*.ts",
+        "src/**/*.js",
+        "src/**/*.jsx",
+        "package.json"
+      ]
     },
     "test": {
       "dependsOn": ["^build"],
@@ -23,4 +36,4 @@
       "cache": false
     }
   }
-} 
+}
