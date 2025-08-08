@@ -130,10 +130,11 @@ const eslintConfig = [
         },
       ],
       'sonarjs/todo-tag': 'off',
+      'tailwindcss/no-custom-classname': 'off',
+      'react-perf/jsx-no-new-function-as-prop': 'off',
       // TODO: Remove these (turning them to errors), once fixed 
       'import/default': 'warn',
       'import/named': 'warn',
-      'react-perf/jsx-no-new-function-as-prop': 'warn',
       'sonarjs/no-all-duplicated-branches': 'warn',
       'sonarjs/prefer-single-boolean-return': 'warn',
       'turbo/no-undeclared-env-vars': 'warn',

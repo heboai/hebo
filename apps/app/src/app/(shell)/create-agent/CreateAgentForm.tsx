@@ -32,7 +32,7 @@ type FormData = {
 };
 
 export function CreateAgentForm() {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>();
   const router = useRouter();
 
   const {
@@ -47,8 +47,8 @@ export function CreateAgentForm() {
     },
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    setError(null);
+  const handleCreateAgent: SubmitHandler<FormData> = async (data) => {
+    setError(undefined);
 
     try {
       // TODO: Replace this with Eden Query Client
@@ -73,7 +73,7 @@ export function CreateAgentForm() {
   };
 
   return (
-    <Card className="card max-w-lg border-none bg-transparent shadow-none">
+    <Card className="max-w-lg border-none bg-transparent shadow-none">
       <CardHeader>
         <CardTitle>Create a new agent</CardTitle>
         <CardDescription>
@@ -83,7 +83,10 @@ export function CreateAgentForm() {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          onSubmit={handleSubmit(handleCreateAgent)}
+          aria-busy={isSubmitting}
+        >
           {/* Agent Name Field */}
           <div className="flex flex-col sm:grid sm:grid-cols-[auto_1fr]">
             <Label htmlFor="agent-name" className="sm:w-32">
@@ -94,6 +97,7 @@ export function CreateAgentForm() {
                 id="agent-name"
                 type="text"
                 placeholder="Name"
+                disabled={isSubmitting}
                 aria-invalid={!!errors.agentName}
                 {...register("agentName", {
                   required: "Please enter an agent name",
@@ -116,7 +120,11 @@ export function CreateAgentForm() {
                 control={control}
                 name="defaultModel"
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={isSubmitting}
+                  >
                     <SelectTrigger
                       id="model-select"
                       className="w-full"
