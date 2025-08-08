@@ -5,7 +5,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 ## Repository Structure
 
 ```
-/ (git root)
+/ (hebo)
 ├── apps/                   # Deployable targets
 │   ├── api/                # Elysia API server
 │   └── app/                # Next.js web application

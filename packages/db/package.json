@@ -6,16 +6,18 @@
   "main": "./drizzle.ts",
   "types": "./drizzle.ts",
   "scripts": {
-    "clean": "rimraf .next .turbo node_modules hebo.db",
+    "clean": "rimraf .next .turbo node_modules ../hebo.db",
     "migrate": "drizzle-kit migrate",
     "generate": "drizzle-kit generate",
     "studio": "drizzle-kit studio",
     "check": "drizzle-kit check"
   },
+  "peerDependencies": {
+    "drizzle-orm": "0.44.4",
+    "@sinclair/typebox": "^0.34.33"
+  },
   "dependencies": {
     "@libsql/client": "^0.15.9",
-    "@sinclair/typebox": "^0.32.35",
-    "drizzle-orm": "^0.44.4",
     "pg": "^8.16.3"
   },
   "devDependencies": {

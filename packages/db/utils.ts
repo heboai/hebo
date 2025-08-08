@@ -1,4 +1,6 @@
-import { createRequire } from "module";
+import { createRequire } from "node:module";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 // ---------------------------------------------
@@ -32,7 +34,7 @@ const safeRead = <T>(fn: () => T): T | undefined => {
 
 // Cached view of the HeboDatabase resource (if present & accessible).
 const heboDb = ResourceSafe
-  ? safeRead(() => ResourceSafe.HeboDatabase) ?? {}
+  ? (safeRead(() => ResourceSafe.HeboDatabase) ?? {})
   : {};
 
 /**
@@ -95,7 +97,12 @@ export function getDrizzleConfig(): LocalConfig | RemoteConfig {
 
 export function getConnectionConfig(): DbCredentials | string {
   if (isLocal) {
-    return process.env.PGLITE_PATH ?? "./hebo.db";
+    // Prefer explicit env var; otherwise resolve to a stable path next to this package
+    // so every consumer (apps/api, scripts, etc.) points to the same DB file.
+    if (process.env.PGLITE_PATH) return process.env.PGLITE_PATH;
+
+    const pkgDir = path.dirname(fileURLToPath(new URL("./", import.meta.url)));
+    return path.resolve(pkgDir, "hebo.db");
   }
 
   // "Remote" – PostgreSQL.  Pull from SST first, then ENV.

@@ -1,9 +1,10 @@
-import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
-import { authenticateUser } from "./middlewares/auth";
-import { handleGetVersion } from "./api";
+import { Elysia } from "elysia";
 
-const PORT = parseInt(process.env.PORT ?? "3001", 10);
+import { agentRoutes } from "./routes/agents";
+import { branchRoutes } from "./routes/branches";
+
+const PORT = Number(process.env.PORT) || 3001;
 
 new Elysia()
   .use(
@@ -17,17 +18,7 @@ new Elysia()
     }),
   )
   .get("/", () => "Hebo API says hello!")
-  .use(authenticateUser)
-  .guard({
-    /* Ensure request is authenticated */
-    beforeHandle: ({ store, set }) => {
-      if (!store.userId) {
-        set.status = 401;
-        return "Unauthorized";
-      }
-    },
-  })
-  .group("/v1", (app) => app.get("/version", () => handleGetVersion()))
+  .group("/v1", (app) => app.use(agentRoutes).use(branchRoutes))
   .onError(({ error }) => {
     console.error("API Error:", error);
     return {
