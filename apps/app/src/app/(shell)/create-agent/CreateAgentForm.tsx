@@ -24,6 +24,7 @@ import {
 } from "@hebo/ui/components/Select";
 
 import { supportedModels } from "~/config/models";
+import { api } from "~/lib/data";
 import { agentStore } from "~/stores/agentStore";
 
 // FUTURE: Implement TypeBox Validation
@@ -48,30 +49,20 @@ export function CreateAgentForm() {
     },
   });
 
-  const handleCreateAgent: SubmitHandler<FormData> = async (data) => {
-    setError(undefined);
+  const handleCreateAgent: SubmitHandler<FormData> = async (fields) => {
+    // TODO: Replace this with Eden React Query Client
+    // @ts-expect-error: API type not ready
+    const { data, error } = await api.agents.post({
+      agentName: fields.agentName,
+      models: [fields.defaultModel],
+    });
 
-    try {
-      // TODO: Replace this with Eden Query Client
-      const response = await fetch("/api/agents", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agentName: data.agentName,
-          models: [data.defaultModel],
-        }),
-      });
-
-      const json = await response.json();
-      if (response.ok) {
-        // TODO: replace with Eden Query Client Reactivity
-        agentStore.agents.push(json.agentName);
-        router.replace("/");
-      } else {
-        setError(json.error);
-      }
-    } catch {
-      setError("Unexpected error occurred.");
+    if (error) {
+      setError(error.value.error);
+    } else {
+      // TODO: replace with Eden Query Client Reactivity
+      agentStore.agents.push(data.agentName);
+      router.replace("/");
     }
   };
 
