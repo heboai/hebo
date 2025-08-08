@@ -1,14 +1,14 @@
-import type { NextConfig } from "next";
-
 import createMDX from "@next/mdx";
 import rehypeShiki from "@shikijs/rehype";
+
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
   // Support Type Script and Markdown pages
   pageExtensions: ["mdx", "ts", "tsx"],
   // Enable transpile packages for ui lib
-  transpilePackages: ["@hebo/ui"],
+  transpilePackages: ["@hebo/ui", "@hebo/api"],
   experimental: {
     // Enable page transitions via react
     viewTransition: true,
