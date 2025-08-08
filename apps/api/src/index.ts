@@ -4,12 +4,7 @@ import { Elysia } from "elysia";
 import { agentRoutes } from "./routes/agents";
 import { branchRoutes } from "./routes/branches";
 
-const parsePort = (portString: string | undefined): number => {
-  const parsed = Number.parseInt(portString ?? "3001", 10);
-  return Number.isNaN(parsed) ? 3001 : parsed;
-};
-
-const PORT = parsePort(process.env.PORT);
+const PORT = Number(process.env.PORT) || 3001;
 
 new Elysia()
   .use(
