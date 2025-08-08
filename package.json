@@ -60,5 +60,10 @@
   },
   "engines": {
     "bun": ">=1.2.19"
+  },
+  "catalog": {
+    "drizzle-orm": "0.44.4",
+    "drizzle-typebox": "0.3.3",
+    "@sinclair/typebox": "0.34.33"
   }
 }

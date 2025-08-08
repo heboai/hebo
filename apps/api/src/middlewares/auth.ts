@@ -1,5 +1,5 @@
-import { Elysia } from "elysia";
 import { bearer } from "@elysiajs/bearer";
+import { Elysia } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
 interface StackAuthEnv {
@@ -55,13 +55,15 @@ export const authenticateUser = new Elysia({
       // No credential
       if (!authHeader && !accessToken) {
         set.status = 401;
-        return "Unauthorized";
+        return { error: "Unauthorized" } as const;
       }
 
       // Both credentials
       if (authHeader && accessToken) {
         set.status = 401;
-        return "Send either Authorization or X-Access-Token header";
+        return {
+          error: "Send either Authorization or X-Access-Token header",
+        } as const;
       }
 
       /* ───────── Validate JWT ───────── */
@@ -71,7 +73,7 @@ export const authenticateUser = new Elysia({
           store.userId = payload?.sub;
         } catch {
           set.status = 403;
-          return "Invalid or expired JWT";
+          return { error: "Invalid or expired JWT" } as const;
         }
       }
 
@@ -80,7 +82,7 @@ export const authenticateUser = new Elysia({
         const token = bearerToken;
         if (!token) {
           set.status = 403;
-          return "Invalid API key";
+          return { error: "Invalid API key" } as const;
         }
 
         const response = await fetch(
@@ -99,10 +101,18 @@ export const authenticateUser = new Elysia({
 
         if (response.status !== 200) {
           set.status = 403;
-          return "Invalid API key";
+          return { error: "Invalid API key" } as const;
         }
 
-        const { userId: userIdFromApiKey } = await response.json();
+        const data = (await response.json()) as Record<string, unknown>;
+
+        // Stack's API-key check returns `user_id` for a valid user key
+        const userIdFromApiKey = data?.user_id as string | undefined;
+        if (!userIdFromApiKey) {
+          set.status = 403;
+          return { error: "Invalid API key" } as const;
+        }
+
         store.userId = userIdFromApiKey;
       }
     },

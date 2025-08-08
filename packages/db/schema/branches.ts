@@ -1,3 +1,4 @@
+import { isNull } from "drizzle-orm";
 import {
   text,
   bigserial,
@@ -6,9 +7,10 @@ import {
   uniqueIndex,
   bigint,
 } from "drizzle-orm/pg-core";
-import { isNull } from "drizzle-orm";
-import { timestamps } from "./timestamps";
+
 import { agents } from "./agents";
+import { timestamps } from "./timestamps";
+import { Models } from "./types/models";
 
 export const branches = pgTable(
   "branches",
@@ -18,7 +20,7 @@ export const branches = pgTable(
       .notNull()
       .references(() => agents.id, { onDelete: "cascade" }),
     name: text("name").notNull().default("main"),
-    models: jsonb("models").notNull(),
+    models: jsonb("models").$type<Models>().notNull(),
     ...timestamps,
   },
   (table) => [
