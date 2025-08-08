@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 
-
 import { Button } from "@hebo/ui/components/Button";
 import {
   Card,
@@ -73,117 +72,102 @@ export function CreateAgentForm() {
   };
 
   return (
-    <Card className="card border-none bg-transparent shadow-none">
+    <Card className="card max-w-lg border-none bg-transparent shadow-none">
       <CardHeader>
-        <CardTitle className="card-title">Create a new agent</CardTitle>
+        <CardTitle>Create a new agent</CardTitle>
         <CardDescription>
           Each agent has its own model configuration and API keys. Learn more
-          about which model to choose based on Use Case
+          about which model to choose based on Use Case.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-1 gap-4">
-            {/* Agent Name Field */}
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-4">
-              <Label htmlFor="agent-name" className="sm:w-32">
-                Agent Name
-              </Label>
-              <div className="w-full max-w-xs space-y-1">
-                <div className="w-full bg-white">
-                  <Input
-                    id="agent-name"
-                    type="text"
-                    placeholder="Name"
-                    className="w-full"
-                    aria-invalid={!!errors.agentName}
-                    {...register("agentName", {
-                      required: "Please enter an agent name",
-                    })}
-                  />
+          {/* Agent Name Field */}
+          <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] sm:items-start">
+            <Label htmlFor="agent-name" className="sm:w-32">
+              Agent Name
+            </Label>
+            <div className="max-w-xs">
+              <Input
+                id="agent-name"
+                type="text"
+                placeholder="Name"
+                aria-invalid={!!errors.agentName}
+                {...register("agentName", {
+                  required: "Please enter an agent name",
+                })}
+              />
+              {errors.agentName && (
+                <div className="text-destructive" role="alert">
+                  {errors.agentName.message}
                 </div>
-                {errors.agentName && (
-                  <div className="text-destructive" role="alert">
-                    {errors.agentName.message}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
 
             {/* Default Model Field */}
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-4">
-              <Label htmlFor="model-select" className="sm:w-32">
-                Default Model
-              </Label>
-              <div className="w-full max-w-xs space-y-1">
-                <div className="w-full bg-white">
-                  <Controller
-                    control={control}
-                    name="defaultModel"
-                    render={({ field }) => (
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger
-                          id="model-select"
-                          className="w-full"
-                          aria-invalid={!!errors.defaultModel}
+            <Label htmlFor="model-select" className="sm:w-32">
+              Default Model
+            </Label>
+            <div className="max-w-xs">
+              {/* TODO: Consider to generalize Controller into Select component */}
+              <Controller
+                control={control}
+                name="defaultModel"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger
+                      id="model-select"
+                      className="w-full"
+                      aria-invalid={!!errors.defaultModel}
+                    >
+                      <SelectValue
+                        placeholder="Select a model"
+                        className="truncate"
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {supportedModels.map((model) => (
+                        <SelectItem
+                          key={model.modelName}
+                          value={model.modelName}
+                          className="truncate"
                         >
-                          <SelectValue
-                            placeholder="Select a model"
-                            className="truncate"
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {supportedModels.map((model) => (
-                            <SelectItem
-                              key={model.modelName}
-                              value={model.modelName}
-                              className="truncate"
-                            >
-                              {model.modelName} (
-                              {Math.floor(model.freeTokensPerMonth / 1_000_000)}M
-                              Free Tokens / Month)
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </div>
-                {errors.defaultModel && (
-                  <div className="text-destructive" role="alert">
-                    {errors.defaultModel.message}
-                  </div>
+                          {model.modelName} (
+                          {Math.floor(model.freeTokensPerMonth / 1_000_000)}M
+                          Free Tokens / Month)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 )}
-              </div>
-            </div>
-
-            {/* Mutation Error Display */}
-            {error && (
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-4">
-                <div className="sm:w-32"></div>
-                <div className="space-y-1">
-                  <div className="text-destructive" role="alert">
-                    {error}
-                  </div>
+              />
+              {errors.defaultModel && (
+                <div className="text-destructive" role="alert">
+                  {errors.defaultModel.message}
                 </div>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                aria-label="Create Agent and go to home"
-              >
-                {isSubmitting && <Loader2Icon className="animate-spin" />}
-                {isSubmitting ? "Creating..." : "Create"}
-              </Button>
+              )}
             </div>
+          </div>
+
+          {/* Mutation Error Display */}
+          {error && (
+            <div className="text-destructive text-right" role="alert">
+              {error}
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <div className="flex justify-end">
+            {/* TODO: Generalize spinner into Button prop */}
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              aria-label="Create Agent and go to home"
+            >
+              {isSubmitting && <Loader2Icon className="animate-spin" />}
+              {isSubmitting ? "Creating..." : "Create"}
+            </Button>
           </div>
         </form>
       </CardContent>
