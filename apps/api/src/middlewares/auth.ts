@@ -36,24 +36,6 @@ const jwks = createRemoteJWKSet(
 
 type AuthError = { status: number; error: string };
 
-const checkCredentialChoice = (
-  authHeader?: string,
-  accessToken?: string,
-): AuthError | null => {
-  if (!authHeader && !accessToken) {
-    return { status: 401, error: "Unauthorized" };
-  }
-
-  if (authHeader && accessToken) {
-    return {
-      status: 401,
-      error: "Send either Authorization or X-Access-Token header",
-    };
-  }
-
-  return null;
-};
-
 const validateJwtToken = async (
   accessToken: string,
 ): Promise<string | AuthError> => {
@@ -104,6 +86,24 @@ const validateApiKey = async (
   } catch {
     return { status: 403, error: "Invalid API key response" };
   }
+};
+
+const checkCredentialChoice = (
+  authHeader?: string,
+  accessToken?: string,
+): AuthError | null => {
+  if (!authHeader && !accessToken) {
+    return { status: 401, error: "Unauthorized" };
+  }
+
+  if (authHeader && accessToken) {
+    return {
+      status: 401,
+      error: "Send either Authorization or X-Access-Token header",
+    };
+  }
+
+  return null;
 };
 
 export const authenticateUser = new Elysia({
