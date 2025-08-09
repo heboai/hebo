@@ -2,7 +2,7 @@ import { UserName } from "~/components/auth/UserName";
 import { Logo } from "~/components/ui/Logo";
 import { GenerateApiKey } from "~/components/ui/GenerateApiKey";
 
-<Logo className="hidden md:flex"/>
+<Logo className="hidden md:flex" />
 
 **Hi <UserName />!**
 
@@ -11,8 +11,8 @@ Start using our playground or code your first agent.
 # Step 1: Create your first API key
 
 <GenerateApiKey />
-Copy your key once generated, for security reasons you won’t be able to see it again.
-
+Copy your key once generated, for security reasons you won’t be able to see it
+again.
 
 # Step 2: Connect using your favorite framework
 
@@ -26,6 +26,7 @@ $ npm install ai
 ```bash Langchain
 $ pip install -U langchain-openai portkey-ai
 ```
+
 </CodeGroup>
 
 Then, create the following code:
@@ -36,18 +37,19 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { generateText } from 'ai';
 
 const provider = createOpenAICompatible({
-  name: 'YOUR_MODEL_ALIAS',
-  apiKey: 'YOUR_API_KEY',
-  baseURL: 'https://cloud.hebo.ai/api',
+name: 'YOUR_MODEL_ALIAS',
+apiKey: 'YOUR_API_KEY',
+baseURL: 'https://cloud.hebo.ai/api',
 });
 
 const response = await generateText(
-  model: provider, 
-  { prompt: 'Tell me a joke about AI.' }
+model: provider,
+{ prompt: 'Tell me a joke about AI.' }
 );
 
 console.log(result);
-```
+
+````
 
 ```python Langchain
 from langchain_openai import ChatOpenAI
@@ -65,11 +67,10 @@ llm = ChatOpenAI(
 
 response = llm.invoke("Tell me a joke about AI.")
 print(response.content)
-```
-</CodeGroup>
+````
 
+</CodeGroup>
 
 # Step 3: Use your evaluations & observability tools as usual
 
 Continue to read our full documentation to [learn more](https://docs.hebo.ai/hebo_eval)
-
