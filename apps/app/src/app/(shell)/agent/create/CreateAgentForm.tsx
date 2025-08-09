@@ -60,9 +60,9 @@ export function CreateAgentForm() {
     if (error) {
       setError(error.value.error);
     } else {
-      // TODO: replace with Eden Query Client Reactivity
-      agentStore.agents.push(data.agentName);
-      router.replace("/");
+      // TODO: replace with route parameter
+      agentStore.activeAgent = data.agentName;
+      router.replace("/agent/");
     }
   };
 
