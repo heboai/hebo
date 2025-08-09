@@ -62,7 +62,6 @@ const eslintConfig = [
       "no-secrets/no-secrets": "error",
       ...unicorn.configs.recommended.rules,
       "unused-imports/no-unused-imports": "error",
-      'unused-imports/no-unused-vars': "error",
       ...promise.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...reactPerf.configs.flat.recommended.rules,
@@ -70,6 +69,7 @@ const eslintConfig = [
       // eslint-disable-next-line import/no-named-as-default-member
       ...sonarjs.configs.recommended.rules,
       ...tailwindcss.configs.recommended.rules,
+      // eslint-disable-next-line import/no-named-as-default-member
       ...turbo.configs.recommended.rules,
       "unicorn/filename-case": "off",
       "unicorn/prevent-abbreviations": "off",
@@ -124,13 +124,16 @@ const eslintConfig = [
           'newlines-between': 'always',
         },
       ],
+      'sonarjs/no-commented-code': 'off',
+      'sonarjs/todo-tag': 'off',
+      'tailwindcss/no-custom-classname': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
       // TODO: Remove these (turning them to errors), once fixed 
       'import/default': 'warn',
       'import/named': 'warn',
       'react-perf/jsx-no-new-function-as-prop': 'warn',
       'sonarjs/no-all-duplicated-branches': 'warn',
       'sonarjs/prefer-single-boolean-return': 'warn',
-      'sonarjs/todo-tag': 'warn',
       'turbo/no-undeclared-env-vars': 'warn',
       'unicorn/catch-error-name': 'warn',
       'unicorn/no-null': 'warn',

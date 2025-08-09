@@ -1,9 +1,9 @@
+import { StackClientApp } from "@stackframe/react";
 import { useRouter } from "next/navigation";
 
-import type { AuthService } from "./types";
 import { userStore } from "~/stores/userStore";
 
-import { StackClientApp } from "@stackframe/react";
+import type { AuthService } from "./types";
 
 let _stackApp: StackClientApp<true, string> | undefined;
 

@@ -1,0 +1,27 @@
+"use client";
+
+import { useEffect } from "react";
+
+import { isDevLocal } from "~/lib/env";
+
+export function MSWProvider() {
+  // FUTURE refactor this into service instead of component
+  useEffect(() => {
+    // Only run MSW in browser and when no real API URL is set
+    if (globalThis.window === undefined) return;
+
+    if (isDevLocal) {
+      import("~/mocks/browser")
+        .then(({ worker }) => worker.start({ onUnhandledRequest: "bypass" }))
+        .then((result) => {
+          console.log("[MSW] Mock Service Worker started.");
+          return result;
+        })
+        .catch((error) => {
+          console.error("[MSW] Failed to start worker:", error);
+        });
+    }
+  }, []);
+
+  return <></>;
+}

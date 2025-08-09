@@ -17,9 +17,10 @@
     "incremental": false,
     "baseUrl": ".",
     "paths": {
-      "@hebo/ui/*": ["packages/ui/src/*"],
-      "@hebo/db/*": ["packages/db/*"]
+      "@hebo/api/*": ["apps/api/src/*"],
+      "@hebo/db/*": ["packages/db/*"],
+      "@hebo/ui/*": ["packages/ui/src/*"]
     }
   },
   "exclude": ["node_modules"]
-} 
+}

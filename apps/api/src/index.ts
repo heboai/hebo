@@ -6,7 +6,7 @@ import { branchRoutes } from "./routes/branches";
 
 const PORT = Number(process.env.PORT) || 3001;
 
-new Elysia()
+const api = new Elysia()
   .use(
     swagger({
       documentation: {
@@ -28,3 +28,5 @@ new Elysia()
   .listen(PORT);
 
 console.log(`🚀 Hebo API listening on port ${PORT} (Bun ${process.version})`);
+
+export type Api = typeof api;
