@@ -25,7 +25,7 @@ import { api } from "~/lib/data";
 import { agentStore } from "~/stores/agentStore";
 
 export function AgentSelector() {
-  const [agents, setAgents] = useState();
+  const [agents, setAgents] = useState<any[]>([]);
   const pathname = usePathname();
   const router = useRouter();
   const agentSnap = useSnapshot(agentStore);
@@ -37,8 +37,10 @@ export function AgentSelector() {
     (async () => {
       // TODO: Replace this with Eden React Query Client
       // @ts-expect-error: API type not ready
-      const { data } = await api.agents.get();
+      const { data, error } = await api.agents.get();
       if (cancelled) return;
+
+      console.log(error);
 
       setAgents(data);
 
@@ -52,7 +54,7 @@ export function AgentSelector() {
     })();
   }, [pathname, router]);
 
-  return (agents ?? []).length > 0 ? (
+  return agents.length > 0 ? (
     /* TODO: Implement Agent & Branch Dropdowns */
     <SidebarMenu>
       <SidebarMenuItem>
@@ -84,7 +86,7 @@ export function AgentSelector() {
             side="bottom"
             sideOffset={4}
           >
-            {(agents ?? []).map((agent, index) => (
+            {agents.map((agent) => (
               <DropdownMenuItem
                 key={agent.agentName}
                 className="gap-2 p-2"
