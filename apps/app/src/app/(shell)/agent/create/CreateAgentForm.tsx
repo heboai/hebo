@@ -25,7 +25,6 @@ import {
 
 import { supportedModels } from "~/config/models";
 import { api, queryClient } from "~/lib/data";
-import { agentStore } from "~/stores/agentStore";
 
 // FUTURE: Implement TypeBox Validation
 type FormData = {
@@ -59,8 +58,7 @@ export function CreateAgentForm() {
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey: ["agents"] });
         // @ts-expect-error: API type not ready
-        agentStore.activeAgent = data.data.agentName;
-        router.replace("/agent/");
+        router.replace(`/agent/${data.data.id}`);
       },
     },
     queryClient,

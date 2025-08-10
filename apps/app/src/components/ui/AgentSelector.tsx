@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSnapshot } from "valtio";
 
@@ -40,18 +40,28 @@ export function AgentSelector() {
   // Redirect to /create-agent if no agent exists yet
   const pathname = usePathname();
   const router = useRouter();
+  const params = useParams<{ id: string }>();
 
   useEffect(() => {
     if (fetchStatus !== "idle" || pathname === "/agent/create") return;
 
-    const target = agents.length > 0 ? "/agent" : "/agent/create";
+    const target = agents.length > 0 ? `/agent/${params.id}` : "/agent/create";
 
     if (pathname !== target) {
       router.replace(target);
     }
   }, [fetchStatus, agents, pathname, router]);
 
+  // Update active agent in agentStore
   const agentSnap = useSnapshot(agentStore);
+  useEffect(() => {
+    if (params.id) {
+      const agent = agents.find((a) => a.id === params.id);
+      if (agent) {
+        agentStore.activeAgent = { id: agent.id, name: agent.agentName };
+      }
+    }
+  }, [params.id, agents]);
 
   return agents.length > 0 ? (
     /* TODO: Implement Agent & Branch Dropdowns */
@@ -73,7 +83,7 @@ export function AgentSelector() {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate text-lg font-medium">
-                  {agentSnap.activeAgent}
+                  {agentSnap.activeAgent?.name}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
@@ -89,9 +99,9 @@ export function AgentSelector() {
               <DropdownMenuItem
                 key={agent.agentName}
                 className="gap-2 p-2"
-                onClick={() => (agentStore.activeAgent = agent.agentName)}
+                asChild
               >
-                {agent.agentName}
+                <Link href={`/agent/${agent.id}`}>{agent.agentName}</Link>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
