@@ -81,7 +81,7 @@ export function CreateAgentForm() {
               Agent Name
             </Label>
             <div className="sm:max-w-xs">
-              {/* FUTURE: Figure out how to autofocus */}
+              {/* FUTURE: Autofocus on load and validation error */}
               <Input
                 id="agent-name"
                 type="text"

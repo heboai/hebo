@@ -60,7 +60,7 @@ export function AgentSelector() {
   }, [params.id, agents]);
 
   return agents.length > 0 ? (
-    /* TODO: Implement Agent & Branch Dropdowns */
+    /* TODO: Implement Branch Selector */
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
