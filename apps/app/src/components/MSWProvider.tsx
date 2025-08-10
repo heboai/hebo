@@ -11,6 +11,11 @@ export function MSWProvider() {
     if (globalThis.window === undefined) return;
 
     if (isDevLocal) {
+      // Avoid double-starts in React Strict Mode
+      const w = globalThis.window as any;
+      if (w.__mswStarted) return;
+      w.__mswStarted = true;
+
       import("~/mocks/browser")
         .then(({ worker }) => worker.start({ onUnhandledRequest: "bypass" }))
         .then((result) => {

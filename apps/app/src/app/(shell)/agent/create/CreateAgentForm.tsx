@@ -88,12 +88,19 @@ export function CreateAgentForm() {
                 placeholder="Name"
                 disabled={isPending}
                 aria-invalid={!!errors.agentName}
+                aria-describedby={
+                  errors.agentName ? "agent-name-error" : undefined
+                }
                 {...register("agentName", {
                   required: "Please enter an agent name",
                 })}
               />
               {errors.agentName && (
-                <div className="text-destructive" role="alert">
+                <div
+                  id="agent-name-error"
+                  className="text-destructive"
+                  role="alert"
+                >
                   {errors.agentName.message}
                 </div>
               )}
@@ -108,6 +115,7 @@ export function CreateAgentForm() {
               <Controller
                 control={control}
                 name="defaultModel"
+                rules={{ required: "Please select a default model" }}
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
@@ -118,6 +126,9 @@ export function CreateAgentForm() {
                       id="model-select"
                       className="w-full"
                       aria-invalid={!!errors.defaultModel}
+                      aria-describedby={
+                        errors.defaultModel ? "default-model-error" : undefined
+                      }
                     >
                       <SelectValue
                         placeholder="Select a model"
@@ -141,7 +152,11 @@ export function CreateAgentForm() {
                 )}
               />
               {errors.defaultModel && (
-                <div className="text-destructive" role="alert">
+                <div
+                  id="default-model-error"
+                  className="text-destructive"
+                  role="alert"
+                >
                   {errors.defaultModel.message}
                 </div>
               )}
@@ -161,7 +176,7 @@ export function CreateAgentForm() {
             <Button
               type="submit"
               disabled={isPending}
-              aria-label="Create Agent and go to home"
+              aria-label="Create Agent"
             >
               {isPending && (
                 <Loader2Icon className="animate-spin" aria-hidden="true" />

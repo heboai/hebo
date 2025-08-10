@@ -182,7 +182,7 @@
 
   /* Form general styling */
   form {
-    @apply space-y-6;
+    @apply flex flex-col gap-6;
   }
 
   form div {

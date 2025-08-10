@@ -1,3 +1,5 @@
+"use client";
+
 import { StackClientApp } from "@stackframe/react";
 import { useRouter } from "next/navigation";
 

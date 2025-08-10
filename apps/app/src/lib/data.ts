@@ -9,7 +9,7 @@ import {
   type UseQueryResult,
 } from "@tanstack/react-query";
 
-import { Api } from "@hebo/api";
+import type { Api } from "@hebo/api";
 
 import { isDevLocal } from "~/lib/env";
 

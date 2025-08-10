@@ -46,7 +46,7 @@ export function AgentSelector() {
     if (pathname !== target) {
       router.replace(target);
     }
-  }, [fetchStatus, agents, pathname, router]);
+  }, [fetchStatus, agents, pathname, params.id, router]);
 
   // Update active agent in agentStore
   const agentSnap = useSnapshot(agentStore);
@@ -67,6 +67,7 @@ export function AgentSelector() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
+              aria-label="Select agent"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
@@ -82,24 +83,24 @@ export function AgentSelector() {
                   {agentSnap.activeAgent?.name}
                 </span>
               </div>
-              <ChevronsUpDown className="ml-auto" />
+              <ChevronsUpDown className="ml-auto" aria-hidden="true" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             align="start"
             side="bottom"
             sideOffset={4}
           >
             {agents.map((agent) => (
-              <DropdownMenuItem key={agent.name} className="gap-2 p-2" asChild>
+              <DropdownMenuItem key={agent.id} className="gap-2 p-2" asChild>
                 <Link href={`/agent/${agent.id}`}>{agent.name}</Link>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="gap-2 p-2">
               <Link href="/agent/create">
-                <Plus className="size-4" />
+                <Plus className="size-4" aria-hidden="true" />
                 <div className="text-muted-foreground font-medium">
                   Create agent
                 </div>
@@ -110,7 +111,7 @@ export function AgentSelector() {
       </SidebarMenuItem>
     </SidebarMenu>
   ) : (
-    <Link href="/">
+    <Link href="/" aria-label="Home">
       <Logo />
     </Link>
   );
