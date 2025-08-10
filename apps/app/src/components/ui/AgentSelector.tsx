@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,20 +21,17 @@ import {
 } from "@hebo/ui/components/Sidebar";
 
 import { Logo } from "~/components/ui/Logo";
-import { api, queryClient } from "~/lib/data";
+import { api, useEdenQuery } from "~/lib/data";
 import { agentStore } from "~/stores/agentStore";
 
 export function AgentSelector() {
   // Query agents list
-  const { data: agents = [], fetchStatus } = useQuery<any[]>(
-    {
-      queryKey: ["agents"],
-      // @ts-expect-error: API type not ready
-      queryFn: () => api.agents.get(),
-      staleTime: 600_000, // 10 minutes
-    },
-    queryClient,
-  );
+  const { data: agents = [], fetchStatus } = useEdenQuery<any[]>({
+    queryKey: ["agents"],
+    // @ts-expect-error: API type not ready
+    queryFn: () => api.agents.get(),
+    staleTime: 600_000, // 10 minutes
+  });
 
   // Redirect to /create-agent if no agent exists yet
   const pathname = usePathname();

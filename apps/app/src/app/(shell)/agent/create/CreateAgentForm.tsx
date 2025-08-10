@@ -1,6 +1,5 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
@@ -24,7 +23,7 @@ import {
 } from "@hebo/ui/components/Select";
 
 import { supportedModels } from "~/config/models";
-import { api, queryClient } from "~/lib/data";
+import { api, queryClient, useEdenMutation } from "~/lib/data";
 
 // FUTURE: Implement TypeBox Validation
 type FormData = {
@@ -47,22 +46,19 @@ export function CreateAgentForm() {
 
   const router = useRouter();
 
-  const { mutate, error, isPending } = useMutation(
-    {
-      mutationFn: (values: FormData) =>
-        // @ts-expect-error: API type not ready
-        api.agents.post({
-          agentName: values.agentName,
-          models: [values.defaultModel],
-        }),
-      onSuccess: (data) => {
-        queryClient.invalidateQueries({ queryKey: ["agents"] });
-        // @ts-expect-error: API type not ready
-        router.replace(`/agent/${data.data.id}`);
-      },
+  const { mutate, error, isPending } = useEdenMutation({
+    mutationFn: (values: FormData) =>
+      // @ts-expect-error: API type not ready
+      api.agents.post({
+        agentName: values.agentName,
+        models: [values.defaultModel],
+      }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["agents"] });
+      // @ts-expect-error: API type not ready
+      router.replace(`/agent/${data.id}`);
     },
-    queryClient,
-  );
+  });
 
   return (
     <Card className="max-w-lg border-none bg-transparent shadow-none">
