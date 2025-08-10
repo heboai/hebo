@@ -54,7 +54,7 @@ export function AgentSelector() {
     if (params.id) {
       const agent = agents.find((a) => a.id === params.id);
       if (agent) {
-        agentStore.activeAgent = { id: agent.id, name: agent.agentName };
+        agentStore.activeAgent = { id: agent.id, name: agent.name };
       }
     }
   }, [params.id, agents]);
@@ -92,12 +92,8 @@ export function AgentSelector() {
             sideOffset={4}
           >
             {agents.map((agent) => (
-              <DropdownMenuItem
-                key={agent.agentName}
-                className="gap-2 p-2"
-                asChild
-              >
-                <Link href={`/agent/${agent.id}`}>{agent.agentName}</Link>
+              <DropdownMenuItem key={agent.name} className="gap-2 p-2" asChild>
+                <Link href={`/agent/${agent.id}`}>{agent.name}</Link>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />

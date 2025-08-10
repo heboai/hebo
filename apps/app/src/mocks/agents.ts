@@ -3,7 +3,7 @@ import { http, HttpResponse, delay } from "msw";
 import { db } from "~/mocks/db";
 
 interface Agent {
-  agentName: string;
+  name: string;
   models: string;
   branches?: string[];
 }
@@ -13,7 +13,7 @@ export const agentHandlers = [
   http.post("/api/agents", async ({ request }) => {
     const body = (await request.json()) as Agent;
 
-    if (db.getCollection("agents").findBy({ agentName: body.agentName })) {
+    if (db.getCollection("agents").findBy({ name: body.name })) {
       return HttpResponse.json(
         { error: "Agent with the same name already exists" },
         { status: 400 },

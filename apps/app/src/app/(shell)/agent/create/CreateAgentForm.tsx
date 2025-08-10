@@ -50,7 +50,7 @@ export function CreateAgentForm() {
     mutationFn: (values: FormData) =>
       // @ts-expect-error: API type not ready
       api.agents.post({
-        agentName: values.agentName,
+        name: values.agentName,
         models: [values.defaultModel],
       }),
     onSuccess: (data) => {
