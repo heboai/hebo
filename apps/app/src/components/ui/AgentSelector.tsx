@@ -26,8 +26,6 @@ import { api, queryClient } from "~/lib/data";
 import { agentStore } from "~/stores/agentStore";
 
 export function AgentSelector() {
-  const agentSnap = useSnapshot(agentStore);
-
   // Query agents list
   const { data: agents = [] } = useQuery<any[]>(
     {
@@ -39,7 +37,7 @@ export function AgentSelector() {
     queryClient,
   );
 
-  // Redirect to /create-agent if on agent exists ye
+  // Redirect to /create-agent if no agent exists yet
   const lastTarget = useRef<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -53,6 +51,8 @@ export function AgentSelector() {
       router.replace(target);
     }
   }, [agents, pathname, router]);
+
+  const agentSnap = useSnapshot(agentStore);
 
   return agents.length > 0 ? (
     /* TODO: Implement Agent & Branch Dropdowns */
