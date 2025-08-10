@@ -1,9 +1,9 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 import { Button } from "@hebo/ui/components/Button";
 import {
@@ -24,7 +24,7 @@ import {
 } from "@hebo/ui/components/Select";
 
 import { supportedModels } from "~/config/models";
-import { api } from "~/lib/data";
+import { api, queryClient } from "~/lib/data";
 import { agentStore } from "~/stores/agentStore";
 
 // FUTURE: Implement TypeBox Validation
@@ -34,14 +34,11 @@ type FormData = {
 };
 
 export function CreateAgentForm() {
-  const [error, setError] = useState<string | undefined>();
-  const router = useRouter();
-
   const {
     control,
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
       agentName: "",
@@ -49,22 +46,25 @@ export function CreateAgentForm() {
     },
   });
 
-  const handleCreateAgent: SubmitHandler<FormData> = async (fields) => {
-    // TODO: Replace this with Eden React Query Client
-    // @ts-expect-error: API type not ready
-    const { data, error } = await api.agents.post({
-      agentName: fields.agentName,
-      models: [fields.defaultModel],
-    });
+  const router = useRouter();
 
-    if (error) {
-      setError(error.value.error);
-    } else {
-      // TODO: replace with route parameter
-      agentStore.activeAgent = data.agentName;
-      router.replace("/agent/");
-    }
-  };
+  const { mutate, error, isPending } = useMutation(
+    {
+      mutationFn: (values: FormData) =>
+        // @ts-expect-error: API type not ready
+        api.agents.post({
+          agentName: values.agentName,
+          models: [values.defaultModel],
+        }),
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["agents"] });
+        // @ts-expect-error: API type not ready
+        agentStore.activeAgent = data.data.agentName;
+        router.replace("/agent/");
+      },
+    },
+    queryClient,
+  );
 
   return (
     <Card className="max-w-lg border-none bg-transparent shadow-none">
@@ -78,8 +78,8 @@ export function CreateAgentForm() {
 
       <CardContent>
         <form
-          onSubmit={handleSubmit(handleCreateAgent)}
-          aria-busy={isSubmitting}
+          onSubmit={handleSubmit((data) => mutate(data))}
+          aria-busy={isPending}
         >
           {/* Agent Name Field */}
           <div className="flex flex-col sm:grid sm:grid-cols-[auto_1fr]">
@@ -91,7 +91,7 @@ export function CreateAgentForm() {
                 id="agent-name"
                 type="text"
                 placeholder="Name"
-                disabled={isSubmitting}
+                disabled={isPending}
                 aria-invalid={!!errors.agentName}
                 {...register("agentName", {
                   required: "Please enter an agent name",
@@ -117,7 +117,7 @@ export function CreateAgentForm() {
                   <Select
                     onValueChange={field.onChange}
                     value={field.value}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                   >
                     <SelectTrigger
                       id="model-select"
@@ -156,7 +156,7 @@ export function CreateAgentForm() {
           {/* Mutation Error Display */}
           {error && (
             <div className="text-destructive text-right" role="alert">
-              {error}
+              {error.message}
             </div>
           )}
 
@@ -165,13 +165,13 @@ export function CreateAgentForm() {
             {/* FUTURE: Consider to generalize spinner into Button prop */}
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isPending}
               aria-label="Create Agent and go to home"
             >
-              {isSubmitting && (
+              {isPending && (
                 <Loader2Icon className="animate-spin" aria-hidden="true" />
               )}
-              {isSubmitting ? "Creating..." : "Create"}
+              {isPending ? "Creating..." : "Create"}
             </Button>
           </div>
         </form>

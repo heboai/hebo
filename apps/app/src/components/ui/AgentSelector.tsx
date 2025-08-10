@@ -1,10 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useSnapshot } from "valtio";
 
 import {
@@ -21,38 +22,37 @@ import {
 } from "@hebo/ui/components/Sidebar";
 
 import { Logo } from "~/components/ui/Logo";
-import { api } from "~/lib/data";
+import { api, queryClient } from "~/lib/data";
 import { agentStore } from "~/stores/agentStore";
 
 export function AgentSelector() {
-  const [agents, setAgents] = useState<any[]>([]);
-  const pathname = usePathname();
-  const router = useRouter();
   const agentSnap = useSnapshot(agentStore);
 
-  // Redirect to /create-agent if on agent exists yet
-  useEffect(() => {
-    const cancelled = false;
-
-    (async () => {
-      // TODO: Replace this with Eden React Query Client
+  // Query agents list
+  const { data: agents = [] } = useQuery<any[]>(
+    {
+      queryKey: ["agents"],
       // @ts-expect-error: API type not ready
-      const { data, error } = await api.agents.get();
-      if (cancelled) return;
+      queryFn: () => api.agents.get(),
+      staleTime: 600_000, // 10 minutes
+    },
+    queryClient,
+  );
 
-      console.log(error);
+  // Redirect to /create-agent if on agent exists ye
+  const lastTarget = useRef<string | null>(null);
+  const pathname = usePathname();
+  const router = useRouter();
 
-      setAgents(data);
+  useEffect(() => {
+    const target = agents.length > 0 ? "/agent" : "/agent/create";
 
-      if (data.length === 0) {
-        if (pathname != "/agent/create") {
-          router.replace("/agent/create");
-        }
-      } else if (pathname == "/") {
-        router.replace("/agent");
-      }
-    })();
-  }, [pathname, router]);
+    // only navigate if needed, and don’t repeat the same target
+    if (pathname !== target && lastTarget.current !== target) {
+      lastTarget.current = target;
+      router.replace(target);
+    }
+  }, [agents, pathname, router]);
 
   return agents.length > 0 ? (
     /* TODO: Implement Agent & Branch Dropdowns */
