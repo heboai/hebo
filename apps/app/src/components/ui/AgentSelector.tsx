@@ -5,7 +5,7 @@ import { ChevronsUpDown, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useSnapshot } from "valtio";
 
 import {
@@ -27,7 +27,7 @@ import { agentStore } from "~/stores/agentStore";
 
 export function AgentSelector() {
   // Query agents list
-  const { data: agents = [] } = useQuery<any[]>(
+  const { data: agents = [], fetchStatus } = useQuery<any[]>(
     {
       queryKey: ["agents"],
       // @ts-expect-error: API type not ready
@@ -38,19 +38,18 @@ export function AgentSelector() {
   );
 
   // Redirect to /create-agent if no agent exists yet
-  const lastTarget = useRef<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
+    if (fetchStatus !== "idle" || pathname === "/agent/create") return;
+
     const target = agents.length > 0 ? "/agent" : "/agent/create";
 
-    // only navigate if needed, and don’t repeat the same target
-    if (pathname !== target && lastTarget.current !== target) {
-      lastTarget.current = target;
+    if (pathname !== target) {
       router.replace(target);
     }
-  }, [agents, pathname, router]);
+  }, [fetchStatus, agents, pathname, router]);
 
   const agentSnap = useSnapshot(agentStore);
 
