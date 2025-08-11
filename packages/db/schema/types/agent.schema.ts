@@ -6,13 +6,13 @@ type AgentSchema = {
   $id: "agent.schema.json";
   $schema: "https://json-schema.org/draft/2020-12/schema";
   type: "object";
-  required: ["agentSlug", "models"];
+  required: ["slug", "name", "models"];
   properties: {
-    agentSlug: {
+    slug: {
       type: "string";
       minLength: 1;
     };
-    agentName: {
+    name: {
       type: "string";
       minLength: 1;
     };
@@ -20,13 +20,13 @@ type AgentSchema = {
       type: "array";
       items: {
         type: "object";
-        required: ["alias", "modelCanonicalName"];
+        required: ["alias", "canonicalName"];
         properties: {
           alias: {
             type: "string";
             minLength: 1;
           };
-          modelCanonicalName: {
+          canonicalName: {
             $ref: "models.schema.json#/$defs/ModelCanonicalName";
           };
           endpoint: {
