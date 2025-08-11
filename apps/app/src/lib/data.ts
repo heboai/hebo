@@ -3,6 +3,7 @@ import {
   useMutation,
   useQuery,
   QueryClient,
+  QueryKey,
   type UseMutationOptions,
   type UseMutationResult,
   type UseQueryOptions,
@@ -14,7 +15,7 @@ import type { Api } from "@hebo/api";
 import { isDevLocal } from "~/lib/env";
 
 const url = isDevLocal
-  ? `${globalThis.location.origin}/api`
+  ? "http://localhost:3000/api"
   : process.env.NEXT_PUBLIC_API_URL!;
 
 const api = treaty<Api>(url, {
@@ -25,19 +26,27 @@ const api = treaty<Api>(url, {
 
 const queryClient = new QueryClient();
 
-function unwrapEden<T>(res: any): T {
+// Unwrap eden result: throw "error" or return "data"
+type EdenError = { status?: number; value?: { error: string } };
+type EdenResponse<T> =
+  | { data: T; error?: undefined }
+  | { data?: undefined; error: EdenError };
+
+function unwrapEden<T>(res: EdenResponse<T>): T {
   if (res?.error) {
-    const { status, value } = res.error;
-    const err = new Error(value.error);
-    (err as any).status = status;
+    const err = new (class extends Error {
+      status?: number;
+    })(res.error.value?.error);
+    err.status = res.error.status;
     throw err;
   }
   return res.data as T;
 }
 
-function useEdenQuery<TData, TQueryKey extends readonly unknown[] = any>(
+// Simple wrapper for useQuery to apply unwrapEden & queryClient singleton
+function useEdenQuery<TData, TQueryKey extends QueryKey = QueryKey>(
   options: Omit<UseQueryOptions<TData, Error, TData, TQueryKey>, "queryFn"> & {
-    queryFn: () => Promise<any>;
+    queryFn: () => Promise<EdenResponse<TData>>;
   },
 ): UseQueryResult<TData, Error> {
   const { queryFn, ...rest } = options;
@@ -51,9 +60,10 @@ function useEdenQuery<TData, TQueryKey extends readonly unknown[] = any>(
   );
 }
 
+// Simple wrapper for useMutation to apply unwrapEden & queryClient singleton
 function useEdenMutation<TData, TVariables = void>(
   options: Omit<UseMutationOptions<TData, Error, TVariables>, "mutationFn"> & {
-    mutationFn: (vars: TVariables) => Promise<any>; // Eden result
+    mutationFn: (vars: TVariables) => Promise<EdenResponse<TData>>;
   },
 ): UseMutationResult<TData, Error, TVariables> {
   const { mutationFn, ...rest } = options;
