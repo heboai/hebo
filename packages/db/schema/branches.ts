@@ -1,32 +1,11 @@
-import { isNull } from "drizzle-orm";
-import {
-  text,
-  bigserial,
-  pgTable,
-  jsonb,
-  uniqueIndex,
-  bigint,
-} from "drizzle-orm/pg-core";
+import { text, bigserial, pgTable, jsonb } from "drizzle-orm/pg-core";
 
-import { agents } from "./agents";
-import { timestamps } from "./timestamps";
+import { audits } from "./audits";
+import { type Agent } from "./types/agent.schema";
 
-import type { Models } from "./types/models";
-
-export const branches = pgTable(
-  "branches",
-  {
-    id: bigserial("id", { mode: "number" }).primaryKey(),
-    agent_id: bigint("agent_id", { mode: "number" })
-      .notNull()
-      .references(() => agents.id, { onDelete: "cascade" }),
-    name: text("name").notNull().default("main"),
-    models: jsonb("models").$type<Models>().notNull(),
-    ...timestamps,
-  },
-  (table) => [
-    uniqueIndex("branches_agent_id_name_unique_index")
-      .on(table.agent_id, table.name)
-      .where(isNull(table.deleted_at)),
-  ],
-);
+export const branches = pgTable("branches", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  name: text("name").notNull().default("main"),
+  agent: jsonb("agent").$type<Agent>().notNull(),
+  ...audits,
+});

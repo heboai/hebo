@@ -1,27 +1,21 @@
-import { isLocal, getConnectionConfig } from "./utils";
-import type { DbCredentials } from "./utils";
-
-// Drizzle imports for both dialects
 import {
   drizzle as drizzlePostgres,
   NodePgDatabase,
 } from "drizzle-orm/node-postgres";
 import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
-
-// Runtime clients
 import { Pool } from "pg";
 
-// Schema imports
-import { agents } from "./schema/agents";
+import { audits } from "./schema/audits";
 import { branches } from "./schema/branches";
-import { timestamps } from "./schema/timestamps";
-import * as models from "./schema/types/models";
+import * as agent from "./schema/types/agent.schema";
+import { isLocal, getConnectionConfig } from "./utils";
+
+import type { DbCredentials } from "./utils";
 
 const postgresSchema = {
-  agents,
   branches,
-  timestamps,
-  ...models,
+  audits,
+  ...agent,
 };
 
 // Create an intersection type that contains the shared API surface of both drivers.
@@ -61,4 +55,4 @@ export const db = initDb();
 // type safety globally
 export const typedDb: UniversalDb = db;
 
-export { isLocal };
+export { isLocal } from "./utils";
