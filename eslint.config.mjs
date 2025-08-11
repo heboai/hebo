@@ -135,18 +135,13 @@ const eslintConfig = [
       'tailwindcss/no-custom-classname': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       // TODO: Remove these (turning them to errors), once fixed 
-      'import/default': 'warn',
       'import/named': 'warn',
       'sonarjs/no-all-duplicated-branches': 'warn',
-      'sonarjs/prefer-single-boolean-return': 'warn',
       'turbo/no-undeclared-env-vars': 'warn',
       'unicorn/catch-error-name': 'warn',
       'unicorn/no-null': 'warn',
       'unicorn/no-useless-undefined': 'warn',
-      'unicorn/prefer-export-from': 'warn',
       'unicorn/prefer-global-this': 'warn',
-      'unicorn/prefer-node-protocol': 'warn',
-      'unicorn/prefer-number-properties': 'warn',
     },
   },
 ];
