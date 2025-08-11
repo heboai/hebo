@@ -1,4 +1,3 @@
-
 import { CopyToClipboardButton } from "@hebo/ui/_mintlify/code/CopyToClipboardButton";
 import { Input as ShadCNInput } from "@hebo/ui/_shadcn/ui/input";
 import { cn } from "@hebo/ui/lib/utils";
@@ -21,7 +20,12 @@ export function Input({
   return (
     <div className="relative w-full min-w-0">
       {Icon && (
-        <Icon size={16} className="absolute top-1/2 left-3 -translate-y-1/2" />
+        <Icon
+          size={16}
+          className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
+          aria-hidden="true"
+          focusable="false"
+        />
       )}
       {copy && (
         <CopyToClipboardButton

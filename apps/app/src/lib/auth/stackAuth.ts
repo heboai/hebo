@@ -9,7 +9,7 @@ import type { AuthService } from "./types";
 
 let _stackApp: StackClientApp<true, string> | undefined;
 
-function getStackApp(): StackClientApp<true, string> {
+const getStackApp = (): StackClientApp<true, string> => {
   if (!_stackApp) {
     _stackApp = new StackClientApp({
       projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
@@ -32,19 +32,18 @@ function getStackApp(): StackClientApp<true, string> {
   }
 
   return _stackApp;
-}
+};
 
 const authService: AuthService = {
   ensureSignedIn() {
     const user = getStackApp().useUser({ or: "redirect" });
 
-    if (user) {
-      userStore.user = {
-        email: user.primaryEmail ?? "",
-        name: user.displayName ?? "",
-        avatar: user.profileImageUrl ?? "",
-      };
-    }
+    if (!user) return;
+    userStore.user = {
+      email: user.primaryEmail ?? "",
+      name: user.displayName ?? "",
+      avatar: user.profileImageUrl ?? "",
+    };
   },
 
   async generateApiKey() {

@@ -23,7 +23,7 @@ export function GenerateApiKey() {
     setKey("Generating API Key ...");
 
     try {
-      const newKey = await authService.generateApiKey?.();
+      const newKey = await authService.generateApiKey();
       setKey(newKey ?? "Failed to generate key");
       setLoading("success");
     } catch (error_) {
@@ -49,12 +49,15 @@ export function GenerateApiKey() {
       />
       <Button
         disabled={loading !== "idle"}
+        aria-busy={loading === "loading"}
         onClick={() => {
           handleGenerateAPIKey();
         }}
         aria-label="Generate new API key"
       >
-        {loading === "loading" && <Loader2Icon className="animate-spin" />}
+        {loading === "loading" && (
+          <Loader2Icon className="animate-spin" aria-hidden="true" />
+        )}
         Generate
       </Button>
     </div>
