@@ -1,3 +1,4 @@
+import { isNull } from "drizzle-orm";
 import { pgTable, jsonb, uuid, uniqueIndex } from "drizzle-orm/pg-core";
 
 import { agents } from "./agents";
@@ -16,6 +17,8 @@ export const branches = pgTable(
     ...audit,
   },
   (table) => [
-    uniqueIndex("unique_slug_per_agent").on(table.agentId, table.slug),
+    uniqueIndex("unique_slug_per_agent")
+      .on(table.agentId, table.slug)
+      .where(isNull(table.deletedAt)),
   ],
 );
