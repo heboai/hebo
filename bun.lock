@@ -94,16 +94,13 @@
       "version": "0.0.1",
       "dependencies": {
         "@libsql/client": "^0.15.9",
+        "drizzle-orm": "0.44.4",
         "pg": "^8.16.3",
       },
       "devDependencies": {
         "@electric-sql/pglite": "^0.3.7",
         "@types/pg": "^8.15.5",
         "drizzle-kit": "^0.31.4",
-      },
-      "peerDependencies": {
-        "@sinclair/typebox": "^0.34.33",
-        "drizzle-orm": "0.44.4",
       },
     },
     "packages/ui": {

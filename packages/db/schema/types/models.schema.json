@@ -1,0 +1,51 @@
+{
+  "$id": "models.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["models", "__supportedCanonicalNames"],
+  "properties": {
+    "__supportedCanonicalNames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["alias", "canonicalName"],
+        "properties": {
+          "alias": {
+            "type": "string",
+            "minLength": 1
+          },
+          "canonicalName": {
+            "type": "string",
+            "enum": {
+              "$data": "/__supportedCanonicalNames"
+            }
+          },
+          "endpoint": {
+            "type": "object",
+            "required": ["url", "provider", "apiKey"],
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "provider": {
+                "enum": ["aws", "custom"]
+              },
+              "apiKey": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

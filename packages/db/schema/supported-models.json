@@ -1,0 +1,22 @@
+[
+  {
+    "canonicalName": "claude-3-5-sonnet-20241022",
+    "displayName": "Claude 3.5 Sonnet (Oct 2024)",
+    "rateLimit": 120
+  },
+  {
+    "canonicalName": "claude-3-haiku-20240307",
+    "displayName": "Claude 3 Haiku (Mar 2024)",
+    "rateLimit": 200
+  },
+  {
+    "canonicalName": "voyage-multimodal-3",
+    "displayName": "Voyage Multimodal 3",
+    "rateLimit": 80
+  },
+  {
+    "canonicalName": "voyage-3-large",
+    "displayName": "Voyage 3 Large",
+    "rateLimit": 60
+  }
+]
