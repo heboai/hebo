@@ -2,7 +2,6 @@ import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 
 import { agentRoutes } from "./routes/agents";
-import { branchRoutes } from "./routes/branches";
 
 const PORT = Number(process.env.PORT) || 3001;
 
@@ -18,11 +17,11 @@ new Elysia()
     }),
   )
   .get("/", () => "Hebo API says hello!")
-  .group("/v1", (app) => app.use(agentRoutes).use(branchRoutes))
+  .group("/v1", (app) => app.use(agentRoutes))
   .onError(({ error }) => {
     console.error("API Error:", error);
     return {
-      error,
+      error: error,
     };
   })
   .listen(PORT);
