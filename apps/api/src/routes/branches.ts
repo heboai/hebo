@@ -10,7 +10,7 @@ const ErrorResponse = t.Object({ error: t.String() });
 
 export const branchRoutes = new Elysia({
   name: "branch-routes",
-  prefix: "/:agentId/branches",
+  prefix: "/:agentSlug/branches",
 })
   .post(
     "/",
@@ -19,7 +19,7 @@ export const branchRoutes = new Elysia({
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentId: t.String() }),
+      params: t.Object({ agentSlug: t.String() }),
       body: createBranch,
       response: { 501: ErrorResponse },
     },
@@ -31,29 +31,29 @@ export const branchRoutes = new Elysia({
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentId: t.String() }),
+      params: t.Object({ agentSlug: t.String() }),
       response: { 501: ErrorResponse },
     },
   )
   .get(
-    "/:branchId",
+    "/:branchSlug",
     async ({ set }) => {
       set.status = 501;
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentId: t.String(), branchId: t.String() }),
+      params: t.Object({ agentSlug: t.String(), branchSlug: t.String() }),
       response: { 501: ErrorResponse },
     },
   )
   .put(
-    "/:branchId",
+    "/:branchSlug",
     async ({ set }) => {
       set.status = 501;
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentId: t.String(), branchId: t.String() }),
+      params: t.Object({ agentSlug: t.String(), branchSlug: t.String() }),
       body: updateBranch,
       response: { 501: ErrorResponse },
     },

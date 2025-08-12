@@ -36,24 +36,24 @@ export const agentRoutes = new Elysia({
     },
   )
   .get(
-    "/:agentId",
+    "/:agentSlug",
     async ({ set }) => {
       set.status = 501;
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentId: t.String() }),
+      params: t.Object({ agentSlug: t.String() }),
       response: { 501: ErrorResponse },
     },
   )
   .put(
-    "/:agentId",
+    "/:agentSlug",
     async ({ set }) => {
       set.status = 501;
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentId: t.String() }),
+      params: t.Object({ agentSlug: t.String() }),
       body: updateAgent,
       response: { 501: ErrorResponse },
     },
