@@ -11,6 +11,7 @@
     "clean": "rimraf .turbo node_modules"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.1.14",
     "@radix-ui/react-scroll-area": "^1.2.9",
     "ai": "^5.0.10",
     "ai-elements": "^1.0.3",
