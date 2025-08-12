@@ -4,7 +4,6 @@ import rehypeShiki from "@shikijs/rehype";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   eslint: { ignoreDuringBuilds: true },
   // Support Type Script and Markdown pages
   pageExtensions: ["mdx", "ts", "tsx"],

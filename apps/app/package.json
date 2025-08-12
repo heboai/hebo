@@ -9,7 +9,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "serve out -p 3000",
+    "start": "next start",
     "clean": "rimraf .next .turbo node_modules out"
   },
   "dependencies": {
