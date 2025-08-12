@@ -7,7 +7,6 @@ import { Pool } from "pg";
 
 import { agents } from "./schema/agents";
 import { branches } from "./schema/branches";
-import { audit } from "./schema/mixin/audit";
 import { isLocal, getConnectionConfig } from "./utils";
 
 import type { DbCredentials } from "./utils";
@@ -15,7 +14,6 @@ import type { DbCredentials } from "./utils";
 const postgresSchema = {
   agents,
   branches,
-  audit,
 };
 
 // Create an intersection type that contains the shared API surface of both drivers.

@@ -1,5 +1,5 @@
 {
-  "id": "899768f8-256c-46c5-9a1f-780248c58e2f",
+  "id": "89a67c1e-27e9-4b81-89e8-b1144b3d4891",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -69,7 +69,13 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "agents_slug_unique": {
+          "name": "agents_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": ["slug"]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -148,7 +154,29 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "unique_slug_per_agent": {
+          "name": "unique_slug_per_agent",
+          "columns": [
+            {
+              "expression": "agent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "branches_agent_id_agents_id_fk": {
           "name": "branches_agent_id_agents_id_fk",
