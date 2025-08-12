@@ -2,9 +2,9 @@
   "$id": "models.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
-  "required": ["models", "__supportedCanonicalNames"],
+  "required": ["models", "__supportedTypes"],
   "properties": {
-    "__supportedCanonicalNames": {
+    "__supportedTypes": {
       "type": "array",
       "items": {
         "type": "string"
@@ -15,16 +15,16 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["alias", "canonicalName"],
+        "required": ["alias", "type"],
         "properties": {
           "alias": {
             "type": "string",
             "minLength": 1
           },
-          "canonicalName": {
+          "type": {
             "type": "string",
             "enum": {
-              "$data": "/__supportedCanonicalNames"
+              "$data": "/__supportedTypes"
             }
           },
           "endpoint": {
