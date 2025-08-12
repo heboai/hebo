@@ -6,8 +6,8 @@ import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
 import { Pool } from "pg";
 
 import { agents } from "./schema/agents";
-import { audits } from "./schema/audits";
 import { branches } from "./schema/branches";
+import { audits } from "./schema/mixin/audit";
 import { isLocal, getConnectionConfig } from "./utils";
 
 import type { DbCredentials } from "./utils";

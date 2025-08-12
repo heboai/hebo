@@ -1,5 +1,5 @@
 CREATE TABLE "agents" (
-	"id" bigserial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"slug" text NOT NULL,
 	"created_by" text NOT NULL,
@@ -11,9 +11,10 @@ CREATE TABLE "agents" (
 );
 --> statement-breakpoint
 CREATE TABLE "branches" (
-	"id" bigserial PRIMARY KEY NOT NULL,
-	"agent_id" bigint NOT NULL,
-	"name" text DEFAULT 'main' NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"agent_id" uuid NOT NULL,
+	"name" text NOT NULL,
+	"slug" text NOT NULL,
 	"models" jsonb NOT NULL,
 	"created_by" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,

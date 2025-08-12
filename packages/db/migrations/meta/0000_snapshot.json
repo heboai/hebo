@@ -1,5 +1,5 @@
 {
-  "id": "9a4d8a7d-0c05-4bc3-a03e-4aefe5c6b9a7",
+  "id": "899768f8-256c-46c5-9a1f-780248c58e2f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,9 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "bigserial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
@@ -79,13 +80,14 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "bigserial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "agent_id": {
           "name": "agent_id",
-          "type": "bigint",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -93,8 +95,13 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'main'"
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "models": {
           "name": "models",

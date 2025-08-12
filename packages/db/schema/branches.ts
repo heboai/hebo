@@ -1,14 +1,15 @@
-import { text, bigserial, pgTable, jsonb, bigint } from "drizzle-orm/pg-core";
+import { pgTable, jsonb, uuid } from "drizzle-orm/pg-core";
 
 import { agents } from "./agents";
-import { audits } from "./audits";
+import { audits } from "./mixin/audit";
+import { slug } from "./mixin/slug";
 
 export const branches = pgTable("branches", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  agentId: bigint("agent_id", { mode: "number" })
+  id: uuid("id").primaryKey().defaultRandom(),
+  agentId: uuid("agent_id")
     .references(() => agents.id, { onDelete: "cascade" })
     .notNull(),
-  name: text("name").notNull().default("main"),
+  ...slug,
   models: jsonb("models").notNull(),
   ...audits,
 });

@@ -1,10 +1,10 @@
-import { text, bigserial, pgTable } from "drizzle-orm/pg-core";
+import { uuid, pgTable } from "drizzle-orm/pg-core";
 
-import { audits } from "./audits";
+import { audits } from "./mixin/audit";
+import { slug } from "./mixin/slug";
 
 export const agents = pgTable("agents", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  name: text("name").notNull(),
-  slug: text("slug").notNull(),
+  id: uuid("id").primaryKey().defaultRandom(),
+  ...slug,
   ...audits,
 });
