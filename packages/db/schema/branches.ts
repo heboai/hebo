@@ -1,7 +1,7 @@
 import { pgTable, jsonb, uuid } from "drizzle-orm/pg-core";
 
 import { agents } from "./agents";
-import { audits } from "./mixin/audit";
+import { audit } from "./mixin/audit";
 import { slug } from "./mixin/slug";
 
 export const branches = pgTable("branches", {
@@ -11,5 +11,5 @@ export const branches = pgTable("branches", {
     .notNull(),
   ...slug,
   models: jsonb("models").notNull(),
-  ...audits,
+  ...audit,
 });

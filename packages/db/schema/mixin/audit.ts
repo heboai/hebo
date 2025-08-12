@@ -1,6 +1,6 @@
 import { text, timestamp } from "drizzle-orm/pg-core";
 
-export const audits = {
+export const audit = {
   createdBy: text("created_by").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
