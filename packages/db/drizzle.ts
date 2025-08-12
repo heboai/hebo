@@ -5,17 +5,17 @@ import {
 import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
 import { Pool } from "pg";
 
+import { agents } from "./schema/agents";
 import { audits } from "./schema/audits";
 import { branches } from "./schema/branches";
-import * as agent from "./schema/types/agent.schema";
 import { isLocal, getConnectionConfig } from "./utils";
 
 import type { DbCredentials } from "./utils";
 
 const postgresSchema = {
+  agents,
   branches,
   audits,
-  ...agent,
 };
 
 // Create an intersection type that contains the shared API surface of both drivers.
