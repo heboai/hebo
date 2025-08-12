@@ -24,7 +24,32 @@ const api = treaty<Api>(url, {
   fetch: { credentials: "include" },
 });
 
-const queryClient = new QueryClient();
+// Ensure "real" errors are not surpressed
+const shouldThrow = (error: unknown): boolean => {
+  const errObj = error as { status?: unknown };
+
+  // Network / CORS / DNS / offline — no response status
+  if (error instanceof TypeError && errObj.status === undefined) {
+    return true;
+  }
+
+  // If fetcher throws `{ status, body }` for HTTP errors:
+  if (typeof errObj.status === "number") {
+    const status = errObj.status;
+
+    if (status >= 500) return true; // Infrastructure issues
+    if (status === 401 || status === 403) return true; // Auth issues
+  }
+
+  return false; // Validation, 404, etc. stay local
+};
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { throwOnError: shouldThrow },
+    mutations: { throwOnError: shouldThrow },
+  },
+});
 
 // Unwrap eden result: throw "error" or return "data"
 type EdenError = { status?: number; value?: { error: string } };
