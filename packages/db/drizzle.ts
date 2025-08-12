@@ -23,7 +23,7 @@ type PgliteDb = PgliteDatabase<typeof postgresSchema>;
 type PostgresDb = NodePgDatabase<typeof postgresSchema>;
 export type UniversalDb = PgliteDb & PostgresDb;
 
-// Immediately-invoked function to build the correct DB instance.
+// Factory function to build the correct DB instance at module init.
 const initDb = (): UniversalDb => {
   if (isLocal) {
     // Local development – PGLite via pglite client
