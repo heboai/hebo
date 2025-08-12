@@ -1,5 +1,5 @@
 {
-  "id": "a0e4680f-1936-4ce4-beaf-80aba7714281",
+  "id": "9a4d8a7d-0c05-4bc3-a03e-4aefe5c6b9a7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -85,7 +85,7 @@
         },
         "agent_id": {
           "name": "agent_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },

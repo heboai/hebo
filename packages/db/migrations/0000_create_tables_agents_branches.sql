@@ -12,7 +12,7 @@ CREATE TABLE "agents" (
 --> statement-breakpoint
 CREATE TABLE "branches" (
 	"id" bigserial PRIMARY KEY NOT NULL,
-	"agent_id" integer NOT NULL,
+	"agent_id" bigint NOT NULL,
 	"name" text DEFAULT 'main' NOT NULL,
 	"models" jsonb NOT NULL,
 	"created_by" text NOT NULL,
