@@ -89,6 +89,43 @@
       "name": "@hebo/infra",
       "version": "0.0.1",
     },
+    "packages/aikit-ui": {
+      "name": "@hebo/aikit-ui",
+      "version": "0.0.1",
+      "dependencies": {
+        "@radix-ui/react-scroll-area": "^1.2.9",
+        "ai": "^5.0.10",
+        "ai-elements": "^1.0.3",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^3.3.1",
+      },
+      "devDependencies": {
+        "@radix-ui/react-avatar": "^1.1.10",
+        "@radix-ui/react-dialog": "^1.1.14",
+        "@radix-ui/react-separator": "^1.1.7",
+        "@radix-ui/react-slot": "^1.2.3",
+        "@radix-ui/react-tabs": "^1.1.12",
+        "@radix-ui/react-tooltip": "^1.2.7",
+        "@types/react": "^19.1",
+        "@types/react-dom": "^19.1",
+        "lucide-react": "^0.539.0",
+        "react": "^19.1",
+        "react-dom": "^19.1",
+      },
+      "peerDependencies": {
+        "@radix-ui/react-avatar": "^1.1.10",
+        "@radix-ui/react-dialog": "^1.1.14",
+        "@radix-ui/react-dropdown-menu": "^2.1.15",
+        "@radix-ui/react-separator": "^1.1.7",
+        "@radix-ui/react-slot": "^1.2.3",
+        "@radix-ui/react-tabs": "^1.1.12",
+        "@radix-ui/react-tooltip": "^1.2.7",
+        "lucide-react": "^0.525.0",
+        "react": "^19.1",
+        "react-dom": "^19.1",
+      },
+    },
     "packages/db": {
       "name": "@hebo/db",
       "version": "0.0.1",
@@ -255,6 +292,8 @@
     "@floating-ui/react-dom": ["@floating-ui/react-dom@2.1.5", "", { "dependencies": { "@floating-ui/dom": "^1.7.3" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-HDO/1/1oH9fjj4eLgegrlH3dklZpHtUYYFiVwMUwfGvk9jWDRWqkklA2/NFScknrcNSspbV868WjXORvreDX+Q=="],
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
+
+    "@hebo/aikit-ui": ["@hebo/aikit-ui@workspace:packages/aikit-ui"],
 
     "@hebo/api": ["@hebo/api@workspace:apps/api"],
 
