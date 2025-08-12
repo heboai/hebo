@@ -1,5 +1,5 @@
 {
-  "id": "89a67c1e-27e9-4b81-89e8-b1144b3d4891",
+  "id": "1b9ddc02-9fe5-4718-aaf8-b0edc83b302e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -66,16 +66,26 @@
           "notNull": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "agents_slug_unique": {
-          "name": "agents_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": ["slug"]
+      "indexes": {
+        "unique_slug": {
+          "name": "unique_slug",
+          "columns": [
+            {
+              "expression": "LOWER(\"slug\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -165,13 +175,14 @@
               "nulls": "last"
             },
             {
-              "expression": "slug",
-              "isExpression": false,
+              "expression": "LOWER(\"slug\")",
               "asc": true,
+              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
+          "where": "\"branches\".\"deleted_at\" is null",
           "concurrently": false,
           "method": "btree",
           "with": {}

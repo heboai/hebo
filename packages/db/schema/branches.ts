@@ -1,4 +1,4 @@
-import { isNull } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import { pgTable, jsonb, uuid, uniqueIndex } from "drizzle-orm/pg-core";
 
 import { agents } from "./agents";
@@ -12,13 +12,14 @@ export const branches = pgTable(
     agentId: uuid("agent_id")
       .references(() => agents.id, { onDelete: "cascade" })
       .notNull(),
-    ...slug({ unique: false }),
+    ...slug,
     models: jsonb("models").notNull(),
     ...audit,
   },
   (table) => [
+    // Case-insensitive unique slug per agent
     uniqueIndex("unique_slug_per_agent")
-      .on(table.agentId, table.slug)
+      .on(table.agentId, sql`LOWER(${table.slug})`)
       .where(isNull(table.deletedAt)),
   ],
 );
