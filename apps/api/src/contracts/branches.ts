@@ -8,13 +8,14 @@ import { t } from "elysia";
 import { branches } from "@hebo/db/schema/branches";
 
 import { selectAgent } from "./agents";
+import { omitCommon } from "./common";
 
 const _selectBranch = createSelectSchema(branches);
 const _createBranch = createInsertSchema(branches);
 const _updateBranch = createUpdateSchema(branches);
 
-export const createBranch = t.Pick(_createBranch, ["name", "models"]);
-export const updateBranch = t.Pick(_updateBranch, ["name", "models"]);
+export const createBranch = omitCommon(_createBranch, ["agentId"]);
+export const updateBranch = omitCommon(_updateBranch, ["agentId"]);
 
 export const selectBranch = t.Object({
   branchSlug: _selectBranch.properties.slug,
