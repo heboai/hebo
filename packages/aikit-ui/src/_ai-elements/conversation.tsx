@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from "@hebo/ui/_shadcn/ui/button";
+import { Button } from "../_shadcn/ui/button";
 import { ArrowDownIcon } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { useCallback } from 'react';

@@ -1,9 +1,10 @@
+import { cn } from "@hebo/aikit-ui/src/lib/utils";
+
 import {
   Button as ShadCNButton,
   buttonVariants,
-} from "@hebo/ui/_shadcn/ui/button";
+} from "../../../aikit-ui/src/_shadcn/ui/button";
 
-import { cn } from "@hebo/ui/lib/utils";
 import type { VariantProps } from "class-variance-authority";
 
 type ExtendedButtonProps = React.ComponentProps<typeof ShadCNButton> &

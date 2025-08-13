@@ -1,8 +1,9 @@
-import type { LucideIcon } from "lucide-react";
-
-import { cn } from "@hebo/ui/lib/utils";
+import { Input as ShadCNInput } from "@hebo/aikit-ui/src/_shadcn/ui/input";
+import { cn } from "@hebo/aikit-ui/src/lib/utils";
 import { CopyToClipboardButton } from "@hebo/ui/_mintlify/code/CopyToClipboardButton";
-import { Input as ShadCNInput } from "@hebo/ui/_shadcn/ui/input";
+
+
+import type { LucideIcon } from "lucide-react";
 
 interface InputProps extends React.ComponentProps<"input"> {
   icon?: LucideIcon;
@@ -20,12 +21,12 @@ export function Input({
   return (
     <div className="relative w-full min-w-0">
       {Icon && (
-        <Icon size={16} className="absolute top-1/2 -translate-y-1/2 left-3" />
+        <Icon size={16} className="absolute top-1/2 left-3 -translate-y-1/2" />
       )}
       {copy && (
         <CopyToClipboardButton
           textToCopy={value?.toString() ?? ""}
-          className="absolute top-1/2 -translate-y-1/2 right-2"
+          className="absolute top-1/2 right-2 -translate-y-1/2"
         />
       )}
       <ShadCNInput

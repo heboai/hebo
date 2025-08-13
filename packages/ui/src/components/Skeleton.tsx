@@ -1,5 +1,6 @@
 import React from "react";
-import { Skeleton as ShadCNSkeleton } from "@hebo/ui/_shadcn/ui/skeleton";
+
+import { Skeleton as ShadCNSkeleton } from "@hebo/aikit-ui/src/_shadcn/ui/skeleton";
 
 interface SkeletonProps extends React.ComponentProps<"div"> {
   count: number;
