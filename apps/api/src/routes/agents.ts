@@ -1,7 +1,23 @@
-import { Elysia } from "elysia";
+import {
+  createInsertSchema,
+  createSelectSchema,
+  createUpdateSchema,
+} from "drizzle-typebox";
+import { Elysia, t } from "elysia";
 
-import { createAgent, selectAgent, updateAgent } from "../contracts/agents";
-import { ErrorResponse } from "../contracts/common";
+import { agents } from "@hebo/db/schema/agents";
+
+import { createModelSchemas } from "../utils";
+
+const _selectAgent = createSelectSchema(agents);
+const _insertAgent = createInsertSchema(agents);
+const _updateAgent = createUpdateSchema(agents);
+const { createSchema: createAgent, updateSchema: updateAgent } =
+  createModelSchemas({ insert: _insertAgent, update: _updateAgent });
+
+export const selectAgent = t.Object({
+  agentSlug: _selectAgent.properties.slug,
+});
 
 export const agentRoutes = new Elysia({
   name: "agent-routes",
@@ -11,43 +27,43 @@ export const agentRoutes = new Elysia({
     "/",
     async ({ set }) => {
       set.status = 501;
-      return { error: "Not implemented" } as const;
+      return "Not implemented" as const;
     },
     {
       body: createAgent,
-      response: { 501: ErrorResponse },
+      response: { 501: t.String() },
     },
   )
   .get(
     "/",
     async ({ set }) => {
       set.status = 501;
-      return { error: "Not implemented" } as const;
+      return "Not implemented" as const;
     },
     {
-      response: { 501: ErrorResponse },
+      response: { 501: t.String() },
     },
   )
   .get(
     "/:agentSlug",
     async ({ set }) => {
       set.status = 501;
-      return { error: "Not implemented" } as const;
+      return "Not implemented" as const;
     },
     {
       params: selectAgent,
-      response: { 501: ErrorResponse },
+      response: { 501: t.String() },
     },
   )
   .put(
     "/:agentSlug",
     async ({ set }) => {
       set.status = 501;
-      return { error: "Not implemented" } as const;
+      return "Not implemented" as const;
     },
     {
       params: selectAgent,
       body: updateAgent,
-      response: { 501: ErrorResponse },
+      response: { 501: t.String() },
     },
   );

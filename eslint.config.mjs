@@ -27,6 +27,10 @@ const eslintConfig = [
       tailwindcss: {
         config: false, 
       },
+      // Limit Next.js plugin root to the web app only to avoid monorepo noise
+      next: {
+        rootDir: ["apps/app"],
+      },
       // Point to the correct tsconfig
       'import/resolver': {
         typescript: {
