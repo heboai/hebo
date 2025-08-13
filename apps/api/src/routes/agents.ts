@@ -1,14 +1,8 @@
-import { createInsertSchema, createUpdateSchema } from "drizzle-typebox";
-import { Elysia, t } from "elysia";
-
-import { agents } from "@hebo/db/schema/agents";
+import { Elysia } from "elysia";
 
 import { branchRoutes } from "./branches";
-
-const createAgent = createInsertSchema(agents);
-const updateAgent = createUpdateSchema(agents);
-
-const ErrorResponse = t.Object({ error: t.String() });
+import { createAgent, selectAgent, updateAgent } from "../contracts/agents";
+import { ErrorResponse } from "../contracts/common";
 
 export const agentRoutes = new Elysia({
   name: "agent-routes",
@@ -42,7 +36,7 @@ export const agentRoutes = new Elysia({
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentSlug: t.String() }),
+      params: selectAgent,
       response: { 501: ErrorResponse },
     },
   )
@@ -53,7 +47,7 @@ export const agentRoutes = new Elysia({
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentSlug: t.String() }),
+      params: selectAgent,
       body: updateAgent,
       response: { 501: ErrorResponse },
     },

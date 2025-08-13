@@ -1,12 +1,12 @@
-import { createInsertSchema, createUpdateSchema } from "drizzle-typebox";
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
 
-import { branches } from "@hebo/db/schema/branches";
-
-const createBranch = createInsertSchema(branches);
-const updateBranch = createUpdateSchema(branches);
-
-const ErrorResponse = t.Object({ error: t.String() });
+import { selectAgent } from "../contracts/agents";
+import {
+  createBranch,
+  selectBranchWithAgent,
+  updateBranch,
+} from "../contracts/branches";
+import { ErrorResponse } from "../contracts/common";
 
 export const branchRoutes = new Elysia({
   name: "branch-routes",
@@ -19,7 +19,7 @@ export const branchRoutes = new Elysia({
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentSlug: t.String() }),
+      params: selectAgent,
       body: createBranch,
       response: { 501: ErrorResponse },
     },
@@ -31,7 +31,7 @@ export const branchRoutes = new Elysia({
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentSlug: t.String() }),
+      params: selectAgent,
       response: { 501: ErrorResponse },
     },
   )
@@ -42,7 +42,7 @@ export const branchRoutes = new Elysia({
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentSlug: t.String(), branchSlug: t.String() }),
+      params: selectBranchWithAgent,
       response: { 501: ErrorResponse },
     },
   )
@@ -53,7 +53,7 @@ export const branchRoutes = new Elysia({
       return { error: "Not implemented" } as const;
     },
     {
-      params: t.Object({ agentSlug: t.String(), branchSlug: t.String() }),
+      params: selectBranchWithAgent,
       body: updateBranch,
       response: { 501: ErrorResponse },
     },
