@@ -13,7 +13,8 @@
   "dependencies": {
     "@radix-ui/react-popover": "^1.1.14",
     "@radix-ui/react-scroll-area": "^1.2.9",
-    "ai": "^5.0.10",
+    "@radix-ui/react-select": "^2.2.5",
+    "ai": "^5.0.11",
     "ai-elements": "^1.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
