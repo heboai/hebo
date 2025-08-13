@@ -52,7 +52,7 @@ const queryClient = new QueryClient({
 });
 
 // Unwrap eden result: throw "error" or return "data"
-type EdenError = { status?: number; value?: { error: string } };
+type EdenError = { status?: number; value?: string };
 type EdenResponse<T> =
   | { data: T; error?: undefined }
   | { data?: undefined; error: EdenError };
@@ -61,7 +61,7 @@ function unwrapEden<T>(res: EdenResponse<T>): T {
   if (res?.error) {
     const err = new (class extends Error {
       status?: number;
-    })(res.error.value?.error);
+    })(res.error.value);
     err.status = res.error.status;
     throw err;
   }

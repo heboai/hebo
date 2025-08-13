@@ -23,10 +23,9 @@ export const agentHandlers = [
     };
 
     if (db.getCollection("agents").findBy({ slug: tmpAgent.slug })) {
-      return HttpResponse.json(
-        { error: "Agent with the same name already exists" },
-        { status: 400 },
-      );
+      return new HttpResponse("Agent with the same name already exists", {
+        status: 400,
+      });
     }
 
     const newAgent = db.getCollection("agents").insert(tmpAgent);

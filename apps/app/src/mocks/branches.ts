@@ -27,10 +27,9 @@ export const branchHandlers = [
       };
 
       if (db.getCollection("branches").findBy({ slug: tmpBranch.slug })) {
-        return HttpResponse.json(
-          { error: "Branch with the same name already exists" },
-          { status: 400 },
-        );
+        return new HttpResponse("Branch with the same name already exists", {
+          status: 400,
+        });
       }
 
       const newBranch = db.getCollection("branches").insert(tmpBranch);
