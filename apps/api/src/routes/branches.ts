@@ -1,30 +1,26 @@
-import {
-  createInsertSchema,
-  createSelectSchema,
-  createUpdateSchema,
-} from "drizzle-typebox";
 import { Elysia, t } from "elysia";
 
 import { branches } from "@hebo/db/schema/branches";
 
-import { selectAgent } from "./agents";
-import { createModelSchemas } from "../utils";
+import { agentPathParam } from "./agents";
+import {
+  createInsertSchema,
+  createCustomInsertSchema,
+  createCustomUpdateSchema,
+} from "../utils/schema-factory";
 
-const _selectBranch = createSelectSchema(branches);
-const _insertBranch = createInsertSchema(branches);
-const _updateBranch = createUpdateSchema(branches);
-const { createSchema: createBranch, updateSchema: updateBranch } =
-  createModelSchemas({ insert: _insertBranch, update: _updateBranch }, [
-    "agentId",
-  ]);
+const _insertSchema = createInsertSchema(branches);
+const createBranch = createCustomInsertSchema(branches, ["agentId"]);
+const updateBranch = createCustomUpdateSchema(branches, ["agentId"]);
 
-const selectBranch = t.Object({
-  branchSlug: _selectBranch.properties.slug,
+// Ensure the path parameter type matches the corresponding database field type
+const branchPathParam = t.Object({
+  branchSlug: _insertSchema.properties.slug,
 });
 
-const selectBranchWithAgent = t.Object({
-  ...selectAgent.properties,
-  ...selectBranch.properties,
+const branchWithAgentPathParam = t.Object({
+  ...agentPathParam.properties,
+  ...branchPathParam.properties,
 });
 
 export const branchRoutes = new Elysia({
@@ -38,7 +34,7 @@ export const branchRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      params: selectAgent,
+      params: agentPathParam,
       body: createBranch,
       response: { 501: t.String() },
     },
@@ -50,7 +46,7 @@ export const branchRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      params: selectAgent,
+      params: agentPathParam,
       response: { 501: t.String() },
     },
   )
@@ -61,7 +57,7 @@ export const branchRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      params: selectBranchWithAgent,
+      params: branchWithAgentPathParam,
       response: { 501: t.String() },
     },
   )
@@ -72,7 +68,7 @@ export const branchRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      params: selectBranchWithAgent,
+      params: branchWithAgentPathParam,
       body: updateBranch,
       response: { 501: t.String() },
     },

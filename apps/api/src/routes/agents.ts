@@ -1,22 +1,20 @@
-import {
-  createInsertSchema,
-  createSelectSchema,
-  createUpdateSchema,
-} from "drizzle-typebox";
 import { Elysia, t } from "elysia";
 
 import { agents } from "@hebo/db/schema/agents";
 
-import { createModelSchemas } from "../utils";
+import {
+  createInsertSchema,
+  createCustomInsertSchema,
+  createCustomUpdateSchema,
+} from "../utils/schema-factory";
 
-const _selectAgent = createSelectSchema(agents);
-const _insertAgent = createInsertSchema(agents);
-const _updateAgent = createUpdateSchema(agents);
-const { createSchema: createAgent, updateSchema: updateAgent } =
-  createModelSchemas({ insert: _insertAgent, update: _updateAgent });
+const _insertSchema = createInsertSchema(agents);
+const createAgent = createCustomInsertSchema(agents);
+const updateAgent = createCustomUpdateSchema(agents);
 
-export const selectAgent = t.Object({
-  agentSlug: _selectAgent.properties.slug,
+// Ensure the path parameter type matches the corresponding database field type
+export const agentPathParam = t.Object({
+  agentSlug: _insertSchema.properties.slug,
 });
 
 export const agentRoutes = new Elysia({
@@ -51,7 +49,7 @@ export const agentRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      params: selectAgent,
+      params: agentPathParam,
       response: { 501: t.String() },
     },
   )
@@ -62,7 +60,7 @@ export const agentRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      params: selectAgent,
+      params: agentPathParam,
       body: updateAgent,
       response: { 501: t.String() },
     },

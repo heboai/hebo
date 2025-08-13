@@ -19,8 +19,7 @@ const createApi = () =>
       }),
     )
     .get("/", () => "Hebo API says hello!")
-    .group("/v1", (app) => app.use(agentRoutes))
-    .group("/v1/agents", (app) => app.use(branchRoutes))
+    .group("/v1", (app) => app.use(agentRoutes.use(branchRoutes)))
     .onError(({ error }) => {
       console.error("API Error:", error);
       return {
