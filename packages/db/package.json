@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@libsql/client": "^0.15.9",
-    "drizzle-orm": "0.41.0",
     "pg": "^8.16.3"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "^0.44.4"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.7",
