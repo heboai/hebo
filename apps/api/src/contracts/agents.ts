@@ -7,10 +7,13 @@ import { t } from "elysia";
 
 import { agents } from "@hebo/db/schema/agents";
 
-export const _selectAgent = createSelectSchema(agents);
+const _selectAgent = createSelectSchema(agents);
+const _createAgent = createInsertSchema(agents);
+const _updateAgent = createUpdateSchema(agents);
 
-export const createAgent = createInsertSchema(agents);
-export const updateAgent = createUpdateSchema(agents);
+export const createAgent = t.Pick(_createAgent, ["name"]);
+export const updateAgent = t.Pick(_updateAgent, ["name"]);
+
 export const selectAgent = t.Object({
   agentSlug: _selectAgent.properties.slug,
 });
