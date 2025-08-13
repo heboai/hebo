@@ -29,7 +29,7 @@ const eslintConfig = [
       },
       // Limit Next.js plugin root to the web app only to avoid monorepo noise
       next: {
-        rootDir: ["apps/app"],
+        rootDir: ["apps/app/"],
       },
       // Point to the correct tsconfig
       'import/resolver': {
