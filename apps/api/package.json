@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "bun build src/index.ts --target=bun --outdir=dist",
     "dev": "bun --hot src/index.ts",
