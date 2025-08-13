@@ -28,8 +28,9 @@ const createApi = () =>
       };
     });
 
-createApi().listen(PORT);
-
-console.log(`🚀 Hebo API listening on port ${PORT} (Bun ${process.version})`);
+if (import.meta.main) {
+  createApi().listen(PORT);
+  console.log(`🚀 Hebo API listening on port ${PORT} (Bun ${process.version})`);
+}
 
 export type Api = ReturnType<typeof createApi>;
