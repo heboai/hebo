@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "../../apps/app/src/styles/tailwind.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@hebo/aikit-ui/_shadcn",
+    "utils": "@hebo/aikit-ui/lib/utils",
+    "ui": "@hebo/aikit-ui/_shadcn/ui",
+    "lib": "@hebo/aikit-ui/lib",
+    "hooks": "@hebo/aikit-ui/hooks"
+  },
+  "iconLibrary": "lucide"
+}

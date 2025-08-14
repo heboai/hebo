@@ -139,6 +139,10 @@ const eslintConfig = [
       'unicorn/prefer-global-this': 'warn',
       'unicorn/prefer-node-protocol': 'warn',
       'unicorn/prefer-number-properties': 'warn',
+      "unicorn/no-document-cookie": "warn",
+      "sonarjs/pseudo-random": "warn",
+      "tailwindcss/no-custom-classname": "warn",
+      "tailwindcss/no-contradicting-classname": "warn",
     },
   },
 ];

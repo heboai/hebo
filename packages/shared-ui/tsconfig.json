@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@hebo/shared-ui/*": ["./*"]
+    }
+  },
+  "include": ["src", "../aikit-ui/src/_shadcn/ui"],
+  "exclude": ["node_modules", "dist"]
+}

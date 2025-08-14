@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { lazy } from "react";
 
-import { Button } from "@hebo/ui/components/Button";
+import { Button } from "@hebo/shared-ui/components/Button";
 
 import { isStackAuthEnabled } from "~/lib/utils";
 
