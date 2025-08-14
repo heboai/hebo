@@ -83,4 +83,4 @@ export const agentRoutes = new Elysia({
     },
   )
 
-  .delete("/:id", async () => {});
+  .delete("/:agentSlug", async () => {});

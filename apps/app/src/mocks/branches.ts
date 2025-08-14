@@ -16,8 +16,8 @@ interface Branch {
 }
 
 export const branchHandlers = [
-  http.post<{ slug: string }>(
-    "/api/agents/:slug/branches",
+  http.post<{ agentSlug: string }>(
+    "/api/v1/agents/:agentSlug/branches",
     async ({ request }) => {
       const body = (await request.json()) as Branch;
 
@@ -39,10 +39,13 @@ export const branchHandlers = [
     },
   ),
 
-  http.get<{ slug: string }>("/api/agents/:slug/branches", async () => {
-    const branches = db.getCollection("branches").records;
+  http.get<{ agentSlug: string }>(
+    "/api/v1/agents/:agentSlug/branches",
+    async () => {
+      const branches = db.getCollection("branches").records;
 
-    await delay(1000);
-    return HttpResponse.json(branches);
-  }),
+      await delay(1000);
+      return HttpResponse.json(branches);
+    },
+  ),
 ];

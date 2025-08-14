@@ -47,8 +47,6 @@ export function AgentForm() {
 
   const { mutate, error, isPending } = useEdenMutation({
     mutationFn: (values: FormData) =>
-      // TODO: Remove eslint exception
-      // @ts-expect-error: API type not ready
       api.agents.post({
         name: values.agentName,
         models: [values.defaultModel],

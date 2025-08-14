@@ -47,9 +47,7 @@ export function DangerSettings() {
 
   const { mutate, error, isPending } = useEdenMutation({
     mutationFn: () =>
-      // TODO: Remove eslint exception
-      // @ts-expect-error: API type not ready
-      api.agents({ slug: agentSnap.activeAgent?.slug }).delete(),
+      api.agents({ agentSlug: agentSnap.activeAgent?.slug ?? "" }).delete(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
       agentStore.activeAgent = undefined;

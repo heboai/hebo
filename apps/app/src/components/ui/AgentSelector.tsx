@@ -30,7 +30,6 @@ export function AgentSelector() {
   // Query agents list
   const { data: agents = [], fetchStatus } = useEdenQuery<any[]>({
     queryKey: ["agents"],
-    // @ts-expect-error: API type not ready
     queryFn: () => api.agents.get(),
     staleTime: 600_000, // 10 minutes
   });

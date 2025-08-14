@@ -13,7 +13,7 @@ interface Agent {
   branches?: string[];
 }
 export const agentHandlers = [
-  http.post("/api/agents", async ({ request }) => {
+  http.post("/api/v1/agents", async ({ request }) => {
     const body = (await request.json()) as Agent;
 
     const tmpAgent = {
@@ -37,27 +37,30 @@ export const agentHandlers = [
     return HttpResponse.json(newAgent, { status: 201 });
   }),
 
-  http.get("/api/agents", async () => {
+  http.get("/api/v1/agents", async () => {
     const agents = db.getCollection("agents").records;
 
     await delay(2000);
     return HttpResponse.json(agents);
   }),
 
-  http.delete("/api/agents/:slug", async ({ params }) => {
-    const tmpAgent = {
-      slug: params.slug,
-    };
+  http.delete<{ agentSlug: string }>(
+    "/api/v1/agents/:agentSlug",
+    async ({ params }) => {
+      const tmpAgent = {
+        slug: params.agentSlug,
+      };
 
-    if (!db.getCollection("agents").findBy(tmpAgent)) {
-      return new HttpResponse("Agent with the slug not found", {
-        status: 400,
-      });
-    }
+      if (!db.getCollection("agents").findBy(tmpAgent)) {
+        return new HttpResponse("Agent with the slug not found", {
+          status: 400,
+        });
+      }
 
-    db.getCollection("agents").remove(tmpAgent);
+      db.getCollection("agents").remove(tmpAgent);
 
-    await delay(2000);
-    return new HttpResponse({ status: 201 });
-  }),
+      await delay(2000);
+      return new HttpResponse({ status: 201 });
+    },
+  ),
 ];
