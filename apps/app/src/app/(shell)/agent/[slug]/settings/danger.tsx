@@ -74,6 +74,7 @@ export function DangerSettings() {
                 <Button variant="destructive">Delete Agent</Button>
               </DialogTrigger>
               <DialogContent className="bg-sidebar sm:max-w-md">
+                {/* FUTURE: improve spacing in dialog */}
                 <form
                   onSubmit={handleSubmit(() => mutate())}
                   aria-busy={isPending}
