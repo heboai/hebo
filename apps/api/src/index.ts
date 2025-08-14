@@ -19,11 +19,7 @@ const createApi = () =>
       }),
     )
     .get("/", () => "Hebo API says hello!")
-    .group("/v1", (app) => app.use(agentRoutes.use(branchRoutes)))
-    .onError(({ error }) => {
-      console.error("API Error:", error);
-      return error;
-    });
+    .group("/v1", (app) => app.use(agentRoutes.use(branchRoutes)));
 
 if (import.meta.main) {
   createApi().listen(PORT);
