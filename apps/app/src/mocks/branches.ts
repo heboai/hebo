@@ -23,7 +23,7 @@ export const branchHandlers = [
 
       const tmpBranch = {
         name: body.name,
-        slug: slugify(body.name),
+        slug: slugify(body.name, { lower: true, strict: true }),
       };
 
       if (db.getCollection("branches").findBy({ slug: tmpBranch.slug })) {

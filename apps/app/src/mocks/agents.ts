@@ -19,7 +19,7 @@ export const agentHandlers = [
     const tmpAgent = {
       id: crypto.randomUUID(),
       name: body.name,
-      slug: slugify(body.name),
+      slug: slugify(body.name, { lower: true, strict: true }),
       branches: ["main"], // always create ['main'] by default
     };
 
