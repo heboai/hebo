@@ -54,9 +54,7 @@ export function AgentForm() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
       // FUTURE: implement wrapper for router to apply ViewTransitions
-      // TODO: Remove eslint exception
-      // @ts-expect-error: API type not ready
-      router.replace(`/agent/${data.slug}`);
+      router.replace(`/agent/${(data as any).slug}`);
     },
   });
 
