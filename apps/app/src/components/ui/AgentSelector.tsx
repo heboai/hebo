@@ -102,7 +102,12 @@ export function AgentSelector() {
                     {agentSnap.activeAgent?.name}
                   </span>
                 </div>
-                <Button variant="ghost" asChild onClick={() => setOpen(false)}>
+                <Button
+                  variant="ghost"
+                  asChild
+                  onClick={() => setOpen(false)}
+                  aria-label="Agent Settings"
+                >
                   <Link href={`/agent/${agentSnap.activeAgent?.slug}/settings`}>
                     <Settings
                       size={16}

@@ -84,7 +84,8 @@ export function DangerSettings() {
                   </DialogHeader>
                   <Alert variant="destructive">
                     <AlertTitle>
-                      <b>Warning:</b> This action is not reversible. Be certain.
+                      <strong>Warning:</strong> This action is not reversible.
+                      Be certain.
                     </AlertTitle>
                   </Alert>
                   <div>
