@@ -112,7 +112,7 @@ export function CreateAgentForm() {
               Default Model
             </Label>
             <div className="sm:max-w-xs">
-              {/* FUTURE: Consider to generalize Controller into Select component */}
+              {/* FUTURE: Use ShadCN Form components */}
               <Controller
                 control={control}
                 name="defaultModel"

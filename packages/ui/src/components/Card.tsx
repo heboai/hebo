@@ -1,5 +1,6 @@
 export {
   Card,
+  CardAction,
   CardHeader,
   CardFooter,
   CardTitle,

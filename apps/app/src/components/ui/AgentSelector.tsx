@@ -1,10 +1,9 @@
 "use client";
 
 import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 
 import { Button } from "@hebo/ui/components/Button";
@@ -22,7 +21,7 @@ import {
   SidebarMenuItem,
 } from "@hebo/ui/components/Sidebar";
 
-import { Logo } from "~/components/ui/Logo";
+import { AgentLogo } from "~/components/ui/AgentLogo";
 import { api, useEdenQuery } from "~/lib/data";
 import { agentStore } from "~/stores/agentStore";
 
@@ -41,12 +40,12 @@ export function AgentSelector() {
   const params = useParams<{ slug: string }>();
 
   useEffect(() => {
-    if (fetchStatus !== "idle" || pathname === "/agent/create") return;
+    if (fetchStatus !== "idle") return;
 
     const target =
       agents.length > 0 ? `/agent/${params.slug}` : "/agent/create";
 
-    if (pathname !== target) {
+    if (pathname !== target && pathname == "/") {
       router.replace(target);
     }
   }, [fetchStatus, agents, pathname, params.slug, router]);
@@ -62,11 +61,14 @@ export function AgentSelector() {
     }
   }, [params.slug, agents]);
 
+  // Dropdown open or closed
+  const [open, setOpen] = useState(false);
+
   return agents.length > 0 ? (
     /* TODO: Implement Branch Selector */
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
@@ -74,12 +76,7 @@ export function AgentSelector() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <Image
-                  src="/hebo-icon.png"
-                  alt="Agent Logo"
-                  width={32}
-                  height={32}
-                />
+                <AgentLogo />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate text-lg font-medium">
@@ -98,19 +95,14 @@ export function AgentSelector() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 py-1 pl-2 text-sm">
                 <div className="text-sidebar-primary-foreground flex aspect-square size-6 items-center justify-center rounded-lg">
-                  <Image
-                    src="/hebo-icon.png"
-                    alt="Agent Logo"
-                    width={24}
-                    height={24}
-                  />
+                  <AgentLogo size={24} />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate text-base font-medium">
                     {agentSnap.activeAgent?.name}
                   </span>
                 </div>
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" asChild onClick={() => setOpen(false)}>
                   <Link href={`/agent/${agentSnap.activeAgent?.slug}/settings`}>
                     <Settings
                       size={16}
@@ -147,7 +139,7 @@ export function AgentSelector() {
     </SidebarMenu>
   ) : (
     <Link href="/" aria-label="Home">
-      <Logo />
+      <AgentLogo />
     </Link>
   );
 }
