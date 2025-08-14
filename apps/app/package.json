@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@hebo/ui": "workspace:*",
+    "@hebo/aikit-ui": "workspace:*",
     "@stackframe/react": "^2.8.25",
     "lucide-react": "^0.525.0",
     "next": "~15.4.4",

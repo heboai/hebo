@@ -3,9 +3,9 @@
 import { KeyRound, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
+import { cn } from "@hebo/aikit-ui/src/lib/utils";
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
-import { cn } from "@hebo/ui/lib/utils";
 
 import { authService } from "~/lib/auth";
 
@@ -23,9 +23,9 @@ export function GenerateApiKey({ className }: { className?: string }) {
     try {
       const newKey = await authService.generateApiKey?.();
       setKey(newKey ?? "Failed to generate key");
-    } catch (err) {
-      setError((err as Error).message);
-      setKey((err as Error).message);
+    } catch (error_) {
+      setError((error_ as Error).message);
+      setKey((error_ as Error).message);
     }
 
     setLoading(false);

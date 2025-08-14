@@ -18,8 +18,9 @@
     "baseUrl": ".",
     "paths": {
       "@hebo/ui/*": ["packages/ui/src/*"],
-      "@hebo/db/*": ["packages/db/*"]
+      "@hebo/db/*": ["packages/db/*"],
+      "@hebo/aikit-ui/*": ["packages/aikit-ui/src/*"]
     }
   },
   "exclude": ["node_modules"]
-} 
+}
