@@ -34,7 +34,7 @@ export const branchRoutes = new Elysia({
     },
     {
       params: agentPathParam,
-      body: t.Omit(createBranch, [...AUDIT_FIELDS, ...ID_FIELDS, "agentSlug"]),
+      body: t.Omit(createBranch, [...AUDIT_FIELDS, ...ID_FIELDS, "agentId", "slug"]),
       response: { 501: t.String() },
     },
   )
@@ -68,7 +68,7 @@ export const branchRoutes = new Elysia({
     },
     {
       params: branchPathParams,
-      body: t.Omit(updateBranch, [...AUDIT_FIELDS, ...ID_FIELDS, "agentSlug"]),
+      body: t.Omit(updateBranch, [...AUDIT_FIELDS, ...ID_FIELDS, "agentId", "slug"]),
       response: { 501: t.String() },
     },
   );
