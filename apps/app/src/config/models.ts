@@ -1,3 +1,4 @@
+// TODO: replace with supported-models.json from db package
 export interface SupportedModel {
   modelName: string;
   freeTokensPerMonth: number;
