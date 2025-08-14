@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 
+import supportedModels from "@hebo/db/schema/json/supported-models.json";
 import { Button } from "@hebo/ui/components/Button";
 import {
   Card,
@@ -21,7 +22,6 @@ import {
   SelectValue,
 } from "@hebo/ui/components/Select";
 
-import { supportedModels } from "~/config/models";
 import { api, queryClient, useEdenMutation } from "~/lib/data";
 
 // FUTURE: Implement TypeBox Validation
@@ -39,7 +39,7 @@ export function AgentForm() {
   } = useForm<FormData>({
     defaultValues: {
       agentName: "",
-      defaultModel: supportedModels[0].modelName,
+      defaultModel: supportedModels[0].name,
     },
   });
 
@@ -140,13 +140,20 @@ export function AgentForm() {
                     <SelectContent>
                       {supportedModels.map((model) => (
                         <SelectItem
-                          key={model.modelName}
-                          value={model.modelName}
+                          key={model.name}
+                          value={model.name}
                           className="truncate"
                         >
-                          {model.modelName} (
-                          {Math.floor(model.freeTokensPerMonth / 1_000_000)}M
-                          Free Tokens / Month)
+                          {model.displayName}
+                          <span className="text-xs">
+                            (
+                            {new Intl.NumberFormat("en", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                              maximumFractionDigits: 1,
+                            }).format(model.rateLimit)}{" "}
+                            free tokens / month)
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   // Support Type Script and Markdown pages
   pageExtensions: ["mdx", "ts", "tsx"],
   // Enable transpile packages for ui lib
-  transpilePackages: ["@hebo/ui"],
+  transpilePackages: ["@hebo/ui", "@hebo/db"],
   experimental: {
     // Enable page transitions via react
     viewTransition: true,

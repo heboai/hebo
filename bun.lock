@@ -58,6 +58,7 @@
       "version": "0.0.1",
       "dependencies": {
         "@elysiajs/eden": "^1.3.2",
+        "@hebo/db": "workspace:*",
         "@hebo/ui": "workspace:*",
         "@stackframe/react": "^2.8.25",
         "@tanstack/react-query": "^5.84.1",
