@@ -22,6 +22,7 @@ import {
 } from "@hebo/ui/components/Sidebar";
 
 import { AgentLogo } from "~/components/ui/AgentLogo";
+import { Logo } from "~/components/ui/Logo";
 import { api, useEdenQuery } from "~/lib/data";
 import { agentStore } from "~/stores/agentStore";
 
@@ -139,7 +140,7 @@ export function AgentSelector() {
     </SidebarMenu>
   ) : (
     <Link href="/" aria-label="Home">
-      <AgentLogo />
+      <Logo />
     </Link>
   );
 }
