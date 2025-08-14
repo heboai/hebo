@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useSnapshot } from "valtio";
@@ -120,13 +119,7 @@ export function DangerSettings() {
                     <DialogClose asChild>
                       <Button variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button disabled={isPending} type="submit">
-                      {isPending && (
-                        <Loader2Icon
-                          className="animate-spin"
-                          aria-hidden="true"
-                        />
-                      )}
+                    <Button isLoading={isPending} type="submit">
                       Delete Agent
                     </Button>
                   </DialogFooter>

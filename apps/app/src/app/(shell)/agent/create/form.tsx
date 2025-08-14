@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 
@@ -173,16 +172,12 @@ export function AgentForm() {
 
           {/* Submit Button */}
           <div className="flex justify-end">
-            {/* FUTURE: Consider to generalize spinner into Button prop */}
             <Button
               type="submit"
-              disabled={isPending}
+              isLoading={isPending}
               aria-label="Create Agent"
             >
-              {isPending && (
-                <Loader2Icon className="animate-spin" aria-hidden="true" />
-              )}
-              {isPending ? "Creating..." : "Create"}
+              Create
             </Button>
           </div>
         </form>
