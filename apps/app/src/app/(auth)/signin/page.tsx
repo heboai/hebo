@@ -1,25 +1,24 @@
 import { Ban, BookOpen, CreditCard } from "lucide-react";
+import { Suspense } from "react";
 
 import { Badge } from "@hebo/ui/components/Badge";
 import { Button } from "@hebo/ui/components/Button";
 import { Skeleton } from "@hebo/ui/components/Skeleton";
 
+import { AuthProvider } from "~/components/auth/AuthProvider";
 import { MagicLinkSignIn } from "~/components/auth/MagicLinkSignIn";
 import { OAuthSignIn } from "~/components/auth/OAuthSignIn";
-import { AuthProvider } from "~/components/auth/AuthProvider";
 import { Logo } from "~/components/ui/Logo";
-
-import { Suspense } from "react";
 
 export default function SignIn() {
   return (
-    <div className="min-h-screen relative">
+    <div className="relative min-h-screen">
       {/* Marketing Message */}
-      <aside className="fixed w-128 min-h-screen bg-blue-100 bg-[url(/login-bg.png)] bg-bottom-left bg-no-repeat transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full">
+      <aside className="fixed min-h-screen w-128 -translate-x-full bg-blue-100 bg-[url(/login-bg.png)] bg-bottom-left bg-no-repeat transition-transform duration-300 ease-in-out lg:translate-x-0">
         <Button
           asChild
           variant="ghost"
-          className="absolute left-6 top-5 bg-blue-200 hover:bg-blue-300 text-foreground no-underline"
+          className="text-foreground absolute top-5 left-6 bg-blue-200 no-underline hover:bg-blue-300"
         >
           <a
             href="https://docs.hebo.ai"
@@ -31,10 +30,10 @@ export default function SignIn() {
           </a>
         </Button>
 
-        <div className="px-19 py-30 space-y-5 text-xl">
-          <div className="flex gap-2 text-3xl font-semibold items-center">
+        <div className="space-y-5 px-19 py-30 text-xl">
+          <div className="flex items-center gap-2 text-3xl font-semibold">
             Hebo is{}
-            <Badge className="bg-lime-400 text-foreground text-3xl font-semibold">
+            <Badge className="text-foreground bg-lime-400 text-3xl font-semibold">
               FREE
             </Badge>
           </div>
@@ -62,31 +61,31 @@ export default function SignIn() {
       </aside>
 
       {/* Login Components */}
-      <main className="lg:ml-128 min-h-screen flex flex-1 items-center justify-center transition-all duration-300">
-        <div className="w-xs flex flex-col gap-4 items-center">
-
+      <main className="flex min-h-screen flex-1 items-center justify-center transition-all duration-300 lg:ml-128">
+        <div className="flex w-xs flex-col items-center gap-4">
           {/* AuthComponents may take a few seconds to load */}
-          <Suspense fallback={<Skeleton className="w-full h-10" count={5} />}>
+          <Suspense fallback={<Skeleton className="h-10 w-full" count={5} />}>
             <AuthProvider>
               <Logo />
-              <p className="text-base text-center">
+              <p className="text-center text-base">
                 The fastest way to build & scale agents
               </p>
 
               <div className="w-full space-y-4">
                 <OAuthSignIn />
                 <div className="flex items-center gap-4">
-                  <div className="flex-1 h-[1px] bg-gray-300" />
+                  <div className="h-[1px] flex-1 bg-gray-300" />
                   <span className="text-sm whitespace-nowrap">or</span>
-                  <div className="flex-1 h-[1px] bg-gray-300" />
+                  <div className="h-[1px] flex-1 bg-gray-300" />
                 </div>
+                {/* FUTURE: make the sign-in button use primary color (yellow)*/}
                 <MagicLinkSignIn />
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="relative">
-                  <Ban className="w-4 h-4" />
-                  <CreditCard className="w-2 h-2 absolute left-1 top-1" />
+                  <Ban className="h-4 w-4" />
+                  <CreditCard className="absolute top-1 left-1 h-2 w-2" />
                 </span>
                 <span className="text-sm">No credit card required</span>
               </div>
