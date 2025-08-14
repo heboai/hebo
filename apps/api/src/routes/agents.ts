@@ -68,4 +68,15 @@ export const agentRoutes = new Elysia({
       body: updateAgent,
       response: { 501: t.String() },
     },
+  )
+  .delete(
+    "/:agentSlug",
+    async ({ set }) => {
+      set.status = 501;
+      return "Not implemented" as const;
+    },
+    {
+      params: agentPathParam,
+      response: { 501: t.String() },
+    },
   );
