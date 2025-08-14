@@ -17,7 +17,7 @@
     "build": "bun run build:js && bun run build:types",
     "dev": "bun --hot src/index.ts",
     "start": "bun -e \"import { existsSync } from 'fs'; if (!existsSync('dist/index.js')) { console.log('❌ Build not found. Please run \\'bun run build\\' first.'); process.exit(1); }\" && bun dist/index.js",
-    "clean": "rimraf .next .turbo node_modules dist"
+    "clean": "rimraf .turbo node_modules dist"
   },
   "devDependencies": {
     "bun-types": "^1.2.19",
