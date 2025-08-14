@@ -4,8 +4,8 @@ import { KeyRound, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@hebo/aikit-ui/src/lib/utils";
-import { Button } from "@hebo/ui/components/Button";
-import { Input } from "@hebo/ui/components/Input";
+import { Button } from "@hebo/shared-ui/components/Button";
+import { Input } from "@hebo/shared-ui/components/Input";
 
 import { authService } from "~/lib/auth";
 

@@ -1,17 +1,15 @@
 "use client";
 
-import Link from "next/link";
 
-import { useAuth } from "~/hooks/auth";
-import { isStackAuthEnabled } from "~/lib/utils";
 
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import Link from "next/link";
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@hebo/ui/components/Avatar";
+} from "@hebo/shared-ui/components/Avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,12 +18,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@hebo/ui/components/DropdownMenu";
+} from "@hebo/shared-ui/components/DropdownMenu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@hebo/ui/components/Sidebar";
+} from "@hebo/shared-ui/components/Sidebar";
+
+import { useAuth } from "~/hooks/auth";
+import { isStackAuthEnabled } from "~/lib/utils";
 
 export function UserButton() {
   const { user } = useAuth();
@@ -53,7 +54,7 @@ export function UserButton() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) m-2 min-w-56 rounded-lg"
+            className="m-2 w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
             side="bottom"
             align="end"
             sideOffset={4}

@@ -3,9 +3,9 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "@hebo/aikit-ui/*": ["./*"]
+      "@hebo/shared-ui/*": ["./*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "../aikit-ui/src/_shadcn/ui"],
   "exclude": ["node_modules", "dist"]
 }

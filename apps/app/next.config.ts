@@ -1,4 +1,3 @@
-
 import createMDX from "@next/mdx";
 import rehypeShiki from "@shikijs/rehype";
 
@@ -9,7 +8,7 @@ const nextConfig: NextConfig = {
   // Support Type Script and Markdown pages
   pageExtensions: ["mdx", "ts", "tsx"],
   // Enable transpile packages for ui lib
-  transpilePackages: ["@hebo/ui", "@hebo/aikit-ui"],
+  transpilePackages: ["@hebo/shared-ui", "@hebo/aikit-ui"],
   experimental: {
     // Enable page transitions via react
     viewTransition: true,

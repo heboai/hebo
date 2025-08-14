@@ -1,7 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@source "../../node_modules/@hebo/ui";
+@source "../../node_modules/@hebo/shared-ui";
+@source "../../node_modules/@hebo/aikit-ui";
 
 @custom-variant dark (&:is(.dark *));
 

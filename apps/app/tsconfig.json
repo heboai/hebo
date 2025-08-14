@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
-      "@hebo/ui/*": ["../../packages/ui/src/*"],
+      "@hebo/shared-ui/*": ["../../packages/shared-ui/src/*"],
       "@hebo/aikit-ui/*": ["../../packages/aikit-ui/src/*"]
     },
     "plugins": [
