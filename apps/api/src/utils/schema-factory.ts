@@ -1,3 +1,4 @@
+import { Type } from "@sinclair/typebox";
 import {
   createSchemaFactory as baseCreateSchemaFactory,
   CreateSchemaFactoryOptions,
@@ -22,17 +23,17 @@ export function createSchemaFactory(ops?: CreateSchemaFactoryOptions) {
 
   const createSelectSchema = (entity: Table, keys?: readonly string[]) => {
     const schema = base.createSelectSchema(entity);
-    return keys ? ops?.typeboxInstance.Omit(schema, keys) : schema;
+    return keys ? (ops?.typeboxInstance ?? Type).Omit(schema, keys) : schema;
   };
 
   const createInsertSchema = (entity: Table, keys?: readonly string[]) => {
     const schema = base.createInsertSchema(entity);
-    return keys ? ops?.typeboxInstance.Omit(schema, keys) : schema;
+    return keys ? (ops?.typeboxInstance ?? Type).Omit(schema, keys) : schema;
   };
 
   const createUpdateSchema = (entity: Table, keys?: readonly string[]) => {
     const schema = base.createUpdateSchema(entity);
-    return keys ? ops?.typeboxInstance.Omit(schema, keys) : schema;
+    return keys ? (ops?.typeboxInstance ?? Type).Omit(schema, keys) : schema;
   };
 
   return {

@@ -13,17 +13,11 @@ const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
   typeboxInstance: t,
 });
 
+const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS, "agentId"] as const;
+
 const _insertSchema = createInsertSchema(branches);
-const createBranch = createInsertSchema(branches, [
-  ...AUDIT_FIELDS,
-  ...ID_FIELDS,
-  "agentId",
-]);
-const updateBranch = createUpdateSchema(branches, [
-  ...AUDIT_FIELDS,
-  ...ID_FIELDS,
-  "agentId",
-]);
+const createBranch = createInsertSchema(branches, OMIT_FIELDS);
+const updateBranch = createUpdateSchema(branches, OMIT_FIELDS);
 
 // Ensure the path parameter types match the corresponding database field type
 const branchPathParams = t.Object({

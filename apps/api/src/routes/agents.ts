@@ -12,9 +12,11 @@ const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
   typeboxInstance: t,
 });
 
+const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS] as const;
+
 const _insertSchema = createInsertSchema(agents);
-const createAgent = createInsertSchema(agents, [...AUDIT_FIELDS, ...ID_FIELDS]);
-const updateAgent = createUpdateSchema(agents, [...AUDIT_FIELDS, ...ID_FIELDS]);
+const createAgent = createInsertSchema(agents, OMIT_FIELDS);
+const updateAgent = createUpdateSchema(agents, OMIT_FIELDS);
 
 // Ensure the path parameter type matches the corresponding database field type
 export const agentPathParam = t.Object({
