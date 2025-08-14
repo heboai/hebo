@@ -1,5 +1,6 @@
 "use client";
 
+import escapeStringRegexp from "escape-string-regexp";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useSnapshot } from "valtio";
@@ -95,8 +96,9 @@ export function DangerSettings() {
                     disabled={isPending}
                     {...register("agentName", {
                       pattern: {
+                        // eslint-disable-next-line security/detect-non-literal-regexp -- safe: escaped with escape-string-regexp
                         value: new RegExp(
-                          `^${agentSnap.activeAgent?.name} || ""$`,
+                          `^${escapeStringRegexp(agentSnap.activeAgent?.name || "")}$`,
                         ),
                         message: "Please enter the agent name",
                       },

@@ -12,7 +12,7 @@ export function GeneralSettings() {
 
   return (
     <>
-      <div className="row-span-2">
+      <div>
         <AgentLogo size={96} />
       </div>
       <div className="grid w-full grid-cols-[max-content_1fr] grid-rows-2 gap-x-4 gap-y-2">
