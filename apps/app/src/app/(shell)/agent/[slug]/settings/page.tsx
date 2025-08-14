@@ -29,7 +29,7 @@ export default function Settings() {
 
       <div className="flex flex-row items-center gap-4">
         <div className="row-span-2">
-          <AgentLogo width={96} height={96} />
+          <AgentLogo size={96} />
         </div>
         <div className="grid w-full grid-cols-[max-content_1fr] grid-rows-2 gap-x-4 gap-y-2">
           <label htmlFor="name">Name </label>
