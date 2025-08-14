@@ -16,6 +16,7 @@ export const AUDIT_FIELDS = [
 
 export const ID_FIELDS = ["id", "slug"] as const;
 
+// TODO: We are breaking the type inference here. Fix this for the sake of consumers.
 export function createSchemaFactory(ops?: CreateSchemaFactoryOptions) {
   const base = baseCreateSchemaFactory(ops);
 
