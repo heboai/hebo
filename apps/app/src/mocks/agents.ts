@@ -49,7 +49,7 @@ export const agentHandlers = [
       slug: params.slug,
     };
 
-    if (db.getCollection("agents").findBy(tmpAgent)) {
+    if (!db.getCollection("agents").findBy(tmpAgent)) {
       return new HttpResponse("Agent with the slug not found", {
         status: 400,
       });

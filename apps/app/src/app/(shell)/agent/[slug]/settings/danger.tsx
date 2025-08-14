@@ -49,10 +49,10 @@ export function DangerSettings() {
   const { mutate, error, isPending } = useEdenMutation({
     mutationFn: () =>
       // @ts-expect-error: API type not ready
-      api.agents.delete({ slug: agentSnap.activeAgent?.slug }),
+      api.agents({ slug: agentSnap.activeAgent?.slug }).delete(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
-      agentSnap.activeAgent = undefined;
+      agentStore.activeAgent = undefined;
       // FUTURE: implement wrapper for router to apply ViewTransitions
       router.replace(`/`);
     },
@@ -95,7 +95,9 @@ export function DangerSettings() {
                     disabled={isPending}
                     {...register("agentName", {
                       pattern: {
-                        value: new RegExp(`^${agentSnap.activeAgent?.name}$`),
+                        value: new RegExp(
+                          `^${agentSnap.activeAgent?.name} || ""$`,
+                        ),
                         message: "Please enter the agent name",
                       },
                       required: "Please enter the agent name",
