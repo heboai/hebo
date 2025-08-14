@@ -2,7 +2,7 @@ import { BookOpen, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { unstable_ViewTransition as ViewTransition } from "react";
 
-
+import Chat from "@hebo/aikit-ui/blocks/Chat";
 import {
   Sidebar,
   SidebarContent,
@@ -73,6 +73,10 @@ export default function ShellLayout({
             </SidebarFooter>
             <SidebarRail />
           </div>
+        </Sidebar>
+
+        <Sidebar side="right">
+          <Chat />
         </Sidebar>
 
         <main className="flex w-full flex-1 flex-col gap-4 p-4">
