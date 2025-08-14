@@ -30,6 +30,8 @@ export const agentHandlers = [
 
     const newAgent = db.getCollection("agents").insert(tmpAgent);
 
+    console.log(newAgent.slug);
+
     await delay(1500);
     return HttpResponse.json(newAgent, { status: 201 });
   }),

@@ -57,7 +57,7 @@ export function CreateAgentForm() {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
       // FUTURE: implement wrapper for router to apply ViewTransitions
       // @ts-expect-error: API type not ready
-      router.replace(`/agent/${data.id}`);
+      router.replace(`/agent/${data.slug}`);
     },
   });
 

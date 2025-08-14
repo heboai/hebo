@@ -38,28 +38,29 @@ export function AgentSelector() {
   // Redirect to /create-agent if no agent exists yet
   const pathname = usePathname();
   const router = useRouter();
-  const params = useParams<{ id: string }>();
+  const params = useParams<{ slug: string }>();
 
   useEffect(() => {
     if (fetchStatus !== "idle" || pathname === "/agent/create") return;
 
-    const target = agents.length > 0 ? `/agent/${params.id}` : "/agent/create";
+    const target =
+      agents.length > 0 ? `/agent/${params.slug}` : "/agent/create";
 
     if (pathname !== target) {
       router.replace(target);
     }
-  }, [fetchStatus, agents, pathname, params.id, router]);
+  }, [fetchStatus, agents, pathname, params.slug, router]);
 
   // Update active agent in agentStore
   const agentSnap = useSnapshot(agentStore);
   useEffect(() => {
-    if (params.id) {
-      const agent = agents.find((a) => a.id === params.id);
+    if (params.slug) {
+      const agent = agents.find((a) => a.slug === params.slug);
       if (agent) {
-        agentStore.activeAgent = { id: agent.id, name: agent.name };
+        agentStore.activeAgent = { slug: agent.slug, name: agent.name };
       }
     }
-  }, [params.id, agents]);
+  }, [params.slug, agents]);
 
   return agents.length > 0 ? (
     /* TODO: Implement Branch Selector */
@@ -110,7 +111,7 @@ export function AgentSelector() {
                   </span>
                 </div>
                 <Button variant="ghost" asChild>
-                  <Link href={`/agent/${agentSnap.activeAgent?.id}/settings`}>
+                  <Link href={`/agent/${agentSnap.activeAgent?.slug}/settings`}>
                     <Settings
                       size={16}
                       className="ml-auto "
@@ -122,10 +123,10 @@ export function AgentSelector() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             {agents.map((agent) => (
-              <DropdownMenuItem key={agent.id} className="gap-2 p-2" asChild>
-                <Link href={`/agent/${agent.id}`}>
+              <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
+                <Link href={`/agent/${agent.slug}`}>
                   {agent.name}
-                  {agent.id === agentSnap.activeAgent?.id && (
+                  {agent.slug === agentSnap.activeAgent?.slug && (
                     <Check size={12} className="ml-auto" aria-hidden="true" />
                   )}
                 </Link>
