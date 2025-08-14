@@ -1,16 +1,18 @@
 "use client";
 
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSnapshot } from "valtio";
 
+import { Button } from "@hebo/ui/components/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@hebo/ui/components/DropdownMenu";
@@ -92,9 +94,41 @@ export function AgentSelector() {
             side="bottom"
             sideOffset={4}
           >
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 py-1 pl-2 text-sm">
+                <div className="text-sidebar-primary-foreground flex aspect-square size-6 items-center justify-center rounded-lg">
+                  <Image
+                    src="/hebo-icon.png"
+                    alt="Agent Logo"
+                    width={24}
+                    height={24}
+                  />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate text-base font-medium">
+                    {agentSnap.activeAgent?.name}
+                  </span>
+                </div>
+                <Button variant="ghost" asChild>
+                  <Link href={`/agent/${agentSnap.activeAgent?.id}/settings`}>
+                    <Settings
+                      size={16}
+                      className="ml-auto "
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </Button>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
             {agents.map((agent) => (
               <DropdownMenuItem key={agent.id} className="gap-2 p-2" asChild>
-                <Link href={`/agent/${agent.id}`}>{agent.name}</Link>
+                <Link href={`/agent/${agent.id}`}>
+                  {agent.name}
+                  {agent.id === agentSnap.activeAgent?.id && (
+                    <Check size={12} className="ml-auto" aria-hidden="true" />
+                  )}
+                </Link>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
