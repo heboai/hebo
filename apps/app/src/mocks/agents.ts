@@ -17,6 +17,7 @@ export const agentHandlers = [
     const body = (await request.json()) as Agent;
 
     const tmpAgent = {
+      id: crypto.randomUUID(),
       name: body.name,
       slug: slugify(body.name),
       branches: ["main"], // always create ['main'] by default
@@ -32,14 +33,30 @@ export const agentHandlers = [
 
     console.log(newAgent.slug);
 
-    await delay(1500);
+    await delay(200);
     return HttpResponse.json(newAgent, { status: 201 });
   }),
 
   http.get("/api/agents", async () => {
     const agents = db.getCollection("agents").records;
 
-    await delay(1000);
+    await delay(2000);
     return HttpResponse.json(agents);
+  }),
+
+  http.delete("/api/agents/:slug", async ({ params }) => {
+    const tmpAgent = {
+      slug: params.slug,
+    };
+
+    if (db.getCollection("agents").findBy(tmpAgent)) {
+      return new HttpResponse("Agent with the slug not found", {
+        status: 400,
+      });
+    }
+
+    db.getCollection("agents").remove(tmpAgent);
+
+    await delay(2000);
   }),
 ];
