@@ -69,14 +69,14 @@ const useEdenQuery = <
   TSelected = TData,
 >(
   options: Omit<
-    UseQueryOptions<TData, unknown, TSelected, TQueryKey>,
+    UseQueryOptions<TData, Error, TSelected, TQueryKey>,
     "queryFn"
   > & {
     queryFn: () => Promise<TreatyResult>;
   },
-): UseQueryResult<TSelected, unknown> => {
+): UseQueryResult<TSelected, Error> => {
   const { queryFn, ...rest } = options;
-  return useQuery<TData, unknown, TSelected, TQueryKey>(
+  return useQuery<TData, Error, TSelected, TQueryKey>(
     {
       ...rest,
       queryFn: async () => unwrapEden<TData>(await queryFn()),
@@ -88,15 +88,15 @@ const useEdenQuery = <
 // Simple wrapper for useMutation to apply unwrapEden & queryClient singleton
 function useEdenMutation<TData, TVariables = void, TContext = unknown>(
   options: Omit<
-    UseMutationOptions<TData, unknown, TVariables, TContext>,
+    UseMutationOptions<TData, Error, TVariables, TContext>,
     "mutationFn"
   > & {
     mutationFn: (vars: TVariables) => Promise<TreatyResult>;
   },
-): UseMutationResult<TData, unknown, TVariables, TContext> {
+): UseMutationResult<TData, Error, TVariables, TContext> {
   const { mutationFn, ...rest } = options;
 
-  return useMutation<TData, unknown, TVariables, TContext>(
+  return useMutation<TData, Error, TVariables, TContext>(
     {
       ...rest,
       mutationFn: async (vars) => unwrapEden<TData>(await mutationFn(vars)),
