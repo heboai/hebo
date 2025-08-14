@@ -3,14 +3,18 @@ import { Elysia, t } from "elysia";
 import { agents } from "@hebo/db/schema/agents";
 
 import {
-  createInsertSchema,
-  createCustomInsertSchema,
-  createCustomUpdateSchema,
-} from "../utils/schema-factory";
+  createSchemaFactory,
+  AUDIT_FIELDS,
+  ID_FIELDS,
+} from "~/utils/schema-factory";
+
+const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
+  typeboxInstance: t,
+});
 
 const _insertSchema = createInsertSchema(agents);
-const createAgent = createCustomInsertSchema(agents);
-const updateAgent = createCustomUpdateSchema(agents);
+const createAgent = createInsertSchema(agents, [...AUDIT_FIELDS, ...ID_FIELDS]);
+const updateAgent = createUpdateSchema(agents, [...AUDIT_FIELDS, ...ID_FIELDS]);
 
 // Ensure the path parameter type matches the corresponding database field type
 export const agentPathParam = t.Object({

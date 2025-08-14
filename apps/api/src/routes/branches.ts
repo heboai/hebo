@@ -2,25 +2,32 @@ import { Elysia, t } from "elysia";
 
 import { branches } from "@hebo/db/schema/branches";
 
-import { agentPathParam } from "./agents";
+import { agentPathParam } from "~/routes/agents";
 import {
-  createInsertSchema,
-  createCustomInsertSchema,
-  createCustomUpdateSchema,
-} from "../utils/schema-factory";
+  createSchemaFactory,
+  AUDIT_FIELDS,
+  ID_FIELDS,
+} from "~/utils/schema-factory";
 
-const _insertSchema = createInsertSchema(branches);
-const createBranch = createCustomInsertSchema(branches, ["agentId"]);
-const updateBranch = createCustomUpdateSchema(branches, ["agentId"]);
-
-// Ensure the path parameter type matches the corresponding database field type
-const branchPathParam = t.Object({
-  branchSlug: _insertSchema.properties.slug,
+const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
+  typeboxInstance: t,
 });
 
-const branchWithAgentPathParam = t.Object({
+const _insertSchema = createInsertSchema(branches);
+const createBranch = createInsertSchema(branches, [
+  ...AUDIT_FIELDS,
+  ...ID_FIELDS,
+  "agentId",
+]);
+const updateBranch = createUpdateSchema(branches, [
+  ...AUDIT_FIELDS,
+  ...ID_FIELDS,
+  "agentId",
+]);
+
+const branchPathParams = t.Object({
   ...agentPathParam.properties,
-  ...branchPathParam.properties,
+  branchSlug: _insertSchema.properties.slug,
 });
 
 export const branchRoutes = new Elysia({
@@ -57,7 +64,7 @@ export const branchRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      params: branchWithAgentPathParam,
+      params: branchPathParams,
       response: { 501: t.String() },
     },
   )
@@ -68,7 +75,7 @@ export const branchRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      params: branchWithAgentPathParam,
+      params: branchPathParams,
       body: updateBranch,
       response: { 501: t.String() },
     },

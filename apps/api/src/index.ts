@@ -1,8 +1,8 @@
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 
-import { agentRoutes } from "./routes/agents";
-import { branchRoutes } from "./routes/branches";
+import { agentRoutes } from "~/routes/agents";
+import { branchRoutes } from "~/routes/branches";
 
 const PORT = Number(process.env.PORT) || 3001;
 
@@ -22,9 +22,7 @@ const createApi = () =>
     .group("/v1", (app) => app.use(agentRoutes.use(branchRoutes)))
     .onError(({ error }) => {
       console.error("API Error:", error);
-      return {
-        error: error,
-      };
+      return error;
     });
 
 if (import.meta.main) {

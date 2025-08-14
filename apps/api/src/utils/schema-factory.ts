@@ -1,12 +1,11 @@
-import { createSchemaFactory } from "drizzle-typebox";
-import { t } from "elysia";
+import {
+  createSchemaFactory as baseCreateSchemaFactory,
+  CreateSchemaFactoryOptions,
+} from "drizzle-typebox";
 
 import type { Table } from "drizzle-orm";
 
-// Define common fields to omit
-const commonOmittedKeys = [
-  "id",
-  "slug",
+export const AUDIT_FIELDS = [
   "createdBy",
   "createdAt",
   "updatedBy",
@@ -15,22 +14,29 @@ const commonOmittedKeys = [
   "deletedAt",
 ] as const;
 
-export const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
-  typeboxInstance: t,
-});
+export const ID_FIELDS = ["id", "slug"] as const;
 
-export const createCustomInsertSchema = (
-  table: Table,
-  extraKeys: readonly string[] = [],
-) => {
-  const schema = createInsertSchema(table);
-  return t.Omit(schema, [...commonOmittedKeys, ...extraKeys]);
-};
+export function createSchemaFactory(ops?: CreateSchemaFactoryOptions) {
+  const base = baseCreateSchemaFactory(ops);
 
-export const createCustomUpdateSchema = (
-  table: Table,
-  extraKeys: readonly string[] = [],
-) => {
-  const schema = createUpdateSchema(table);
-  return t.Omit(schema, [...commonOmittedKeys, ...extraKeys]);
-};
+  const createSelectSchema = (entity: Table, keys?: readonly string[]) => {
+    const schema = base.createSelectSchema(entity);
+    return keys ? ops?.typeboxInstance.Omit(schema, keys) : schema;
+  };
+
+  const createInsertSchema = (entity: Table, keys?: readonly string[]) => {
+    const schema = base.createInsertSchema(entity);
+    return keys ? ops?.typeboxInstance.Omit(schema, keys) : schema;
+  };
+
+  const createUpdateSchema = (entity: Table, keys?: readonly string[]) => {
+    const schema = base.createUpdateSchema(entity);
+    return keys ? ops?.typeboxInstance.Omit(schema, keys) : schema;
+  };
+
+  return {
+    createSelectSchema,
+    createInsertSchema,
+    createUpdateSchema,
+  };
+}
