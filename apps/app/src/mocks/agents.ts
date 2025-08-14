@@ -58,5 +58,6 @@ export const agentHandlers = [
     db.getCollection("agents").remove(tmpAgent);
 
     await delay(2000);
+    return new HttpResponse({ status: 201 });
   }),
 ];

@@ -1,3 +1,10 @@
+"use client";
+
+import { Loader2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useSnapshot } from "valtio";
+
 import { Alert, AlertTitle } from "@hebo/ui/components/Alert";
 import { Button } from "@hebo/ui/components/Button";
 import {
@@ -14,12 +21,43 @@ import {
   DialogTrigger,
   DialogContent,
   DialogTitle,
-  DialogDescription,
   DialogHeader,
 } from "@hebo/ui/components/Dialog";
 import { Input } from "@hebo/ui/components/Input";
 
+import { api, queryClient, useEdenMutation } from "~/lib/data";
+import { agentStore } from "~/stores/agentStore";
+
+type FormData = {
+  agentName: string;
+};
+
 export function DangerSettings() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      agentName: "",
+    },
+  });
+
+  const agentSnap = useSnapshot(agentStore);
+  const router = useRouter();
+
+  const { mutate, error, isPending } = useEdenMutation({
+    mutationFn: () =>
+      // @ts-expect-error: API type not ready
+      api.agents.delete({ slug: agentSnap.activeAgent?.slug }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agents"] });
+      agentSnap.activeAgent = undefined;
+      // FUTURE: implement wrapper for router to apply ViewTransitions
+      router.replace(`/`);
+    },
+  });
+
   return (
     <>
       <h2>Danger Zone</h2>
@@ -35,29 +73,58 @@ export function DangerSettings() {
               <DialogTrigger asChild>
                 <Button variant="destructive">Delete Agent</Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader className="gap-4">
-                  <DialogTitle>Delete Agent</DialogTitle>
-                  <DialogDescription className="flex flex-col gap-2">
-                    <Alert variant="destructive">
-                      <AlertTitle>
-                        <b>Warning:</b> This action is not reversible. Be
-                        certain.
-                      </AlertTitle>
-                    </Alert>
-                    <div>
-                      To confirm, type &quot;<b>Dummy Name</b>&quot; in the box
-                      below:
+              <DialogContent className="bg-sidebar sm:max-w-md">
+                <form
+                  onSubmit={handleSubmit(() => mutate())}
+                  aria-busy={isPending}
+                >
+                  <DialogHeader>
+                    <DialogTitle>Delete Agent</DialogTitle>
+                  </DialogHeader>
+                  <Alert variant="destructive">
+                    <AlertTitle>
+                      <b>Warning:</b> This action is not reversible. Be certain.
+                    </AlertTitle>
+                  </Alert>
+                  <div>
+                    To confirm, type &quot;<b>{agentSnap.activeAgent?.name}</b>
+                    &quot; in the box below:
+                  </div>
+                  <Input
+                    className="border-destructive"
+                    disabled={isPending}
+                    {...register("agentName", {
+                      required: "Please enter an agent name",
+                    })}
+                    aria-describedby={
+                      errors.agentName ? "agent-name-error" : undefined
+                    }
+                  />
+                  {(errors.agentName || error) && (
+                    <div
+                      id="agent-name-error"
+                      className="text-destructive"
+                      role="alert"
+                    >
+                      {errors.agentName?.message}
+                      {error?.message}
                     </div>
-                    <Input className="border-destructive" />
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <Button type="submit">Delete Agent</Button>
-                </DialogFooter>
+                  )}
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button disabled={isPending} type="submit">
+                      {isPending && (
+                        <Loader2Icon
+                          className="animate-spin"
+                          aria-hidden="true"
+                        />
+                      )}
+                      Delete Agent
+                    </Button>
+                  </DialogFooter>
+                </form>
               </DialogContent>
             </Dialog>
           </CardAction>

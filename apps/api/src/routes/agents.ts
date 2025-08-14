@@ -81,4 +81,6 @@ export const agentRoutes = new Elysia({
       params: agentPathParam,
       response: { 501: t.String() },
     },
-  );
+  )
+
+  .delete("/:id", async () => {});
