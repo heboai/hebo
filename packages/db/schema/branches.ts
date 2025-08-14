@@ -1,32 +1,25 @@
-import { isNull } from "drizzle-orm";
-import {
-  text,
-  bigserial,
-  pgTable,
-  jsonb,
-  uniqueIndex,
-  bigint,
-} from "drizzle-orm/pg-core";
+import { isNull, sql } from "drizzle-orm";
+import { pgTable, jsonb, uuid, uniqueIndex } from "drizzle-orm/pg-core";
 
 import { agents } from "./agents";
-import { timestamps } from "./timestamps";
-
-import type { Models } from "./types/models";
+import { audit } from "./mixin/audit";
+import { slug } from "./mixin/slug";
 
 export const branches = pgTable(
   "branches",
   {
-    id: bigserial("id", { mode: "number" }).primaryKey(),
-    agent_id: bigint("agent_id", { mode: "number" })
-      .notNull()
-      .references(() => agents.id, { onDelete: "cascade" }),
-    name: text("name").notNull().default("main"),
-    models: jsonb("models").$type<Models>().notNull(),
-    ...timestamps,
+    id: uuid("id").primaryKey().defaultRandom(),
+    agentId: uuid("agent_id")
+      .references(() => agents.id, { onDelete: "cascade" })
+      .notNull(),
+    ...slug,
+    models: jsonb("models").notNull(),
+    ...audit,
   },
   (table) => [
-    uniqueIndex("branches_agent_id_name_unique_index")
-      .on(table.agent_id, table.name)
-      .where(isNull(table.deleted_at)),
+    // Case-insensitive unique slug per agent
+    uniqueIndex("unique_slug_per_agent")
+      .on(table.agentId, sql`LOWER(${table.slug})`)
+      .where(isNull(table.deletedAt)),
   ],
 );

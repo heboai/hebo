@@ -1,9 +1,15 @@
-import { text, bigserial, pgTable } from "drizzle-orm/pg-core";
-import { timestamps } from "./timestamps";
+import { sql } from "drizzle-orm";
+import { uuid, pgTable, uniqueIndex } from "drizzle-orm/pg-core";
 
-export const agents = pgTable("agents", {
-  id: bigserial("id", { mode: "number" }).primaryKey(),
-  user_id: text("user_id").notNull(),
-  name: text("name").notNull(),
-  ...timestamps,
-});
+import { audit } from "./mixin/audit";
+import { slug } from "./mixin/slug";
+
+export const agents = pgTable(
+  "agents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ...slug,
+    ...audit,
+  },
+  (table) => [uniqueIndex("unique_slug").on(sql`LOWER(${table.slug})`)],
+);

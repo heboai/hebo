@@ -3,14 +3,25 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
-    "build": "bun build src/index.ts --target=bun --outdir=dist",
+    "build:js": "bun build src/index.ts --target=bun --outdir=dist",
+    "build:types": "tsc -p tsconfig.types.json",
+    "build": "bun run build:js && bun run build:types",
     "dev": "bun --hot src/index.ts",
     "start": "bun -e \"import { existsSync } from 'fs'; if (!existsSync('dist/index.js')) { console.log('❌ Build not found. Please run \\'bun run build\\' first.'); process.exit(1); }\" && bun dist/index.js",
-    "clean": "rimraf .next .turbo node_modules dist"
+    "clean": "rimraf .turbo node_modules dist"
   },
   "devDependencies": {
-    "bun-types": "^1.2.19"
+    "bun-types": "^1.2.19",
+    "typescript": "^5.9.2"
   },
   "dependencies": {
     "@elysiajs/bearer": "^1.3.0",
@@ -18,8 +29,8 @@
     "@elysiajs/swagger": "^1.3.1",
     "@hebo/db": "workspace:*",
     "@sinclair/typebox": "^0.34.38",
-    "drizzle-orm": "0.44.4",
-    "drizzle-typebox": "0.3.3",
+    "drizzle-orm": "^0.44.4",
+    "drizzle-typebox": "^0.3.3",
     "elysia": "^1.3.8",
     "jose": "^5.3.0"
   }

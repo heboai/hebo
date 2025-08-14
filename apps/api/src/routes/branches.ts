@@ -1,277 +1,77 @@
-import { and, eq, isNull } from "drizzle-orm";
-import { createSchemaFactory } from "drizzle-typebox";
 import { Elysia, t } from "elysia";
 
-import { db } from "@hebo/db/drizzle";
-import { agents } from "@hebo/db/schema/agents";
 import { branches } from "@hebo/db/schema/branches";
-import { SupportedLLMs, EndpointSchema } from "@hebo/db/schema/types/models";
 
-import { authenticateUser } from "../middlewares/auth";
+import { agentPathParam } from "~/routes/agents";
+import {
+  createSchemaFactory,
+  AUDIT_FIELDS,
+  ID_FIELDS,
+} from "~/utils/schema-factory";
 
-const { createSelectSchema } = createSchemaFactory({ typeboxInstance: t });
-
-// Safe response schemas (omit apiKey from endpoint)
-const ResponseEndpointSchema = t.Object({
-  url: t.String({ format: "uri" }),
-  provider: t.String(),
+const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
+  typeboxInstance: t,
 });
 
-const ResponseModelSchema = t.Object({
-  alias: t.String({ minLength: 1 }),
-  // Use string here to avoid cross-instance Kind mismatches with external unions
-  LLM: t.String(),
-  endpoint: t.Optional(ResponseEndpointSchema),
+const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS, "agentId"] as const;
+
+const _insertSchema = createInsertSchema(branches);
+const createBranch = createInsertSchema(branches, OMIT_FIELDS);
+const updateBranch = createUpdateSchema(branches, OMIT_FIELDS);
+
+// Ensure the path parameter types match the corresponding database field type
+const branchPathParams = t.Object({
+  ...agentPathParam.properties,
+  branchSlug: _insertSchema.properties.slug,
 });
-
-const ResponseModelsSchema = t.Array(ResponseModelSchema, { minItems: 1 });
-
-const SafeBranchSelect = createSelectSchema(branches, {
-  models: ResponseModelsSchema,
-});
-
-// Runtime sanitizer to strip apiKey from models' endpoints
-const sanitizeBranch = (row: typeof branches.$inferSelect) => {
-  const sanitizedModels = row.models.map((model) => ({
-    alias: model.alias,
-    LLM: model.LLM,
-    endpoint: model.endpoint
-      ? { url: model.endpoint.url, provider: model.endpoint.provider }
-      : undefined,
-  }));
-
-  return { ...row, models: sanitizedModels } as const;
-};
-
-// Allow alias to be optional on create/update bodies and default to "default" in handler
-const CreateModelSchema = t.Object(
-  {
-    alias: t.Optional(t.String({ minLength: 1 })),
-    LLM: SupportedLLMs,
-    endpoint: t.Optional(EndpointSchema),
-  },
-  { additionalProperties: false },
-);
-const CreateModelsSchema = t.Array(CreateModelSchema, { minItems: 1 });
-
-const CreateBranchBody = t.Object(
-  {
-    agent_id: t.Integer(),
-    name: t.Optional(t.String({ minLength: 1 })),
-    models: CreateModelsSchema,
-  },
-  { additionalProperties: false },
-);
-
-const UpdateBranchParams = t.Object(
-  { id: t.Numeric() },
-  { additionalProperties: false },
-);
-const UpdateModelSchema = CreateModelSchema;
-const UpdateModelsSchema = t.Array(UpdateModelSchema, { minItems: 1 });
-
-const UpdateBranchBody = t.Object(
-  {
-    agent_id: t.Integer(),
-    name: t.String({ minLength: 1 }),
-    models: UpdateModelsSchema,
-  },
-  { additionalProperties: false },
-);
-
-const GetBranchesParams = t.Object(
-  { agent_id: t.Numeric() },
-  { additionalProperties: false },
-);
-
-const ErrorResponse = t.Object(
-  { error: t.String() },
-  { additionalProperties: false },
-);
 
 export const branchRoutes = new Elysia({
   name: "branch-routes",
-  prefix: "/branches",
+  prefix: "/:agentSlug/branches",
 })
-  .use(authenticateUser)
-  // Create branch
   .post(
     "/",
-    async ({ body, store, set }) => {
-      const userId = store.userId as string | undefined;
-      // TODO: implement guards to reduce code duplication
-      if (!userId) {
-        set.status = 401;
-        return { error: "Unauthorized" } as const;
-      }
-
-      const [agentRow] = await db
-        .select()
-        .from(agents)
-        .where(
-          and(
-            eq(agents.id, body.agent_id),
-            eq(agents.user_id, userId),
-            isNull(agents.deleted_at),
-          ),
-        );
-
-      if (!agentRow) {
-        set.status = 404;
-        return { error: "Agent not found for user" } as const;
-      }
-
-      const modelsWithDefaultAlias = body.models.map((m) => ({
-        ...m,
-        alias: m.alias ?? "default",
-      }));
-
-      // Validate alias uniqueness after defaults
-      const seenAliases = new Set<string>();
-      for (const model of modelsWithDefaultAlias) {
-        if (seenAliases.has(model.alias)) {
-          set.status = 422;
-          return { error: `Duplicate model alias: ${model.alias}` } as const;
-        }
-        seenAliases.add(model.alias);
-      }
-
-      const payload: typeof branches.$inferInsert = {
-        agent_id: body.agent_id,
-        name: body.name ?? "main",
-        models: modelsWithDefaultAlias,
-      };
-
-      const [row] = await db.insert(branches).values(payload).returning();
-      const locationUrl = `/branches/${row.id}`;
-      set.status = 201;
-      (set.headers as Record<string, string>)["Location"] = locationUrl;
-      return sanitizeBranch(row);
+    async ({ set }) => {
+      set.status = 501;
+      return "Not implemented" as const;
     },
     {
-      body: CreateBranchBody,
-      response: {
-        201: SafeBranchSelect,
-        401: ErrorResponse,
-        404: ErrorResponse,
-        422: ErrorResponse,
-      },
+      params: agentPathParam,
+      body: createBranch,
+      response: { 501: t.String() },
     },
   )
-  // Get branches by agent id
   .get(
-    "/:agent_id",
-    async ({ params, store, set }) => {
-      const userId = store.userId as string | undefined;
-      // TODO: implement guards to reduce code duplication
-      if (!userId) {
-        set.status = 401;
-        return { error: "Unauthorized" } as const;
-      }
-
-      const { agent_id } = params;
-
-      const [agentRow] = await db
-        .select()
-        .from(agents)
-        .where(
-          and(
-            eq(agents.id, agent_id),
-            eq(agents.user_id, userId),
-            isNull(agents.deleted_at),
-          ),
-        );
-
-      if (!agentRow) {
-        set.status = 404;
-        return { error: "Agent not found for user" } as const;
-      }
-
-      const rows = await db
-        .select()
-        .from(branches)
-        .where(
-          and(eq(branches.agent_id, agent_id), isNull(branches.deleted_at)),
-        );
-      return rows.map((row) => sanitizeBranch(row));
+    "/",
+    async ({ set }) => {
+      set.status = 501;
+      return "Not implemented" as const;
     },
     {
-      params: GetBranchesParams,
-      response: {
-        200: t.Array(SafeBranchSelect),
-        401: ErrorResponse,
-        404: ErrorResponse,
-      },
+      params: agentPathParam,
+      response: { 501: t.String() },
     },
   )
-  // Update branch
-  .put(
-    "/:id",
-    async ({ params, body, store, set }) => {
-      const userId = store.userId as string | undefined;
-      // TODO: implement guards to reduce code duplication
-      if (!userId) {
-        set.status = 401;
-        return { error: "Unauthorized" } as const;
-      }
-
-      const [agentRow] = await db
-        .select()
-        .from(agents)
-        .where(
-          and(
-            eq(agents.id, body.agent_id),
-            eq(agents.user_id, userId),
-            isNull(agents.deleted_at),
-          ),
-        );
-
-      if (!agentRow) {
-        set.status = 404;
-        return { error: "Agent not found for user" } as const;
-      }
-
-      const modelsWithDefaultAlias = body.models.map((m) => ({
-        ...m,
-        alias: m.alias ?? "default",
-      }));
-
-      // Validate alias uniqueness after defaults
-      const seenAliases = new Set<string>();
-      for (const model of modelsWithDefaultAlias) {
-        if (seenAliases.has(model.alias)) {
-          set.status = 422;
-          return { error: `Duplicate model alias: ${model.alias}` } as const;
-        }
-        seenAliases.add(model.alias);
-      }
-
-      const [updated] = await db
-        .update(branches)
-        .set({ name: body.name, models: modelsWithDefaultAlias })
-        .where(
-          and(
-            eq(branches.id, params.id),
-            eq(branches.agent_id, body.agent_id),
-            isNull(branches.deleted_at),
-          ),
-        )
-        .returning();
-
-      if (!updated) {
-        set.status = 404;
-        return { error: "Branch not found" } as const;
-      }
-      return sanitizeBranch(updated);
+  .get(
+    "/:branchSlug",
+    async ({ set }) => {
+      set.status = 501;
+      return "Not implemented" as const;
     },
     {
-      params: UpdateBranchParams,
-      body: UpdateBranchBody,
-      response: {
-        200: SafeBranchSelect,
-        401: ErrorResponse,
-        404: ErrorResponse,
-        422: ErrorResponse,
-      },
+      params: branchPathParams,
+      response: { 501: t.String() },
+    },
+  )
+  .put(
+    "/:branchSlug",
+    async ({ set }) => {
+      set.status = 501;
+      return "Not implemented" as const;
+    },
+    {
+      params: branchPathParams,
+      body: updateBranch,
+      response: { 501: t.String() },
     },
   );
