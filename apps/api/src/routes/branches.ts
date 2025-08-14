@@ -25,6 +25,7 @@ const updateBranch = createUpdateSchema(branches, [
   "agentId",
 ]);
 
+// Ensure the path parameter types match the corresponding database field type
 const branchPathParams = t.Object({
   ...agentPathParam.properties,
   branchSlug: _insertSchema.properties.slug,
