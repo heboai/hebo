@@ -94,7 +94,11 @@ export function DangerSettings() {
                     className="border-destructive"
                     disabled={isPending}
                     {...register("agentName", {
-                      required: "Please enter an agent name",
+                      pattern: {
+                        value: new RegExp(`^${agentSnap.activeAgent?.name}$`),
+                        message: "Please enter the agent name",
+                      },
+                      required: "Please enter the agent name",
                     })}
                     aria-describedby={
                       errors.agentName ? "agent-name-error" : undefined
