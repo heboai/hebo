@@ -160,11 +160,11 @@
 
   /* Form styles */
   h1 {
-    @apply text-2xl font-medium pb-4;
+    @apply text-2xl font-medium;
   }
 
   h2 {
-    @apply text-xl font-medium pt-6 pb-2;
+    @apply text-xl font-medium;
   }
 
   label {
