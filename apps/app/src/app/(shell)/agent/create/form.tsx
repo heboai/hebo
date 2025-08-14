@@ -31,7 +31,7 @@ type FormData = {
   defaultModel: string;
 };
 
-export function CreateAgentForm() {
+export function AgentForm() {
   const {
     control,
     register,
