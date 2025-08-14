@@ -47,6 +47,7 @@ export function DangerSettings() {
 
   const { mutate, error, isPending } = useEdenMutation({
     mutationFn: () =>
+      // TODO: Remove eslint exception
       // @ts-expect-error: API type not ready
       api.agents({ slug: agentSnap.activeAgent?.slug }).delete(),
     onSuccess: () => {
@@ -60,7 +61,7 @@ export function DangerSettings() {
   return (
     <>
       <h2>Danger Zone</h2>
-      {/* TODO: generalize px / py for Cards */}
+      {/* FUTURE: generalize px / py for Cards */}
       <Card className="border-destructive border-dashed py-5">
         <CardHeader className="px-5">
           <CardTitle>Delete this agent</CardTitle>

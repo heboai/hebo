@@ -10,7 +10,6 @@ import { MagicLinkSignIn } from "~/components/auth/MagicLinkSignIn";
 import { OAuthSignIn } from "~/components/auth/OAuthSignIn";
 import { Logo } from "~/components/ui/Logo";
 
-
 export default function SignIn() {
   return (
     <div className="relative min-h-screen">
@@ -79,7 +78,7 @@ export default function SignIn() {
                   <span className="text-sm whitespace-nowrap">or</span>
                   <div className="h-[1px] flex-1 bg-gray-300" />
                 </div>
-                {/* TODO: make the sign-in button use primary color (yellow)*/}
+                {/* FUTURE: make the sign-in button use primary color (yellow)*/}
                 <MagicLinkSignIn />
               </div>
 

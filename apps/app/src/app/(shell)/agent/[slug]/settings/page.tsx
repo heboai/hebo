@@ -3,7 +3,7 @@ import { GeneralSettings } from "./general";
 
 export default function Settings() {
   return (
-    // TODO: generalize layout gaps
+    // FUTURE: generalize layout gaps
     <div className="flex max-w-2xl flex-col gap-4">
       <h1>Agent Settings</h1>
 

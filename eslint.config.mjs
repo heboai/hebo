@@ -134,7 +134,7 @@ const eslintConfig = [
       'react-perf/jsx-no-new-function-as-prop': 'warn',
       'tailwindcss/no-custom-classname': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      // TODO: Remove these (turning them to errors), once fixed 
+      // FUTURE: Remove these (turning them to errors), once fixed 
       'import/named': 'warn',
       'sonarjs/no-all-duplicated-branches': 'warn',
       'turbo/no-undeclared-env-vars': 'warn',

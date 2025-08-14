@@ -47,6 +47,7 @@ export function AgentForm() {
 
   const { mutate, error, isPending } = useEdenMutation({
     mutationFn: (values: FormData) =>
+      // TODO: Remove eslint exception
       // @ts-expect-error: API type not ready
       api.agents.post({
         name: values.agentName,
@@ -55,6 +56,7 @@ export function AgentForm() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
       // FUTURE: implement wrapper for router to apply ViewTransitions
+      // TODO: Remove eslint exception
       // @ts-expect-error: API type not ready
       router.replace(`/agent/${data.slug}`);
     },

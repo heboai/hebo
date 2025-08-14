@@ -20,7 +20,7 @@ const url = isDevLocal
 
 const api = treaty<Api>(url, {
   // Enable CORS-compatibility
-  // ToDO: test whether it actually works
+  // TODO: test whether it actually works
   fetch: { credentials: "include" },
 });
 

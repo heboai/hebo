@@ -66,7 +66,6 @@ export function AgentSelector() {
   const [open, setOpen] = useState(false);
 
   return agents.length > 0 ? (
-    /* TODO: Implement Branch Selector */
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu open={open} onOpenChange={setOpen}>
