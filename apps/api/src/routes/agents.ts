@@ -46,6 +46,7 @@ export const agentRoutes = new Elysia({
   .post(
     "/",
     async ({ body, set }) => {
+      // TODO: replace with actual user id coming from auth
       const [createdBy, updatedBy] = ["dummy", "dummy"];
       const slug = createSlug(body.name, true);
 
@@ -96,6 +97,7 @@ export const agentRoutes = new Elysia({
   .put(
     "/:agentSlug",
     async ({ body, params, set }) => {
+      // TODO: replace with actual user id coming from auth
       const updatedBy = "dummy";
       const [agent] = await db
         .update(agents)
@@ -119,6 +121,7 @@ export const agentRoutes = new Elysia({
   .delete(
     "/:agentSlug",
     async ({ params, set }) => {
+      // TODO: replace with actual user id coming from auth
       const deletedBy = "dummy";
       const deletedAt = new Date();
 
