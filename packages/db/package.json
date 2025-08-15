@@ -7,6 +7,7 @@
   "types": "./drizzle.ts",
   "scripts": {
     "clean": "rimraf .next .turbo node_modules ../hebo.db",
+    "lint": "bunx eslint .",
     "migrate": "drizzle-kit migrate",
     "generate": "drizzle-kit generate",
     "studio": "drizzle-kit studio",

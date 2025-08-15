@@ -51,10 +51,7 @@ export const isLocal: boolean = (() => {
 
   // If we detect an SST-provided Postgres host, assume remote.
   const remoteHost = safeRead(() => (heboDb as any).host);
-  if (remoteHost) return false;
-
-  // Otherwise treat as local.
-  return true;
+  return !remoteHost;
 })();
 
 // ---------------------------------------------------------

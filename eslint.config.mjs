@@ -19,7 +19,7 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ['**/_*/**', "**/.next/**"],
+    ignores: ['**/_*/**', "**/.next/**", '**/dist/**'],
   },
   {
     settings: {
@@ -134,6 +134,7 @@ const eslintConfig = [
       'react-perf/jsx-no-new-function-as-prop': 'warn',
       'tailwindcss/no-custom-classname': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
+      'turbo/no-undeclared-env-vars': 'warn',
     },
   },
 ];
