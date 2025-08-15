@@ -16,7 +16,7 @@ import { isDevLocal } from "~/lib/env";
 
 const url = isDevLocal
   ? "http://localhost:3000/api"
-  : process.env.NEXT_PUBLIC_API_URL!;
+  : import.meta.env.NEXT_PUBLIC_API_URL!;
 
 const api = treaty<Api>(url, {
   // Enable CORS-compatibility
