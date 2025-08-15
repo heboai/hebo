@@ -67,8 +67,8 @@ export const branchRoutes = new Elysia({
       }
 
       const agentId = agent.id;
-      const createdBy = "dummy";
-      const updatedBy = "dummy";
+      // TODO: replace with actual user id coming from auth
+      const [createdBy, updatedBy] = ["dummy", "dummy"];
       const slug = createSlug(body.name, false);
       const [branch] = await db
         .insert(branches)
@@ -133,6 +133,7 @@ export const branchRoutes = new Elysia({
     "/:branchSlug",
     // TODO: type models to solve Elysia type error
     async ({ body, params, set }) => {
+      // TODO: replace with actual user id coming from auth
       const updatedBy = "dummy";
       const [branch] = await db
         .update(branches)
