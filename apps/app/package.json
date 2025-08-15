@@ -23,7 +23,6 @@
     "ajv": "^8.17.1",
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^3.0.1",
-    "escape-string-regexp": "^5.0.0",
     "lucide-react": "^0.525.0",
     "next": "~15.4.4",
     "react": "^19.1",
