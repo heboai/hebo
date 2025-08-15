@@ -12,7 +12,7 @@
     "build": "turbo run build",
     "clean": "npm-run-all2 clean:workspaces clean:root",
     "clean:workspaces": "turbo run clean",
-    "clean:root": "rimraf .next .turbo node_modules .sst .eslintcache",
+    "clean:root": "rimraf .turbo node_modules .sst .eslintcache",
     "db:generate": "bun run --filter @hebo/db generate",
     "db:migrate": "bun run --filter @hebo/db migrate",
     "db:studio": "bun run --filter @hebo/db studio",
@@ -53,7 +53,7 @@
     "react": "^19.1.1",
     "rimraf": "^6.0.1",
     "sst": "^3.17.10",
-    "tailwindcss": "^4.1.11",
+    "tailwindcss": "^4.1.12",
     "turbo": "^2.5.5",
     "typescript": "^5.9.2"
   },

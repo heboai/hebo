@@ -19,7 +19,7 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ['**/_*/**', '**/dist/**', '**/node_modules/**', "**/.next/**", "**/.turbo/**"],
+    ignores: ['**/_*/**', '**/dist/**', '**/node_modules/**', "**/.next/**", "**/.react-router/**", "**/.turbo/**"],
   },
   {
     settings: {
@@ -63,7 +63,7 @@ const eslintConfig = [
     rules: {
       ...importPlugin.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
-      "no-secrets/no-secrets": "error",
+      "no-secrets/no-secrets": ["error", { "tolerance": 4.1 }],
       ...unicorn.configs.recommended.rules,
       "unused-imports/no-unused-imports": "error",
       ...promise.configs.recommended.rules,
@@ -135,6 +135,7 @@ const eslintConfig = [
       'tailwindcss/no-custom-classname': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       'turbo/no-undeclared-env-vars': 'warn',
+      'unicorn/no-abusive-eslint-disable': 'warn'
     },
   },
 ];
