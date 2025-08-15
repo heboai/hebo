@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
 import { Elysia, t, NotFoundError } from "elysia";
 
 import { db } from "@hebo/db";
@@ -66,12 +66,15 @@ export const agentRoutes = new Elysia({
   .get(
     "/",
     async ({ set }) => {
-      const agentList = await db.select().from(agents);
+      const agentList = await db
+        .select()
+        .from(agents)
+        .where(isNull(agents.deletedAt));
       set.status = 200;
       return agentList;
     },
     {
-      response: [selectAgent],
+      response: t.Array(selectAgent),
     },
   )
   .get(

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, isNull, and } from "drizzle-orm";
 import { Elysia, t, NotFoundError } from "elysia";
 
 import { db } from "@hebo/db";
@@ -57,6 +57,7 @@ export const branchRoutes = new Elysia({
     "/",
     // TODO: type models to solve Elysia type error
     async ({ params, body, set }) => {
+      // TODO: remove agent verification logic duplication
       const [agent] = await db
         .select()
         .from(agents)
@@ -70,6 +71,7 @@ export const branchRoutes = new Elysia({
       // TODO: replace with actual user id coming from auth
       const [createdBy, updatedBy] = ["dummy", "dummy"];
       const slug = createSlug(body.name, false);
+      // TODO: handle DB errors in case of slug collision
       const [branch] = await db
         .insert(branches)
         .values({ agentId, ...body, slug, createdBy, updatedBy })
@@ -86,6 +88,7 @@ export const branchRoutes = new Elysia({
   .get(
     "/",
     async ({ params, set }) => {
+      // TODO: remove agent verification logic duplication
       const [agent] = await db
         .select()
         .from(agents)
@@ -99,13 +102,13 @@ export const branchRoutes = new Elysia({
       const branchList = await db
         .select()
         .from(branches)
-        .where(eq(branches.agentId, agentId));
+        .where(and(eq(branches.agentId, agentId), isNull(branches.deletedAt)));
       set.status = 200;
       return branchList;
     },
     {
       params: agentPathParam,
-      response: [selectBranch],
+      response: t.Array(selectBranch),
     },
   )
   .get(
