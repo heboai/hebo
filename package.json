@@ -28,11 +28,9 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
-    "@next/eslint-plugin-next": "^15.4.4",
+    "@eslint/js": "^9.33.0",
     "check-dependency-version-consistency": "^5.0.1",
     "eslint": "^9.32.0",
-    "eslint-config-next": "^15.4.4",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -55,7 +53,8 @@
     "sst": "^3.17.10",
     "tailwindcss": "^4.1.12",
     "turbo": "^2.5.5",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.1"
   },
   "engines": {
     "bun": ">=1.2.19"

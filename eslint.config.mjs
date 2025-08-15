@@ -1,9 +1,12 @@
-import { FlatCompat } from "@eslint/eslintrc"
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+
 import importPlugin from "eslint-plugin-import"
 import jsxA11y from "eslint-plugin-jsx-a11y"
 import noSecrets from "eslint-plugin-no-secrets"
 import promise from "eslint-plugin-promise"
 import react from "eslint-plugin-react"
+import reactHooks from "eslint-plugin-react-hooks"
 import reactPerf from "eslint-plugin-react-perf"
 import security from "eslint-plugin-security"
 import sonarjs from 'eslint-plugin-sonarjs'
@@ -13,23 +16,15 @@ import unicorn from "eslint-plugin-unicorn"
 import unusedImports from "eslint-plugin-unused-imports"
 
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-})
-
 const eslintConfig = [
   {
-    ignores: ['**/_*/**', '**/dist/**', '**/node_modules/**', "**/.next/**", "**/.react-router/**", "**/.turbo/**"],
+    ignores: ['**/_*/**', '**/build/**', '**/dist/**', '**/node_modules/**', "**/.next/**", "**/.react-router/**", "**/.turbo/**"],
   },
   {
     settings: {
       // Tailwind 4 doesn't have a config
       tailwindcss: {
         config: false, 
-      },
-      // Limit Next.js plugin root to the web app only to avoid monorepo noise
-      next: {
-        rootDir: ["apps/app/"],
       },
       // Point to the correct tsconfig
       'import/resolver': {
@@ -40,11 +35,8 @@ const eslintConfig = [
       },
     },
   },
-  ...compat.extends(
-    "next/core-web-vitals", 
-    "next/typescript",
-    "plugin:react-hooks/recommended-legacy",
-  ),
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     plugins: {
       "import": importPlugin,
@@ -52,6 +44,7 @@ const eslintConfig = [
       "no-secrets": noSecrets,
       promise,
       react,
+      "react-hooks": reactHooks,
       "react-perf": reactPerf,
       security,
       sonarjs,
@@ -68,6 +61,7 @@ const eslintConfig = [
       "unused-imports/no-unused-imports": "error",
       ...promise.configs.recommended.rules,
       ...react.configs.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
       ...reactPerf.configs.flat.recommended.rules,
       ...security.configs.recommended.rules,
       // eslint-disable-next-line import/no-named-as-default-member
