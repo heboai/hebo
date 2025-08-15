@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 
 import { db } from "@hebo/db";
@@ -32,14 +33,12 @@ export const agentRoutes = new Elysia({
   .post(
     "/",
     async ({ body, set }) => {
-      const createdBy = "dummy";
-      const updatedBy = "dummy";
-      const name = body.name;
-      const slug = createSlug(name, true);
+      const [createdBy, updatedBy] = ["dummy", "dummy"];
+      const slug = createSlug(body.name, true);
 
       const [agent] = await db
         .insert(agents)
-        .values({ name, slug, createdBy, updatedBy })
+        .values({ ...body, slug, createdBy, updatedBy })
         .returning();
 
       set.status = 201;
@@ -53,44 +52,62 @@ export const agentRoutes = new Elysia({
   .get(
     "/",
     async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+      const agentList = await db.select().from(agents);
+      set.status = 200;
+      return agentList;
     },
     {
-      response: { 501: t.String() },
+      response: [selectAgent],
     },
   )
   .get(
     "/:agentSlug",
-    async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+    async ({ params, set }) => {
+      const [agent] = await db
+        .select()
+        .from(agents)
+        .where(eq(agents.slug, params.agentSlug));
+      set.status = 200;
+      return agent;
     },
     {
       params: agentPathParam,
-      response: { 501: t.String() },
+      response: selectAgent,
     },
   )
   .put(
     "/:agentSlug",
-    async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+    async ({ body, params, set }) => {
+      const updatedBy = "dummy";
+      const [agent] = await db
+        .update(agents)
+        .set({ ...body, updatedBy })
+        .where(eq(agents.slug, params.agentSlug))
+        .returning();
+      set.status = 200;
+      return agent;
     },
     {
       params: agentPathParam,
       body: t.Omit(updateAgent, [...AUDIT_FIELDS, ...ID_FIELDS]),
-      response: { 501: t.String() },
+      response: selectAgent,
     },
   )
   .delete(
     "/:agentSlug",
-    async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+    async ({ params, set }) => {
+      const deletedBy = "dummy";
+      const deletedAt = new Date();
+      const [agent] = await db
+        .update(agents)
+        .set({ deletedBy, deletedAt })
+        .where(eq(agents.slug, params.agentSlug))
+        .returning();
+      set.status = 200;
+      return agent;
     },
     {
       params: agentPathParam,
-      response: { 501: t.String() },
+      response: selectAgent,
     },
   );
