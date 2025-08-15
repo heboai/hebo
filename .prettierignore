@@ -1,5 +1,5 @@
 **/_*/**
-dist/
-node_modules/
-.next/
-.turbo/
+**/dist/**
+**/node_modules/**
+**/.next/**
+**/.turbo/**

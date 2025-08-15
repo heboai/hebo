@@ -48,10 +48,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <MSWProvider />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <MSWProvider />
         <div className="min-h-screen">{children}</div>
       </body>
     </html>

@@ -6,13 +6,8 @@ import * as stack from "./stack-auth";
 
 import type { AuthService } from "./types";
 
-let authService: AuthService;
-
-if (isStackAuthEnabled) {
-  authService = stack.authService;
-} else {
-  console.warn(" ⚠️ No auth configured, using dummy");
-  authService = dummy.authService;
-}
+const authService: AuthService = isStackAuthEnabled
+  ? stack.authService
+  : (console.warn(" ⚠️ No auth configured, using dummy"), dummy.authService);
 
 export { authService };

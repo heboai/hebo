@@ -23,6 +23,8 @@ export function MSWProvider() {
           return result;
         })
         .catch((error) => {
+          // Allow retry on next render pass if startup fails
+          w.__mswStarted = false;
           console.error("[MSW] Failed to start worker:", error);
         });
     }

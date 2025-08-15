@@ -2,7 +2,7 @@ import { userStore } from "~/state/auth";
 
 import type { AuthService } from "./types";
 
-export const authService: AuthService = {
+export const authService = {
   ensureSignedIn() {
     userStore.user = {
       name: "Dummy User",
@@ -17,4 +17,4 @@ export const authService: AuthService = {
 
     throw new Error("API Keys not implemented in Dummy Auth mode");
   },
-};
+} satisfies AuthService;

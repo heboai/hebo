@@ -2,7 +2,7 @@ import { Logo } from "~/components/ui/Logo";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center space-y-8 p-4 text-center">
+    <main className="flex min-h-screen w-full flex-col items-center justify-center space-y-8 p-4 text-center">
       <Logo />
 
       <div className="space-y-4">
@@ -12,6 +12,6 @@ export default function NotFound() {
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
       </div>
-    </div>
+    </main>
   );
 }

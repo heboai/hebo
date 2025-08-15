@@ -34,7 +34,7 @@ const getStackApp = (): StackClientApp<true, string> => {
   return _stackApp;
 };
 
-const authService: AuthService = {
+const authService = {
   ensureSignedIn() {
     const user = getStackApp().useUser({ or: "redirect" });
 
@@ -48,17 +48,17 @@ const authService: AuthService = {
 
   async generateApiKey() {
     const user = await getStackApp().getUser();
-    if (user) {
-      const apiKey = await user.createApiKey({
-        description: "On-boarding API key",
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-        isPublic: false,
-      });
-      return apiKey.value;
-    } else {
-      return "Error: Not authenticated";
+    if (!user) {
+      throw new Error("Not authenticated");
     }
+
+    const apiKey = await user.createApiKey({
+      description: "On-boarding API key",
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      isPublic: false,
+    });
+    return apiKey.value;
   },
-};
+} satisfies AuthService;
 
 export { authService, getStackApp };

@@ -42,10 +42,12 @@ export function AgentSelector() {
   useEffect(() => {
     if (fetchStatus !== "idle") return;
 
+    const preferredSlug =
+      agents.find((a) => a.slug === params.slug)?.slug ?? agents[0]?.slug;
     const target =
-      agents.length > 0 ? `/agent/${params.slug}` : "/agent/create";
+      agents.length > 0 ? `/agent/${preferredSlug}` : "/agent/create";
 
-    if (pathname !== target && pathname == "/") {
+    if (pathname !== target && pathname === "/") {
       router.replace(target);
     }
   }, [fetchStatus, agents, pathname, params.slug, router]);
@@ -86,7 +88,7 @@ export function AgentSelector() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg"
             align="start"
             side="bottom"
             sideOffset={4}
