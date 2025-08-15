@@ -1,9 +1,10 @@
-import type { AuthService } from "./types";
 import { isStackAuthEnabled } from "~/lib/env";
 
 // FUTURE: use dynamic imports to enable tree shaking
-import * as stack from "./stackAuth";
 import * as dummy from "./dummyAuth";
+import * as stack from "./stackAuth";
+
+import type { AuthService } from "./types";
 
 let authService: AuthService;
 

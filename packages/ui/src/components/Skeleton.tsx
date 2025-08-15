@@ -1,4 +1,3 @@
-import React from "react";
 import { Skeleton as ShadCNSkeleton } from "@hebo/ui/_shadcn/ui/skeleton";
 
 interface SkeletonProps extends React.ComponentProps<"div"> {

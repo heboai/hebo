@@ -12,7 +12,7 @@ export function MSWProvider() {
 
     if (isDevLocal) {
       // Avoid double-starts in React Strict Mode
-      const w = globalThis.window as any;
+      const w = globalThis.window as Window & { __mswStarted?: boolean };
       if (w.__mswStarted) return;
       w.__mswStarted = true;
 

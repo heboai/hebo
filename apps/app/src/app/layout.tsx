@@ -1,11 +1,12 @@
-import type { Metadata, Viewport } from "next";
-
 import { Geist, Geist_Mono } from "next/font/google";
+
+import { MSWProvider } from "~/components/MSWProvider";
+
+import type { Metadata, Viewport } from "next";
 
 import "~/styles/tailwind.css";
 import "~/styles/global.css";
 import "~/styles/stack.css";
-import { MSWProvider } from "~/components/MSWProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

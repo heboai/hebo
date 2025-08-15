@@ -1,6 +1,6 @@
-import type { AuthService } from "./types";
-
 import { userStore } from "~/stores/userStore";
+
+import type { AuthService } from "./types";
 
 export const authService: AuthService = {
   ensureSignedIn() {

@@ -2,7 +2,7 @@ import { Logo } from "~/components/ui/Logo";
 
 export default function NotFound() {
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center text-center space-y-8 p-4">
+    <div className="flex min-h-screen w-full flex-col items-center justify-center space-y-8 p-4 text-center">
       <Logo />
 
       <div className="space-y-4">

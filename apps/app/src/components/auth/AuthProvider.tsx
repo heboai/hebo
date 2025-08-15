@@ -2,8 +2,8 @@
 
 import { lazy, useLayoutEffect, useState } from "react";
 
-import { isStackAuthEnabled } from "~/lib/env";
 import { getStackApp } from "~/lib/auth/stackAuth";
+import { isStackAuthEnabled } from "~/lib/env";
 
 const StackProvider = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.StackProvider })),
@@ -19,11 +19,11 @@ export function AuthProvider({
   // Prevent rendering during static export
   const [isClient, setIsClient] = useState(false);
   useLayoutEffect(() => {
-    if (typeof window !== "undefined") {
+    if (globalThis.window !== undefined) {
       setIsClient(true);
     }
   }, []);
-  if (!isClient) return null;
+  if (!isClient) return <></>;
 
   if (isStackAuthEnabled) {
     const stackApp = getStackApp();

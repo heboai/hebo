@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-
 import { lazy, useLayoutEffect, useState } from "react";
 
 const StackHandler = lazy(() =>
@@ -14,8 +13,8 @@ const StackTheme = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.StackTheme })),
 );
 
-import { isStackAuthEnabled } from "~/lib/env";
 import { getStackApp } from "~/lib/auth/stackAuth";
+import { isStackAuthEnabled } from "~/lib/env";
 
 export function AuthHandler() {
   const pathname = usePathname();
@@ -23,11 +22,11 @@ export function AuthHandler() {
   // Prevent rendering during redirect and static export
   const [isClient, setIsClient] = useState(false);
   useLayoutEffect(() => {
-    if (typeof window !== "undefined") {
+    if (globalThis.window !== undefined) {
       setIsClient(true);
     }
   }, []);
-  if (!isClient) return null;
+  if (!isClient) return <></>;
 
   if (isStackAuthEnabled && isClient) {
     const stackApp = getStackApp();
