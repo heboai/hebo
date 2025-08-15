@@ -106,10 +106,8 @@ export function DangerSettings() {
                         <FormItem>
                           <FormLabel>
                             To confirm, type{" "}
-                            <strong>
-                              &quot;{agentSnap.activeAgent?.name}&quot;
-                            </strong>{" "}
-                            in the box below:
+                            <strong>{agentSnap.activeAgent?.name}</strong> in
+                            the box below:
                           </FormLabel>
                           <FormControl>
                             <Input {...field} />
