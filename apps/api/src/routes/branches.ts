@@ -18,6 +18,7 @@ const { createInsertSchema, createUpdateSchema, createSelectSchema } =
     typeboxInstance: t,
   });
 
+// TODO: the following looks excessively verbose, can we simplify it?
 const _insertSchema = createInsertSchema(branches);
 const _createBranch = createInsertSchema(branches);
 const _updateBranch = createUpdateSchema(branches);

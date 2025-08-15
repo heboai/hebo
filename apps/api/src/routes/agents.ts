@@ -16,6 +16,7 @@ const { createInsertSchema, createUpdateSchema, createSelectSchema } =
     typeboxInstance: t,
   });
 
+// TODO: the following looks excessively verbose, can we simplify it?
 const _insertSchema = createInsertSchema(agents);
 const _createAgent = createInsertSchema(agents);
 const _updateAgent = createUpdateSchema(agents);
