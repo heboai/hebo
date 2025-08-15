@@ -1,7 +1,10 @@
 "use client";
 
+import { ajvResolver } from "@hookform/resolvers/ajv";
+import { Static, Type } from "@sinclair/typebox";
+import { Value } from "@sinclair/typebox/value";
 import { useRouter } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import supportedModels from "@hebo/db/schema/json/supported-models.json";
 import { Button } from "@hebo/ui/components/Button";
@@ -12,8 +15,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@hebo/ui/components/Card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@hebo/ui/components/Form";
 import { Input } from "@hebo/ui/components/Input";
-import { Label } from "@hebo/ui/components/Label";
 import {
   Select,
   SelectContent,
@@ -24,23 +34,23 @@ import {
 
 import { api, queryClient, useEdenMutation } from "~/lib/data";
 
-// FUTURE: Implement TypeBox Validation
-type FormData = {
-  agentName: string;
-  defaultModel: string;
-};
+const FormSchema = Type.Object({
+  agentName: Type.String({
+    minLength: 1,
+    default: "",
+    errorMessage: "Please enter an agent name",
+  }),
+  defaultModel: Type.String({
+    default: supportedModels[0].name,
+  }),
+});
+
+type FormData = Static<typeof FormSchema>;
 
 export function AgentForm() {
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    defaultValues: {
-      agentName: "",
-      defaultModel: supportedModels[0].name,
-    },
+  const form = useForm<FormData>({
+    resolver: ajvResolver(FormSchema as any),
+    defaultValues: Value.Create(FormSchema) as FormData,
   });
 
   const router = useRouter();
@@ -69,123 +79,84 @@ export function AgentForm() {
       </CardHeader>
 
       <CardContent>
-        <form
-          onSubmit={handleSubmit((data) => mutate(data))}
-          aria-busy={isPending}
-        >
-          {/* Agent Name Field */}
-          <div className="flex flex-col sm:grid sm:grid-cols-[auto_1fr]">
-            <Label htmlFor="agent-name" className="sm:w-32">
-              Agent Name
-            </Label>
-            <div className="sm:max-w-xs">
-              {/* FUTURE: Autofocus on load and validation error */}
-              <Input
-                id="agent-name"
-                type="text"
-                placeholder="Name"
-                disabled={isPending}
-                aria-invalid={!!errors.agentName}
-                aria-describedby={
-                  errors.agentName ? "agent-name-error" : undefined
-                }
-                {...register("agentName", {
-                  required: "Please enter an agent name",
-                })}
-              />
-              {errors.agentName && (
-                <div
-                  id="agent-name-error"
-                  className="text-destructive"
-                  role="alert"
-                >
-                  {errors.agentName.message}
-                </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit((data) => mutate(data))}>
+            {/* Agent Name Field */}
+            <FormField
+              control={form.control}
+              name="agentName"
+              render={({ field }) => (
+                <FormItem className="sm:grid-cols-[auto_1fr]">
+                  <FormLabel className="sm:w-32">Agent Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Set an agent name" {...field} />
+                  </FormControl>
+                  <FormMessage className="sm:col-start-2" />
+                </FormItem>
               )}
-            </div>
+            />
 
             {/* Default Model Field */}
-            <Label htmlFor="model-select" className="sm:w-32">
-              Default Model
-            </Label>
-            <div className="sm:max-w-xs">
-              {/* FUTURE: Use ShadCN Form components */}
-              <Controller
-                control={control}
-                name="defaultModel"
-                rules={{ required: "Please select a default model" }}
-                render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={isPending}
-                  >
-                    <SelectTrigger
-                      id="model-select"
-                      className="w-full"
-                      aria-invalid={!!errors.defaultModel}
-                      aria-describedby={
-                        errors.defaultModel ? "default-model-error" : undefined
-                      }
-                    >
-                      <SelectValue
-                        placeholder="Select a model"
-                        className="truncate"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {supportedModels.map((model) => (
-                        <SelectItem
-                          key={model.name}
-                          value={model.name}
+            <FormField
+              control={form.control}
+              name="defaultModel"
+              render={({ field }) => (
+                <FormItem className="sm:grid-cols-[auto_1fr]">
+                  <FormLabel className="sm:w-32">Default Model</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder="Select a model"
                           className="truncate"
-                        >
-                          {model.displayName}
-                          <span className="text-xs">
-                            (
-                            {new Intl.NumberFormat("en", {
-                              notation: "compact",
-                              compactDisplay: "short",
-                              maximumFractionDigits: 1,
-                            }).format(model.rateLimit)}{" "}
-                            free tokens / month)
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.defaultModel && (
-                <div
-                  id="default-model-error"
-                  className="text-destructive"
-                  role="alert"
-                >
-                  {errors.defaultModel.message}
-                </div>
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {supportedModels.map((model) => (
+                          <SelectItem
+                            key={model.name}
+                            value={model.name}
+                            className="truncate"
+                          >
+                            {model.displayName}
+                            <span className="text-xs">
+                              (
+                              {new Intl.NumberFormat("en", {
+                                notation: "compact",
+                                compactDisplay: "short",
+                                maximumFractionDigits: 1,
+                              }).format(model.rateLimit)}{" "}
+                              free tokens / month)
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage className="sm:col-start-2" />
+                </FormItem>
               )}
-            </div>
-          </div>
+            />
 
-          {/* Mutation Error Display */}
-          {error && (
-            <div className="text-destructive text-right" role="alert">
-              {error.message}
-            </div>
-          )}
+            {/* Mutation Error Display */}
+            {error && (
+              <div className="text-destructive text-right" role="alert">
+                {error.message}
+              </div>
+            )}
 
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              isLoading={isPending}
-              aria-label="Create Agent"
-            >
-              Create
-            </Button>
-          </div>
-        </form>
+            {/* Submit Button */}
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                isLoading={isPending}
+                aria-label="Create Agent"
+              >
+                Create
+              </Button>
+            </div>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );
