@@ -73,7 +73,7 @@ export const CodeGroup = forwardRef(function CodeGroup(
           </TabItem>
         ))}
         <div className={clsx("flex-auto flex justify-end")}>
-          {/* FIXME: getNodeText is not picking 100% of text since some nodes are React promises */}
+          {/* TODO: getNodeText is not picking 100% of text since some nodes are React promises */}
           <CopyToClipboardButton
             textToCopy={getNodeText(
               childArr[parseInt(activeTab)]?.props?.children,

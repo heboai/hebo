@@ -30,7 +30,7 @@ export const CodeBlock = forwardRef(function CodeBlock(
   const Button = (
     props: Partial<ComponentPropsWithoutRef<typeof CopyToClipboardButton>>,
   ) => (
-    /* FIXME: getNodeText is not picking 100% of text since some nodes are React promises */
+    /* TODO: getNodeText is not picking 100% of text since some nodes are React promises */
     <CopyToClipboardButton
       textToCopy={getNodeText(children)}
       onCopied={onCopied}
@@ -54,6 +54,7 @@ export const CodeBlock = forwardRef(function CodeBlock(
       ) : (
         <Button className="absolute top-0 right-0 p-2" />
       )}
+      {/* TODO: add / strip out $ for bash */}
       <pre className="code-in-gray-frame">{children}</pre>
     </div>
   );
