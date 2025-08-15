@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Elysia, t } from "elysia";
+import { Elysia, t, NotFoundError } from "elysia";
 
 import { db } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
@@ -19,9 +19,28 @@ const { createInsertSchema, createUpdateSchema, createSelectSchema } =
   });
 
 const _insertSchema = createInsertSchema(branches);
-const createBranch = createInsertSchema(branches);
-const updateBranch = createUpdateSchema(branches);
-const selectBranch = createSelectSchema(branches);
+const _createBranch = createInsertSchema(branches);
+const _updateBranch = createUpdateSchema(branches);
+const _selectBranch = createSelectSchema(branches);
+
+const createBranch = t.Omit(_createBranch, [
+  ...AUDIT_FIELDS,
+  ...ID_FIELDS,
+  "agentId",
+  "slug",
+]);
+const updateBranch = t.Omit(_updateBranch, [
+  ...AUDIT_FIELDS,
+  ...ID_FIELDS,
+  "agentId",
+  "slug",
+]);
+const selectBranch = t.Omit(_selectBranch, [
+  ...AUDIT_FIELDS,
+  ...ID_FIELDS,
+  "agentId",
+  "slug",
+]);
 
 const branchPathParams = t.Object({
   ...agentPathParam.properties,
@@ -31,15 +50,22 @@ const branchPathParams = t.Object({
 export const branchRoutes = new Elysia({
   name: "branch-routes",
   prefix: "/:agentSlug/branches",
+  // TODO: add sanitization for the body string fields
 })
   .post(
     "/",
+    // TODO: type models to solve Elysia type error
     async ({ params, body, set }) => {
-      const agentResult = await db
+      const [agent] = await db
         .select()
         .from(agents)
         .where(eq(agents.slug, params.agentSlug));
-      const agentId = agentResult[0].id;
+
+      if (!agent) {
+        throw new NotFoundError("Agent not found");
+      }
+
+      const agentId = agent.id;
       const createdBy = "dummy";
       const updatedBy = "dummy";
       const slug = createSlug(body.name, false);
@@ -52,18 +78,23 @@ export const branchRoutes = new Elysia({
     },
     {
       params: agentPathParam,
-      body: t.Omit(createBranch, [...AUDIT_FIELDS, ...ID_FIELDS, "agentId", "slug"]),
+      body: createBranch,
       response: selectBranch,
     },
   )
   .get(
     "/",
     async ({ params, set }) => {
-      const agentResult = await db
+      const [agent] = await db
         .select()
         .from(agents)
         .where(eq(agents.slug, params.agentSlug));
-      const agentId = agentResult[0].id;
+
+      if (!agent) {
+        throw new NotFoundError("Agent not found");
+      }
+
+      const agentId = agent.id;
       const branchList = await db
         .select()
         .from(branches)
@@ -78,11 +109,17 @@ export const branchRoutes = new Elysia({
   )
   .get(
     "/:branchSlug",
+    // TODO: type models to solve Elysia type error
     async ({ params, set }) => {
       const [branch] = await db
         .select()
         .from(branches)
         .where(eq(branches.slug, params.branchSlug));
+
+      if (!branch) {
+        throw new NotFoundError("Branch not found");
+      }
+
       set.status = 200;
       return branch;
     },
@@ -93,6 +130,7 @@ export const branchRoutes = new Elysia({
   )
   .put(
     "/:branchSlug",
+    // TODO: type models to solve Elysia type error
     async ({ body, params, set }) => {
       const updatedBy = "dummy";
       const [branch] = await db
@@ -100,12 +138,17 @@ export const branchRoutes = new Elysia({
         .set({ ...body, updatedBy })
         .where(eq(branches.slug, params.branchSlug))
         .returning();
+
+      if (!branch) {
+        throw new NotFoundError("Branch not found");
+      }
+
       set.status = 200;
       return branch;
     },
     {
       params: branchPathParams,
-      body: t.Omit(updateBranch, [...AUDIT_FIELDS, ...ID_FIELDS, "agentId", "slug"]),
+      body: updateBranch,
       response: selectBranch,
     },
   );

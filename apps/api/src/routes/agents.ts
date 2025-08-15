@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { Elysia, t } from "elysia";
+import { Elysia, t, NotFoundError } from "elysia";
 
 import { db } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
@@ -17,9 +17,21 @@ const { createInsertSchema, createUpdateSchema, createSelectSchema } =
   });
 
 const _insertSchema = createInsertSchema(agents);
-const createAgent = createInsertSchema(agents);
-const updateAgent = createUpdateSchema(agents);
-const selectAgent = createSelectSchema(agents);
+const _createAgent = createInsertSchema(agents);
+const _updateAgent = createUpdateSchema(agents);
+const _selectAgent = createSelectSchema(agents);
+
+const createAgent = t.Omit(_createAgent, [
+  ...AUDIT_FIELDS,
+  ...ID_FIELDS,
+  "slug",
+]);
+const updateAgent = t.Omit(_updateAgent, [
+  ...AUDIT_FIELDS,
+  ...ID_FIELDS,
+  "slug",
+]);
+const selectAgent = t.Omit(_selectAgent, [...AUDIT_FIELDS, ...ID_FIELDS]);
 
 export const agentPathParam = t.Object({
   agentSlug: _insertSchema.properties.slug,
@@ -67,6 +79,11 @@ export const agentRoutes = new Elysia({
         .select()
         .from(agents)
         .where(eq(agents.slug, params.agentSlug));
+
+      if (!agent) {
+        throw new NotFoundError("Agent not found");
+      }
+
       set.status = 200;
       return agent;
     },
@@ -84,6 +101,11 @@ export const agentRoutes = new Elysia({
         .set({ ...body, updatedBy })
         .where(eq(agents.slug, params.agentSlug))
         .returning();
+
+      if (!agent) {
+        throw new NotFoundError("Agent not found");
+      }
+
       set.status = 200;
       return agent;
     },
@@ -98,16 +120,16 @@ export const agentRoutes = new Elysia({
     async ({ params, set }) => {
       const deletedBy = "dummy";
       const deletedAt = new Date();
-      const [agent] = await db
+
+      await db
         .update(agents)
         .set({ deletedBy, deletedAt })
-        .where(eq(agents.slug, params.agentSlug))
-        .returning();
-      set.status = 200;
-      return agent;
+        .where(eq(agents.slug, params.agentSlug));
+
+      set.status = 204;
+      return new Response(undefined, { status: 204 });
     },
     {
       params: agentPathParam,
-      response: selectAgent,
     },
   );
