@@ -199,6 +199,10 @@
     @apply text-xl font-medium p-0 pt-2;
   }
 
+  .mdx p {
+    @apply text-sm;
+  }
+
   /* Code boxes */
   .gray-frame {
     @apply text-sm rounded-md overflow-hidden bg-background border shadow-xs;
