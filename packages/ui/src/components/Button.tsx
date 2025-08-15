@@ -36,6 +36,7 @@ export function Button({
             aria-hidden="true"
           />
         )}
+        {/* FUTURE: Gerundify title, e.g. "Create" -> "Creating...." */}
         {children}
       </span>
     </ShadCNButton>
