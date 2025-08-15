@@ -39,10 +39,10 @@ const provider = createOpenAICompatible({
     baseURL: 'https://cloud.hebo.ai/api',
 });
 
-const response = await generateText(
+const response = await generateText({
     model: provider('YOUR_MODEL_ALIAS'),
-    { prompt: 'Tell me a joke about AI.' }
-);
+    prompt: 'Tell me a joke about AI.'
+});
 console.log(result);
 ```
 
