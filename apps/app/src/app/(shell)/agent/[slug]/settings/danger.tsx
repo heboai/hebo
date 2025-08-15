@@ -26,7 +26,7 @@ import {
 import { Input } from "@hebo/ui/components/Input";
 
 import { api, queryClient, useEdenMutation } from "~/lib/data";
-import { agentStore } from "~/stores/agentStore";
+import { agentStore } from "~/state/shell";
 
 type FormData = {
   agentName: string;

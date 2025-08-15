@@ -5,7 +5,7 @@ import { useSnapshot } from "valtio";
 import { Input } from "@hebo/ui/components/Input";
 
 import { AgentLogo } from "~/components/ui/AgentLogo";
-import { agentStore } from "~/stores/agentStore";
+import { agentStore } from "~/state/shell";
 
 export function GeneralSettings() {
   const agentSnap = useSnapshot(agentStore);

@@ -24,7 +24,7 @@ import {
 import { AgentLogo } from "~/components/ui/AgentLogo";
 import { Logo } from "~/components/ui/Logo";
 import { api, useEdenQuery } from "~/lib/data";
-import { agentStore } from "~/stores/agentStore";
+import { agentStore } from "~/state/shell";
 
 export function AgentSelector() {
   // Query agents list

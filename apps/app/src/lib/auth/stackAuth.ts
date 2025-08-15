@@ -3,7 +3,7 @@
 import { StackClientApp } from "@stackframe/react";
 import { useRouter } from "next/navigation";
 
-import { userStore } from "~/stores/userStore";
+import { userStore } from "~/state/auth";
 
 import type { AuthService } from "./types";
 
