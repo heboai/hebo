@@ -1,11 +1,7 @@
 "use client";
 
-import Link from "next/link";
-
-import { useAuth } from "~/hooks/auth";
-import { isStackAuthEnabled } from "~/lib/env";
-
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import Link from "next/link";
 
 import {
   Avatar,
@@ -26,6 +22,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@hebo/ui/components/Sidebar";
+
+import { useAuth } from "~/hooks/auth";
+import { isStackAuthEnabled } from "~/lib/env";
 
 export function UserButton() {
   const { user } = useAuth();
@@ -53,7 +52,7 @@ export function UserButton() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) m-2 min-w-56 rounded-lg"
+            className="m-2 w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg"
             side="bottom"
             align="end"
             sideOffset={4}

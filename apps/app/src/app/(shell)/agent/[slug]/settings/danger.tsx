@@ -26,7 +26,7 @@ import {
 import { Input } from "@hebo/ui/components/Input";
 
 import { api, queryClient, useEdenMutation } from "~/lib/data";
-import { agentStore } from "~/stores/agentStore";
+import { agentStore } from "~/state/shell";
 
 type FormData = {
   agentName: string;
@@ -51,7 +51,6 @@ export function DangerSettings() {
       api.agents({ agentSlug: agentSnap.activeAgent?.slug ?? "" }).delete(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
-      agentStore.activeAgent = undefined;
       // FUTURE: implement wrapper for router to apply ViewTransitions
       router.replace(`/`);
     },

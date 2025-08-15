@@ -37,7 +37,7 @@ export function Input({
         value={value}
         onChange={onChange}
         className={cn(
-          "bg-background",
+          "bg-background text-sm",
           Icon && "pl-9",
           copy && "pr-8 truncate",
           className,

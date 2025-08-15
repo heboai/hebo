@@ -42,7 +42,7 @@ export default function ShellLayout({
         }
       >
         <Sidebar collapsible="icon">
-          <div className="flex h-full w-full flex-col p-2">
+          <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
             <SidebarHeader>
               <AgentSelector />
             </SidebarHeader>

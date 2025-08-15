@@ -1,4 +1,5 @@
 import { defineConfig } from "drizzle-kit";
+
 import { getDrizzleConfig } from "./utils";
 
 const dbConfig = getDrizzleConfig();

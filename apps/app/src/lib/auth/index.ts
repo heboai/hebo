@@ -1,17 +1,13 @@
-import type { AuthService } from "./types";
 import { isStackAuthEnabled } from "~/lib/env";
 
 // FUTURE: use dynamic imports to enable tree shaking
-import * as stack from "./stackAuth";
-import * as dummy from "./dummyAuth";
+import * as dummy from "./dummy-auth";
+import * as stack from "./stack-auth";
 
-let authService: AuthService;
+import type { AuthService } from "./types";
 
-if (isStackAuthEnabled) {
-  authService = stack.authService;
-} else {
-  console.warn(" ⚠️ No auth configured, using dummy");
-  authService = dummy.authService;
-}
+const authService: AuthService = isStackAuthEnabled
+  ? stack.authService
+  : (console.warn(" ⚠️ No auth configured, using dummy"), dummy.authService);
 
 export { authService };

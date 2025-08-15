@@ -19,7 +19,7 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ['**/_*/**', "**/.next/**"],
+    ignores: ['**/_*/**', '**/dist/**', '**/node_modules/**', "**/.next/**", "**/.turbo/**"],
   },
   {
     settings: {
@@ -129,19 +129,12 @@ const eslintConfig = [
         },
       ],
       'sonarjs/no-commented-code': 'off',
-      'sonarjs/todo-tag': 'off',
+      'sonarjs/todo-tag': 'warn',
       'react-perf/jsx-no-new-object-as-prop': 'warn',
       'react-perf/jsx-no-new-function-as-prop': 'warn',
       'tailwindcss/no-custom-classname': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      // FUTURE: Remove these (turning them to errors), once fixed 
-      'import/named': 'warn',
-      'sonarjs/no-all-duplicated-branches': 'warn',
       'turbo/no-undeclared-env-vars': 'warn',
-      'unicorn/catch-error-name': 'warn',
-      'unicorn/no-null': 'warn',
-      'unicorn/no-useless-undefined': 'warn',
-      'unicorn/prefer-global-this': 'warn',
     },
   },
 ];

@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": ["NODE_ENV", "NEXT_PUBLIC_"],
       "outputs": [
         "dist/**",
         ".next/**",

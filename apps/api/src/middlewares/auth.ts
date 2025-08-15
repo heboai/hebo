@@ -95,7 +95,7 @@ const validateApiKey = async (
 const checkCredentialChoice = (
   authHeader?: string,
   accessToken?: string,
-): AuthError | null => {
+): AuthError | undefined => {
   if (!authHeader && !accessToken) {
     return { status: 401, error: "Unauthorized" };
   }
@@ -107,7 +107,7 @@ const checkCredentialChoice = (
     };
   }
 
-  return null;
+  return undefined;
 };
 
 export const authenticateUser = new Elysia({

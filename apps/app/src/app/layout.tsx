@@ -1,11 +1,13 @@
-import type { Metadata, Viewport } from "next";
-
 import { Geist, Geist_Mono } from "next/font/google";
+
+import { MSWProvider } from "~/components/MSWProvider";
+import { isDevLocal } from "~/lib/env";
+
+import type { Metadata, Viewport } from "next";
 
 import "~/styles/tailwind.css";
 import "~/styles/global.css";
 import "~/styles/stack.css";
-import { MSWProvider } from "~/components/MSWProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,10 +49,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <MSWProvider />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {isDevLocal ? <MSWProvider /> : <></>}
         <div className="min-h-screen">{children}</div>
       </body>
     </html>
