@@ -1,6 +1,7 @@
 "use client";
 
-import escapeStringRegexp from "escape-string-regexp";
+import { ajvResolver } from "@hookform/resolvers/ajv";
+import { Static, Type } from "@sinclair/typebox";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useSnapshot } from "valtio";
@@ -23,24 +24,36 @@ import {
   DialogTitle,
   DialogHeader,
 } from "@hebo/ui/components/Dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@hebo/ui/components/Form";
 import { Input } from "@hebo/ui/components/Input";
 
 import { api, queryClient, useEdenMutation } from "~/lib/data";
 import { agentStore } from "~/state/shell";
 
-type FormData = {
-  agentName: string;
-};
+import type { JSONSchemaType } from "ajv";
+
+const AGENT_NAME = agentStore.activeAgent
+  ? agentStore.activeAgent.name
+  : ("" as const);
+
+const FormSchema = Type.Object({
+  agentName: Type.Literal(AGENT_NAME, {
+    errorMessage: "You must type your EXACT agent name",
+  }),
+});
+
+type FormData = Static<typeof FormSchema>;
 
 export function DangerSettings() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    defaultValues: {
-      agentName: "",
-    },
+  const form = useForm<FormData>({
+    resolver: ajvResolver(FormSchema as unknown as JSONSchemaType<FormData>),
   });
 
   const agentSnap = useSnapshot(agentStore);
@@ -59,6 +72,7 @@ export function DangerSettings() {
   return (
     <>
       <h2>Danger Zone</h2>
+
       {/* FUTURE: generalize px / py for Cards */}
       <Card className="border-destructive border-dashed py-5">
         <CardHeader className="px-5">
@@ -73,59 +87,47 @@ export function DangerSettings() {
               </DialogTrigger>
               <DialogContent className="bg-sidebar sm:max-w-md">
                 {/* FUTURE: improve spacing in dialog */}
-                <form
-                  onSubmit={handleSubmit(() => mutate())}
-                  aria-busy={isPending}
-                >
-                  <DialogHeader>
-                    <DialogTitle>Delete Agent</DialogTitle>
-                  </DialogHeader>
-                  <Alert variant="destructive">
-                    <AlertTitle>
-                      <strong>Warning:</strong> This action is not reversible.
-                      Be certain.
-                    </AlertTitle>
-                  </Alert>
-                  <div>
-                    To confirm, type &quot;<b>{agentSnap.activeAgent?.name}</b>
-                    &quot; in the box below:
-                  </div>
-                  <Input
-                    className="border-destructive"
-                    disabled={isPending}
-                    {...register("agentName", {
-                      pattern: {
-                        // eslint-disable-next-line security/detect-non-literal-regexp -- safe: escaped with escape-string-regexp
-                        value: new RegExp(
-                          `^${escapeStringRegexp(agentSnap.activeAgent?.name || "")}$`,
-                        ),
-                        message: "Please enter the agent name",
-                      },
-                      required: "Please enter the agent name",
-                    })}
-                    aria-describedby={
-                      errors.agentName ? "agent-name-error" : undefined
-                    }
-                  />
-                  {(errors.agentName || error) && (
-                    <div
-                      id="agent-name-error"
-                      className="text-destructive"
-                      role="alert"
-                    >
-                      {errors.agentName?.message}
-                      {error?.message}
-                    </div>
-                  )}
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <Button isLoading={isPending} type="submit">
-                      Delete Agent
-                    </Button>
-                  </DialogFooter>
-                </form>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(() => mutate())}>
+                    <DialogHeader>
+                      <DialogTitle>Delete Agent</DialogTitle>
+                    </DialogHeader>
+                    <Alert variant="destructive">
+                      <AlertTitle>
+                        <strong>Warning:</strong> This action is not reversible.
+                        Be certain.
+                      </AlertTitle>
+                    </Alert>
+
+                    <FormField
+                      control={form.control}
+                      name="agentName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            To confirm, type{" "}
+                            <strong>{agentSnap.activeAgent?.name}</strong> in
+                            the box below:
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage>
+                            {error && <span>{error?.message}</span>}
+                          </FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                      <Button isLoading={isPending} type="submit">
+                        Delete Agent
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
               </DialogContent>
             </Dialog>
           </CardAction>
