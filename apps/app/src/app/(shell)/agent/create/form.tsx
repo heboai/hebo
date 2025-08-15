@@ -34,6 +34,8 @@ import {
 
 import { api, queryClient, useEdenMutation } from "~/lib/data";
 
+import type { JSONSchemaType } from "ajv";
+
 const FormSchema = Type.Object({
   agentName: Type.String({
     minLength: 1,
@@ -49,7 +51,7 @@ type FormData = Static<typeof FormSchema>;
 
 export function AgentForm() {
   const form = useForm<FormData>({
-    resolver: ajvResolver(FormSchema as any),
+    resolver: ajvResolver(FormSchema as unknown as JSONSchemaType<FormData>),
     defaultValues: Value.Create(FormSchema) as FormData,
   });
 
