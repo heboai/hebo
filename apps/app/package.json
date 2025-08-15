@@ -6,7 +6,7 @@
     "*.css"
   ],
   "scripts": {
-    "build": "next build",
+    "build": "",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",

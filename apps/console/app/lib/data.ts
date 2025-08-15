@@ -3,7 +3,7 @@ import {
   useMutation,
   useQuery,
   QueryClient,
-  QueryKey,
+  type QueryKey,
   type UseMutationOptions,
   type UseMutationResult,
   type UseQueryOptions,

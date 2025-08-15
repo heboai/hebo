@@ -5,4 +5,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  optimizeDeps: {
+    include: ["@hebo/ui", "@hebo/db", "@hebo/shared-data"],
+  },
+  ssr: {
+    noExternal: ["@hebo/ui", "@hebo/db", "@hebo/shared-data"],
+  },
 });

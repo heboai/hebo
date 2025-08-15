@@ -1,7 +1,4 @@
-"use client";
-
 import { StackClientApp } from "@stackframe/react";
-import { useRouter } from "next/navigation";
 
 import { userStore } from "~/state/auth";
 
@@ -15,7 +12,7 @@ const getStackApp = (): StackClientApp<true, string> => {
       projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
       publishableClientKey:
         process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
-      tokenStore: "cookie", // Client-side cookies
+      tokenStore: "cookie",
       urls: {
         signIn: "/signin",
         signUp: "/signin",
@@ -23,10 +20,7 @@ const getStackApp = (): StackClientApp<true, string> => {
         home: "/",
       },
       redirectMethod: {
-        // Custom useNavigate function for Next.js App Router
-        useNavigate: () => {
-          return useRouter().push;
-        },
+        useNavigate,
       },
     });
   }

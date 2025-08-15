@@ -1,7 +1,5 @@
-"use client";
-
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
-import Link from "next/link";
+import { Link } from "react-router";
 
 import {
   Avatar,
@@ -74,7 +72,7 @@ export function UserButton() {
             <DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/settings">
+                <Link to="/settings">
                   <Settings />
                   Settings
                 </Link>
@@ -83,7 +81,7 @@ export function UserButton() {
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/handler/sign-out">
+                    <Link to="/handler/sign-out">
                       <LogOut />
                       Log out
                     </Link>

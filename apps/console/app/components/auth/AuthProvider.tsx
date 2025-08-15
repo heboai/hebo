@@ -1,25 +1,20 @@
-"use client";
-
-import { usePathname } from "next/navigation";
 import { lazy, useLayoutEffect, useState } from "react";
-
-const StackHandler = lazy(() =>
-  import("@stackframe/react").then((mod) => ({ default: mod.StackHandler })),
-);
-const StackProvider = lazy(() =>
-  import("@stackframe/react").then((mod) => ({ default: mod.StackProvider })),
-);
-const StackTheme = lazy(() =>
-  import("@stackframe/react").then((mod) => ({ default: mod.StackTheme })),
-);
 
 import { getStackApp } from "~/lib/auth/stack-auth";
 import { isStackAuthEnabled } from "~/lib/env";
 
-export function AuthHandler() {
-  const pathname = usePathname();
+const StackProvider = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackProvider })),
+);
 
-  // Prevent rendering during redirect and static export
+const StackTheme = lazy(() =>
+  import("@stackframe/react").then((mod) => ({ default: mod.StackTheme })),
+);
+
+export function AuthProvider({
+  children,
+}: Readonly<{ children?: React.ReactNode }>) {
+  // Prevent rendering during static export
   const [isClient, setIsClient] = useState(false);
   useLayoutEffect(() => {
     if (globalThis.window !== undefined) {
@@ -28,16 +23,14 @@ export function AuthHandler() {
   }, []);
   if (!isClient) return <></>;
 
-  if (isStackAuthEnabled && isClient) {
+  if (isStackAuthEnabled) {
     const stackApp = getStackApp();
     return (
       <StackProvider app={stackApp}>
-        <StackTheme>
-          <StackHandler app={stackApp} location={pathname} fullPage />
-        </StackTheme>
+        <StackTheme>{children}</StackTheme>
       </StackProvider>
     );
   }
 
-  return <></>;
+  return <>{children}</>;
 }

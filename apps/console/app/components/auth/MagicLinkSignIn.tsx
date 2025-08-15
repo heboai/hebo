@@ -1,7 +1,5 @@
-"use client";
-
-import Link from "next/link";
 import { lazy } from "react";
+import { Link } from "react-router";
 
 import { Button } from "@hebo/ui/components/Button";
 
@@ -16,7 +14,7 @@ export function MagicLinkSignIn() {
     <StackMagicLinkSignIn />
   ) : (
     <Button asChild variant="outline" className="w-full">
-      <Link href="/">Dummy MagicLink SignIn</Link>
+      <Link to="/">Dummy MagicLink SignIn</Link>
     </Button>
   );
 }

@@ -1,5 +1,3 @@
-"use client";
-
 import { useAuth } from "~/hooks/auth";
 
 export function UserName() {

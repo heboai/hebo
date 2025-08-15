@@ -1,18 +1,20 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"],
+      "@hebo/ui/*": ["../../packages/ui/src/*"]
+    },
+    "rootDirs": [".", "./.react-router/types"],
+    "types": ["node", "vite/client"],
+    "verbatimModuleSyntax": true
+  },
   "include": [
     "**/*",
     "**/.server/**/*",
     "**/.client/**/*",
-    ".react-router/types/**/*"
-  ],
-  "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["node", "vite/client"],
-    "rootDirs": [".", "./.react-router/types"],
-    "paths": {
-      "~/*": ["./app/*"]
-    },
-    "verbatimModuleSyntax": true
-  }
+    ".react-router/types/**/*",
+    "../../packages/*/src/**/*"
+  ]
 }

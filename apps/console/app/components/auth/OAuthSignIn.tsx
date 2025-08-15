@@ -1,7 +1,5 @@
-"use client";
-
-import Link from "next/link";
 import { lazy } from "react";
+import { Link } from "react-router";
 
 import { Button } from "@hebo/ui/components/Button";
 
@@ -18,7 +16,7 @@ export function OAuthSignIn() {
     <StackOAuthSignIn type="sign-in" />
   ) : (
     <Button asChild variant="outline" className="w-full">
-      <Link href="/" aria-label="Sign in with dummy OAuth provider">
+      <Link to="/" aria-label="Sign in with dummy OAuth provider">
         Dummy OAuth SignIn
       </Link>
     </Button>

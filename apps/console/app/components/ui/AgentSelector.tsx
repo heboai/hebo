@@ -1,9 +1,6 @@
-"use client";
-
 import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
-import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams, useLocation } from "react-router";
 import { useSnapshot } from "valtio";
 
 import { Button } from "@hebo/ui/components/Button";
@@ -35,8 +32,8 @@ export function AgentSelector() {
   });
 
   // Redirect to /create-agent if no agent exists yet
-  const pathname = usePathname();
-  const router = useRouter();
+  const location = useLocation();
+  const navigate = useNavigate();
   const params = useParams<{ slug?: string }>();
 
   useEffect(() => {
@@ -47,8 +44,9 @@ export function AgentSelector() {
     const target =
       agents.length > 0 ? `/agent/${preferredSlug}` : "/agent/create";
 
-    if (pathname === "/" && pathname !== target) router.replace(target);
-  }, [fetchStatus, agents, pathname, params.slug, router]);
+    if (location.pathname === "/" && location.pathname !== target)
+      navigate(target, { replace: true });
+  }, [fetchStatus, agents, location, params.slug, navigate]);
 
   // Update active agent in agentStore
   const agentSnap = useSnapshot(agentStore);
@@ -105,9 +103,7 @@ export function AgentSelector() {
                     onClick={() => setOpen(false)}
                     aria-label="Agent Settings"
                   >
-                    <Link
-                      href={`/agent/${agentSnap.activeAgent?.slug}/settings`}
-                    >
+                    <Link to={`/agent/${agentSnap.activeAgent?.slug}/settings`}>
                       <Settings
                         size={16}
                         className="ml-auto "
@@ -121,7 +117,7 @@ export function AgentSelector() {
             <DropdownMenuSeparator />
             {agents.map((agent) => (
               <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
-                <Link href={`/agent/${agent.slug}`}>
+                <Link to={`/agent/${agent.slug}`}>
                   {agent.name}
                   {agent.slug === agentSnap.activeAgent?.slug && (
                     <Check size={12} className="ml-auto" aria-hidden="true" />
@@ -131,7 +127,7 @@ export function AgentSelector() {
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="gap-2 p-2">
-              <Link href="/agent/create">
+              <Link to="/agent/create">
                 <Plus className="size-4" aria-hidden="true" />
                 <div className="text-muted-foreground font-medium">
                   Create agent
@@ -144,7 +140,7 @@ export function AgentSelector() {
     </SidebarMenu>
   ) : (
     <div className="p-2 transition-[padding] group-data-[state=collapsed]:p-0">
-      <Link href="/" aria-label="Home">
+      <Link to="/" aria-label="Home">
         <Logo />
       </Link>
     </div>

@@ -1,5 +1,3 @@
-"use client";
-
 import { KeyRound, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
