@@ -13,7 +13,7 @@ const StackTheme = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.StackTheme })),
 );
 
-import { getStackApp } from "~/lib/auth/stackAuth";
+import { getStackApp } from "~/lib/auth/stack-auth";
 import { isStackAuthEnabled } from "~/lib/env";
 
 export function AuthHandler() {

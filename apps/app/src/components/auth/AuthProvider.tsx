@@ -2,7 +2,7 @@
 
 import { lazy, useLayoutEffect, useState } from "react";
 
-import { getStackApp } from "~/lib/auth/stackAuth";
+import { getStackApp } from "~/lib/auth/stack-auth";
 import { isStackAuthEnabled } from "~/lib/env";
 
 const StackProvider = lazy(() =>
