@@ -1,4 +1,4 @@
-import { BookOpen, ExternalLink } from "lucide-react";
+import { BookOpen, ExternalLink, SquareChevronRight } from "lucide-react";
 import Link from "next/link";
 import { unstable_ViewTransition as ViewTransition } from "react";
 
@@ -75,17 +75,39 @@ export default function ShellLayout({
           </div>
         </Sidebar>
 
-        <Sidebar side="right">
-          <Chat />
-        </Sidebar>
-
         <main className="flex w-full flex-1 flex-col gap-4 p-4">
           <SidebarTrigger className="fixed -m-1.5" />
-
           <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
             <ViewTransition default="fade-in">{children}</ViewTransition>
           </div>
         </main>
+      </SidebarProvider>
+
+      {/* RIGHT SIDEBAR / PLAYGROUND */}
+      <SidebarProvider
+        defaultOpen={defaultOpen}
+        style={
+          {
+            "--sidebar-width": "24rem", // Tailwind w-96
+            "--sidebar-width-mobile": "24rem",
+            "--sidebar-width-icon": "0rem", // No icon state, fully collapse
+          } as React.CSSProperties
+        }
+      >
+        {/* Floating trigger */}
+        <SidebarTrigger
+          icon={<SquareChevronRight size={24} color="black" />}
+          text="Playground"
+          className="fixed top-4 right-12 z-50 p-2"
+        />
+
+        <Sidebar side="right" collapsible="offcanvas">
+          <SidebarContent>
+            <Chat />
+          </SidebarContent>
+
+          <SidebarRail />
+        </Sidebar>
       </SidebarProvider>
     </div>
   );
