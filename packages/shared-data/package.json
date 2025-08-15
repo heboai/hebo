@@ -1,0 +1,10 @@
+{
+  "name": "@hebo/shared-data",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./supported-models.json": "./supported-models.json",
+    "./models.schema.json": "./models.schema.json"
+  }
+}

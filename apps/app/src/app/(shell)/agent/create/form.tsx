@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 
-import supportedModels from "@hebo/db/schema/json/supported-models.json";
+import supportedModels from "@hebo/shared-data/supported-models.json";
 import { Button } from "@hebo/ui/components/Button";
 import {
   Card,
