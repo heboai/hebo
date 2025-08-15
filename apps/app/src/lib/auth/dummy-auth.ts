@@ -4,6 +4,7 @@ import type { AuthService } from "./types";
 
 export const authService = {
   ensureSignedIn() {
+    if (userStore.user) return;
     userStore.user = {
       name: "Dummy User",
       email: "dummy@user.com",

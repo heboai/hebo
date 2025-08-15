@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { MSWProvider } from "~/components/MSWProvider";
+import { isDevLocal } from "~/lib/env";
 
 import type { Metadata, Viewport } from "next";
 
@@ -51,7 +52,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MSWProvider />
+        {isDevLocal ? <MSWProvider /> : <></>}
         <div className="min-h-screen">{children}</div>
       </body>
     </html>

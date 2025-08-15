@@ -37,7 +37,7 @@ export function AgentSelector() {
   // Redirect to /create-agent if no agent exists yet
   const pathname = usePathname();
   const router = useRouter();
-  const params = useParams<{ slug: string }>();
+  const params = useParams<{ slug?: string }>();
 
   useEffect(() => {
     if (fetchStatus !== "idle") return;
@@ -47,20 +47,15 @@ export function AgentSelector() {
     const target =
       agents.length > 0 ? `/agent/${preferredSlug}` : "/agent/create";
 
-    if (pathname !== target && pathname === "/") {
-      router.replace(target);
-    }
+    if (pathname === "/" && pathname !== target) router.replace(target);
   }, [fetchStatus, agents, pathname, params.slug, router]);
 
   // Update active agent in agentStore
   const agentSnap = useSnapshot(agentStore);
   useEffect(() => {
-    if (params.slug) {
-      const agent = agents.find((a) => a.slug === params.slug);
-      if (agent) {
-        agentStore.activeAgent = { slug: agent.slug, name: agent.name };
-      }
-    }
+    const slug = typeof params.slug === "string" ? params.slug : undefined;
+    const agent = slug ? agents.find((a) => a.slug === params.slug) : undefined;
+    if (agent) agentStore.activeAgent = { slug: agent.slug, name: agent.name };
   }, [params.slug, agents]);
 
   // Dropdown open or closed
@@ -103,20 +98,24 @@ export function AgentSelector() {
                     {agentSnap.activeAgent?.name}
                   </span>
                 </div>
-                <Button
-                  variant="ghost"
-                  asChild
-                  onClick={() => setOpen(false)}
-                  aria-label="Agent Settings"
-                >
-                  <Link href={`/agent/${agentSnap.activeAgent?.slug}/settings`}>
-                    <Settings
-                      size={16}
-                      className="ml-auto "
-                      aria-hidden="true"
-                    />
-                  </Link>
-                </Button>
+                {agentSnap.activeAgent && (
+                  <Button
+                    variant="ghost"
+                    asChild
+                    onClick={() => setOpen(false)}
+                    aria-label="Agent Settings"
+                  >
+                    <Link
+                      href={`/agent/${agentSnap.activeAgent?.slug}/settings`}
+                    >
+                      <Settings
+                        size={16}
+                        className="ml-auto "
+                        aria-hidden="true"
+                      />
+                    </Link>
+                  </Button>
+                )}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
