@@ -13,13 +13,10 @@ const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
   typeboxInstance: t,
 });
 
-const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS, "agentId"] as const;
-
 const _insertSchema = createInsertSchema(branches);
-const createBranch = createInsertSchema(branches, OMIT_FIELDS);
-const updateBranch = createUpdateSchema(branches, OMIT_FIELDS);
+const createBranch = createInsertSchema(branches);
+const updateBranch = createUpdateSchema(branches);
 
-// Ensure the path parameter types match the corresponding database field type
 const branchPathParams = t.Object({
   ...agentPathParam.properties,
   branchSlug: _insertSchema.properties.slug,
@@ -37,7 +34,7 @@ export const branchRoutes = new Elysia({
     },
     {
       params: agentPathParam,
-      body: createBranch,
+      body: t.Omit(createBranch, [...AUDIT_FIELDS, ...ID_FIELDS, "agentSlug"]),
       response: { 501: t.String() },
     },
   )
@@ -71,7 +68,7 @@ export const branchRoutes = new Elysia({
     },
     {
       params: branchPathParams,
-      body: updateBranch,
+      body: t.Omit(updateBranch, [...AUDIT_FIELDS, ...ID_FIELDS, "agentSlug"]),
       response: { 501: t.String() },
     },
   );

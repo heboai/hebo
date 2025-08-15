@@ -12,13 +12,10 @@ const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
   typeboxInstance: t,
 });
 
-const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS] as const;
-
 const _insertSchema = createInsertSchema(agents);
-const createAgent = createInsertSchema(agents, OMIT_FIELDS);
-const updateAgent = createUpdateSchema(agents, OMIT_FIELDS);
+const createAgent = createInsertSchema(agents);
+const updateAgent = createUpdateSchema(agents);
 
-// Ensure the path parameter type matches the corresponding database field type
 export const agentPathParam = t.Object({
   agentSlug: _insertSchema.properties.slug,
 });
@@ -34,7 +31,7 @@ export const agentRoutes = new Elysia({
       return "Not implemented" as const;
     },
     {
-      body: createAgent,
+      body: t.Omit(createAgent, [...AUDIT_FIELDS, ...ID_FIELDS]),
       response: { 501: t.String() },
     },
   )
@@ -67,7 +64,7 @@ export const agentRoutes = new Elysia({
     },
     {
       params: agentPathParam,
-      body: updateAgent,
+      body: t.Omit(updateAgent, [...AUDIT_FIELDS, ...ID_FIELDS]),
       response: { 501: t.String() },
     },
   )
