@@ -19,7 +19,7 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ['**/_*/**', "**/.next/**", '**/dist/**'],
+    ignores: ['**/_*/**', , '**/dist/**', '**/node_modules/**', "**/.next/**", "**/.turbo/**"],
   },
   {
     settings: {
