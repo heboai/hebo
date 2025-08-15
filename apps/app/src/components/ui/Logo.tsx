@@ -4,7 +4,7 @@ import { cn } from "@hebo/ui/lib/utils";
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center gap-2 overflow-hidden", className)}>
+    <div className={cn("flex gap-2", className)}>
       <Image
         src="/hebo-icon.png"
         alt="Hebo AI Logo"
@@ -12,7 +12,7 @@ export function Logo({ className }: { className?: string }) {
         height={32}
         priority
       />
-      <span className="text-2xl font-semibold">hebo.ai</span>
+      <span className="truncate text-2xl font-semibold">hebo.ai</span>
     </div>
   );
 }

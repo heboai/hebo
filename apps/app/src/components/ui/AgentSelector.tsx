@@ -143,8 +143,10 @@ export function AgentSelector() {
       </SidebarMenuItem>
     </SidebarMenu>
   ) : (
-    <Link href="/" aria-label="Home">
-      <Logo />
-    </Link>
+    <div className="p-2 transition-[padding] group-data-[state=collapsed]:p-0">
+      <Link href="/" aria-label="Home">
+        <Logo />
+      </Link>
+    </div>
   );
 }
