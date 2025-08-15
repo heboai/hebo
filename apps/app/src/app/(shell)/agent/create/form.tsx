@@ -86,7 +86,7 @@ export function AgentForm() {
               control={form.control}
               name="agentName"
               render={({ field }) => (
-                <FormItem className="sm:grid-cols-[auto_1fr]">
+                <FormItem className="sm:grid sm:grid-cols-[auto_1fr]">
                   <FormLabel className="sm:w-32">Agent Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Set an agent name" {...field} />
@@ -101,7 +101,7 @@ export function AgentForm() {
               control={form.control}
               name="defaultModel"
               render={({ field }) => (
-                <FormItem className="sm:grid-cols-[auto_1fr]">
+                <FormItem className="sm:grid sm:grid-cols-[auto_1fr]">
                   <FormLabel className="sm:w-32">Default Model</FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
