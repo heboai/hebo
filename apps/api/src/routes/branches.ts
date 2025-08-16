@@ -19,7 +19,6 @@ const { createInsertSchema, createUpdateSchema, createSelectSchema } =
   });
 
 // TODO: the following looks excessively verbose, can we simplify it?
-const _insertSchema = createInsertSchema(branches);
 const _createBranch = createInsertSchema(branches);
 const _updateBranch = createUpdateSchema(branches);
 const _selectBranch = createSelectSchema(branches);
@@ -45,8 +44,21 @@ const selectBranch = t.Omit(_selectBranch, [
 
 const branchPathParams = t.Object({
   ...agentPathParam.properties,
-  branchSlug: _insertSchema.properties.slug,
+  branchSlug: _createBranch.properties.slug,
 });
+
+const verifyAgent = async (agentSlug: string) => {
+  const [agent] = await db
+    .select()
+    .from(agents)
+    .where(eq(agents.slug, agentSlug));
+
+  if (!agent) {
+    throw new NotFoundError("Agent not found");
+  }
+
+  return agent;
+};
 
 export const branchRoutes = new Elysia({
   name: "branch-routes",
@@ -57,15 +69,7 @@ export const branchRoutes = new Elysia({
     "/",
     // TODO: type models to solve Elysia type error
     async ({ params, body, set }) => {
-      // TODO: remove agent verification logic duplication
-      const [agent] = await db
-        .select()
-        .from(agents)
-        .where(eq(agents.slug, params.agentSlug));
-
-      if (!agent) {
-        throw new NotFoundError("Agent not found");
-      }
+      const agent = await verifyAgent(params.agentSlug);
 
       const agentId = agent.id;
       // TODO: replace with actual user id coming from auth
@@ -88,15 +92,7 @@ export const branchRoutes = new Elysia({
   .get(
     "/",
     async ({ params, set }) => {
-      // TODO: remove agent verification logic duplication
-      const [agent] = await db
-        .select()
-        .from(agents)
-        .where(eq(agents.slug, params.agentSlug));
-
-      if (!agent) {
-        throw new NotFoundError("Agent not found");
-      }
+      const agent = await verifyAgent(params.agentSlug);
 
       const agentId = agent.id;
       const branchList = await db
