@@ -64,7 +64,6 @@ export function DangerSettings() {
       api.agents({ agentSlug: agentSnap.activeAgent?.slug ?? "" }).delete(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
-      // FUTURE: implement wrapper for router to apply ViewTransitions
       navigate("/", { replace: true, viewTransition: true });
     },
   });
