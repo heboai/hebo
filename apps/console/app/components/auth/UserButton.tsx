@@ -72,7 +72,7 @@ export function UserButton() {
             <DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/user/profile">
+                <Link to="/user/profile" viewTransition>
                   <Settings />
                   Manage Profile
                 </Link>
@@ -81,7 +81,7 @@ export function UserButton() {
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/handler/sign-out">
+                    <Link to="/handler/sign-out" viewTransition>
                       <LogOut />
                       Log out
                     </Link>

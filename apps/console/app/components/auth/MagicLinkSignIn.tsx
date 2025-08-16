@@ -14,7 +14,9 @@ export function MagicLinkSignIn() {
     <StackMagicLinkSignIn />
   ) : (
     <Button asChild variant="outline" className="w-full">
-      <Link to="/">Dummy MagicLink SignIn</Link>
+      <Link to="/" viewTransition>
+        Dummy MagicLink SignIn
+      </Link>
     </Button>
   );
 }

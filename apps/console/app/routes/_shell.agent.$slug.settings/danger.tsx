@@ -65,7 +65,7 @@ export function DangerSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
       // FUTURE: implement wrapper for router to apply ViewTransitions
-      navigate("/", { replace: true });
+      navigate("/", { replace: true, viewTransition: true });
     },
   });
 

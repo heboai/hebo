@@ -1,13 +1,5 @@
-/* Default View Transition */
-::view-transition-group(.fade-in) {
-  animation: 300ms ease-in fade-in;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Global cross-fade duration */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 300ms;
 }

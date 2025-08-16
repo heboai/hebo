@@ -66,7 +66,7 @@ export function AgentForm() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
       // FUTURE: implement wrapper for router to apply ViewTransitions
-      navigate(`/agent/${(data as any).slug}`, { replace: true });
+      navigate(`/agent/${(data as any).slug}`, { replace: true, viewTransition: true });
     },
   });
 

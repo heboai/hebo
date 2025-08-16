@@ -16,7 +16,11 @@ export function OAuthSignIn() {
     <StackOAuthSignIn type="sign-in" />
   ) : (
     <Button asChild variant="outline" className="w-full">
-      <Link to="/" aria-label="Sign in with dummy OAuth provider">
+      <Link
+        to="/"
+        viewTransition
+        aria-label="Sign in with dummy OAuth provider"
+      >
         Dummy OAuth SignIn
       </Link>
     </Button>

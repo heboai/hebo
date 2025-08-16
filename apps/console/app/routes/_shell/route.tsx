@@ -1,7 +1,4 @@
 import { BookOpen, ExternalLink } from "lucide-react";
-// TODO: bring back the view transition
-// eslint-disable-next-line import/named
-//import { unstable_ViewTransition as ViewTransition } from "react";
 
 import { Outlet } from "react-router";
 
@@ -75,9 +72,7 @@ export default function ShellLayout() {
           <SidebarTrigger className="fixed -m-1.5" />
 
           <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
-            {/*<ViewTransition default="fade-in">*/}
-              <Outlet />
-            {/*</ViewTransition>*/}
+            <Outlet />
           </div>
         </main>
       </SidebarProvider>

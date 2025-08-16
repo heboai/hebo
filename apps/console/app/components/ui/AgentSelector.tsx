@@ -45,7 +45,7 @@ export function AgentSelector() {
       agents.length > 0 ? `/agent/${preferredSlug}` : "/agent/create";
 
     if (location.pathname === "/" && location.pathname !== target)
-      navigate(target, { replace: true });
+      navigate(target, { replace: true, viewTransition: true });
   }, [fetchStatus, agents, location, params.slug, navigate]);
 
   // Update active agent in agentStore
@@ -103,7 +103,10 @@ export function AgentSelector() {
                     onClick={() => setOpen(false)}
                     aria-label="Agent Settings"
                   >
-                    <Link to={`/agent/${agentSnap.activeAgent?.slug}/settings`}>
+                    <Link
+                      to={`/agent/${agentSnap.activeAgent?.slug}/settings`}
+                      viewTransition
+                    >
                       <Settings
                         size={16}
                         className="ml-auto "
@@ -117,7 +120,7 @@ export function AgentSelector() {
             <DropdownMenuSeparator />
             {agents.map((agent) => (
               <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
-                <Link to={`/agent/${agent.slug}`}>
+                <Link to={`/agent/${agent.slug}`} viewTransition>
                   {agent.name}
                   {agent.slug === agentSnap.activeAgent?.slug && (
                     <Check size={12} className="ml-auto" aria-hidden="true" />
@@ -127,7 +130,7 @@ export function AgentSelector() {
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="gap-2 p-2">
-              <Link to="/agent/create">
+              <Link to="/agent/create" viewTransition>
                 <Plus className="size-4" aria-hidden="true" />
                 <div className="text-muted-foreground font-medium">
                   Create agent
@@ -140,7 +143,7 @@ export function AgentSelector() {
     </SidebarMenu>
   ) : (
     <div className="p-2 transition-[padding] group-data-[state=collapsed]:p-0">
-      <Link to="/" aria-label="Home">
+      <Link to="/" aria-label="Home" viewTransition>
         <Logo />
       </Link>
     </div>
