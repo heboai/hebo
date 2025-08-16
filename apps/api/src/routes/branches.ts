@@ -91,6 +91,7 @@ export const branchRoutes = new Elysia({
   )
   .get(
     "/",
+    // TODO: type models to solve Elysia type error
     async ({ params, set }) => {
       const agent = await verifyAgent(params.agentSlug);
 
@@ -111,10 +112,18 @@ export const branchRoutes = new Elysia({
     "/:branchSlug",
     // TODO: type models to solve Elysia type error
     async ({ params, set }) => {
+      const agent = await verifyAgent(params.agentSlug);
+
+      const agentId = agent.id;
       const [branch] = await db
         .select()
         .from(branches)
-        .where(eq(branches.slug, params.branchSlug));
+        .where(
+          and(
+            eq(branches.slug, params.branchSlug),
+            eq(branches.agentId, agentId),
+          ),
+        );
 
       if (!branch) {
         throw new NotFoundError("Branch not found");
@@ -132,12 +141,20 @@ export const branchRoutes = new Elysia({
     "/:branchSlug",
     // TODO: type models to solve Elysia type error
     async ({ body, params, set }) => {
+      const agent = await verifyAgent(params.agentSlug);
+
+      const agentId = agent.id;
       // TODO: replace with actual user id coming from auth
       const updatedBy = "dummy";
       const [branch] = await db
         .update(branches)
         .set({ ...body, updatedBy })
-        .where(eq(branches.slug, params.branchSlug))
+        .where(
+          and(
+            eq(branches.slug, params.branchSlug),
+            eq(branches.agentId, agentId),
+          ),
+        )
         .returning();
 
       if (!branch) {
