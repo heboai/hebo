@@ -1,81 +1,148 @@
-import { Elysia, t } from "elysia";
+import { and, asc, eq, isNull } from "drizzle-orm";
+import { Elysia, t, NotFoundError } from "elysia";
 
+import { db } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
 
+import { createSlug } from "~/utils/create-slug";
 import {
   createSchemaFactory,
   AUDIT_FIELDS,
   ID_FIELDS,
 } from "~/utils/schema-factory";
 
-const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
-  typeboxInstance: t,
-});
+const { createInsertSchema, createUpdateSchema, createSelectSchema } =
+  createSchemaFactory({
+    typeboxInstance: t,
+  });
 
-const _insertSchema = createInsertSchema(agents);
-const createAgent = createInsertSchema(agents);
-const updateAgent = createUpdateSchema(agents);
+const _createAgent = createInsertSchema(agents);
+const _updateAgent = createUpdateSchema(agents);
+const _selectAgent = createSelectSchema(agents);
+
+const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS] as const;
+
+const createAgent = t.Omit(_createAgent, [...OMIT_FIELDS, "slug"]);
+const updateAgent = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
+const selectAgent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
 
 export const agentPathParam = t.Object({
-  agentSlug: _insertSchema.properties.slug,
+  agentSlug: _createAgent.properties.slug,
 });
 
 export const agentRoutes = new Elysia({
   name: "agent-routes",
   prefix: "/agents",
 })
+  // TODO: update method to accept and return what expected by the client
   .post(
     "/",
-    async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+    async ({ body, set }) => {
+      // TODO: replace with actual user id coming from auth
+      const [createdBy, updatedBy] = ["dummy", "dummy"];
+      const slug = createSlug(body.name, true);
+
+      const [agent] = await db
+        .insert(agents)
+        .values({ ...body, slug, createdBy, updatedBy })
+        .onConflictDoNothing()
+        .returning();
+
+      if (!agent) {
+        set.status = 409;
+        throw new Error("Agent with this name already exists");
+      }
+
+      set.status = 201;
+      return agent;
     },
     {
-      body: t.Omit(createAgent, [...AUDIT_FIELDS, ...ID_FIELDS]),
-      response: { 501: t.String() },
+      body: createAgent,
+      response: { 201: selectAgent },
     },
   )
+  // TODO: include the 'expand' option
   .get(
     "/",
     async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+      const agentList = await db
+        .select()
+        .from(agents)
+        .where(isNull(agents.deletedAt))
+        .orderBy(asc(agents.createdAt));
+
+      set.status = 200;
+      return agentList;
     },
     {
-      response: { 501: t.String() },
+      response: t.Array(selectAgent),
     },
   )
+  // TODO: include the 'expand' option
   .get(
     "/:agentSlug",
-    async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+    async ({ params, set }) => {
+      const [agent] = await db
+        .select()
+        .from(agents)
+        .where(
+          and(eq(agents.slug, params.agentSlug), isNull(agents.deletedAt)),
+        );
+
+      if (!agent) {
+        throw new NotFoundError("Agent not found");
+      }
+
+      set.status = 200;
+      return agent;
     },
     {
       params: agentPathParam,
-      response: { 501: t.String() },
+      response: selectAgent,
     },
   )
   .put(
     "/:agentSlug",
-    async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+    async ({ body, params, set }) => {
+      // TODO: replace with actual user id coming from auth
+      const updatedBy = "dummy";
+      const [agent] = await db
+        .update(agents)
+        .set({ ...body, updatedBy })
+        .where(and(eq(agents.slug, params.agentSlug), isNull(agents.deletedAt)))
+        .returning();
+
+      if (!agent) {
+        throw new NotFoundError("Agent not found");
+      }
+
+      set.status = 200;
+      return agent;
     },
     {
       params: agentPathParam,
-      body: t.Omit(updateAgent, [...AUDIT_FIELDS, ...ID_FIELDS]),
-      response: { 501: t.String() },
+      body: updateAgent,
+      response: selectAgent,
     },
   )
   .delete(
     "/:agentSlug",
-    async ({ set }) => {
-      set.status = 501;
-      return "Not implemented" as const;
+    async ({ params, set }) => {
+      // TODO: replace with actual user id coming from auth
+      const deletedBy = "dummy";
+      const deletedAt = new Date();
+
+      await db
+        .update(agents)
+        .set({ deletedBy, deletedAt })
+        .where(
+          and(eq(agents.slug, params.agentSlug), isNull(agents.deletedAt)),
+        );
+
+      set.status = 204;
     },
     {
       params: agentPathParam,
-      response: { 501: t.String() },
+      response: { 204: t.Void() },
     },
   );
