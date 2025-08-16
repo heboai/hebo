@@ -46,18 +46,26 @@ export const branchRoutes = new Elysia({
       // TODO: replace with actual user id coming from auth
       const [createdBy, updatedBy] = ["dummy", "dummy"];
       const slug = createSlug(body.name);
-      // TODO: handle DB errors in case of slug collision
       const [branch] = await db
         .insert(branches)
         .values({ agentId, ...body, slug, createdBy, updatedBy })
+        .onConflictDoNothing()
         .returning();
+
+      if (!branch) {
+        set.status = 409;
+        throw new Error("Branch with this name already exists");
+      }
+
       set.status = 201;
       return branch;
     },
     {
       params: agentPathParam,
       body: createBranch,
-      response: { 201: selectBranch },
+      response: {
+        201: selectBranch,
+      },
     },
   )
   .get(
