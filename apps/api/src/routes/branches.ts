@@ -86,7 +86,7 @@ export const branchRoutes = new Elysia({
     {
       params: agentPathParam,
       body: createBranch,
-      response: selectBranch,
+      response: { 201: selectBranch },
     },
   )
   .get(
