@@ -1,4 +1,5 @@
 import { StackClientApp } from "@stackframe/react";
+import { useNavigate } from "react-router";
 
 import { userStore } from "~/state/auth";
 
@@ -9,9 +10,8 @@ let _stackApp: StackClientApp<true, string> | undefined;
 const getStackApp = (): StackClientApp<true, string> => {
   if (!_stackApp) {
     _stackApp = new StackClientApp({
-      projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID!,
-      publishableClientKey:
-        process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
+      projectId: import.meta.env.VITE_STACK_PROJECT_ID!,
+      publishableClientKey: import.meta.env.VITE_STACK_PUBLISHABLE_CLIENT_KEY!,
       tokenStore: "cookie",
       urls: {
         signIn: "/signin",
