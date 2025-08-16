@@ -42,11 +42,16 @@ export const agentRoutes = new Elysia({
       const [createdBy, updatedBy] = ["dummy", "dummy"];
       const slug = createSlug(body.name, true);
 
-      // TODO: handle DB errors in case of slug collision
       const [agent] = await db
         .insert(agents)
         .values({ ...body, slug, createdBy, updatedBy })
+        .onConflictDoNothing()
         .returning();
+
+      if (!agent) {
+        set.status = 409;
+        throw new Error("Agent with this name already exists");
+      }
 
       set.status = 201;
       return agent;
