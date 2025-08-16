@@ -1,4 +1,4 @@
-import { eq, isNull } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { Elysia, t, NotFoundError } from "elysia";
 
 import { db } from "@hebo/db";
@@ -83,7 +83,9 @@ export const agentRoutes = new Elysia({
       const [agent] = await db
         .select()
         .from(agents)
-        .where(eq(agents.slug, params.agentSlug));
+        .where(
+          and(eq(agents.slug, params.agentSlug), isNull(agents.deletedAt)),
+        );
 
       if (!agent) {
         throw new NotFoundError("Agent not found");
@@ -105,7 +107,7 @@ export const agentRoutes = new Elysia({
       const [agent] = await db
         .update(agents)
         .set({ ...body, updatedBy })
-        .where(eq(agents.slug, params.agentSlug))
+        .where(and(eq(agents.slug, params.agentSlug), isNull(agents.deletedAt)))
         .returning();
 
       if (!agent) {
@@ -131,7 +133,9 @@ export const agentRoutes = new Elysia({
       await db
         .update(agents)
         .set({ deletedBy, deletedAt })
-        .where(eq(agents.slug, params.agentSlug));
+        .where(
+          and(eq(agents.slug, params.agentSlug), isNull(agents.deletedAt)),
+        );
 
       set.status = 204;
     },
