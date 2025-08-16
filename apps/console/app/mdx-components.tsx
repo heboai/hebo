@@ -5,6 +5,7 @@ import type { MDXComponents } from "mdx/types";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
+    // TODO fix CodeBlock in CodeGroup double rendering
     pre: CodeBlock,
     CodeGroup: CodeGroup,
     ...components,
