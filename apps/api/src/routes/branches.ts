@@ -1,4 +1,4 @@
-import { eq, isNull, and } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { Elysia, t, NotFoundError } from "elysia";
 
 import { db } from "@hebo/db";
@@ -39,7 +39,6 @@ const selectBranch = t.Omit(_selectBranch, [
   ...AUDIT_FIELDS,
   ...ID_FIELDS,
   "agentId",
-  "slug",
 ]);
 
 const branchPathParams = t.Object({
@@ -122,6 +121,7 @@ export const branchRoutes = new Elysia({
           and(
             eq(branches.slug, params.branchSlug),
             eq(branches.agentId, agentId),
+            isNull(branches.deletedAt),
           ),
         );
 
@@ -153,6 +153,7 @@ export const branchRoutes = new Elysia({
           and(
             eq(branches.slug, params.branchSlug),
             eq(branches.agentId, agentId),
+            isNull(branches.deletedAt),
           ),
         )
         .returning();
