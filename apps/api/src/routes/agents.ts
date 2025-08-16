@@ -35,6 +35,7 @@ export const agentRoutes = new Elysia({
   prefix: "/agents",
   // TODO: add sanitization for the body string fields
 })
+  // TODO: update method to accept and return what expected by the client
   .post(
     "/",
     async ({ body, set }) => {
@@ -42,6 +43,7 @@ export const agentRoutes = new Elysia({
       const [createdBy, updatedBy] = ["dummy", "dummy"];
       const slug = createSlug(body.name, true);
 
+      // TODO: handle DB errors in case of slug collision
       const [agent] = await db
         .insert(agents)
         .values({ ...body, slug, createdBy, updatedBy })
@@ -55,6 +57,7 @@ export const agentRoutes = new Elysia({
       response: { 201: selectAgent },
     },
   )
+  // TODO: include the 'expand' option
   .get(
     "/",
     async ({ set }) => {
@@ -70,6 +73,7 @@ export const agentRoutes = new Elysia({
       response: t.Array(selectAgent),
     },
   )
+  // TODO: include the 'expand' option
   .get(
     "/:agentSlug",
     async ({ params, set }) => {
