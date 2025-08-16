@@ -58,6 +58,7 @@ export function AgentForm() {
   const navigate = useNavigate();
 
   const { mutate, error, isPending } = useEdenMutation({
+    // TODO: Seems it's not waiting for the result of the creation before onSuccess is called
     mutationFn: (values: FormData) =>
       api.agents.post({
         name: values.agentName,
