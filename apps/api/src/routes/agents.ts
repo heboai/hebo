@@ -17,7 +17,6 @@ const { createInsertSchema, createUpdateSchema, createSelectSchema } =
   });
 
 // TODO: the following looks excessively verbose, can we simplify it?
-const _insertSchema = createInsertSchema(agents);
 const _createAgent = createInsertSchema(agents);
 const _updateAgent = createUpdateSchema(agents);
 const _selectAgent = createSelectSchema(agents);
@@ -35,7 +34,7 @@ const updateAgent = t.Omit(_updateAgent, [
 const selectAgent = t.Omit(_selectAgent, [...AUDIT_FIELDS, ...ID_FIELDS]);
 
 export const agentPathParam = t.Object({
-  agentSlug: _insertSchema.properties.slug,
+  agentSlug: _createAgent.properties.slug,
 });
 
 export const agentRoutes = new Elysia({
