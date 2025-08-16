@@ -2,7 +2,6 @@ import { and, eq, isNull } from "drizzle-orm";
 import { Elysia, t, NotFoundError } from "elysia";
 
 import { db } from "@hebo/db";
-import { agents } from "@hebo/db/schema/agents";
 import { branches } from "@hebo/db/schema/branches";
 
 import { agentPathParam } from "~/routes/agents";
@@ -12,18 +11,18 @@ import {
   AUDIT_FIELDS,
   ID_FIELDS,
 } from "~/utils/schema-factory";
+import { verifyAgent } from "~/utils/verify-agent";
 
 const { createInsertSchema, createUpdateSchema, createSelectSchema } =
   createSchemaFactory({
     typeboxInstance: t,
   });
 
-// TODO: the following looks excessively verbose, can we simplify it?
 const _createBranch = createInsertSchema(branches);
 const _updateBranch = createUpdateSchema(branches);
 const _selectBranch = createSelectSchema(branches);
 
-const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS, "agentId"];
+const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS, "agentId"] as const;
 
 const createBranch = t.Omit(_createBranch, [...OMIT_FIELDS, "slug"]);
 const updateBranch = t.Omit(_updateBranch, [...OMIT_FIELDS, "slug"]);
@@ -33,19 +32,6 @@ const branchPathParams = t.Object({
   ...agentPathParam.properties,
   branchSlug: _createBranch.properties.slug,
 });
-
-const verifyAgent = async (agentSlug: string) => {
-  const [agent] = await db
-    .select()
-    .from(agents)
-    .where(eq(agents.slug, agentSlug));
-
-  if (!agent) {
-    throw new NotFoundError("Agent not found");
-  }
-
-  return agent;
-};
 
 export const branchRoutes = new Elysia({
   name: "branch-routes",
@@ -60,7 +46,7 @@ export const branchRoutes = new Elysia({
       const agentId = agent.id;
       // TODO: replace with actual user id coming from auth
       const [createdBy, updatedBy] = ["dummy", "dummy"];
-      const slug = createSlug(body.name, false);
+      const slug = createSlug(body.name);
       // TODO: handle DB errors in case of slug collision
       const [branch] = await db
         .insert(branches)

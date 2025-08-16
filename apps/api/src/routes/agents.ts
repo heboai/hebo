@@ -16,12 +16,11 @@ const { createInsertSchema, createUpdateSchema, createSelectSchema } =
     typeboxInstance: t,
   });
 
-// TODO: the following looks excessively verbose, can we simplify it?
 const _createAgent = createInsertSchema(agents);
 const _updateAgent = createUpdateSchema(agents);
 const _selectAgent = createSelectSchema(agents);
 
-const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS];
+const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS] as const;
 
 const createAgent = t.Omit(_createAgent, [...OMIT_FIELDS, "slug"]);
 const updateAgent = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
