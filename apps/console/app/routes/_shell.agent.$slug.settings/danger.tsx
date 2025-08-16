@@ -1,8 +1,8 @@
 "use client";
 
 import { ajvResolver } from "@hookform/resolvers/ajv";
-import { Static, Type } from "@sinclair/typebox";
-import { useRouter } from "next/navigation";
+import { type Static, Type } from "@sinclair/typebox";
+import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { useSnapshot } from "valtio";
 
@@ -57,7 +57,7 @@ export function DangerSettings() {
   });
 
   const agentSnap = useSnapshot(agentStore);
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const { mutate, error, isPending } = useEdenMutation({
     mutationFn: () =>
@@ -65,7 +65,7 @@ export function DangerSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
       // FUTURE: implement wrapper for router to apply ViewTransitions
-      router.replace(`/`);
+      navigate("/", { replace: true });
     },
   });
 

@@ -1,3 +1,4 @@
 export default function Agent() {
-  return "Agent";
+  // TODO implement MDX
+  return "MDX not implemented yet";
 }

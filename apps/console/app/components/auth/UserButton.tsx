@@ -72,9 +72,9 @@ export function UserButton() {
             <DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/settings">
+                <Link to="/user/profile">
                   <Settings />
-                  Settings
+                  Manage Profile
                 </Link>
               </DropdownMenuItem>
               {isStackAuthEnabled && (

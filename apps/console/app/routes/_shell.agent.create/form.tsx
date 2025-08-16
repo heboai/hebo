@@ -1,9 +1,9 @@
 "use client";
 
 import { ajvResolver } from "@hookform/resolvers/ajv";
-import { Static, Type } from "@sinclair/typebox";
+import { type Static, Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 
 import supportedModels from "@hebo/shared-data/supported-models.json";
@@ -55,7 +55,7 @@ export function AgentForm() {
     defaultValues: Value.Create(FormSchema) as FormData,
   });
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const { mutate, error, isPending } = useEdenMutation({
     mutationFn: (values: FormData) =>
@@ -66,7 +66,7 @@ export function AgentForm() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["agents"] });
       // FUTURE: implement wrapper for router to apply ViewTransitions
-      router.replace(`/agent/${(data as any).slug}`);
+      navigate(`/agent/${(data as any).slug}`, { replace: true });
     },
   });
 

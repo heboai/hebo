@@ -15,7 +15,7 @@ import type { Api } from "@hebo/api";
 import { isDevLocal } from "~/lib/env";
 
 const url = isDevLocal
-  ? "http://localhost:3000/api"
+  ? "http://localhost:5173/api"
   : import.meta.env.NEXT_PUBLIC_API_URL!;
 
 const api = treaty<Api>(url, {

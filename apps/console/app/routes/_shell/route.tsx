@@ -1,6 +1,9 @@
 import { BookOpen, ExternalLink } from "lucide-react";
+// TODO: bring back the view transition
 // eslint-disable-next-line import/named
-import { unstable_ViewTransition as ViewTransition } from "react";
+//import { unstable_ViewTransition as ViewTransition } from "react";
+
+import { Outlet } from "react-router";
 
 import {
   Sidebar,
@@ -21,11 +24,7 @@ import { UserButton } from "~/components/auth/UserButton";
 import { AgentSelector } from "~/components/ui/AgentSelector";
 import { getCookie } from "~/lib/utils";
 
-export default function ShellLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function ShellLayout() {
   // This only works properly for build not for dev
   const defaultOpen = getCookie("sidebar_state") === "true";
 
@@ -76,7 +75,9 @@ export default function ShellLayout({
           <SidebarTrigger className="fixed -m-1.5" />
 
           <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
-            <ViewTransition default="fade-in">{children}</ViewTransition>
+            {/*<ViewTransition default="fade-in">*/}
+              <Outlet />
+            {/*</ViewTransition>*/}
           </div>
         </main>
       </SidebarProvider>
