@@ -23,5 +23,5 @@
       "@hebo/shared-data/*": ["packages/shared-data/*"]
     }
   },
-  "exclude": ["node_modules", "dist", ".next", ".turbo"]
+  "exclude": ["node_modules", "dist", ".next", ".react-router", ".turbo"]
 }

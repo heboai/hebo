@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"],
+      "@hebo/ui/*": ["../../packages/ui/src/*"]
+    },
+    "rootDirs": [".", "./.react-router/types"],
+    "types": ["node", "vite/client"],
+    "verbatimModuleSyntax": true
+  },
+  "include": [
+    "**/*",
+    "**/.server/**/*",
+    "**/.client/**/*",
+    ".react-router/types/**/*",
+    "../../packages/*/src/**/*"
+  ]
+}

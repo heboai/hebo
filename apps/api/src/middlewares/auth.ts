@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
 interface StackAuthEnv {
-  NEXT_PUBLIC_STACK_PROJECT_ID?: string;
+  VITE_STACK_PROJECT_ID?: string;
   STACK_SECRET_SERVER_KEY?: string;
 }
 
@@ -23,7 +23,7 @@ interface StackAuthEnv {
  *   • `userId` – the authenticated user's ID (API-key owner or JWT subject)
  */
 const {
-  NEXT_PUBLIC_STACK_PROJECT_ID: projectId,
+  VITE_STACK_PROJECT_ID: projectId,
   STACK_SECRET_SERVER_KEY: secretServerKey,
 } = process.env as unknown as StackAuthEnv;
 

@@ -1,11 +1,4 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "@hebo/ui/*": ["./*"]
-    },
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
-} 
+  "compilerOptions": {}
+}

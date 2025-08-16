@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../.sst/platform/config.d.ts" />
 
-import heboVpc from "./vpc";
 import heboDatabase from "./db";
+import heboVpc from "./vpc";
 
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
@@ -44,7 +44,7 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
           PG_USER: heboDatabase.username,
           PG_PASSWORD: heboDatabase.password,
           PG_DATABASE: heboDatabase.database,
-          NEXT_PUBLIC_STACK_PROJECT_ID: stackProjectId.value,
+          VITE_STACK_PROJECT_ID: stackProjectId.value,
           STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
         },
       },
