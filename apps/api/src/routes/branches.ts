@@ -23,23 +23,11 @@ const _createBranch = createInsertSchema(branches);
 const _updateBranch = createUpdateSchema(branches);
 const _selectBranch = createSelectSchema(branches);
 
-const createBranch = t.Omit(_createBranch, [
-  ...AUDIT_FIELDS,
-  ...ID_FIELDS,
-  "agentId",
-  "slug",
-]);
-const updateBranch = t.Omit(_updateBranch, [
-  ...AUDIT_FIELDS,
-  ...ID_FIELDS,
-  "agentId",
-  "slug",
-]);
-const selectBranch = t.Omit(_selectBranch, [
-  ...AUDIT_FIELDS,
-  ...ID_FIELDS,
-  "agentId",
-]);
+const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS, "agentId"];
+
+const createBranch = t.Omit(_createBranch, [...OMIT_FIELDS, "slug"]);
+const updateBranch = t.Omit(_updateBranch, [...OMIT_FIELDS, "slug"]);
+const selectBranch = t.Omit(_selectBranch, [...OMIT_FIELDS]);
 
 const branchPathParams = t.Object({
   ...agentPathParam.properties,
@@ -66,7 +54,6 @@ export const branchRoutes = new Elysia({
 })
   .post(
     "/",
-    // TODO: type models to solve Elysia type error
     async ({ params, body, set }) => {
       const agent = await verifyAgent(params.agentSlug);
 

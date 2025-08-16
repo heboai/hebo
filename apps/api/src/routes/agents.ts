@@ -21,17 +21,11 @@ const _createAgent = createInsertSchema(agents);
 const _updateAgent = createUpdateSchema(agents);
 const _selectAgent = createSelectSchema(agents);
 
-const createAgent = t.Omit(_createAgent, [
-  ...AUDIT_FIELDS,
-  ...ID_FIELDS,
-  "slug",
-]);
-const updateAgent = t.Omit(_updateAgent, [
-  ...AUDIT_FIELDS,
-  ...ID_FIELDS,
-  "slug",
-]);
-const selectAgent = t.Omit(_selectAgent, [...AUDIT_FIELDS, ...ID_FIELDS]);
+const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS];
+
+const createAgent = t.Omit(_createAgent, [...OMIT_FIELDS, "slug"]);
+const updateAgent = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
+const selectAgent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
 
 export const agentPathParam = t.Object({
   agentSlug: _createAgent.properties.slug,
