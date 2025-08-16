@@ -36,7 +36,6 @@ const branchPathParams = t.Object({
 export const branchRoutes = new Elysia({
   name: "branch-routes",
   prefix: "/:agentSlug/branches",
-  // TODO: add sanitization for the body string fields
 })
   .post(
     "/",

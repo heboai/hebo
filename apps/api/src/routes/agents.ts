@@ -33,7 +33,6 @@ export const agentPathParam = t.Object({
 export const agentRoutes = new Elysia({
   name: "agent-routes",
   prefix: "/agents",
-  // TODO: add sanitization for the body string fields
 })
   // TODO: update method to accept and return what expected by the client
   .post(
