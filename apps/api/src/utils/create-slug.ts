@@ -3,9 +3,9 @@ import slugify from "slugify";
 
 export const createSlug = (
   input: string,
-  attachRandomSuffix: boolean,
+  attachRandomSuffix: boolean = false,
 ): string => {
-  const base = slugify(input ?? "", { lower: true, strict: true, trim: true });
+  const base = slugify(input, { lower: true, strict: true, trim: true });
 
   if (!attachRandomSuffix) {
     return base;
@@ -19,5 +19,3 @@ export const createSlug = (
 
   return base ? `${base}-${suffix}` : suffix;
 };
-
-export default createSlug;
