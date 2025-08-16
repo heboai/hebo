@@ -58,8 +58,8 @@ export const agentRoutes = new Elysia({
       return agent;
     },
     {
-      body: t.Omit(createAgent, [...AUDIT_FIELDS, ...ID_FIELDS]),
-      response: selectAgent,
+      body: createAgent,
+      response: { 201: selectAgent },
     },
   )
   .get(
@@ -69,6 +69,7 @@ export const agentRoutes = new Elysia({
         .select()
         .from(agents)
         .where(isNull(agents.deletedAt));
+
       set.status = 200;
       return agentList;
     },
@@ -116,7 +117,7 @@ export const agentRoutes = new Elysia({
     },
     {
       params: agentPathParam,
-      body: t.Omit(updateAgent, [...AUDIT_FIELDS, ...ID_FIELDS]),
+      body: updateAgent,
       response: selectAgent,
     },
   )
@@ -133,9 +134,9 @@ export const agentRoutes = new Elysia({
         .where(eq(agents.slug, params.agentSlug));
 
       set.status = 204;
-      return new Response(undefined, { status: 204 });
     },
     {
       params: agentPathParam,
+      response: { 204: t.Void() },
     },
   );
