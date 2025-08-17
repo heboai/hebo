@@ -4,3 +4,4 @@
 **/.next/**
 **/.turbo/**
 **/.react-router/**
+apps/console/public/mockServiceWorker.js

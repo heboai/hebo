@@ -58,5 +58,10 @@
   },
   "engines": {
     "bun": ">=1.2.19"
+  },
+  "msw": {
+    "workerDirectory": [
+      "apps/console/public"
+    ]
   }
 }
