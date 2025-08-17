@@ -14,7 +14,7 @@ const StackTheme = lazy(() =>
 import { getStackApp } from "~/lib/auth/stack-auth";
 import { isStackAuthEnabled } from "~/lib/env";
 
-export function AuthHandler() {
+export default function AuthHandler() {
   const location = useLocation();
 
   // Prevent rendering during redirect and static export
