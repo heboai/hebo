@@ -22,7 +22,6 @@ import {
   SidebarMenuItem,
 } from "@hebo/ui/components/Sidebar";
 
-import { isStackAuthEnabled } from "~/lib/env";
 import { authStore } from "~/state/auth";
 
 export function UserButton() {
@@ -78,17 +77,13 @@ export function UserButton() {
                   Manage Profile
                 </Link>
               </DropdownMenuItem>
-              {isStackAuthEnabled && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/handler/sign-out" viewTransition>
-                      <LogOut aria-hidden="true" />
-                      Log out
-                    </Link>
-                  </DropdownMenuItem>
-                </>
-              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/handler/sign-out" viewTransition>
+                  <LogOut aria-hidden="true" />
+                  Log out
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

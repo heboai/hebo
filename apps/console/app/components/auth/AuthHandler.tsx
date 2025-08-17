@@ -1,5 +1,5 @@
 import { lazy, useLayoutEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation , Navigate } from "react-router";
 
 const StackHandler = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.StackHandler })),
@@ -37,5 +37,5 @@ export function AuthHandler() {
     );
   }
 
-  return <></>;
+  return <Navigate to="/" replace />;
 }
