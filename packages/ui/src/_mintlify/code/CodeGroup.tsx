@@ -69,11 +69,10 @@ export const CodeGroup = forwardRef(function CodeGroup(
       <Tabs.List className="flex codeblock-header space-x-4">
         {childArr.map((child, tabIndex: number) => (
           <TabItem key={tabIndex.toString()} value={tabIndex.toString()}>
-            {child?.props?.title ?? "Title Missing"}
+            {(child.props.children as React.ReactElement<{ title?: string }>)?.props?.title ?? "Title Missing"}
           </TabItem>
         ))}
         <div className={clsx("flex-auto flex justify-end")}>
-          {/* TODO: getNodeText is not picking 100% of text since some nodes are React promises */}
           <CopyToClipboardButton
             textToCopy={getNodeText(
               childArr[parseInt(activeTab)]?.props?.children,
@@ -85,7 +84,9 @@ export const CodeGroup = forwardRef(function CodeGroup(
       </Tabs.List>
       {childArr.map((child, tabIndex: number) => (
         <Tabs.Content key={tabIndex.toString()} value={tabIndex.toString()}>
-          <pre className="code-in-gray-frame">{child?.props?.children}</pre>
+          <pre className="code-in-gray-frame">
+              {(child.props.children as React.ReactElement<{ children?: React.ReactNode }>).props.children}
+          </pre>
         </Tabs.Content>
       ))}
     </Tabs.Root>
