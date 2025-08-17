@@ -24,7 +24,7 @@ import {
 
 import { authStore } from "~/state/auth";
 
-export function UserButton() {
+export function UserMenu() {
   const { user } = useSnapshot(authStore);
 
   return (

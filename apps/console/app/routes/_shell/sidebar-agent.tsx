@@ -23,7 +23,7 @@ import { Logo } from "~/components/ui/Logo";
 import { api, useEdenQuery } from "~/lib/data";
 import { shellStore } from "~/state/shell";
 
-export function AgentSelector() {
+export function AgentSelect() {
   // Query agents list
   const { data: agents = [], fetchStatus } = useEdenQuery<any[]>({
     queryKey: ["agents"],
