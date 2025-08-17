@@ -49,7 +49,7 @@ export function AgentSelect() {
   }, [fetchStatus, agents, location, params.slug, navigate]);
 
   // Update active agent in agentStore
-  const agentSnap = useSnapshot(shellStore);
+  const { activeAgent } = useSnapshot(shellStore);
   useEffect(() => {
     const slug = typeof params.slug === "string" ? params.slug : undefined;
     const agent = slug ? agents.find((a) => a.slug === params.slug) : undefined;
@@ -74,7 +74,7 @@ export function AgentSelect() {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate text-lg font-medium">
-                  {agentSnap.activeAgent?.name}
+                  {activeAgent?.name}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" aria-hidden="true" />
@@ -93,10 +93,10 @@ export function AgentSelect() {
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate text-base font-medium">
-                    {agentSnap.activeAgent?.name}
+                    {activeAgent?.name}
                   </span>
                 </div>
-                {agentSnap.activeAgent && (
+                {activeAgent && (
                   <Button
                     variant="ghost"
                     asChild
@@ -104,7 +104,7 @@ export function AgentSelect() {
                     aria-label="Agent Settings"
                   >
                     <Link
-                      to={`/agent/${agentSnap.activeAgent?.slug}/settings`}
+                      to={`/agent/${activeAgent?.slug}/settings`}
                       viewTransition
                     >
                       <Settings
@@ -122,7 +122,7 @@ export function AgentSelect() {
               <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
                 <Link to={`/agent/${agent.slug}`} viewTransition>
                   {agent.name}
-                  {agent.slug === agentSnap.activeAgent?.slug && (
+                  {agent.slug === activeAgent?.slug && (
                     <Check size={12} className="ml-auto" aria-hidden="true" />
                   )}
                 </Link>
