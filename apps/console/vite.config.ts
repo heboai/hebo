@@ -19,9 +19,8 @@ export default defineConfig({
             langs: ["bash", "python", "ts"],
             // Add code block metadata as HTML attributes
             addLanguageClass: true,
-            parseMetaString: (str: string): Record<string, string> => ({
-              title: str.trim(),
-            }),
+            parseMetaString: (meta: string): Record<string, string> =>
+              meta ? { title: meta.trim() } : {},
           },
         ],
       ],
