@@ -1,27 +1,17 @@
-import type { ImgHTMLAttributes } from "react";
+import { cn } from "@hebo/ui/lib/utils";
 
-type AgentLogoProps = Omit<
-  ImgHTMLAttributes<HTMLImageElement>,
-  "src" | "width" | "height"
-> & {
-  size?: number;
-  alt?: string;
-};
-
-export function AgentLogo({
-  size = 32,
-  alt = "Agent Logo",
-  ...props
-}: AgentLogoProps) {
+export function Logo({ className }: { className?: string }) {
   return (
-    <img
-      src="/hebo-icon.png"
-      alt={alt}
-      {...props}
-      width={size}
-      height={size}
-      loading="lazy"
-      decoding="async"
-    />
+    <div className={cn("flex gap-2", className)}>
+      <img
+        src="/hebo-icon.png"
+        alt="Hebo AI Logo"
+        width={32}
+        height={32}
+        loading="lazy"
+        decoding="async"
+      />
+      <span className="truncate text-2xl font-semibold">hebo.ai</span>
+    </div>
   );
 }
