@@ -58,6 +58,7 @@ export const agentRoutes = new Elysia({
       };
 
       // First insert the agent record
+      // TODO: use a transaction to ensure atomicity
       const [agent] = await db
         .insert(agents)
         .values({ ...agentData, slug, createdBy, updatedBy })
