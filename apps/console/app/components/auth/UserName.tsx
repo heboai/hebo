@@ -1,7 +1,9 @@
-import { useAuth } from "~/hooks/auth";
+import { useSnapshot } from "valtio";
+
+import { authStore } from "~/state/auth";
 
 export function UserName() {
-  const { user } = useAuth();
+  const auth = useSnapshot(authStore);
 
-  return <span>{user ? user.name : "Loading..."}</span>;
+  return <span>{auth.user ? auth.user.name : "Loading..."}</span>;
 }

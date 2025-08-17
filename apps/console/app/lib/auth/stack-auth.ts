@@ -1,7 +1,7 @@
 import { StackClientApp } from "@stackframe/react";
 import { useNavigate } from "react-router";
 
-import { userStore } from "~/state/auth";
+import { authStore } from "~/state/auth";
 
 import type { AuthService } from "./types";
 
@@ -29,11 +29,11 @@ const getStackApp = (): StackClientApp<true, string> => {
 };
 
 const authService = {
-  ensureSignedIn() {
-    const user = getStackApp().useUser({ or: "redirect" });
+  async ensureSignedIn() {
+    const user = await getStackApp().getUser({ or: "redirect" });
 
     if (!user) return;
-    userStore.user = {
+    authStore.user = {
       email: user.primaryEmail ?? "",
       name: user.displayName ?? "",
       avatar: user.profileImageUrl ?? "",

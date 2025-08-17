@@ -1,11 +1,11 @@
-import { userStore } from "~/state/auth";
+import { authStore } from "~/state/auth";
 
 import type { AuthService } from "./types";
 
 export const authService = {
   ensureSignedIn() {
-    if (userStore.user) return;
-    userStore.user = {
+    if (authStore.user) return;
+    authStore.user = {
       name: "Dummy User",
       email: "dummy@user.com",
       initials: "DU",

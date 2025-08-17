@@ -21,6 +21,14 @@ import { UserButton } from "~/components/auth/UserButton";
 import { AgentSelector } from "~/components/ui/AgentSelector";
 import { getCookie } from "~/lib/utils";
 
+import { authService } from "~/lib/auth";
+
+async function authMiddleware() {
+  authService.ensureSignedIn();
+}
+
+export const unstable_clientMiddleware = [authMiddleware];
+
 export default function ShellLayout() {
   // This only works properly for build not for dev
   const defaultOpen = getCookie("sidebar_state") === "true";
