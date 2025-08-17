@@ -61,7 +61,6 @@ export const CodeGroup = forwardRef(function CodeGroup(
   return (
     <Tabs.Root
       ref={ref}
-      defaultValue="0"
       value={activeTab}
       onValueChange={setActiveTab}
       className={clsx("not-prose gray-frame", className)}
