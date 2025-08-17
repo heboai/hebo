@@ -1,7 +1,7 @@
 import { isNull, sql } from "drizzle-orm";
 import { pgTable, jsonb, uuid, uniqueIndex } from "drizzle-orm/pg-core";
 
-import { ModelsSchema } from "@hebo/shared-data/typebox/models";
+import type { ModelsSchema } from "@hebo/shared-data/typebox/models";
 
 import { agents } from "./agents";
 import { audit } from "./mixin/audit";
