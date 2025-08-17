@@ -24,7 +24,7 @@ import { getCookie } from "~/lib/utils";
 import { authService } from "~/lib/auth";
 
 async function authMiddleware() {
-  authService.ensureSignedIn();
+  await authService.ensureSignedIn();
 }
 
 export const unstable_clientMiddleware = [authMiddleware];
