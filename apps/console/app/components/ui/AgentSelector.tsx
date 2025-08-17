@@ -21,7 +21,7 @@ import {
 import { AgentLogo } from "~/components/ui/AgentLogo";
 import { Logo } from "~/components/ui/Logo";
 import { api, useEdenQuery } from "~/lib/data";
-import { agentStore } from "~/state/shell";
+import { shellStore } from "~/state/shell";
 
 export function AgentSelector() {
   // Query agents list
@@ -49,11 +49,11 @@ export function AgentSelector() {
   }, [fetchStatus, agents, location, params.slug, navigate]);
 
   // Update active agent in agentStore
-  const agentSnap = useSnapshot(agentStore);
+  const agentSnap = useSnapshot(shellStore);
   useEffect(() => {
     const slug = typeof params.slug === "string" ? params.slug : undefined;
     const agent = slug ? agents.find((a) => a.slug === params.slug) : undefined;
-    if (agent) agentStore.activeAgent = { slug: agent.slug, name: agent.name };
+    if (agent) shellStore.activeAgent = { slug: agent.slug, name: agent.name };
   }, [params.slug, agents]);
 
   // Dropdown open or closed

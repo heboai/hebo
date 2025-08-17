@@ -1,6 +1,6 @@
 import { proxy } from "valtio";
 
-export const agentStore = proxy<{
+export const shellStore = proxy<{
   activeAgent: { slug: string; name: string } | undefined;
 }>({
   activeAgent: undefined,

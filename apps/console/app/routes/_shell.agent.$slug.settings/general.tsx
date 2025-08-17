@@ -5,10 +5,10 @@ import { useSnapshot } from "valtio";
 import { Input } from "@hebo/ui/components/Input";
 
 import { AgentLogo } from "~/components/ui/AgentLogo";
-import { agentStore } from "~/state/shell";
+import { shellStore } from "~/state/shell";
 
 export function GeneralSettings() {
-  const agentSnap = useSnapshot(agentStore);
+  const agentSnap = useSnapshot(shellStore);
 
   return (
     <>

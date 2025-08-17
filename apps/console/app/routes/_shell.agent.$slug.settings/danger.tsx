@@ -35,12 +35,12 @@ import {
 import { Input } from "@hebo/ui/components/Input";
 
 import { api, queryClient, useEdenMutation } from "~/lib/data";
-import { agentStore } from "~/state/shell";
+import { shellStore } from "~/state/shell";
 
 import type { JSONSchemaType } from "ajv";
 
-const AGENT_NAME = agentStore.activeAgent
-  ? agentStore.activeAgent.name
+const AGENT_NAME = shellStore.activeAgent
+  ? shellStore.activeAgent.name
   : ("" as const);
 
 const FormSchema = Type.Object({
@@ -56,7 +56,7 @@ export function DangerSettings() {
     resolver: ajvResolver(FormSchema as unknown as JSONSchemaType<FormData>),
   });
 
-  const agentSnap = useSnapshot(agentStore);
+  const agentSnap = useSnapshot(shellStore);
   const navigate = useNavigate();
 
   const { mutate, error, isPending } = useEdenMutation({
