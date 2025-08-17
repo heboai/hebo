@@ -72,9 +72,9 @@ export function UserMenu() {
             <DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/user/profile" viewTransition>
+                <Link to="/user/account" viewTransition>
                   <Settings aria-hidden="true" />
-                  Manage Profile
+                  Manage Account
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
