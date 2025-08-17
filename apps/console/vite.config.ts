@@ -8,6 +8,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [
+    tsconfigPaths(),
     mdx({
       providerImportSource: "~/mdx-components.tsx",
       rehypePlugins: [
@@ -27,7 +28,6 @@ export default defineConfig({
     }),
     tailwindcss(),
     reactRouter(),
-    tsconfigPaths(),
     devtoolsJson(),
   ],
 });

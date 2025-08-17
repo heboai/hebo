@@ -24,7 +24,7 @@ const api = treaty<Api>(url, {
   fetch: { credentials: "include" },
 }).v1;
 
-// Ensure "real" errors are not surpressed
+// Ensure "real" errors are not suppressed
 const shouldThrow = (error: unknown): boolean => {
   const errObj = error as { status?: unknown };
 

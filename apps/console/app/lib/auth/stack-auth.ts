@@ -16,7 +16,7 @@ const getStackApp = (): StackClientApp<true, string> => {
       urls: {
         signIn: "/signin",
         signUp: "/signin",
-        accountSettings: "/settings",
+        accountSettings: "/user/profile",
         home: "/",
       },
       redirectMethod: {

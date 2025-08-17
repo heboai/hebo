@@ -130,7 +130,7 @@ export function AgentSelector() {
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="gap-2 p-2">
-              <Link to="/agent/create" viewTransition>
+              <Link to="/agent/create" aria-label="Create agent">
                 <Plus className="size-4" aria-hidden="true" />
                 <div className="text-muted-foreground font-medium">
                   Create agent

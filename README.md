@@ -112,7 +112,7 @@ The repository uses GitHub Actions for CI/CD:
 
 #### Manual deployments:
 
-For deployments, we utilize the SST framework (http://sst.dev/).
+For deployments, we utilize the SST framework (https://sst.dev/).
 You can either install the SST CLI locally or use `bunx` to execute deployment commands manually.
 
 ```bash

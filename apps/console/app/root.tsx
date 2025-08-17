@@ -46,7 +46,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {isDevLocal ? <MSWProvider /> : <></>}
+        {isDevLocal && <MSWProvider />}
         <div className="min-h-screen">{children}</div>
         <ScrollRestoration />
         <Scripts />
