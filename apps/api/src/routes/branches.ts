@@ -70,7 +70,6 @@ export const branchRoutes = new Elysia({
   )
   .get(
     "/",
-    // TODO: type models to solve Elysia type error
     async ({ params, set }) => {
       const agent = await verifyAgent(params.agentSlug);
 
@@ -90,7 +89,6 @@ export const branchRoutes = new Elysia({
   )
   .get(
     "/:branchSlug",
-    // TODO: type models to solve Elysia type error
     async ({ params, set }) => {
       const agent = await verifyAgent(params.agentSlug);
 
@@ -120,7 +118,6 @@ export const branchRoutes = new Elysia({
   )
   .put(
     "/:branchSlug",
-    // TODO: type models to solve Elysia type error
     async ({ body, params, set }) => {
       const agent = await verifyAgent(params.agentSlug);
 

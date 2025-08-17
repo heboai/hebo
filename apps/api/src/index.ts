@@ -7,6 +7,7 @@ import { branchRoutes } from "~/routes/branches";
 const PORT = Number(process.env.PORT) || 3001;
 
 const createApi = () =>
+  // TODO: include cors plugin
   new Elysia()
     .use(
       swagger({
