@@ -39,6 +39,7 @@ export const branchRoutes = new Elysia({
 })
   .post(
     "/",
+    // TODO:use ajv to validate the models field
     async ({ params, body, set }) => {
       const agent = await verifyAgent(params.agentSlug);
 
