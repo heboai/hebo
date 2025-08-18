@@ -34,7 +34,7 @@ export const branchHandlers = [
 
       const newBranch = db.getCollection("branches").insert(tmpBranch);
 
-      await delay(1500);
+      await delay(200);
       return HttpResponse.json(newBranch, { status: 201 });
     },
   ),

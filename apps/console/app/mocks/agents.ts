@@ -38,7 +38,7 @@ export const agentHandlers = [
   http.get("/api/v1/agents", async () => {
     const agents = db.getCollection("agents").records;
 
-    await delay(2000);
+    await delay(1000);
     return HttpResponse.json(agents);
   }),
 
@@ -57,7 +57,7 @@ export const agentHandlers = [
 
       db.getCollection("agents").remove(tmpAgent);
 
-      await delay(2000);
+      await delay(500);
       return new HttpResponse({ status: 201 });
     },
   ),
