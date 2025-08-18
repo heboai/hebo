@@ -39,11 +39,11 @@ const provider = createOpenAICompatible({
     baseURL: 'https://cloud.hebo.ai/api',
 });
 
-const response = await generateText({
+const { text } = await generateText({
     model: provider('YOUR_MODEL_ALIAS'),
     prompt: 'Tell me a joke about AI.'
 });
-console.log(response);
+console.log(text);
 ```
 
 ```python Langchain
