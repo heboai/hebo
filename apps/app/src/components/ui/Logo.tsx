@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { cn } from "@hebo/ui/lib/utils";
+import { cn } from "@hebo/aikit-ui/src/lib/utils";
 
 export function Logo({ className }: { className?: string }) {
   return (
