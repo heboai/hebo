@@ -3,7 +3,6 @@ import { status } from "elysia";
 
 import { db } from "@hebo/db";
 import type { UniversalDbClient } from "@hebo/db";
-import { agents } from "@hebo/db/schema/agents";
 import { branches } from "@hebo/db/schema/branches";
 
 import { createSlug } from "~/utils/create-slug";
@@ -11,23 +10,7 @@ import { createSlug } from "~/utils/create-slug";
 import * as BranchesModel from "./model";
 
 export const BranchService = {
-  async verifyAgent(agentSlug: string) {
-    const [agent] = await db
-      .select()
-      .from(agents)
-      .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)));
-
-    if (!agent) {
-      throw status(
-        404,
-        "Agent not found" satisfies BranchesModel.AgentNotFound,
-      );
-    }
-
-    return agent;
-  },
-
-  async createBranchRecord(
+  async createBranch(
     agentId: string,
     input: BranchesModel.CreateBody,
     client: UniversalDbClient = db,
@@ -57,7 +40,7 @@ export const BranchService = {
     defaultModel: string,
   ) {
     const model = { alias: "default" as const, type: defaultModel };
-    return this.createBranchRecord(
+    return this.createBranch(
       agentId,
       {
         name: "main",
@@ -67,15 +50,7 @@ export const BranchService = {
     );
   },
 
-  async createBranch(agentSlug: string, input: BranchesModel.CreateBody) {
-    const agent = await this.verifyAgent(agentSlug);
-    return this.createBranchRecord(agent.id, input);
-  },
-
-  async listBranches(agentSlug: string) {
-    const agent = await this.verifyAgent(agentSlug);
-    const agentId = agent.id;
-
+  async listBranches(agentId: string) {
     const branchList = await db
       .select()
       .from(branches)
@@ -84,10 +59,7 @@ export const BranchService = {
     return branchList;
   },
 
-  async getBranchBySlug(agentSlug: string, branchSlug: string) {
-    const agent = await this.verifyAgent(agentSlug);
-    const agentId = agent.id;
-
+  async getBranchBySlug(agentId: string, branchSlug: string) {
     const [branch] = await db
       .select()
       .from(branches)
@@ -105,13 +77,10 @@ export const BranchService = {
   },
 
   async updateBranch(
-    agentSlug: string,
+    agentId: string,
     branchSlug: string,
     input: BranchesModel.UpdateBody,
   ) {
-    const agent = await this.verifyAgent(agentSlug);
-    const agentId = agent.id;
-
     // TODO: replace with actual user id coming from auth
     const updatedBy = "dummy";
 

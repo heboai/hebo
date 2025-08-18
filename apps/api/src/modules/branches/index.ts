@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 
 import * as AgentsModel from "~/modules/agents/model";
+import { verifyAgent } from "~/modules/verify-agent";
 
 import * as BranchesModel from "./model";
 import { BranchService } from "./service";
@@ -9,11 +10,12 @@ export const branchesModule = new Elysia({
   name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
+  .use(verifyAgent)
   .post(
     "/",
     // TODO:use ajv to validate the models field
-    async ({ params, body, set }) => {
-      const branch = await BranchService.createBranch(params.agentSlug, body);
+    async ({ body, set, agentId }) => {
+      const branch = await BranchService.createBranch(agentId, body);
       set.status = 201;
       return branch;
     },
@@ -29,8 +31,8 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/",
-    async ({ params, set }) => {
-      const list = await BranchService.listBranches(params.agentSlug);
+    async ({ set, agentId }) => {
+      const list = await BranchService.listBranches(agentId);
       set.status = 200;
       return list;
     },
@@ -41,9 +43,9 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/:branchSlug",
-    async ({ params, set }) => {
+    async ({ params, set, agentId }) => {
       const branch = await BranchService.getBranchBySlug(
-        params.agentSlug,
+        agentId,
         params.branchSlug,
       );
       set.status = 200;
@@ -59,9 +61,9 @@ export const branchesModule = new Elysia({
   )
   .put(
     "/:branchSlug",
-    async ({ params, body, set }) => {
+    async ({ params, body, set, agentId }) => {
       const branch = await BranchService.updateBranch(
-        params.agentSlug,
+        agentId,
         params.branchSlug,
         body,
       );
