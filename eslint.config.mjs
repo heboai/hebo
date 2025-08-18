@@ -1,6 +1,4 @@
 import js from "@eslint/js";
-import tseslint from "typescript-eslint";
-
 import importPlugin from "eslint-plugin-import"
 import jsxA11y from "eslint-plugin-jsx-a11y"
 import noSecrets from "eslint-plugin-no-secrets"
@@ -14,6 +12,7 @@ import tailwindcss from "eslint-plugin-tailwindcss";
 import turbo from "eslint-plugin-turbo"
 import unicorn from "eslint-plugin-unicorn"
 import unusedImports from "eslint-plugin-unused-imports"
+import tseslint from "typescript-eslint";
 
 
 const eslintConfig = [
@@ -64,10 +63,8 @@ const eslintConfig = [
       ...reactHooks.configs.recommended.rules,
       ...reactPerf.configs.flat.recommended.rules,
       ...security.configs.recommended.rules,
-      // eslint-disable-next-line import/no-named-as-default-member
       ...sonarjs.configs.recommended.rules,
       ...tailwindcss.configs.recommended.rules,
-      // eslint-disable-next-line import/no-named-as-default-member
       ...turbo.configs.recommended.rules,
       "unicorn/filename-case": "off",
       "unicorn/prevent-abbreviations": "off",
