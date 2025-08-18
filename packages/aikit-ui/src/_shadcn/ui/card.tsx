@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@hebo/ui/lib/utils"
+import { cn } from "@hebo/aikit-ui/lib/utils"
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (

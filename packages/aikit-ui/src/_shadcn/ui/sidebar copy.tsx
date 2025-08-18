@@ -5,25 +5,25 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, VariantProps } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
 
-import { useIsMobile } from "@hebo/ui/hooks/use-mobile"
-import { cn } from "@hebo/ui/lib/utils"
-import { Button } from "@hebo/ui/_shadcn/ui/button"
-import { Input } from "@hebo/ui/_shadcn/ui/input"
-import { Separator } from "@hebo/ui/_shadcn/ui/separator"
+import { useIsMobile } from "@hebo/aikit-ui/hooks/use-mobile"
+import { cn } from "@hebo/aikit-ui/lib/utils"
+import { Button } from "@hebo/aikit-ui/_shadcn/ui/button"
+import { Input } from "@hebo/aikit-ui/_shadcn/ui/input"
+import { Separator } from "@hebo/aikit-ui/_shadcn/ui/separator"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@hebo/ui/_shadcn/ui/sheet"
-import { Skeleton } from "@hebo/ui/_shadcn/ui/skeleton"
+} from "@hebo/aikit-ui/_shadcn/ui/sheet"
+import { Skeleton } from "@hebo/aikit-ui/_shadcn/ui/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@hebo/ui/_shadcn/ui/tooltip"
+} from "@hebo/aikit-ui/_shadcn/ui/tooltip"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
