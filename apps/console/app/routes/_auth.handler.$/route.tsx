@@ -1,5 +1,5 @@
-import { lazy, useLayoutEffect, useState } from "react";
-import { useLocation , Navigate } from "react-router";
+import { lazy, useLayoutEffect, useState, Suspense } from "react";
+import { useLocation, Navigate } from "react-router";
 
 const StackHandler = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.StackHandler })),
@@ -29,11 +29,13 @@ export default function AuthHandler() {
   if (isStackAuthEnabled && isClient) {
     const stackApp = getStackApp();
     return (
-      <StackProvider app={stackApp}>
-        <StackTheme>
-          <StackHandler app={stackApp} location={location.pathname} fullPage />
-        </StackTheme>
-      </StackProvider>
+      <Suspense fallback={null}>
+        <StackProvider app={stackApp}>
+          <StackTheme>
+            <StackHandler app={stackApp} location={location.pathname} fullPage />
+          </StackTheme>
+        </StackProvider>
+      </Suspense>
     );
   }
 

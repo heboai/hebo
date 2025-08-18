@@ -51,7 +51,7 @@ export function AgentSelect({
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate text-lg font-medium">
-                  {activeAgent?.name}
+                  {activeAgent?.name ?? "Select an agent"}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" aria-hidden="true" />
@@ -70,7 +70,7 @@ export function AgentSelect({
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate text-base font-medium">
-                    {activeAgent?.name}
+                    {activeAgent?.name ?? "Select an agent"}
                   </span>
                 </div>
                 {activeAgent && (
@@ -107,7 +107,7 @@ export function AgentSelect({
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="gap-2 p-2">
-              <Link to="/agent/create" aria-label="Create agent">
+              <Link to="/agent/create" aria-label="Create agent" viewTransition>
                 <Plus className="size-4" aria-hidden="true" />
                 <div className="text-muted-foreground font-medium">
                   Create agent

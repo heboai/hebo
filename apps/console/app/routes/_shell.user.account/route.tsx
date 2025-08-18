@@ -1,8 +1,6 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 
 import { isStackAuthEnabled } from "~/lib/env";
-
-import { Suspense } from "react";
 
 import { Skeleton } from "@hebo/ui/components/Skeleton";
 

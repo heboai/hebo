@@ -25,7 +25,7 @@ export const agentHandlers = [
 
     if (db.getCollection("agents").findBy({ slug: tmpAgent.slug })) {
       return new HttpResponse("Agent with the same name already exists", {
-        status: 400,
+        status: 409,
       });
     }
 
@@ -51,7 +51,7 @@ export const agentHandlers = [
 
       if (!db.getCollection("agents").findBy(tmpAgent)) {
         return new HttpResponse("Agent with the slug not found", {
-          status: 400,
+          status: 404,
         });
       }
 

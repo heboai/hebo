@@ -4,19 +4,14 @@ import { api } from "~/lib/data";
 
 import type { Route } from "./+types/route";
 
-import { DangerSettings } from "./danger";
+import { DangerSettings } from "./danger-zone";
 import { GeneralSettings } from "./general";
 
 
 export async function clientAction({ request }: Route.ClientActionArgs ) {
     const formData = await request.formData();
-  
-    const slug = formData.get("slug");
-    if (typeof slug !== "string" || !slug) {
-      return { error: "Invalid form submission" };
-    }
 
-    const result = await api.agents({ agentSlug: slug }).delete();
+    const result = await api.agents({ agentSlug: formData.get("slug") }).delete();
 
     return result.error
       ? { error: result.error.value }

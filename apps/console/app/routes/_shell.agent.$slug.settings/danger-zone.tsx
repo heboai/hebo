@@ -1,5 +1,3 @@
-"use client";
-
 import { ajvResolver } from "@hookform/resolvers/ajv";
 import { type Static, Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
