@@ -27,10 +27,7 @@ const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS] as const;
 // The create agent schema accepts a default model name which is later used to insert the branch record for that agent.
 const createAgent = t.Intersect([
   t.Omit(_createAgent, [...OMIT_FIELDS, "slug"]),
-  // TODO: the enum is not correctly validated and it accepts values that are not in the enum
-  t.Object({
-    defaultModel: t.String({ enum: supportedModels.map((m) => m.name) }),
-  }),
+  t.Object({ defaultModel: t.String() }),
 ]);
 const updateAgent = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
 const selectAgent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
@@ -38,6 +35,8 @@ const selectAgent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
 export const agentPathParam = t.Object({
   agentSlug: _createAgent.properties.slug,
 });
+
+const SupportedModelNames = new Set(supportedModels.map((m) => m.name));
 
 export const agentRoutes = new Elysia({
   name: "agent-routes",
@@ -51,6 +50,12 @@ export const agentRoutes = new Elysia({
       const slug = createSlug(body.name, true);
 
       const { defaultModel, ...agentData } = body;
+
+      if (!SupportedModelNames.has(defaultModel)) {
+        set.status = 400;
+        throw new Error("Invalid model name");
+      }
+
       const model = {
         alias: "default",
         type: defaultModel,
