@@ -9,9 +9,8 @@ async function defaultAgentMiddleware() {
   // FUTURE remember last agent in sessions storage
   if (agents.length > 0) {
     throw redirect(`/agent/${agents[0]?.slug}`);
-  } else {
-    throw redirect("/agent/create");
   }
+  throw redirect("/agent/create");
 }
 
 export const unstable_clientMiddleware = [defaultAgentMiddleware];

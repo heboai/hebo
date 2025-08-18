@@ -6,6 +6,6 @@ export interface AuthService {
 export type User = {
   email: string;
   name: string;
-  initials: string;
+  initials?: string;
   avatar?: string;
 };

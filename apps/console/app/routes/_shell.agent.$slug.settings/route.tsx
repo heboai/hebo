@@ -11,14 +11,19 @@ import { GeneralSettings } from "./general";
 export async function clientAction({ request }: Route.ClientActionArgs ) {
     const formData = await request.formData();
   
-    const result = await api.agents({ agentSlug: formData.get("slug") }).delete();
+    const slug = formData.get("slug");
+    if (typeof slug !== "string" || !slug) {
+      return { error: "Invalid form submission" };
+    }
+
+    const result = await api.agents({ agentSlug: slug }).delete();
 
     return result.error
-      ? { error: result.error.message }
+      ? { error: result.error.value }
       : redirect("/");
 }
 
-export default function Settings() {
+export default function Settings({ actionData }: Route.ComponentProps) {
   const { activeAgent } = useRouteLoaderData("routes/_shell");
 
   return (
@@ -31,7 +36,7 @@ export default function Settings() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <DangerSettings activeAgent={activeAgent} />
+        <DangerSettings activeAgent={activeAgent} error={actionData?.error} />
       </div>
     </div>
   );

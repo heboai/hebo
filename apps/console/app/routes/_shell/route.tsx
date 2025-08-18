@@ -39,7 +39,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   if (params.slug && !activeAgent)
     throw new Response("Agent Not Found", { status: 404 });
 
-  return { agents: agents, activeAgent: activeAgent };
+  return { agents, activeAgent };
 }
 
 export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {

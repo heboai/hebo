@@ -82,7 +82,7 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
               <DialogContent className="bg-sidebar sm:max-w-md">
                 {/* FUTURE: improve spacing in dialog */}
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit((data) => submit(data, { method: "post" }))}>
+                  <form onSubmit={form.handleSubmit((data) => submit(data, { method: "post" }))} aria-busy={Boolean(navigation.formAction)}>
                     <DialogHeader>
                       <DialogTitle>Delete Agent</DialogTitle>
                     </DialogHeader>

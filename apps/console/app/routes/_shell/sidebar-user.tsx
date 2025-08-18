@@ -25,7 +25,7 @@ import {
 type User = {
   name: string,
   email: string,
-  initials: string,
+  initials?: string,
   avatar?: string
 }
 

@@ -71,7 +71,7 @@ export function AgentForm({ error }: { error?: string }) {
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => submit(data, { method: "post" }))}>
+          <form onSubmit={form.handleSubmit((data) => submit(data, { method: "post" }))}  aria-busy={Boolean(navigation.formAction)}>
             {/* Agent Name Field */}
             <FormField
               control={form.control}
