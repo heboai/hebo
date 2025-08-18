@@ -61,39 +61,31 @@ export const agentRoutes = new Elysia({
         type: defaultModel,
       };
 
-      // First insert the agent record
-      // TODO: use a transaction to ensure atomicity
-      const [agent] = await db
-        .insert(agents)
-        .values({ ...agentData, slug, createdBy, updatedBy })
-        .onConflictDoNothing()
-        .returning();
+      // Insert the agent record and its initial branch in a single transaction
+      const agent = await db.transaction(async (tx) => {
+        const [createdAgent] = await tx
+          .insert(agents)
+          .values({ ...agentData, slug, createdBy, updatedBy })
+          .onConflictDoNothing()
+          .returning();
 
-      // TODO: Apply a fallback strategy with retries with different slugs
-      if (!agent) {
-        set.status = 409;
-        throw new Error("Agent with this name already exists");
-      }
+        // TODO: Apply a fallback strategy with retries with different slugs
+        if (!createdAgent) {
+          set.status = 409;
+          throw new Error("Agent with this name already exists");
+        }
 
-      // Then insert the first branch record for the agent
-      const [branch] = await db
-        .insert(branches)
-        .values({
-          agentId: agent.id,
+        await tx.insert(branches).values({
+          agentId: createdAgent.id,
           name: "main",
           slug: "main",
           models: [model],
           createdBy,
           updatedBy,
-        })
-        .onConflictDoNothing()
-        .returning();
+        });
 
-      if (!branch) {
-        // This should never happen for a new agent
-        set.status = 409;
-        throw new Error("Something went wrong, please try again");
-      }
+        return createdAgent;
+      });
 
       set.status = 201;
       return agent;
