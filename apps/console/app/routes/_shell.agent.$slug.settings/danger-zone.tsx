@@ -93,6 +93,18 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
 
                     <FormField
                       control={form.control}
+                      name="slug"
+                      render={({ field }) => (
+                        <FormItem className="hidden">
+                          <FormControl>
+                            <input {...field} />  
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
                       name="agentName"
                       render={({ field }) => (
                         <FormItem>
@@ -104,24 +116,16 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
-                          <FormMessage>
-                            {error && <span>{error}</span>}
-                          </FormMessage>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="slug"
-                      render={({ field }) => (
-                        <FormItem >
-                          <FormControl>
-                            <input type="hidden" {...field} />  
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+                    {error && (
+                      <div className="text-destructive text-right" role="alert">
+                        {error}
+                      </div>
+                    )}
 
                     <DialogFooter>
                       <DialogClose asChild>
