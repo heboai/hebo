@@ -3,9 +3,9 @@ export interface AuthService {
   generateApiKey(): Promise<string>;
 }
 
-export interface User {
+export type User = {
   email: string;
   name: string;
-  initials?: string;
+  initials: string;
   avatar?: string;
-}
+};

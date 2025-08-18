@@ -58,14 +58,12 @@ export function AgentForm() {
   const navigate = useNavigate();
 
   const { mutate, error, isPending } = useEdenMutation({
-    // TODO: Seems it's not waiting for the result of the creation before onSuccess is called
     mutationFn: (values: FormData) =>
       api.agents.post({
         name: values.agentName,
         models: [values.defaultModel],
       }),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["agents"] });
+    onSuccess: async (data) => {
       navigate(`/agent/${(data as any).slug}`, { replace: true, viewTransition: true });
     },
   });

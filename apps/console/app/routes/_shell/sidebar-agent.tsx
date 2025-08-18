@@ -1,7 +1,6 @@
 import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams, useLocation } from "react-router";
-import { useSnapshot } from "valtio";
+import { useState } from "react";
+import { Link } from "react-router";
 
 import { Button } from "@hebo/ui/components/Button";
 import {
@@ -20,46 +19,24 @@ import {
 
 import { AgentLogo } from "~/components/ui/AgentLogo";
 import { Logo } from "~/components/ui/Logo";
-import { api, useEdenQuery } from "~/lib/data";
-import { shellStore } from "~/state/shell";
 
-export function AgentSelect() {
-  // Query agents list
-  const { data: agents = [], fetchStatus } = useEdenQuery<any[]>({
-    queryKey: ["agents"],
-    queryFn: () => api.agents.get(),
-    staleTime: 600_000, // 10 minutes
-  });
+type Agent = {
+  name: string,
+  slug: string,
+}
 
-  // Redirect to /create-agent if no agent exists yet
-  const location = useLocation();
-  const navigate = useNavigate();
-  const params = useParams<{ slug?: string }>();
-
-  useEffect(() => {
-    if (fetchStatus !== "idle") return;
-
-    const preferredSlug =
-      agents.find((a) => a.slug === params.slug)?.slug ?? agents[0]?.slug;
-    const target =
-      agents.length > 0 ? `/agent/${preferredSlug}` : "/agent/create";
-
-    if (location.pathname === "/" && location.pathname !== target)
-      navigate(target, { replace: true, viewTransition: true });
-  }, [fetchStatus, agents, location, params.slug, navigate]);
-
-  // Update active agent in agentStore
-  const { activeAgent } = useSnapshot(shellStore);
-  useEffect(() => {
-    const slug = typeof params.slug === "string" ? params.slug : undefined;
-    const agent = slug ? agents.find((a) => a.slug === params.slug) : undefined;
-    if (agent) shellStore.activeAgent = { slug: agent.slug, name: agent.name };
-  }, [params.slug, agents]);
+export function AgentSelect({
+  activeAgent = null,
+  agents = [],
+}: {
+  activeAgent?: Agent | null,
+  agents?: Agent[],
+}) {
 
   // Dropdown open or closed
   const [open, setOpen] = useState(false);
 
-  return agents.length > 0 ? (
+  return agents?.length > 0 ? (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu open={open} onOpenChange={setOpen}>

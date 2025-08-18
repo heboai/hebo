@@ -1,6 +1,5 @@
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
 import { Link } from "react-router";
-import { useSnapshot } from "valtio";
 
 import {
   Avatar,
@@ -22,11 +21,15 @@ import {
   SidebarMenuItem,
 } from "@hebo/ui/components/Sidebar";
 
-import { authStore } from "~/state/auth";
 
-export function UserMenu() {
-  const { user } = useSnapshot(authStore);
+type User = {
+  name: string,
+  email: string,
+  initials: string,
+  avatar?: string
+}
 
+export function UserMenu({ user }: { user?: User}) {
   return (
     <SidebarMenu>
       <SidebarMenuItem>

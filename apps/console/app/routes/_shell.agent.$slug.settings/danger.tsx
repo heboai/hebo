@@ -4,7 +4,6 @@ import { ajvResolver } from "@hookform/resolvers/ajv";
 import { type Static, Type } from "@sinclair/typebox";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import { useSnapshot } from "valtio";
 
 import { Alert, AlertTitle } from "@hebo/ui/components/Alert";
 import { Button } from "@hebo/ui/components/Button";
@@ -35,35 +34,35 @@ import {
 import { Input } from "@hebo/ui/components/Input";
 
 import { api, queryClient, useEdenMutation } from "~/lib/data";
-import { shellStore } from "~/state/shell";
 
 import type { JSONSchemaType } from "ajv";
 
-const AGENT_NAME = shellStore.activeAgent
-  ? shellStore.activeAgent.name
-  : ("" as const);
 
-const FormSchema = Type.Object({
-  agentName: Type.Literal(AGENT_NAME, {
-    errorMessage: "You must type your EXACT agent name",
-  }),
-});
+type ActiveAgent = {
+  slug: string;
+  name: string;
+}
 
-type FormData = Static<typeof FormSchema>;
+export function DangerSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
 
-export function DangerSettings() {
+  const FormSchema = Type.Object({
+    agentName: Type.Literal(activeAgent.name, {
+      errorMessage: "You must type your EXACT agent name",
+    }),
+  });
+
+  type FormData = Static<typeof FormSchema>;
+  
   const form = useForm<FormData>({
     resolver: ajvResolver(FormSchema as unknown as JSONSchemaType<FormData>),
   });
 
-  const agentSnap = useSnapshot(shellStore);
   const navigate = useNavigate();
 
   const { mutate, error, isPending } = useEdenMutation({
     mutationFn: () =>
-      api.agents({ agentSlug: agentSnap.activeAgent?.slug ?? "" }).delete(),
+      api.agents({ agentSlug: activeAgent.slug }).delete(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["agents"] });
       navigate("/", { replace: true, viewTransition: true });
     },
   });
@@ -105,7 +104,7 @@ export function DangerSettings() {
                         <FormItem>
                           <FormLabel>
                             To confirm, type{" "}
-                            <strong>{agentSnap.activeAgent?.name}</strong> in
+                            <strong>{activeAgent.name}</strong> in
                             the box below:
                           </FormLabel>
                           <FormControl>

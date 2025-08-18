@@ -10,6 +10,7 @@ import { MSWProvider } from "~/components/MSWProvider";
 import { isDevLocal } from "~/lib/env";
 
 import type { Route } from "./+types/root";
+
 import "./styles/tailwind.css";
 import "./styles/global.css";
 import "./styles/stack.css";

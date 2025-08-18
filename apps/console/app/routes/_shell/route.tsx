@@ -1,15 +1,28 @@
-import { Outlet } from "react-router";
+import { Outlet, type ShouldRevalidateFunctionArgs } from "react-router";
+import { useSnapshot } from "valtio";
 
 import {
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
   SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
   SidebarTrigger,
 } from "@hebo/ui/components/Sidebar";
 
-import SidebarLeft from "./sidebar";
-
-import { getCookie } from "~/lib/utils";
-
 import { authService } from "~/lib/auth";
+import { api, unwrapEden } from "~/lib/data";
+import { getCookie } from "~/lib/utils";
+import { authStore } from "~/state/auth";
+
+import type { Route } from "./+types/route";
+
+import { UserMenu } from "./sidebar-user";
+import { AgentSelect } from "./sidebar-agent";
+import { StaticContent } from "./sidebar-static";
+
 
 async function authMiddleware() {
   await authService.ensureSignedIn();
@@ -17,8 +30,26 @@ async function authMiddleware() {
 
 export const unstable_clientMiddleware = [authMiddleware];
 
-export default function ShellLayout() {
-  // This only works properly for build not for dev
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const agents: any[] =  unwrapEden(await api.agents.get());
+
+  const activeAgent = params.slug ? agents.find((a) => a.slug === params.slug) : undefined;
+
+  if (params.slug && !activeAgent)
+    throw new Response("Agent Not Found", { status: 404 });
+
+  return { agents: agents, activeAgent: activeAgent };
+}
+
+export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
+  // Only reload data if the slug exists and changed
+  return nextParams.slug !== undefined && currentParams.slug !== nextParams.slug;
+}
+
+export default function ShellLayout({loaderData}: Route.ComponentProps) {
+  const { user } = useSnapshot(authStore);
+
+  // FUTURE replace with session storage
   const defaultOpen = getCookie("sidebar_state") === "true";
 
   return (
@@ -33,7 +64,20 @@ export default function ShellLayout() {
           } as React.CSSProperties
         }
       >
-        <SidebarLeft />
+        <Sidebar collapsible="icon">
+          <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
+            <SidebarHeader>
+                <AgentSelect activeAgent={loaderData.activeAgent} agents={loaderData.agents} />
+            </SidebarHeader>
+            <SidebarContent />
+            <SidebarFooter>
+                <StaticContent />
+                <SidebarSeparator className="mx-0" />
+                <UserMenu user={user} />
+            </SidebarFooter>
+            <SidebarRail />
+          </div>
+        </Sidebar>
 
         <main className="relative flex w-full flex-1 flex-col gap-4 p-4">
           <SidebarTrigger className="fixed -m-1.5" />
