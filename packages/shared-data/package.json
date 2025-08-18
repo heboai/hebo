@@ -5,8 +5,7 @@
   "type": "module",
   "exports": {
     "./supported-models.json": "./json/supported-models.json",
-    "./models.schema.json": "./json/models.schema.json",
-    "./typebox/models": "./typebox/models.ts"
+    "./models.schema.json": "./json/models.schema.json"
   },
   "dependencies": {
     "@sinclair/typebox": "^0.34.38"

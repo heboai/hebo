@@ -5,7 +5,6 @@ import { db } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
 import { branches } from "@hebo/db/schema/branches";
 import supportedModels from "@hebo/shared-data/supported-models.json";
-import type { ModelsSchema as ModelsArray } from "@hebo/shared-data/typebox/models";
 
 import { createSlug } from "~/utils/create-slug";
 import {
@@ -52,7 +51,7 @@ export const agentRoutes = new Elysia({
       const slug = createSlug(body.name, true);
 
       const { defaultModel, ...agentData } = body;
-      const model: ModelsArray[number] = {
+      const model = {
         alias: "default",
         type: defaultModel,
       };
