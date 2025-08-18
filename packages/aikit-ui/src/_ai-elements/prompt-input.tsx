@@ -28,7 +28,7 @@ export function PromptInput({ className, ...props }: PromptInputProps) {
   return (
     <form
       className={cn(
-        "w-full divide-y overflow-hidden rounded-xl border bg-background shadow-sm",
+        "w-full divide-y overflow-hidden rounded-xl border bg-background shadow-sm rounded-b-none rounded-t-sm h-20",
         className,
       )}
       {...props}
@@ -44,7 +44,7 @@ export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
 export function PromptInputTextarea({
   onChange,
   className,
-  placeholder = "What would you like to know?",
+  placeholder = "Start prompting ...",
   minHeight = 48,
   maxHeight = 164,
   ...props
@@ -206,7 +206,7 @@ export function PromptInputModelSelectTrigger({
   return (
     <SelectTrigger
       className={cn(
-        "border-none bg-transparent font-medium text-muted-foreground shadow-none transition-colors",
+        "border-none bg-transparent font-medium text-muted-foreground shadow-none transition-colors absolute bottom-1",
         'hover:bg-accent hover:text-foreground [&[aria-expanded="true"]]:bg-accent [&[aria-expanded="true"]]:text-foreground',
         className,
       )}

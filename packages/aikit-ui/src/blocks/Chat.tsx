@@ -24,7 +24,6 @@ import {
   PromptInputTools,
 } from "@hebo/aikit-ui/_ai-elements/prompt-input";
 
-
 const models = [
   { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B" },
   { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B" },
@@ -45,7 +44,7 @@ export default function Chat() {
         },
       },
     );
-    setText('');
+    setText("");
   };
 
   return (
@@ -76,10 +75,6 @@ export default function Chat() {
         />
         <PromptInputToolbar>
           <PromptInputTools>
-            {/* Attachment button */}
-            <PromptInputButton>
-              <PaperclipIcon size={16} />
-            </PromptInputButton>
             {/* Model selector */}
             <PromptInputModelSelect
               onValueChange={(value) => setModel(value)}
@@ -97,6 +92,11 @@ export default function Chat() {
               </PromptInputModelSelectContent>
             </PromptInputModelSelect>
           </PromptInputTools>
+          {/* Attachment button */}
+          <PromptInputButton className="absolute right-10 bottom-1">
+            <PaperclipIcon size={16} />
+          </PromptInputButton>
+          {/* Submit button */}
           <PromptInputSubmit
             disabled={!text}
             status={status}
