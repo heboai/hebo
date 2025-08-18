@@ -1,8 +1,8 @@
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 
-import { agentRoutes } from "~/routes/agents";
-import { branchRoutes } from "~/routes/branches";
+import { agentsModule } from "~/modules/agents";
+import { branchesModule } from "~/modules/branches";
 
 const PORT = Number(process.env.PORT) || 3001;
 
@@ -20,7 +20,7 @@ const createApi = () =>
       }),
     )
     .get("/", () => "Hebo API says hello!")
-    .group("/v1", (app) => app.use(agentRoutes.use(branchRoutes)));
+    .group("/v1", (app) => app.use(agentsModule.use(branchesModule)));
 
 if (import.meta.main) {
   createApi().listen(PORT);
