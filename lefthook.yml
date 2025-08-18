@@ -6,7 +6,7 @@ pre-commit:
 
   commands:
     format:
-      glob: "**/*.{js,jsx,ts,tsx,json,jsonc,css,html,yaml,yml,toml}"
+      glob: "**/*.{js,jsx,ts,tsx,json,jsonc,md,mdx,css,html,yaml,yml,toml}"
       run: bun run format:staged -- {staged_files} && git add {staged_files}
 
     lint:

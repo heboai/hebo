@@ -13,9 +13,9 @@ const heboApp = new sst.aws.Nextjs("HeboApp", {
       ? "cloud.hebo.ai"
       : `${$app.stage}.cloud.hebo.ai`,
   environment: {
-    NEXT_PUBLIC_API_URL: heboApiUrl,
-    NEXT_PUBLIC_STACK_PROJECT_ID: stackProjectId.value,
-    NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY: stackPublishableClientKey.value,
+    VITE_API_URL: heboApiUrl,
+    VITE_STACK_PROJECT_ID: stackProjectId.value,
+    VITE_STACK_PUBLISHABLE_CLIENT_KEY: stackPublishableClientKey.value,
   },
 });
 

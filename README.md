@@ -8,7 +8,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 / (hebo)
 ├── apps/                   # Deployable targets
 │   ├── api/                # Elysia API server
-│   └── app/                # Next.js web application
+│   └── console/            # React Router web application
 │
 ├── packages/               # Shareable libraries
 │   ├── db/                 # Database schema and migrations
@@ -63,21 +63,21 @@ bun run dev
 ```
 
 ```bash
-# Start only the app in dev
-bun run -F @hebo/app dev
+# Start only the console in dev
+bun run -F @hebo/console dev
 ```
 
 ### Run modes
 
 | #   | Mode                        | Command                    | Database                       | API availability                        |
 | --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
-| 1   | **Frontend-only** (offline) | `bun run -F @hebo/app dev` | —                              | none – UI relies on local state manager |
+| 1   | **Frontend-only** (offline) | `bun run -F @hebo/console dev` | —                              | none – UI relies on local state manager |
 | 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | http://localhost:3001                   |
 | 3   | **Remote full-stack**       | `sst deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
 
 > **How the UI knows if the API is present**
 >
-> The web app reads `NEXT_PUBLIC_API_URL` at runtime:
+> The web app reads `VITE_API_URL` at runtime:
 >
 > - If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
 > - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun dev`, or the real API Gateway URL by `sst deploy`).
@@ -90,8 +90,8 @@ bun run -F @hebo/app dev
 # Build all packages and apps
 bun run build
 
-# Build specific package/app
-bun run -F @hebo/app build
+# Build specific package/console
+bun run -F @hebo/console build
 ```
 
 ### Testing
@@ -100,8 +100,8 @@ bun run -F @hebo/app build
 # Run all tests
 bun run test
 
-# Test specific package/app
-bun run -F @hebo/app test
+# Test specific package/console
+bun run -F @hebo/console test
 ```
 
 ### Deployment
@@ -112,7 +112,7 @@ The repository uses GitHub Actions for CI/CD:
 
 #### Manual deployments:
 
-For deployments, we utilize the SST framework (http://sst.dev/).
+For deployments, we utilize the SST framework (https://sst.dev/).
 You can either install the SST CLI locally or use `bunx` to execute deployment commands manually.
 
 ```bash
