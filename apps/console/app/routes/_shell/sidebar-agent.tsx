@@ -36,7 +36,7 @@ export function AgentSelect({
   // Dropdown open or closed
   const [open, setOpen] = useState(false);
 
-  return agents?.length > 0 ? (
+  return agents.length > 0 ? (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -81,7 +81,7 @@ export function AgentSelect({
                     aria-label="Agent Settings"
                   >
                     <Link
-                      to={`/agent/${activeAgent?.slug}/settings`}
+                      to={`/agent/${activeAgent.slug}/settings`}
                       viewTransition
                     >
                       <Settings

@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     tsconfigPaths(),
     mdx({
-      providerImportSource: "~/mdx-components.tsx",
+      providerImportSource: "~/mdx-components",
       rehypePlugins: [
         [
           rehypeShiki,
