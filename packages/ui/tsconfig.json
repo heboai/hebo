@@ -4,8 +4,8 @@
     "baseUrl": "src",
     "paths": {
       "@hebo/ui/*": ["./*"]
-    },
+    }
   },
-  "include": ["src"],
+  "include": ["src", "../packages/aikit-ui/src/_shadcn/ui"],
   "exclude": ["node_modules", "dist"]
-} 
+}
