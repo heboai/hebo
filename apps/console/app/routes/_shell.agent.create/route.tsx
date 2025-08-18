@@ -12,8 +12,8 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
     const formData = await request.formData();
   
     const result = await api.agents.post({
-        name: formData.get("agentName"),
-        defaultModel: formData.get("defaultModel"),
+        name: String(formData.get("agentName")),
+        defaultModel: String(formData.get("defaultModel")),
     });
 
     return result.error

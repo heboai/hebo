@@ -11,7 +11,7 @@ import { GeneralSettings } from "./general";
 export async function clientAction({ request }: Route.ClientActionArgs ) {
     const formData = await request.formData();
 
-    const result = await api.agents({ agentSlug: formData.get("slug") }).delete();
+    const result = await api.agents({ agentSlug: String(formData.get("slug")) }).delete();
 
     return result.error
       ? { error: result.error.value }
