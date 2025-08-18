@@ -7,10 +7,9 @@ import {
   ScrollRestoration,
 } from "react-router";
 
-import { MSWProvider } from "~/components/MSWProvider";
-import { isDevLocal } from "~/lib/env";
-
 import type { Route } from "./+types/root";
+
+import "./init";
 
 import "./styles/tailwind.css";
 import "./styles/global.css";
@@ -49,7 +48,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {isDevLocal && <MSWProvider />}
         <div className="min-h-screen">{children}</div>
         <ScrollRestoration />
         <Scripts />
