@@ -31,6 +31,7 @@ export const links: Route.LinksFunction = () => [
       "family=Geist+Mono:wght@100..900&" +
       "display=swap",
   },
+  { rel: "icon", href: "/hebo-icon.png" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -45,7 +46,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
           content="The fastest way to build &amp; scale agents"
         />
         <Meta />
-        <link rel="icon" href="/hebo-icon.png" />
         <Links />
       </head>
       <body>
