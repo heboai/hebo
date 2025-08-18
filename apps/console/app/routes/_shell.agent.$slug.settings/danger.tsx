@@ -2,7 +2,8 @@
 
 import { ajvResolver } from "@hookform/resolvers/ajv";
 import { type Static, Type } from "@sinclair/typebox";
-import { useNavigate } from "react-router";
+import { Value } from "@sinclair/typebox/value";
+import { useNavigation, useSubmit } from "react-router";
 import { useForm } from "react-hook-form";
 
 import { Alert, AlertTitle } from "@hebo/ui/components/Alert";
@@ -33,8 +34,6 @@ import {
 } from "@hebo/ui/components/Form";
 import { Input } from "@hebo/ui/components/Input";
 
-import { api, queryClient, useEdenMutation } from "~/lib/data";
-
 import type { JSONSchemaType } from "ajv";
 
 
@@ -43,11 +42,14 @@ type ActiveAgent = {
   name: string;
 }
 
-export function DangerSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
+export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgent, error?: string  }) {
 
   const FormSchema = Type.Object({
     agentName: Type.Literal(activeAgent.name, {
       errorMessage: "You must type your EXACT agent name",
+    }),
+    slug: Type.String({
+      default: activeAgent.slug,
     }),
   });
 
@@ -55,17 +57,11 @@ export function DangerSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
   
   const form = useForm<FormData>({
     resolver: ajvResolver(FormSchema as unknown as JSONSchemaType<FormData>),
+    defaultValues: { ...Value.Create(FormSchema), agentName: ""} satisfies Partial<FormData>
   });
 
-  const navigate = useNavigate();
-
-  const { mutate, error, isPending } = useEdenMutation({
-    mutationFn: () =>
-      api.agents({ agentSlug: activeAgent.slug }).delete(),
-    onSuccess: () => {
-      navigate("/", { replace: true, viewTransition: true });
-    },
-  });
+  const submit = useSubmit();
+  const navigation = useNavigation();
 
   return (
     <>
@@ -86,7 +82,7 @@ export function DangerSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
               <DialogContent className="bg-sidebar sm:max-w-md">
                 {/* FUTURE: improve spacing in dialog */}
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(() => mutate())}>
+                  <form onSubmit={form.handleSubmit((data) => submit(data, { method: "post" }))}>
                     <DialogHeader>
                       <DialogTitle>Delete Agent</DialogTitle>
                     </DialogHeader>
@@ -111,16 +107,29 @@ export function DangerSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
                             <Input {...field} />
                           </FormControl>
                           <FormMessage>
-                            {error && <span>{error?.message}</span>}
+                            {error && <span>{error}</span>}
                           </FormMessage>
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="slug"
+                      render={({ field }) => (
+                        <FormItem >
+                          <FormControl>
+                            <input type="hidden" {...field} />  
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
                     <DialogFooter>
                       <DialogClose asChild>
                         <Button variant="outline">Cancel</Button>
                       </DialogClose>
-                      <Button isLoading={isPending} type="submit">
+                      <Button isLoading={Boolean(navigation.formAction)} type="submit">
                         Delete Agent
                       </Button>
                     </DialogFooter>

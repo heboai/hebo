@@ -13,7 +13,7 @@ import {
 } from "@hebo/ui/components/Sidebar";
 
 import { authService } from "~/lib/auth";
-import { api, unwrapEden } from "~/lib/data";
+import { api } from "~/lib/data";
 import { getCookie } from "~/lib/utils";
 import { authStore } from "~/state/auth";
 
@@ -30,8 +30,9 @@ async function authMiddleware() {
 
 export const unstable_clientMiddleware = [authMiddleware];
 
+
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const agents: any[] =  unwrapEden(await api.agents.get());
+  const { data: agents } = await api.agents.get();
 
   const activeAgent = params.slug ? agents.find((a) => a.slug === params.slug) : undefined;
 
@@ -45,6 +46,7 @@ export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidate
   // Only reload data if the slug exists and changed
   return nextParams.slug !== undefined && currentParams.slug !== nextParams.slug;
 }
+
 
 export default function ShellLayout({loaderData}: Route.ComponentProps) {
   const { user } = useSnapshot(authStore);

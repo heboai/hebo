@@ -3,7 +3,7 @@
 import { ajvResolver } from "@hookform/resolvers/ajv";
 import { type Static, Type } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { useNavigate } from "react-router";
+import { useNavigation, useSubmit } from "react-router";
 import { useForm } from "react-hook-form";
 
 import supportedModels from "@hebo/shared-data/supported-models.json";
@@ -32,9 +32,9 @@ import {
   SelectValue,
 } from "@hebo/ui/components/Select";
 
-import { api, queryClient, useEdenMutation } from "~/lib/data";
 
 import type { JSONSchemaType } from "ajv";
+
 
 const FormSchema = Type.Object({
   agentName: Type.String({
@@ -49,24 +49,15 @@ const FormSchema = Type.Object({
 
 type FormData = Static<typeof FormSchema>;
 
-export function AgentForm() {
+export function AgentForm({ error }: { error?: string }) {
+
   const form = useForm<FormData>({
     resolver: ajvResolver(FormSchema as unknown as JSONSchemaType<FormData>),
     defaultValues: Value.Create(FormSchema) as FormData,
   });
 
-  const navigate = useNavigate();
-
-  const { mutate, error, isPending } = useEdenMutation({
-    mutationFn: (values: FormData) =>
-      api.agents.post({
-        name: values.agentName,
-        models: [values.defaultModel],
-      }),
-    onSuccess: async (data) => {
-      navigate(`/agent/${(data as any).slug}`, { replace: true, viewTransition: true });
-    },
-  });
+  const submit = useSubmit();
+  const navigation = useNavigation();
 
   return (
     <Card className="max-w-lg border-none bg-transparent shadow-none">
@@ -80,7 +71,7 @@ export function AgentForm() {
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => mutate(data))}>
+          <form onSubmit={form.handleSubmit((data) => submit(data, { method: "post" }))}>
             {/* Agent Name Field */}
             <FormField
               control={form.control}
@@ -141,7 +132,7 @@ export function AgentForm() {
             {/* Mutation Error Display */}
             {error && (
               <div className="text-destructive text-right" role="alert">
-                {error.message}
+                {error}
               </div>
             )}
 
@@ -149,7 +140,7 @@ export function AgentForm() {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                isLoading={isPending}
+                isLoading={Boolean(navigation.formAction)}
                 aria-label="Create Agent"
               >
                 Create

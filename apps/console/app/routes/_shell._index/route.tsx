@@ -1,9 +1,9 @@
 import { redirect } from "react-router";
 
-import { api, unwrapEden } from "~/lib/data";
+import { api } from "~/lib/data";
 
 async function defaultAgentMiddleware() {
-  const agents: any[] = unwrapEden(await api.agents.get());
+  const { data: agents } = await api.agents.get();
 
   // FUTURE fade-in the next page
   // FUTURE remember last agent in sessions storage
