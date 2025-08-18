@@ -1,6 +1,7 @@
 import {
   isRouteErrorResponse,
   Links,
+  Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -43,6 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           name="description"
           content="The fastest way to build &amp; scale agents"
         />
+        <Meta />
         <link rel="icon" href="/hebo-icon.png" />
         <Links />
       </head>
