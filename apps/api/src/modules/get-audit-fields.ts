@@ -9,10 +9,10 @@ export type AuditFields = {
 /**
  * Dummy audit fields injector.
  * Replaces later with real auth; for now always uses "dummy".
- * TODO: Replace with real auth.
  */
 export const getAuditFields = new Elysia({ name: "get-audit-fields" })
   .derive(() => {
+    // TODO: Replace with real auth.
     const userId = "dummy" as const;
     const auditFields: AuditFields = {
       createdBy: userId,
