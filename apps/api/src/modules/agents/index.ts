@@ -1,5 +1,7 @@
 import { Elysia } from "elysia";
 
+import { getAuditFields } from "~/modules/get-audit-fields";
+
 import * as AgentsModel from "./model";
 import { AgentService } from "./service";
 
@@ -7,10 +9,11 @@ export const agentsModule = new Elysia({
   name: "agents-module",
   prefix: "/agents",
 })
+  .use(getAuditFields)
   .post(
     "/",
-    async ({ body, set }) => {
-      const agent = await AgentService.createAgent(body);
+    async ({ body, set, auditFields }) => {
+      const agent = await AgentService.createAgent(body, auditFields);
       set.status = 201;
       return agent;
     },
@@ -48,8 +51,12 @@ export const agentsModule = new Elysia({
   )
   .put(
     "/:agentSlug",
-    async ({ body, params, set }) => {
-      const agent = await AgentService.updateAgent(params.agentSlug, body);
+    async ({ body, params, set, auditFields }) => {
+      const agent = await AgentService.updateAgent(
+        params.agentSlug,
+        body,
+        auditFields,
+      );
       set.status = 200;
       return agent;
     },
@@ -61,8 +68,11 @@ export const agentsModule = new Elysia({
   )
   .delete(
     "/:agentSlug",
-    async ({ params, set }) => {
-      const agent = await AgentService.softDeleteAgent(params.agentSlug);
+    async ({ params, set, auditFields }) => {
+      const agent = await AgentService.softDeleteAgent(
+        params.agentSlug,
+        auditFields,
+      );
       set.status = 204;
       return agent;
     },

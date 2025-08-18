@@ -6,6 +6,7 @@ import { agents } from "@hebo/db/schema/agents";
 import supportedModels from "@hebo/shared-data/supported-models.json";
 
 import { BranchService } from "~/modules/branches/service";
+import type { AuditFields } from "~/modules/get-audit-fields";
 import { createSlug } from "~/utils/create-slug";
 
 import * as AgentsModel from "./model";
@@ -13,10 +14,7 @@ import * as AgentsModel from "./model";
 const SupportedModelNames = new Set(supportedModels.map((m) => m.name));
 
 export const AgentService = {
-  async createAgent(input: AgentsModel.CreateBody) {
-    // TODO: replace with actual user id coming from auth
-    // TODO: move frequent used values into a plugin to reuse across services
-    const [createdBy, updatedBy] = ["dummy", "dummy"];
+  async createAgent(input: AgentsModel.CreateBody, auditFields: AuditFields) {
     const slug = createSlug(input.name, true);
 
     const { defaultModel, ...agentData } = input;
@@ -31,7 +29,12 @@ export const AgentService = {
     const agent = await db.transaction(async (tx) => {
       const [createdAgent] = await tx
         .insert(agents)
-        .values({ ...agentData, slug, createdBy, updatedBy })
+        .values({
+          ...agentData,
+          slug,
+          createdBy: auditFields.createdBy,
+          updatedBy: auditFields.updatedBy,
+        })
         .onConflictDoNothing()
         .returning();
 
@@ -43,9 +46,10 @@ export const AgentService = {
         );
 
       await BranchService.createInitialBranch(
-        tx,
         createdAgent.id,
         defaultModel,
+        auditFields,
+        tx,
       );
 
       return createdAgent;
@@ -75,12 +79,14 @@ export const AgentService = {
     return agent;
   },
 
-  async updateAgent(agentSlug: string, input: AgentsModel.UpdateBody) {
-    // TODO: replace with actual user id coming from auth
-    const updatedBy = "dummy";
+  async updateAgent(
+    agentSlug: string,
+    input: AgentsModel.UpdateBody,
+    auditFields: AuditFields,
+  ) {
     const [agent] = await db
       .update(agents)
-      .set({ ...input, updatedBy })
+      .set({ ...input, updatedBy: auditFields.updatedBy })
       .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)))
       .returning();
 
@@ -90,14 +96,12 @@ export const AgentService = {
     return agent;
   },
 
-  async softDeleteAgent(agentSlug: string) {
-    // TODO: replace with actual user id coming from auth
-    const deletedBy = "dummy";
+  async softDeleteAgent(agentSlug: string, auditFields: AuditFields) {
     const deletedAt = new Date();
 
     await db
       .update(agents)
-      .set({ deletedBy, deletedAt })
+      .set({ deletedBy: auditFields.deletedBy, deletedAt })
       .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)));
   },
 };

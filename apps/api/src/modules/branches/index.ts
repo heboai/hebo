@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 
 import * as AgentsModel from "~/modules/agents/model";
+import { getAuditFields } from "~/modules/get-audit-fields";
 import { verifyAgent } from "~/modules/verify-agent";
 
 import * as BranchesModel from "./model";
@@ -10,12 +11,17 @@ export const branchesModule = new Elysia({
   name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
+  .use(getAuditFields)
   .use(verifyAgent)
   .post(
     "/",
     // TODO:use ajv to validate the models field
-    async ({ body, set, agentId }) => {
-      const branch = await BranchService.createBranch(agentId, body);
+    async ({ body, set, agentId, auditFields }) => {
+      const branch = await BranchService.createBranch(
+        agentId,
+        body,
+        auditFields,
+      );
       set.status = 201;
       return branch;
     },
@@ -61,11 +67,12 @@ export const branchesModule = new Elysia({
   )
   .put(
     "/:branchSlug",
-    async ({ params, body, set, agentId }) => {
+    async ({ params, body, set, agentId, auditFields }) => {
       const branch = await BranchService.updateBranch(
         agentId,
         params.branchSlug,
         body,
+        auditFields,
       );
       set.status = 200;
       return branch;

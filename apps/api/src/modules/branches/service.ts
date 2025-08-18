@@ -5,6 +5,7 @@ import { db } from "@hebo/db";
 import type { UniversalDbClient } from "@hebo/db";
 import { branches } from "@hebo/db/schema/branches";
 
+import type { AuditFields } from "~/modules/get-audit-fields";
 import { createSlug } from "~/utils/create-slug";
 
 import * as BranchesModel from "./model";
@@ -13,15 +14,20 @@ export const BranchService = {
   async createBranch(
     agentId: string,
     input: BranchesModel.CreateBody,
+    auditFields: AuditFields,
     client: UniversalDbClient = db,
   ) {
-    // TODO: replace with actual user id coming from auth
-    const [createdBy, updatedBy] = ["dummy", "dummy"];
     const slug = createSlug(input.name);
 
     const [branch] = await client
       .insert(branches)
-      .values({ agentId, ...input, slug, createdBy, updatedBy })
+      .values({
+        agentId,
+        ...input,
+        slug,
+        createdBy: auditFields.createdBy,
+        updatedBy: auditFields.updatedBy,
+      })
       .onConflictDoNothing()
       .returning();
 
@@ -35,9 +41,10 @@ export const BranchService = {
   },
 
   async createInitialBranch(
-    client: UniversalDbClient = db,
     agentId: string,
     defaultModel: string,
+    auditFields: AuditFields,
+    client: UniversalDbClient = db,
   ) {
     const model = { alias: "default" as const, type: defaultModel };
     return this.createBranch(
@@ -46,6 +53,7 @@ export const BranchService = {
         name: "main",
         models: [model],
       } as BranchesModel.CreateBody,
+      auditFields,
       client,
     );
   },
@@ -80,13 +88,11 @@ export const BranchService = {
     agentId: string,
     branchSlug: string,
     input: BranchesModel.UpdateBody,
+    auditFields: AuditFields,
   ) {
-    // TODO: replace with actual user id coming from auth
-    const updatedBy = "dummy";
-
     const [branch] = await db
       .update(branches)
-      .set({ ...input, updatedBy })
+      .set({ ...input, updatedBy: auditFields.updatedBy })
       .where(
         and(
           eq(branches.slug, branchSlug),
