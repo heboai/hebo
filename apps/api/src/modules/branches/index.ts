@@ -1,10 +1,9 @@
 import { Elysia, t } from "elysia";
 
-import { db } from "@hebo/db";
-
 import { agentId } from "~/middlewares/agent-id";
 import { auditFields } from "~/middlewares/audit-fields";
 import * as AgentsModel from "~/modules/agents/model";
+import { withRequestTransaction } from "~/utils/request-db";
 
 import * as BranchesModel from "./model";
 import { BranchService } from "./service";
@@ -15,20 +14,18 @@ export const branchesModule = new Elysia({
 })
   .use(auditFields)
   .use(agentId)
-  .decorate("db", db)
   .post(
     "/",
     // TODO:use ajv to validate the models field
-    async ({ body, set, agentId, auditFields, db }) => {
+    withRequestTransaction(async ({ body, set, agentId, auditFields }) => {
       const branch = await BranchService.createBranch(
-        db,
         agentId,
         body,
         auditFields,
       );
       set.status = 201;
       return branch;
-    },
+    }),
     {
       params: AgentsModel.PathParam,
       body: BranchesModel.CreateBody,
@@ -41,8 +38,8 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/",
-    async ({ set, agentId, db }) => {
-      const list = await BranchService.listBranches(db, agentId);
+    async ({ set, agentId }) => {
+      const list = await BranchService.listBranches(agentId);
       set.status = 200;
       return list;
     },
@@ -53,9 +50,8 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/:branchSlug",
-    async ({ params, set, agentId, db }) => {
+    async ({ params, set, agentId }) => {
       const branch = await BranchService.getBranchBySlug(
-        db,
         agentId,
         params.branchSlug,
       );
@@ -72,17 +68,18 @@ export const branchesModule = new Elysia({
   )
   .put(
     "/:branchSlug",
-    async ({ params, body, set, agentId, auditFields, db }) => {
-      const branch = await BranchService.updateBranch(
-        db,
-        agentId,
-        params.branchSlug,
-        body,
-        auditFields,
-      );
-      set.status = 200;
-      return branch;
-    },
+    withRequestTransaction(
+      async ({ params, body, set, agentId, auditFields }) => {
+        const branch = await BranchService.updateBranch(
+          agentId,
+          params.branchSlug,
+          body,
+          auditFields,
+        );
+        set.status = 200;
+        return branch;
+      },
+    ),
     {
       params: BranchesModel.PathParams,
       body: BranchesModel.UpdateBody,

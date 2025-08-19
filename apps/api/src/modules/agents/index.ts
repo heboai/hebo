@@ -1,8 +1,7 @@
 import { Elysia } from "elysia";
 
-import { db } from "@hebo/db";
-
 import { auditFields } from "~/middlewares/audit-fields";
+import { withRequestTransaction } from "~/utils/request-db";
 
 import * as AgentsModel from "./model";
 import { AgentService } from "./service";
@@ -12,14 +11,13 @@ export const agentsModule = new Elysia({
   prefix: "/agents",
 })
   .use(auditFields)
-  .decorate("db", db)
   .post(
     "/",
-    async ({ body, set, auditFields, db }) => {
-      const agent = await AgentService.createAgent(db, body, auditFields);
+    withRequestTransaction(async ({ body, set, auditFields }) => {
+      const agent = await AgentService.createAgent(body, auditFields);
       set.status = 201;
       return agent;
-    },
+    }),
     {
       body: AgentsModel.CreateBody,
       response: {
@@ -32,8 +30,8 @@ export const agentsModule = new Elysia({
   // TODO: include the 'expand' option
   .get(
     "/",
-    async ({ set, db }) => {
-      const agentList = await AgentService.listAgents(db);
+    async ({ set }) => {
+      const agentList = await AgentService.listAgents();
       set.status = 200;
       return agentList;
     },
@@ -42,8 +40,8 @@ export const agentsModule = new Elysia({
   // TODO: include the 'expand' option
   .get(
     "/:agentSlug",
-    async ({ params, set, db }) => {
-      const agent = await AgentService.getAgentBySlug(db, params.agentSlug);
+    async ({ params, set }) => {
+      const agent = await AgentService.getAgentBySlug(params.agentSlug);
       set.status = 200;
       return agent;
     },
@@ -54,16 +52,15 @@ export const agentsModule = new Elysia({
   )
   .put(
     "/:agentSlug",
-    async ({ body, params, set, auditFields, db }) => {
+    withRequestTransaction(async ({ body, params, set, auditFields }) => {
       const agent = await AgentService.updateAgent(
-        db,
         params.agentSlug,
         body,
         auditFields,
       );
       set.status = 200;
       return agent;
-    },
+    }),
     {
       params: AgentsModel.PathParam,
       body: AgentsModel.UpdateBody,
@@ -72,9 +69,8 @@ export const agentsModule = new Elysia({
   )
   .delete(
     "/:agentSlug",
-    async ({ params, set, auditFields, db }) => {
+    async ({ params, set, auditFields }) => {
       const agent = await AgentService.softDeleteAgent(
-        db,
         params.agentSlug,
         auditFields,
       );
