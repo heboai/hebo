@@ -52,7 +52,7 @@ export const agentsModule = new Elysia({
   )
   .put(
     "/:agentSlug",
-    withRequestTransaction(async ({ body, params, set, userId }) => {
+    async ({ body, params, set, userId }) => {
       const agent = await AgentService.updateAgent(
         params.agentSlug,
         body,
@@ -60,7 +60,7 @@ export const agentsModule = new Elysia({
       );
       set.status = 200;
       return agent;
-    }),
+    },
     {
       params: AgentsModel.PathParam,
       body: AgentsModel.UpdateBody,

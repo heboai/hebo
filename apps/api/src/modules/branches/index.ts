@@ -3,7 +3,6 @@ import { Elysia, t } from "elysia";
 import { agentId } from "~/middlewares/agent-id";
 import { userId } from "~/middlewares/user-id";
 import * as AgentsModel from "~/modules/agents/model";
-import { withRequestTransaction } from "~/utils/request-db";
 
 import * as BranchesModel from "./model";
 import { BranchService } from "./service";
@@ -17,11 +16,11 @@ export const branchesModule = new Elysia({
   .post(
     "/",
     // TODO:use ajv to validate the models field
-    withRequestTransaction(async ({ body, set, agentId, userId }) => {
+    async ({ body, set, agentId, userId }) => {
       const branch = await BranchService.createBranch(agentId, body, userId);
       set.status = 201;
       return branch;
-    }),
+    },
     {
       params: AgentsModel.PathParam,
       body: BranchesModel.CreateBody,
@@ -65,7 +64,7 @@ export const branchesModule = new Elysia({
   )
   .put(
     "/:branchSlug",
-    withRequestTransaction(async ({ params, body, set, agentId, userId }) => {
+    async ({ params, body, set, agentId, userId }) => {
       const branch = await BranchService.updateBranch(
         agentId,
         params.branchSlug,
@@ -74,7 +73,7 @@ export const branchesModule = new Elysia({
       );
       set.status = 200;
       return branch;
-    }),
+    },
     {
       params: BranchesModel.PathParams,
       body: BranchesModel.UpdateBody,
