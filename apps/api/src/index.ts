@@ -1,3 +1,4 @@
+import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 
@@ -7,8 +8,9 @@ import { branchesModule } from "~/modules/branches";
 const PORT = Number(process.env.PORT) || 3001;
 
 const createApi = () =>
-  // TODO: include cors plugin
   new Elysia()
+    // make cors more strict for production
+    .use(cors())
     .use(
       swagger({
         documentation: {
