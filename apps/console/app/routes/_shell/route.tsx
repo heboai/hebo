@@ -94,6 +94,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
       {/* RIGHT SIDEBAR / PLAYGROUND */}
       <SidebarProvider
         defaultOpen={defaultOpen}
+        className="fixed"
         style={
           {
             "--sidebar-width": "24rem", // Tailwind w-96
