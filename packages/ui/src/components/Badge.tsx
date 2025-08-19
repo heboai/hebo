@@ -1,1 +1,1 @@
-export { Badge } from "@hebo/ui/_shadcn/ui/badge";
+export { Badge } from "@hebo/aikit-ui/src/_shadcn/ui/badge";

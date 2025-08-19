@@ -1,6 +1,6 @@
+import { Input as ShadCNInput } from "@hebo/aikit-ui/src/_shadcn/ui/input";
+import { cn } from "@hebo/aikit-ui/src/lib/utils";
 import { CopyToClipboardButton } from "@hebo/ui/_mintlify/code/CopyToClipboardButton";
-import { Input as ShadCNInput } from "@hebo/ui/_shadcn/ui/input";
-import { cn } from "@hebo/ui/lib/utils";
 
 import type { LucideIcon } from "lucide-react";
 

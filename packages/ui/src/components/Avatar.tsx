@@ -2,4 +2,4 @@ export {
   Avatar,
   AvatarImage,
   AvatarFallback,
-} from "@hebo/ui/_shadcn/ui/avatar";
+} from "@hebo/aikit-ui/src/_shadcn/ui/avatar.js";

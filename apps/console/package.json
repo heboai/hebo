@@ -19,6 +19,7 @@
     "@hebo/db": "workspace:*",
     "@hebo/shared-data": "workspace:*",
     "@hebo/ui": "workspace:*",
+    "@hebo/aikit-ui": "workspace:*",
     "@hookform/resolvers": "^5.2.1",
     "@react-router/fs-routes": "^7.8.1",
     "@react-router/node": "^7.8.1",
