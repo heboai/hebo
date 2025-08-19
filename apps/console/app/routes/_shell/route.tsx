@@ -22,6 +22,8 @@ import type { Route } from "./+types/route";
 import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
+import Chat from "@hebo/aikit-ui/src/blocks/Chat";
+import { SquareChevronRight } from "lucide-react";
 
 
 async function authMiddleware() {
@@ -88,6 +90,32 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
             <Outlet />
           </div>
         </main>
+      </SidebarProvider>
+      {/* RIGHT SIDEBAR / PLAYGROUND */}
+      <SidebarProvider
+        defaultOpen={defaultOpen}
+        style={
+          {
+            "--sidebar-width": "24rem", // Tailwind w-96
+            "--sidebar-width-mobile": "24rem",
+            "--sidebar-width-icon": "0rem", // No icon state, fully collapse
+          } as React.CSSProperties
+        }
+      >
+        {/* Floating trigger */}
+        <SidebarTrigger
+          icon={<SquareChevronRight size={24} color="black" />}
+          text="Playground"
+          className="fixed top-4 right-12 z-50 p-2"
+        />
+
+        <Sidebar side="right" collapsible="offcanvas">
+          <SidebarContent>
+            <Chat />
+          </SidebarContent>
+
+          <SidebarRail />
+        </Sidebar>
       </SidebarProvider>
     </div>
   );
