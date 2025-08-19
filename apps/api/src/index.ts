@@ -29,7 +29,7 @@ const createApi = () =>
 if (import.meta.main) {
   const app = createApi().listen(PORT);
   console.log(
-    `🚀 Hebo API listening on ${app.server!.url} (Bun ${process.version})`,
+    `🚀 Hebo API listening on ${app.server!.url} (Bun ${Bun.version})`,
   );
 }
 

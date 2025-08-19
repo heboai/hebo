@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 
-import { auditFields } from "~/middlewares/audit-fields";
+import { userId } from "~/middlewares/user-id";
 import { withRequestTransaction } from "~/utils/request-db";
 
 import * as AgentsModel from "./model";
@@ -10,11 +10,11 @@ export const agentsModule = new Elysia({
   name: "agents-module",
   prefix: "/agents",
 })
-  .use(auditFields)
+  .use(userId)
   .post(
     "/",
-    withRequestTransaction(async ({ body, set, auditFields }) => {
-      const agent = await AgentService.createAgent(body, auditFields);
+    withRequestTransaction(async ({ body, set, userId }) => {
+      const agent = await AgentService.createAgent(body, userId);
       set.status = 201;
       return agent;
     }),
@@ -30,8 +30,8 @@ export const agentsModule = new Elysia({
   // TODO: include the 'expand' option
   .get(
     "/",
-    async ({ set }) => {
-      const agentList = await AgentService.listAgents();
+    async ({ set, userId }) => {
+      const agentList = await AgentService.listAgents(userId);
       set.status = 200;
       return agentList;
     },
@@ -40,8 +40,8 @@ export const agentsModule = new Elysia({
   // TODO: include the 'expand' option
   .get(
     "/:agentSlug",
-    async ({ params, set }) => {
-      const agent = await AgentService.getAgentBySlug(params.agentSlug);
+    async ({ params, set, userId }) => {
+      const agent = await AgentService.getAgentBySlug(params.agentSlug, userId);
       set.status = 200;
       return agent;
     },
@@ -52,11 +52,11 @@ export const agentsModule = new Elysia({
   )
   .put(
     "/:agentSlug",
-    withRequestTransaction(async ({ body, params, set, auditFields }) => {
+    withRequestTransaction(async ({ body, params, set, userId }) => {
       const agent = await AgentService.updateAgent(
         params.agentSlug,
         body,
-        auditFields,
+        userId,
       );
       set.status = 200;
       return agent;
@@ -69,10 +69,10 @@ export const agentsModule = new Elysia({
   )
   .delete(
     "/:agentSlug",
-    async ({ params, set, auditFields }) => {
+    async ({ params, set, userId }) => {
       const agent = await AgentService.softDeleteAgent(
         params.agentSlug,
-        auditFields,
+        userId,
       );
       set.status = 204;
       return agent;

@@ -1,0 +1,75 @@
+import { and, isNull, sql, type SQL } from "drizzle-orm";
+
+import type { UniversalDbClient } from "./drizzle";
+
+// Minimal structural type for tables that include audit columns
+type TableWithAudit = {
+  deletedAt: unknown;
+  deletedBy: unknown;
+  createdBy: unknown;
+  updatedBy: unknown;
+  createdAt?: unknown;
+  updatedAt?: unknown;
+};
+
+export type AuditContext = { userId: string };
+
+/**
+ * Wraps a Drizzle table with helpers that automatically:
+ * - filter out soft-deleted records (deletedAt IS NULL)
+ * - set audit fields (createdBy/updatedBy/deletedBy, updatedAt) on writes
+ */
+export function withAudit<TTable extends TableWithAudit>(
+  table: TTable,
+  ctx: AuditContext,
+) {
+  return {
+    where(extra?: SQL) {
+      // NOTE: As soon as auth is implemented, also include user/tenant scoping here,
+      // e.g. and(eq(table.createdBy, ctx.userId), ...). For now we only filter soft-deleted rows.
+      // TODO: add user/tenant scoping here
+      return extra
+        ? and(isNull((table as any).deletedAt), extra)
+        : isNull((table as any).deletedAt);
+    },
+
+    select(db: UniversalDbClient, extra?: SQL) {
+      return (db as any)
+        .select()
+        .from(table as any)
+        .where(this.where(extra));
+    },
+
+    insert(db: UniversalDbClient, values: object) {
+      return (db as any).insert(table as any).values({
+        ...values,
+        createdBy: ctx.userId,
+        updatedBy: ctx.userId,
+        // keep server-side timestamps consistent regardless of client clock
+        createdAt: sql`now()`,
+        updatedAt: sql`now()`,
+      });
+    },
+
+    update(db: UniversalDbClient, values: object, extra?: SQL) {
+      return (db as any)
+        .update(table as any)
+        .set({
+          ...values,
+          updatedBy: ctx.userId,
+          updatedAt: sql`now()`,
+        })
+        .where(this.where(extra));
+    },
+
+    delete(db: UniversalDbClient, extra?: SQL) {
+      return (db as any)
+        .update(table as any)
+        .set({
+          deletedAt: sql`now()`,
+          deletedBy: ctx.userId,
+        })
+        .where(this.where(extra));
+    },
+  } as const;
+}

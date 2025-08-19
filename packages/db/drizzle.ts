@@ -69,3 +69,4 @@ export const db = initDb();
 export const typedDb: UniversalDb = db;
 
 export { isLocal } from "./utils";
+export * from "./audit-utils";
