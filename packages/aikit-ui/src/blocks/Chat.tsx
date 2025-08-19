@@ -3,7 +3,7 @@
 import { createGroq } from "@ai-sdk/groq";
 import { useChat } from "@ai-sdk/react";
 import { generateText } from "ai";
-import { Bot, PaperclipIcon } from "lucide-react";
+import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -26,6 +26,8 @@ import {
   PromptInputTools,
 } from "@hebo/aikit-ui/_ai-elements/prompt-input";
 
+import { Button } from "../_shadcn/ui/button";
+
 const models = [
   { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B" },
   { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B" },
@@ -39,9 +41,12 @@ export default function Chat() {
     apiKey: import.meta.env.VITE_GROQ_API_KEY,
   });
 
+  const handleReset = () => {
+    setMessages([]);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!text) return;
 
     const userMessage = {
@@ -51,11 +56,9 @@ export default function Chat() {
     };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages as any);
-
     setText("");
 
     try {
-      // Convert your message format to the format expected by generateText
       const conversationHistory = updatedMessages.map((msg: any) => ({
         role: msg.role as "user" | "assistant",
         content: msg.parts
@@ -73,20 +76,13 @@ export default function Chat() {
         role: "assistant",
         parts: [{ type: "text", text: outputText ?? "" }],
       };
-
       setMessages((prev: any) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Error generating text:", error);
-      // Optionally add an error message to the conversation
       const errorMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        parts: [
-          {
-            type: "text",
-            text: "Sorry, I encountered an error. Please try again.",
-          },
-        ],
+        parts: [{ type: "text", text: "Sorry, I encountered an error." }],
       };
       setMessages((prev: any) => [...prev, errorMessage]);
     }
@@ -94,6 +90,13 @@ export default function Chat() {
 
   return (
     <div className="flex h-full flex-col">
+      {/* Header Controls */}
+      <div className="absolute top-4 left-4 z-10 flex items-center">
+        <Button variant="ghost" size="icon" onClick={handleReset}>
+          <IterationCcw size={20} />
+        </Button>
+      </div>
+
       {/* Conversation area */}
       <Conversation>
         <ConversationContent>
@@ -138,10 +141,12 @@ export default function Chat() {
               </PromptInputModelSelectContent>
             </PromptInputModelSelect>
           </PromptInputTools>
+
           {/* Attachment button */}
           <PromptInputButton className="absolute right-10 bottom-1">
             <PaperclipIcon size={16} />
           </PromptInputButton>
+
           {/* Submit button */}
           <PromptInputSubmit
             disabled={!text}
