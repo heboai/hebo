@@ -21,10 +21,7 @@ export const AgentService = {
     const { defaultModel, ...agentData } = input;
 
     if (!SupportedModelNames.has(defaultModel))
-      throw status(
-        400,
-        "Invalid model name" satisfies AgentsModel.InvalidModel,
-      );
+      throw status(400, AgentsModel.InvalidModel.const);
 
     // Insert the agent record and its initial branch in a single transaction
     const agent = await db.transaction(async (tx) => {
@@ -40,11 +37,7 @@ export const AgentService = {
         .returning();
 
       // TODO: Apply a fallback strategy with retries with different slugs
-      if (!createdAgent)
-        throw status(
-          409,
-          "Agent with this name already exists" satisfies AgentsModel.AlreadyExists,
-        );
+      if (!createdAgent) throw status(409, AgentsModel.AlreadyExists.const);
 
       await BranchService.createInitialBranch(
         createdAgent.id,
@@ -75,7 +68,7 @@ export const AgentService = {
       .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)));
 
     if (!agent) {
-      throw status(404, "Agent not found" satisfies AgentsModel.NotFound);
+      throw status(404, AgentsModel.NotFound.const);
     }
     return agent;
   },
@@ -92,7 +85,7 @@ export const AgentService = {
       .returning();
 
     if (!agent) {
-      throw status(404, "Agent not found" satisfies AgentsModel.NotFound);
+      throw status(404, AgentsModel.NotFound.const);
     }
     return agent;
   },

@@ -11,6 +11,7 @@ import { createSlug } from "~/utils/create-slug";
 import * as BranchesModel from "./model";
 
 // TODO: reduce audit fields boilerplate by using helpers from the db package. example here: https://gist.github.com/heiwen/edda78c2b3f5c544cb71ade03ecc1110
+// TODO: make accept the client the default from the request context
 export const BranchService = {
   async createBranch(
     agentId: string,
@@ -32,11 +33,7 @@ export const BranchService = {
       .onConflictDoNothing()
       .returning();
 
-    if (!branch)
-      throw status(
-        409,
-        "Branch with this name already exists" satisfies BranchesModel.AlreadyExists,
-      );
+    if (!branch) throw status(409, BranchesModel.AlreadyExists.const);
 
     return branch;
   },
@@ -80,8 +77,7 @@ export const BranchService = {
         ),
       );
 
-    if (!branch)
-      throw status(404, "Branch not found" satisfies BranchesModel.NotFound);
+    if (!branch) throw status(404, BranchesModel.NotFound.const);
     return branch;
   },
 
@@ -103,8 +99,7 @@ export const BranchService = {
       )
       .returning();
 
-    if (!branch)
-      throw status(404, "Branch not found" satisfies BranchesModel.NotFound);
+    if (!branch) throw status(404, BranchesModel.NotFound.const);
     return branch;
   },
 };
