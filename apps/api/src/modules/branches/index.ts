@@ -1,8 +1,8 @@
 import { Elysia, t } from "elysia";
 
+import { getAuditFields } from "~/middlewares/get-audit-fields";
+import { verifyAgent } from "~/middlewares/verify-agent";
 import * as AgentsModel from "~/modules/agents/model";
-import { getAuditFields } from "~/modules/get-audit-fields";
-import { verifyAgent } from "~/modules/verify-agent";
 
 import * as BranchesModel from "./model";
 import { BranchService } from "./service";

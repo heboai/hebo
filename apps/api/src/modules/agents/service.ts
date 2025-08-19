@@ -5,8 +5,8 @@ import { db } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
 import supportedModels from "@hebo/shared-data/supported-models.json";
 
+import type { AuditFields } from "~/middlewares/get-audit-fields";
 import { BranchService } from "~/modules/branches/service";
-import type { AuditFields } from "~/modules/get-audit-fields";
 import { createSlug } from "~/utils/create-slug";
 
 import * as AgentsModel from "./model";

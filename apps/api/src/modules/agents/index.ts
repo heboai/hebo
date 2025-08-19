@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 
-import { getAuditFields } from "~/modules/get-audit-fields";
+import { getAuditFields } from "~/middlewares/get-audit-fields";
 
 import * as AgentsModel from "./model";
 import { AgentService } from "./service";
