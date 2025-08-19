@@ -10,6 +10,7 @@ import { createSlug } from "~/utils/create-slug";
 
 import * as BranchesModel from "./model";
 
+// TODO: reduce audit fields boilerplate by using helpers from the db package. example here: https://gist.github.com/heiwen/edda78c2b3f5c544cb71ade03ecc1110
 export const BranchService = {
   async createBranch(
     agentId: string,

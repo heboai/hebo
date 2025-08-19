@@ -13,6 +13,7 @@ import * as AgentsModel from "./model";
 
 const SupportedModelNames = new Set(supportedModels.map((m) => m.name));
 
+// TODO: reduce audit fields boilerplate by using helpers from the db package. example here: https://gist.github.com/heiwen/edda78c2b3f5c544cb71ade03ecc1110
 export const AgentService = {
   async createAgent(input: AgentsModel.CreateBody, auditFields: AuditFields) {
     const slug = createSlug(input.name, true);

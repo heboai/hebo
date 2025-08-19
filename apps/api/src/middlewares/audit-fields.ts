@@ -10,6 +10,8 @@ export type AuditFields = {
  * Dummy audit fields injector.
  * Replaces later with real auth; for now always uses "dummy".
  */
+
+// TODO: this middleware will be fully replaced by the real auth middleware
 export const auditFields = new Elysia({ name: "audit-fields" })
   .derive(() => {
     // TODO: Replace with real auth.
