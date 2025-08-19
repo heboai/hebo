@@ -54,7 +54,7 @@ cp .env.example .env
 
 ```bash
 # Init the development database
-bun run db:push
+bun run db:migrate
 ```
 
 ```bash
@@ -66,6 +66,16 @@ bun run dev
 # Start only the console in dev
 bun run -F @hebo/console dev
 ```
+
+```bash
+# Cleanup
+bun run clean
+```
+
+```bash
+# Cleanup just the DB package
+bun run -F @hebo/db clean 
+````
 
 ### Run modes
 
