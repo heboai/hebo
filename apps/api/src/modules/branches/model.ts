@@ -25,11 +25,11 @@ export type CreateBody = typeof CreateBody.static;
 export const UpdateBody = t.Omit(_updateBranch, [...OMIT_FIELDS, "slug"]);
 export type UpdateBody = typeof UpdateBody.static;
 
-export const Item = t.Omit(_selectBranch, [...OMIT_FIELDS]);
-export type Item = typeof Item.static;
+export const Branch = t.Omit(_selectBranch, [...OMIT_FIELDS]);
+export type Branch = typeof Branch.static;
 
-export const ItemList = t.Array(Item);
-export type ItemList = typeof ItemList.static;
+export const BranchList = t.Array(Branch);
+export type BranchList = typeof BranchList.static;
 
 export const PathParams = t.Object({
   ...AgentsModel.PathParam.properties,

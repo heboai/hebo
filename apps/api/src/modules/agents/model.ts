@@ -28,11 +28,11 @@ export type CreateBody = typeof CreateBody.static;
 export const UpdateBody = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
 export type UpdateBody = typeof UpdateBody.static;
 
-export const Item = t.Omit(_selectAgent, [...OMIT_FIELDS]);
-export type Item = typeof Item.static;
+export const Agent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
+export type Agent = typeof Agent.static;
 
-export const ItemList = t.Array(Item);
-export type ItemList = typeof ItemList.static;
+export const AgentList = t.Array(Agent);
+export type AgentList = typeof AgentList.static;
 
 export const NoContent = t.Void();
 export type NoContent = typeof NoContent.static;

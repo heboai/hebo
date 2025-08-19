@@ -20,7 +20,7 @@ export const agentsModule = new Elysia({
     {
       body: AgentsModel.CreateBody,
       response: {
-        201: AgentsModel.Item,
+        201: AgentsModel.Agent,
         400: AgentsModel.InvalidModel,
         409: AgentsModel.AlreadyExists,
       },
@@ -34,7 +34,7 @@ export const agentsModule = new Elysia({
       set.status = 200;
       return agentList;
     },
-    { response: AgentsModel.ItemList },
+    { response: AgentsModel.AgentList },
   )
   // TODO: include the 'expand' option
   .get(
@@ -46,7 +46,7 @@ export const agentsModule = new Elysia({
     },
     {
       params: AgentsModel.PathParam,
-      response: { 200: AgentsModel.Item, 404: AgentsModel.NotFound },
+      response: { 200: AgentsModel.Agent, 404: AgentsModel.NotFound },
     },
   )
   .put(
@@ -63,7 +63,7 @@ export const agentsModule = new Elysia({
     {
       params: AgentsModel.PathParam,
       body: AgentsModel.UpdateBody,
-      response: { 200: AgentsModel.Item, 404: AgentsModel.NotFound },
+      response: { 200: AgentsModel.Agent, 404: AgentsModel.NotFound },
     },
   )
   .delete(

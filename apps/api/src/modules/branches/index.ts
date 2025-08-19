@@ -29,7 +29,7 @@ export const branchesModule = new Elysia({
       params: AgentsModel.PathParam,
       body: BranchesModel.CreateBody,
       response: {
-        201: BranchesModel.Item,
+        201: BranchesModel.Branch,
         404: BranchesModel.AgentNotFound,
         409: BranchesModel.AlreadyExists,
       },
@@ -44,7 +44,7 @@ export const branchesModule = new Elysia({
     },
     {
       params: AgentsModel.PathParam,
-      response: BranchesModel.ItemList,
+      response: BranchesModel.BranchList,
     },
   )
   .get(
@@ -60,7 +60,7 @@ export const branchesModule = new Elysia({
     {
       params: BranchesModel.PathParams,
       response: {
-        200: BranchesModel.Item,
+        200: BranchesModel.Branch,
         404: t.Union([BranchesModel.AgentNotFound, BranchesModel.NotFound]),
       },
     },
@@ -81,7 +81,7 @@ export const branchesModule = new Elysia({
       params: BranchesModel.PathParams,
       body: BranchesModel.UpdateBody,
       response: {
-        200: BranchesModel.Item,
+        200: BranchesModel.Branch,
         404: t.Union([BranchesModel.AgentNotFound, BranchesModel.NotFound]),
       },
     },
