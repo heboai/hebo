@@ -96,7 +96,6 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
       <SidebarProvider
         shortcut="p"
         defaultOpen={defaultOpen}
-        className="fixed"
         style={
           {
             "--sidebar-width": "24rem", // Tailwind w-96
