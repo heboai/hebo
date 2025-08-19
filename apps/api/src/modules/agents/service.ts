@@ -1,7 +1,7 @@
 import { and, asc, eq, isNull } from "drizzle-orm";
 import { status } from "elysia";
 
-import { UniversalDbClient } from "@hebo/db";
+import type { UniversalDbClient } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
 import supportedModels from "@hebo/shared-data/supported-models.json";
 
