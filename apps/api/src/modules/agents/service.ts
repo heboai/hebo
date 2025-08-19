@@ -26,7 +26,7 @@ export const AgentService = {
     const client = getDb();
 
     // Insert the agent record and its initial branch; rely on request-level transaction when present
-    const [createdAgent] = await client
+    const [agent] = await client
       .insert(agents)
       .values({
         ...agentData,
@@ -38,15 +38,15 @@ export const AgentService = {
       .returning();
 
     // TODO: Apply a fallback strategy with retries with different slugs
-    if (!createdAgent) throw status(409, AgentsModel.AlreadyExists.const);
+    if (!agent) throw status(409, AgentsModel.AlreadyExists.const);
 
     await BranchService.createInitialBranch(
-      createdAgent.id,
+      agent.id,
       defaultModel,
       auditFields,
     );
 
-    return createdAgent;
+    return agent;
   },
 
   async listAgents() {
