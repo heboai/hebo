@@ -60,6 +60,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
     <div className="flex min-h-screen flex-col gap-4">
       <SidebarProvider
         defaultOpen={defaultOpen}
+        shortcut="b"
         style={
           {
             "--sidebar-width": "12rem",
@@ -93,6 +94,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
       </SidebarProvider>
       {/* RIGHT SIDEBAR / PLAYGROUND */}
       <SidebarProvider
+        shortcut="p"
         defaultOpen={defaultOpen}
         className="fixed"
         style={
