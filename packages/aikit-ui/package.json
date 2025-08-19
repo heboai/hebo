@@ -9,6 +9,7 @@
     "clean": "rimraf .turbo node_modules"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^2.0.10",
     "@ai-sdk/react": "^2.0.13",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.14",
@@ -35,6 +36,7 @@
     "react-dom": "^19.1"
   },
   "devDependencies": {
+    "@types/node": "^24.3.0",
     "@types/react": "^19.1",
     "@types/react-dom": "^19.1",
     "lucide-react": "^0.539.0",

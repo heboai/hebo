@@ -1,6 +1,8 @@
 "use client";
 
+import { createGroq } from "@ai-sdk/groq";
 import { useChat } from "@ai-sdk/react";
+import { generateText } from "ai";
 import { PaperclipIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -30,21 +32,64 @@ const models = [
 ];
 
 export default function Chat() {
-  const { messages, sendMessage, status } = useChat();
+  const { messages, setMessages, status } = useChat();
   const [text, setText] = useState("");
   const [model, setModel] = useState(models[0].id);
+  const groqModel = createGroq({
+    apiKey: import.meta.env.VITE_GROQ_API_KEY,
+  });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    sendMessage(
-      { text: text },
-      {
-        body: {
-          model: model,
-        },
-      },
-    );
+
+    if (!text) return;
+
+    const userMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      parts: [{ type: "text", text }],
+    };
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages as any);
+
     setText("");
+
+    try {
+      // Convert your message format to the format expected by generateText
+      const conversationHistory = updatedMessages.map((msg: any) => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.parts
+          .filter((p: any) => p.type === "text")
+          .map((p: any) => ({ type: "text" as const, text: p.text })),
+      }));
+
+      const { text: outputText } = await generateText({
+        model: groqModel(model),
+        messages: conversationHistory,
+      });
+
+      const assistantMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        parts: [{ type: "text", text: outputText ?? "" }],
+      };
+
+      setMessages((prev: any) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Error generating text:", error);
+      // Optionally add an error message to the conversation
+      const errorMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        parts: [
+          {
+            type: "text",
+            text: "Sorry, I encountered an error. Please try again.",
+          },
+        ],
+      };
+      setMessages((prev: any) => [...prev, errorMessage]);
+    }
   };
 
   return (
@@ -52,12 +97,12 @@ export default function Chat() {
       {/* Conversation area */}
       <Conversation>
         <ConversationContent>
-          {messages.map((m) => (
+          {messages.map((m: any) => (
             <Message from={m.role} key={m.id}>
               <MessageContent>
                 {m.parts
-                  .filter((p) => p.type === "text")
-                  .map((p, i) => (
+                  .filter((p: any) => p.type === "text")
+                  .map((p: any, i: number) => (
                     <div key={`${m.id}-${i}`}>{p.text}</div>
                   ))}
               </MessageContent>
