@@ -5,7 +5,7 @@ import { db } from "@hebo/db";
 import type { UniversalDbClient } from "@hebo/db";
 import { branches } from "@hebo/db/schema/branches";
 
-import type { AuditFields } from "~/middlewares/get-audit-fields";
+import type { AuditFields } from "~/middlewares/audit-fields";
 import { createSlug } from "~/utils/create-slug";
 
 import * as BranchesModel from "./model";

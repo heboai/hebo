@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 
-import { getAuditFields } from "~/middlewares/get-audit-fields";
+import { auditFields } from "~/middlewares/audit-fields";
 
 import * as AgentsModel from "./model";
 import { AgentService } from "./service";
@@ -9,7 +9,7 @@ export const agentsModule = new Elysia({
   name: "agents-module",
   prefix: "/agents",
 })
-  .use(getAuditFields)
+  .use(auditFields)
   .post(
     "/",
     async ({ body, set, auditFields }) => {

@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 
-import { getAuditFields } from "~/middlewares/get-audit-fields";
-import { verifyAgent } from "~/middlewares/verify-agent";
+import { agentId } from "~/middlewares/agent-id";
+import { auditFields } from "~/middlewares/audit-fields";
 import * as AgentsModel from "~/modules/agents/model";
 
 import * as BranchesModel from "./model";
@@ -11,8 +11,8 @@ export const branchesModule = new Elysia({
   name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
-  .use(getAuditFields)
-  .use(verifyAgent)
+  .use(auditFields)
+  .use(agentId)
   .post(
     "/",
     // TODO:use ajv to validate the models field

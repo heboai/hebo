@@ -4,7 +4,7 @@ import { Elysia, status } from "elysia";
 import { db } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
 
-export const verifyAgent = new Elysia({ name: "verify-agent" })
+export const agentId = new Elysia({ name: "agent-id" })
   .derive(async ({ params }) => {
     const agentSlug = (params as { agentSlug?: string }).agentSlug;
 
