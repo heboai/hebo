@@ -1,5 +1,7 @@
 import { Elysia } from "elysia";
 
+import { db } from "@hebo/db";
+
 import { auditFields } from "~/middlewares/audit-fields";
 
 import * as AgentsModel from "./model";
@@ -10,10 +12,11 @@ export const agentsModule = new Elysia({
   prefix: "/agents",
 })
   .use(auditFields)
+  .decorate("db", db)
   .post(
     "/",
-    async ({ body, set, auditFields }) => {
-      const agent = await AgentService.createAgent(body, auditFields);
+    async ({ body, set, auditFields, db }) => {
+      const agent = await AgentService.createAgent(db, body, auditFields);
       set.status = 201;
       return agent;
     },
@@ -29,8 +32,8 @@ export const agentsModule = new Elysia({
   // TODO: include the 'expand' option
   .get(
     "/",
-    async ({ set }) => {
-      const agentList = await AgentService.listAgents();
+    async ({ set, db }) => {
+      const agentList = await AgentService.listAgents(db);
       set.status = 200;
       return agentList;
     },
@@ -39,8 +42,8 @@ export const agentsModule = new Elysia({
   // TODO: include the 'expand' option
   .get(
     "/:agentSlug",
-    async ({ params, set }) => {
-      const agent = await AgentService.getAgentBySlug(params.agentSlug);
+    async ({ params, set, db }) => {
+      const agent = await AgentService.getAgentBySlug(db, params.agentSlug);
       set.status = 200;
       return agent;
     },
@@ -51,8 +54,9 @@ export const agentsModule = new Elysia({
   )
   .put(
     "/:agentSlug",
-    async ({ body, params, set, auditFields }) => {
+    async ({ body, params, set, auditFields, db }) => {
       const agent = await AgentService.updateAgent(
+        db,
         params.agentSlug,
         body,
         auditFields,
@@ -68,8 +72,9 @@ export const agentsModule = new Elysia({
   )
   .delete(
     "/:agentSlug",
-    async ({ params, set, auditFields }) => {
+    async ({ params, set, auditFields, db }) => {
       const agent = await AgentService.softDeleteAgent(
+        db,
         params.agentSlug,
         auditFields,
       );

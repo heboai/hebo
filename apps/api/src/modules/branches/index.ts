@@ -1,5 +1,7 @@
 import { Elysia, t } from "elysia";
 
+import { db } from "@hebo/db";
+
 import { agentId } from "~/middlewares/agent-id";
 import { auditFields } from "~/middlewares/audit-fields";
 import * as AgentsModel from "~/modules/agents/model";
@@ -13,11 +15,13 @@ export const branchesModule = new Elysia({
 })
   .use(auditFields)
   .use(agentId)
+  .decorate("db", db)
   .post(
     "/",
     // TODO:use ajv to validate the models field
-    async ({ body, set, agentId, auditFields }) => {
+    async ({ body, set, agentId, auditFields, db }) => {
       const branch = await BranchService.createBranch(
+        db,
         agentId,
         body,
         auditFields,
@@ -37,8 +41,8 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/",
-    async ({ set, agentId }) => {
-      const list = await BranchService.listBranches(agentId);
+    async ({ set, agentId, db }) => {
+      const list = await BranchService.listBranches(db, agentId);
       set.status = 200;
       return list;
     },
@@ -49,8 +53,9 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/:branchSlug",
-    async ({ params, set, agentId }) => {
+    async ({ params, set, agentId, db }) => {
       const branch = await BranchService.getBranchBySlug(
+        db,
         agentId,
         params.branchSlug,
       );
@@ -67,8 +72,9 @@ export const branchesModule = new Elysia({
   )
   .put(
     "/:branchSlug",
-    async ({ params, body, set, agentId, auditFields }) => {
+    async ({ params, body, set, agentId, auditFields, db }) => {
       const branch = await BranchService.updateBranch(
+        db,
         agentId,
         params.branchSlug,
         body,

@@ -8,6 +8,7 @@ import { branchesModule } from "~/modules/branches";
 const PORT = Number(process.env.PORT) || 3001;
 
 const createApi = () =>
+  // TODO: add logger
   new Elysia()
     // make cors more strict for production
     .use(cors())
