@@ -1,10 +1,8 @@
 "use client";
 
 import { createGroq } from "@ai-sdk/groq";
-import { useChat } from "@ai-sdk/react";
 import { generateText } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState } from "react";
 
 import {
   Conversation,
@@ -27,64 +25,81 @@ import {
 } from "@hebo/aikit-ui/_ai-elements/prompt-input";
 
 import { Button } from "../_shadcn/ui/button";
+import { useChat } from "../hooks/use-chat";
+import { ChatMessage } from "../types/chat";
 
+// Models configuration
 const models = [
   { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B" },
   { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B" },
 ];
 
 export default function Chat() {
-  const { messages, setMessages, status } = useChat();
-  const [text, setText] = useState("");
-  const [model, setModel] = useState(models[0].id);
+  const { state, actions } = useChat();
+
   const groqModel = createGroq({
     apiKey: import.meta.env.VITE_GROQ_API_KEY,
   });
 
   const handleReset = () => {
-    setMessages([]);
+    actions.clearMessages();
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!text) return;
+    if (!state.currentInput.trim()) return;
 
-    const userMessage = {
+    actions.setLoading(true);
+    actions.setError(undefined);
+
+    // Add user message
+    const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: "user",
-      parts: [{ type: "text", text }],
+      parts: [{ type: "text", text: state.currentInput }],
     };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages as any);
-    setText("");
+
+    actions.addMessage(userMessage);
+    actions.setInput("");
 
     try {
-      const conversationHistory = updatedMessages.map((msg: any) => ({
-        role: msg.role as "user" | "assistant",
-        content: msg.parts
-          .filter((p: any) => p.type === "text")
-          .map((p: any) => ({ type: "text" as const, text: p.text })),
-      }));
+      // Prepare conversation history for API
+      const conversationHistory = [...state.messages, userMessage].map(
+        (msg) => ({
+          role: msg.role as "user" | "assistant",
+          content: msg.parts
+            .filter((p) => p.type === "text")
+            .map((p) => ({ type: "text" as const, text: p.text })),
+        }),
+      );
 
+      // Generate AI response
       const { text: outputText } = await generateText({
-        model: groqModel(model),
+        model: groqModel(state.currentModel),
         messages: conversationHistory,
       });
 
-      const assistantMessage = {
+      // Add AI response
+      const assistantMessage: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
         parts: [{ type: "text", text: outputText ?? "" }],
       };
-      setMessages((prev: any) => [...prev, assistantMessage]);
+
+      actions.addMessage(assistantMessage);
     } catch (error) {
       console.error("Error generating text:", error);
-      const errorMessage = {
+
+      const errorMessage: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
         parts: [{ type: "text", text: "Sorry, I encountered an error." }],
       };
-      setMessages((prev: any) => [...prev, errorMessage]);
+
+      actions.addMessage(errorMessage);
+      actions.setError("Failed to generate response");
+    } finally {
+      actions.setLoading(false);
     }
   };
 
@@ -100,12 +115,12 @@ export default function Chat() {
       {/* Conversation area */}
       <Conversation>
         <ConversationContent>
-          {messages.map((m: any) => (
+          {state.messages.map((m) => (
             <Message from={m.role} key={m.id}>
               <MessageContent>
                 {m.parts
-                  .filter((p: any) => p.type === "text")
-                  .map((p: any, i: number) => (
+                  .filter((p) => p.type === "text")
+                  .map((p, i) => (
                     <div key={`${m.id}-${i}`}>{p.text}</div>
                   ))}
               </MessageContent>
@@ -118,15 +133,17 @@ export default function Chat() {
       {/* Input area */}
       <PromptInput onSubmit={handleSubmit} className="relative mt-4">
         <PromptInputTextarea
-          onChange={(e) => setText(e.target.value)}
-          value={text}
+          onChange={(e) => actions.setInput(e.target.value)}
+          value={state.currentInput}
+          disabled={state.isLoading}
         />
         <PromptInputToolbar>
           <PromptInputTools>
             {/* Model selector */}
             <PromptInputModelSelect
-              onValueChange={(value) => setModel(value)}
-              value={model}
+              onValueChange={actions.setModel}
+              value={state.currentModel}
+              disabled={state.isLoading}
             >
               <PromptInputModelSelectTrigger>
                 <Bot />
@@ -143,18 +160,27 @@ export default function Chat() {
           </PromptInputTools>
 
           {/* Attachment button */}
-          <PromptInputButton className="absolute right-10 bottom-1">
+          <PromptInputButton
+            className="absolute right-10 bottom-1"
+            disabled={state.isLoading}
+          >
             <PaperclipIcon size={16} />
           </PromptInputButton>
 
           {/* Submit button */}
           <PromptInputSubmit
-            disabled={!text}
-            status={status}
+            disabled={!state.currentInput.trim() || state.isLoading}
             className="absolute right-1 bottom-1"
           />
         </PromptInputToolbar>
       </PromptInput>
+
+      {/* Error display */}
+      {state.error && (
+        <div className="mt-2 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
+          {state.error}
+        </div>
+      )}
     </div>
   );
 }
