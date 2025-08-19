@@ -9,4 +9,4 @@ export const AUDIT_FIELDS = [
   "deletedAt",
 ] as const;
 
-export const ID_FIELDS = ["id", "slug"] as const;
+export const ID_FIELDS = ["id"] as const;

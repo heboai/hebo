@@ -5,6 +5,8 @@ import { agents } from "./agents";
 import { audit } from "./mixin/audit";
 import { slug } from "./mixin/slug";
 
+type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
+
 export const branches = pgTable(
   "branches",
   {
@@ -13,7 +15,7 @@ export const branches = pgTable(
       .references(() => agents.id, { onDelete: "cascade" })
       .notNull(),
     ...slug,
-    models: jsonb("models").notNull(),
+    models: jsonb("models").$type<Json>().notNull(),
     ...audit,
   },
   (table) => [
