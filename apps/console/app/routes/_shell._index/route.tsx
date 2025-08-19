@@ -7,8 +7,8 @@ async function defaultAgentMiddleware() {
 
   // FUTURE fade-in the next page
   // FUTURE remember last agent in sessions storage
-  if (agents.length > 0) {
-    throw redirect(`/agent/${agents[0]?.slug}`);
+  if (agents!.length > 0) {
+    throw redirect(`/agent/${agents![0]?.slug}`);
   }
   throw redirect("/agent/create");
 }
