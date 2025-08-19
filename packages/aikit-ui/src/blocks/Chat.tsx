@@ -3,7 +3,7 @@
 import { createGroq } from "@ai-sdk/groq";
 import { useChat } from "@ai-sdk/react";
 import { generateText } from "ai";
-import { PaperclipIcon } from "lucide-react";
+import { Bot, PaperclipIcon } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -126,6 +126,7 @@ export default function Chat() {
               value={model}
             >
               <PromptInputModelSelectTrigger>
+                <Bot />
                 <PromptInputModelSelectValue />
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>

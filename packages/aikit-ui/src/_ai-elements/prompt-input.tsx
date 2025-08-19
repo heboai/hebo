@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2Icon, SendIcon, SquareIcon, XIcon } from "lucide-react";
+import { Loader2Icon, SendHorizontal, SquareIcon, XIcon } from "lucide-react";
 import { Children } from "react";
 
 import {
@@ -149,13 +149,13 @@ export type PromptInputSubmitProps = ComponentProps<typeof Button> & {
 
 export function PromptInputSubmit({
   className,
-  variant = "default",
+  variant = "ghost",
   size = "icon",
   status,
   children,
   ...props
 }: PromptInputSubmitProps) {
-  let Icon = <SendIcon className="size-4" />;
+  let Icon = <SendHorizontal className="size-4" />;
 
   switch (status) {
     case "submitted": {
