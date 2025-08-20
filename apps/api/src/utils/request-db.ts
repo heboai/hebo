@@ -35,6 +35,11 @@ export const withRequestTransaction = <TArgs extends unknown[], TResult>(
 export const runInRequestTransaction = <T>(
   fn: () => Promise<T>,
 ): Promise<T> => {
+  // Usage guidance:
+  // - Call at request/handler boundaries to ensure a transaction exists for the whole unit of work.
+  // - If a transaction already exists in ALS, this reuses it (no nested transactions are created).
+  // - Use only when multiple DB operations must be atomic; do not wrap individual queries.
+  // - Always access the client via `getDb()` so calls participate in the active transaction.
   const existing = requestDbStorage.getStore();
   if (existing) return fn();
   return baseDb.transaction((tx) => runWithRequestDb(tx, fn));
