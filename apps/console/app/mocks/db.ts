@@ -1,13 +1,14 @@
-import { factory, primaryKey } from "@mswjs/data";
+import { factory, primaryKey, manyOf } from "@mswjs/data";
 
 export const db = factory({
   agent: {
     slug: primaryKey(String),
     name: String,
-    branches: (): string[] => [],
+    branches: manyOf("branch"),
   },
   branch: {
-    slug: primaryKey(String),
+    id: primaryKey(() => crypto.randomUUID()),
+    slug: String,
     name: String,
   },
 });
