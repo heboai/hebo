@@ -34,25 +34,18 @@ export const UpdateBody = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
 export type UpdateBody = typeof UpdateBody.static;
 
 export const Agent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
-export type Agent = typeof Agent.static;
 
 export const AgentList = t.Array(Agent);
-export type AgentList = typeof AgentList.static;
 
 export const NoContent = t.Void();
-export type NoContent = typeof NoContent.static;
 
 export const PathParam = t.Object({
   agentSlug: _createAgent.properties.slug,
 });
-export type PathParam = typeof PathParam.static;
 
 // Error DTOs
 export const InvalidModel = t.Literal("Invalid model name");
-export type InvalidModel = typeof InvalidModel.static;
 
 export const AlreadyExists = t.Literal("Agent with this name already exists");
-export type AlreadyExists = typeof AlreadyExists.static;
 
 export const NotFound = t.Literal("Agent not found");
-export type NotFound = typeof NotFound.static;

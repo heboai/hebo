@@ -26,23 +26,17 @@ export const UpdateBody = t.Omit(_updateBranch, [...OMIT_FIELDS, "slug"]);
 export type UpdateBody = typeof UpdateBody.static;
 
 export const Branch = t.Omit(_selectBranch, [...OMIT_FIELDS]);
-export type Branch = typeof Branch.static;
 
 export const BranchList = t.Array(Branch);
-export type BranchList = typeof BranchList.static;
 
 export const PathParams = t.Object({
   ...AgentsModel.PathParam.properties,
   branchSlug: _createBranch.properties.slug,
 });
-export type PathParams = typeof PathParams.static;
 
 // Error DTOs
 export const AlreadyExists = t.Literal("Branch with this name already exists");
-export type AlreadyExists = typeof AlreadyExists.static;
 
 export const NotFound = t.Literal("Branch not found");
-export type NotFound = typeof NotFound.static;
 
 export const AgentNotFound = t.Literal("Agent not found");
-export type AgentNotFound = typeof AgentNotFound.static;
