@@ -7,7 +7,7 @@ import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@hebo/aikit-ui/src/hooks/use-mobile"
 import { cn } from "@hebo/aikit-ui/src/lib/utils"
-import { Button } from "@hebo/ui/_shadcn/ui/button"
+import { Button } from "@hebo/aikit-ui/src/_shadcn/ui/button"
 import { Input } from "@hebo/ui/_shadcn/ui/input"
 import { Separator } from "@hebo/ui/_shadcn/ui/separator"
 import {
@@ -30,7 +30,6 @@ const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
-const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
@@ -57,6 +56,7 @@ function SidebarProvider({
   defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
+  shortcut = "b",
   className,
   style,
   children,
@@ -65,6 +65,7 @@ function SidebarProvider({
   defaultOpen?: boolean
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  shortcut?: string
 }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
@@ -97,7 +98,7 @@ function SidebarProvider({
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
-        event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
+        event.key === shortcut &&
         (event.metaKey || event.ctrlKey)
       ) {
         event.preventDefault()
@@ -253,11 +254,19 @@ function Sidebar({
   )
 }
 
+
+interface SidebarTriggerProps extends React.ComponentProps<typeof Button> {
+  icon?: React.ReactNode
+  text?: string
+}
+
 function SidebarTrigger({
   className,
   onClick,
+  icon = <PanelLeftIcon />, // default icon
+  text = "",  // default text
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: SidebarTriggerProps) {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -273,11 +282,12 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
+      {icon}
+      <span>{text}</span>
     </Button>
   )
 }
+
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
   const { toggleSidebar } = useSidebar()

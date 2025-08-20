@@ -14,4 +14,4 @@ export {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
-} from "@hebo/aikit-ui/src/_shadcn/ui/dropdown-menu";
+} from "@hebo/ui/_shadcn/ui/dropdown-menu";

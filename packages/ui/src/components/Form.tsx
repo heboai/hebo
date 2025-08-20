@@ -7,4 +7,4 @@ export {
   FormDescription,
   FormMessage,
   FormField,
-} from "@hebo/aikit-ui/src/_shadcn/ui/form";
+} from "@hebo/ui/_shadcn/ui/form";
