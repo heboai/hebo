@@ -3,46 +3,36 @@ import slugify from "slugify";
 
 import { db } from "~/mocks/db";
 
-if (!db.hasCollection("branches")) {
-  db.createCollection("branches");
-  db.getCollection("branches").insert({
-    name: "main",
-    slug: "main",
-  });
-}
-
-interface Branch {
-  name: string;
-}
-
 export const branchHandlers = [
   http.post<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async ({ request }) => {
-      const body = (await request.json()) as Branch;
+      const body = (await request.json()) as ReturnType<
+        typeof db.branch.create
+      >;
 
-      const tmpBranch = {
+      const branch = {
         name: body.name,
         slug: slugify(body.name, { lower: true, strict: true }),
       };
 
-      if (db.getCollection("branches").findBy({ slug: tmpBranch.slug })) {
+      try {
+        db.branch.create(branch);
+      } catch {
         return new HttpResponse("Branch with the same name already exists", {
-          status: 400,
+          status: 409,
         });
       }
 
-      const newBranch = db.getCollection("branches").insert(tmpBranch);
-
       await delay(200);
-      return HttpResponse.json(newBranch, { status: 201 });
+      return HttpResponse.json(branch, { status: 201 });
     },
   ),
 
   http.get<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async () => {
-      const branches = db.getCollection("branches").records;
+      const branches = db.branch.getAll();
 
       await delay(1000);
       return HttpResponse.json(branches);

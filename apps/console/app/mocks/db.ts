@@ -1,14 +1,13 @@
-import DB from "~/mocks/_miragejs/orm/db/DB";
-import type DbCollection from "~/mocks/_miragejs/orm/db/DbCollection";
+import { factory, primaryKey } from "@mswjs/data";
 
-type MockCollections = Record<
-  string,
-  DbCollection<Record<string, unknown>, string>
->;
-
-declare global {
-  var __heboDb: DB<MockCollections> | undefined;
-}
-
-// Initialize DB only once
-export const db = globalThis.__heboDb ?? new DB<MockCollections>();
+export const db = factory({
+  agent: {
+    slug: primaryKey(String),
+    name: String,
+    branches: (): string[] => [],
+  },
+  branch: {
+    slug: primaryKey(String),
+    name: String,
+  },
+});
