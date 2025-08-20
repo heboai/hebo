@@ -23,6 +23,21 @@ type PgliteDb = PgliteDatabase<typeof postgresSchema>;
 type PostgresDb = NodePgDatabase<typeof postgresSchema>;
 export type UniversalDb = PgliteDb & PostgresDb;
 
+// Extract transaction client types for both drivers and expose a unified type
+type PostgresTx = Parameters<PostgresDb["transaction"]>[0] extends (
+  tx: infer T,
+  ...args: any
+) => any
+  ? T
+  : never;
+type PgliteTx = Parameters<PgliteDb["transaction"]>[0] extends (
+  tx: infer T,
+  ...args: any
+) => any
+  ? T
+  : never;
+export type UniversalDbClient = UniversalDb | PostgresTx | PgliteTx;
+
 // Factory function to build the correct DB instance at module init.
 const initDb = (): UniversalDb => {
   if (isLocal) {

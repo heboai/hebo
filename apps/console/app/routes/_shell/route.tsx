@@ -35,7 +35,7 @@ export const unstable_clientMiddleware = [authMiddleware];
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents } = await api.agents.get();
 
-  const activeAgent = params.slug ? agents.find((a) => a.slug === params.slug) : undefined;
+  const activeAgent = params.slug ? agents!.find((a) => a.slug === params.slug) : undefined;
 
   if (params.slug && !activeAgent)
     throw new Response("Agent Not Found", { status: 404 });
@@ -70,7 +70,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
         <Sidebar collapsible="icon">
           <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
             <SidebarHeader>
-                <AgentSelect activeAgent={loaderData.activeAgent} agents={loaderData.agents} />
+                <AgentSelect activeAgent={loaderData.activeAgent} agents={loaderData.agents!} />
             </SidebarHeader>
             <SidebarContent />
             <SidebarFooter>
