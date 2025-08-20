@@ -31,3 +31,6 @@ export const withRequestTransaction = <TArgs extends unknown[], TResult>(
     );
   };
 };
+
+export const inRequestTx = <T>(fn: () => Promise<T>) =>
+  withRequestTransaction(fn);

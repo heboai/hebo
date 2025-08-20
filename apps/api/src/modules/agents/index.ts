@@ -1,7 +1,6 @@
 import { Elysia } from "elysia";
 
 import { userId } from "~/middlewares/user-id";
-import { withRequestTransaction } from "~/utils/request-db";
 
 import * as AgentsModel from "./model";
 import { AgentService } from "./service";
@@ -13,11 +12,11 @@ export const agentsModule = new Elysia({
   .use(userId)
   .post(
     "/",
-    withRequestTransaction(async ({ body, set, userId }) => {
+    async ({ body, set, userId }) => {
       const agent = await AgentService.createAgent(body, userId);
       set.status = 201;
       return agent;
-    }),
+    },
     {
       body: AgentsModel.CreateBody,
       response: {

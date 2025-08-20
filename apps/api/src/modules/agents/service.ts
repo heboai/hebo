@@ -6,33 +6,33 @@ import { agents } from "@hebo/db/schema/agents";
 
 import { BranchService } from "~/modules/branches/service";
 import { createSlug } from "~/utils/create-slug";
-import { getDb } from "~/utils/request-db";
+import { getDb, inRequestTx } from "~/utils/request-db";
 
 import * as AgentsModel from "./model";
 
 export const AgentService = {
   async createAgent(input: AgentsModel.CreateBody, userId: string) {
-    const slug = createSlug(input.name, true);
+    return inRequestTx(async () => {
+      const slug = createSlug(input.name, true);
+      const { defaultModel, ...agentData } = input;
 
-    const { defaultModel, ...agentData } = input;
+      if (!AgentsModel.SupportedModelNames.has(defaultModel))
+        throw status(400, AgentsModel.InvalidModel.const);
 
-    if (!AgentsModel.SupportedModelNames.has(defaultModel))
-      throw status(400, AgentsModel.InvalidModel.const);
+      const agentsRepo = withAudit(agents, { userId });
 
-    const agentsRepo = withAudit(agents, { userId });
+      // Insert the agent record and its initial branch; rely on request-level transaction when present
+      const [agent] = await agentsRepo
+        .insert(getDb(), { ...agentData, slug })
+        .onConflictDoNothing()
+        .returning();
 
-    // Insert the agent record and its initial branch; rely on request-level transaction when present
-    const [agent] = await agentsRepo
-      .insert(getDb(), { ...agentData, slug })
-      .onConflictDoNothing()
-      .returning();
+      // FUTURE: Apply a fallback strategy with retries with different slugs
+      if (!agent) throw status(409, AgentsModel.AlreadyExists.const);
 
-    // FUTURE: Apply a fallback strategy with retries with different slugs
-    if (!agent) throw status(409, AgentsModel.AlreadyExists.const);
-
-    await BranchService.createInitialBranch(agent.id, defaultModel, userId);
-
-    return agent;
+      await BranchService.createInitialBranch(agent.id, defaultModel, userId);
+      return agent;
+    })();
   },
 
   async listAgents(userId: string) {
