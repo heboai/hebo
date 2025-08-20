@@ -26,14 +26,14 @@ export type UniversalDb = PgliteDb & PostgresDb;
 // Extract transaction client types for both drivers and expose a unified type
 type PostgresTx = Parameters<PostgresDb["transaction"]>[0] extends (
   tx: infer T,
-  ...args: any
-) => any
+  ...args: unknown[]
+) => unknown
   ? T
   : never;
 type PgliteTx = Parameters<PgliteDb["transaction"]>[0] extends (
   tx: infer T,
-  ...args: any
-) => any
+  ...args: unknown[]
+) => unknown
   ? T
   : never;
 export type UniversalDbClient = UniversalDb | PostgresTx | PgliteTx;
