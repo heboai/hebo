@@ -144,7 +144,7 @@ export default function Chat({ models, apiKey }: ChatProps) {
             >
               <PromptInputModelSelectTrigger>
                 <Bot />
-                <PromptInputModelSelectValue placeholder="Default Model" />
+                <PromptInputModelSelectValue />
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>
                 {models.map((m) => (
