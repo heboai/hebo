@@ -11,7 +11,7 @@ export const agentId = new Elysia({ name: "agent-id" })
     if (!agentSlug) throw status(400, "agentSlug is required");
 
     const [agent] = await db
-      .select()
+      .select({ id: agents.id })
       .from(agents)
       .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)));
 
