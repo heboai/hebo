@@ -1,8 +1,8 @@
 "use client";
 
 import { createGroq } from "@ai-sdk/groq";
-import { generateText } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
+import { useState } from "react";
 
 import {
   Conversation,
@@ -25,79 +25,92 @@ import {
 } from "@hebo/aikit-ui/_ai-elements/prompt-input";
 
 import { Button } from "../_shadcn/ui/button";
-import { useChat } from "../hooks/use-chat";
-import { ChatMessage, ChatProps } from "../types/chat";
+
+interface Model {
+  id: string;
+  name: string;
+}
+
+interface ChatProps {
+  models: Model[];
+  apiKey: string;
+}
 
 export default function Chat({ models, apiKey }: ChatProps) {
-  const { state, actions } = useChat();
+  const [currentModel, setCurrentModel] = useState(models[0]?.id || "");
 
   const groqModel = createGroq({
     apiKey,
   });
 
-  const handleReset = () => {
-    actions.clearMessages();
+  const [messages, setMessages] = useState<
+    Array<{
+      id: string;
+      role: "user" | "assistant";
+      content: string;
+    }>
+  >([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCustomSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!state.currentInput.trim()) return;
+    if (!input.trim() || isLoading) return;
 
-    actions.setLoading(true);
-    actions.setError(undefined);
+    setIsLoading(true);
 
     // Add user message
-    const userMessage: ChatMessage = {
+    const userMessage = {
       id: crypto.randomUUID(),
-      role: "user",
-      parts: [{ type: "text", text: state.currentInput }],
+      role: "user" as const,
+      content: input,
     };
 
-    actions.addMessage(userMessage);
-    actions.setInput("");
+    setMessages((prev) => [...prev, userMessage]);
+    setInput(""); // Clear input immediately
 
     try {
-      // Prepare conversation history for API
-      const conversationHistory = [...state.messages, userMessage].map(
-        (msg) => ({
-          role: msg.role as "user" | "assistant",
-          content: msg.parts
-            .filter((p) => p.type === "text")
-            .map((p) => ({ type: "text" as const, text: p.text })),
-        }),
-      );
+      const { generateText } = await import("ai");
+
+      // Prepare conversation history
+      const conversationHistory = [...messages, userMessage].map((msg) => ({
+        role: msg.role as "user" | "assistant",
+        content: msg.content,
+      }));
 
       // Generate AI response
       const { text: outputText } = await generateText({
-        model: groqModel(state.currentModel),
+        model: groqModel(currentModel),
         messages: conversationHistory,
       });
 
       // Add AI response
-      const assistantMessage: ChatMessage = {
+      const assistantMessage = {
         id: crypto.randomUUID(),
-        role: "assistant",
-        parts: [{ type: "text", text: outputText ?? "" }],
+        role: "assistant" as const,
+        content: outputText || "Sorry, I encountered an error.",
       };
 
-      actions.addMessage(assistantMessage);
-    } catch {
-      const errorMessage: ChatMessage = {
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Error generating response:", error);
+      const errorMessage = {
         id: crypto.randomUUID(),
-        role: "assistant",
-        parts: [
-          {
-            type: "text",
-            text: "Sorry, I encountered an error.",
-          },
-        ],
+        role: "assistant" as const,
+        content: "Sorry, I encountered an error.",
       };
-
-      actions.addMessage(errorMessage);
-      actions.setError("Failed to generate response");
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
-      actions.setLoading(false);
+      setIsLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    setMessages([]);
   };
 
   return (
@@ -112,14 +125,10 @@ export default function Chat({ models, apiKey }: ChatProps) {
       {/* Conversation area */}
       <Conversation>
         <ConversationContent>
-          {state.messages.map((m) => (
-            <Message from={m.role} key={m.id}>
+          {messages.map((message) => (
+            <Message from={message.role} key={message.id}>
               <MessageContent>
-                {m.parts
-                  .filter((p) => p.type === "text")
-                  .map((p, i) => (
-                    <div key={`${m.id}-${i}`}>{p.text}</div>
-                  ))}
+                <div>{message.content}</div>
               </MessageContent>
             </Message>
           ))}
@@ -128,28 +137,28 @@ export default function Chat({ models, apiKey }: ChatProps) {
       </Conversation>
 
       {/* Input area */}
-      <PromptInput onSubmit={handleSubmit} className="relative mt-4">
+      <PromptInput onSubmit={handleCustomSubmit} className="relative mt-4">
         <PromptInputTextarea
-          onChange={(e) => actions.setInput(e.target.value)}
-          value={state.currentInput}
-          disabled={state.isLoading}
+          onChange={handleInputChange}
+          value={input}
+          disabled={isLoading}
         />
         <PromptInputToolbar>
           <PromptInputTools>
             {/* Model selector */}
             <PromptInputModelSelect
-              onValueChange={actions.setModel}
-              value={state.currentModel}
-              disabled={state.isLoading}
+              onValueChange={setCurrentModel}
+              value={currentModel}
+              disabled={isLoading}
             >
               <PromptInputModelSelectTrigger>
                 <Bot />
                 <PromptInputModelSelectValue />
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>
-                {models.map((m) => (
-                  <PromptInputModelSelectItem key={m.id} value={m.id}>
-                    {m.name}
+                {models.map((model) => (
+                  <PromptInputModelSelectItem key={model.id} value={model.id}>
+                    {model.name}
                   </PromptInputModelSelectItem>
                 ))}
               </PromptInputModelSelectContent>
@@ -159,14 +168,14 @@ export default function Chat({ models, apiKey }: ChatProps) {
           {/* Attachment button */}
           <PromptInputButton
             className="absolute right-10 bottom-1"
-            disabled={state.isLoading}
+            disabled={isLoading}
           >
             <PaperclipIcon size={16} />
           </PromptInputButton>
 
           {/* Submit button */}
           <PromptInputSubmit
-            disabled={!state.currentInput.trim() || state.isLoading}
+            disabled={!input.trim() || isLoading}
             className="absolute right-1 bottom-1"
           />
         </PromptInputToolbar>
