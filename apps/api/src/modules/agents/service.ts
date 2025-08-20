@@ -6,13 +6,13 @@ import { withAudit } from "@hebo/db/utils/with-audit";
 
 import { BranchService } from "~/modules/branches/service";
 import { createSlug } from "~/utils/create-slug";
-import { getDb, inRequestTx } from "~/utils/request-db";
+import { getDb, runInRequestTransaction } from "~/utils/request-db";
 
 import * as AgentsModel from "./model";
 
 export const AgentService = {
   async createAgent(input: AgentsModel.CreateBody, userId: string) {
-    return inRequestTx(async () => {
+    return runInRequestTransaction(async () => {
       const slug = createSlug(input.name, true);
       const { defaultModel, ...agentData } = input;
 
@@ -32,7 +32,7 @@ export const AgentService = {
 
       await BranchService.createInitialBranch(agent.id, defaultModel, userId);
       return agent;
-    })();
+    });
   },
 
   async listAgents(userId: string) {

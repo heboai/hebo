@@ -32,5 +32,10 @@ export const withRequestTransaction = <TArgs extends unknown[], TResult>(
   };
 };
 
-export const inRequestTx = <T>(fn: () => Promise<T>) =>
-  withRequestTransaction(fn);
+export const runInRequestTransaction = <T>(
+  fn: () => Promise<T>,
+): Promise<T> => {
+  const existing = requestDbStorage.getStore();
+  if (existing) return fn();
+  return baseDb.transaction((tx) => runWithRequestDb(tx, fn));
+};
