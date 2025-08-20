@@ -36,7 +36,7 @@ interface ChatProps {
   apiKey: string;
 }
 
-export default function Chat({ models, apiKey }: ChatProps) {
+export function Chat({ models, apiKey }: ChatProps) {
   const [currentModel, setCurrentModel] = useState(models[0]?.id || "");
 
   const groqModel = createGroq({

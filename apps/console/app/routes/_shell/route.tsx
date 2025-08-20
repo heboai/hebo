@@ -22,7 +22,7 @@ import type { Route } from "./+types/route";
 import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
-import Chat from "@hebo/aikit-ui/src/blocks/Chat";
+import { Chat } from "@hebo/aikit-ui/src/blocks/Chat";
 import { SquareChevronRight } from "lucide-react";
 import supportedModels from "@hebo/shared-data/supported-models.json";
 
