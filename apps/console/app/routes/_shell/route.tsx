@@ -24,6 +24,7 @@ import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
 import Chat from "@hebo/aikit-ui/src/blocks/Chat";
 import { SquareChevronRight } from "lucide-react";
+import supportedModels from "@hebo/shared-data/supported-models.json";
 
 
 async function authMiddleware() {
@@ -113,7 +114,10 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
 
         <Sidebar side="right" collapsible="offcanvas">
           <SidebarContent>
-            <Chat />
+            <Chat models={supportedModels.map((model) => ({
+              id: model.name,
+              name: model.displayName,
+            }))} apiKey={import.meta.env.VITE_GROQ_API_KEY} />
           </SidebarContent>
 
           <SidebarRail />

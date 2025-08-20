@@ -26,19 +26,13 @@ import {
 
 import { Button } from "../_shadcn/ui/button";
 import { useChat } from "../hooks/use-chat";
-import { ChatMessage } from "../types/chat";
+import { ChatMessage, ChatProps } from "../types/chat";
 
-// Models configuration
-const models = [
-  { id: "llama-3.1-8b-instant", name: "Llama 3.1 8B" },
-  { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B" },
-];
-
-export default function Chat() {
+export default function Chat({ models, apiKey }: ChatProps) {
   const { state, actions } = useChat();
 
   const groqModel = createGroq({
-    apiKey: import.meta.env.VITE_GROQ_API_KEY,
+    apiKey,
   });
 
   const handleReset = () => {
@@ -147,7 +141,7 @@ export default function Chat() {
             >
               <PromptInputModelSelectTrigger>
                 <Bot />
-                <PromptInputModelSelectValue />
+                <PromptInputModelSelectValue placeholder="Default Model" />
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>
                 {models.map((m) => (

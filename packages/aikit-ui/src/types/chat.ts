@@ -26,3 +26,8 @@ export interface Model {
   id: string;
   name: string;
 }
+
+export interface ChatProps {
+  models: Model[];
+  apiKey: string;
+}
