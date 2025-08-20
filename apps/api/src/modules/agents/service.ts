@@ -1,8 +1,8 @@
 import { asc, eq } from "drizzle-orm";
 import { status } from "elysia";
 
-import { withAudit } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
+import { withAudit } from "@hebo/db/utils/with-audit";
 
 import { BranchService } from "~/modules/branches/service";
 import { createSlug } from "~/utils/create-slug";

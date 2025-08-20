@@ -1,8 +1,7 @@
 import { and, isNull, sql, type SQL } from "drizzle-orm";
 
-import type { UniversalDbClient } from "./drizzle";
+import type { UniversalDbClient } from "../drizzle";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
-
 
 // Minimal structural type for tables that include audit columns
 type TableWithAudit = {

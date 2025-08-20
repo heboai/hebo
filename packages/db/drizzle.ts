@@ -5,11 +5,11 @@ import {
 import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
 import { Pool } from "pg";
 
+import { isLocal, getConnectionConfig } from "./runtime-config";
 import { agents } from "./schema/agents";
 import { branches } from "./schema/branches";
-import { isLocal, getConnectionConfig } from "./utils";
 
-import type { DbCredentials } from "./utils";
+import type { DbCredentials } from "./runtime-config";
 
 const postgresSchema = {
   agents,
@@ -67,6 +67,3 @@ export const db = initDb();
 // Separate typed export for consumers who want strict typing without losing
 // type safety globally
 export const typedDb: UniversalDb = db;
-
-export { isLocal } from "./utils";
-export * from "./audit-utils";

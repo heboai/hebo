@@ -3,9 +3,28 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "main": "./drizzle.ts",
-  "types": "./drizzle.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/drizzle.d.ts",
+      "default": "./dist/drizzle.js"
+    },
+    "./schema/agents": {
+      "types": "./dist/schema/agents.d.ts",
+      "default": "./dist/schema/agents.js"
+    },
+    "./schema/branches": {
+      "types": "./dist/schema/branches.d.ts",
+      "default": "./dist/schema/branches.js"
+    },
+    "./utils/with-audit": {
+      "types": "./dist/utils/with-audit.d.ts",
+      "default": "./dist/utils/with-audit.js"
+    }
+  },
   "scripts": {
+    "build:types": "tsc -p tsconfig.types.json",
+    "build:js": "tsc -p tsconfig.build.json",
+    "build": "bun run build:js && bun run build:types",
     "clean": "rimraf .next .turbo node_modules ../hebo.db",
     "lint": "bunx eslint .",
     "migrate": "drizzle-kit migrate",
