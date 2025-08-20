@@ -108,6 +108,9 @@
       "version": "0.0.1",
       "dependencies": {
         "@ai-sdk/groq": "^2.0.10",
+        "@radix-ui/react-avatar": "^1.1.10",
+        "@radix-ui/react-select": "^2.2.5",
+        "@radix-ui/react-slot": "^1.2.3",
         "ai": "^5.0.13",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -121,9 +124,6 @@
         "ai-elements": "^1.0.3",
       },
       "peerDependencies": {
-        "@radix-ui/react-avatar": "^1.1.10",
-        "@radix-ui/react-select": "^2.2.5",
-        "@radix-ui/react-slot": "^1.2.3",
         "lucide-react": "^0.539.0",
         "react": "^19.1.1",
         "react-dom": "^19.1.1",
