@@ -26,13 +26,11 @@ import Chat from "@hebo/aikit-ui/src/blocks/Chat";
 import { SquareChevronRight } from "lucide-react";
 import supportedModels from "@hebo/shared-data/supported-models.json";
 
-
 async function authMiddleware() {
   await authService.ensureSignedIn();
 }
 
 export const unstable_clientMiddleware = [authMiddleware];
-
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents } = await api.agents.get();
@@ -50,18 +48,17 @@ export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidate
   return nextParams.slug !== undefined && currentParams.slug !== nextParams.slug;
 }
 
-
 export default function ShellLayout({loaderData}: Route.ComponentProps) {
   const { user } = useSnapshot(authStore);
 
-  // FUTURE replace with session storage
-  const defaultOpen = getCookie("sidebar_state") === "true";
+  // Independent sidebar states
+  const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
+  const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
 
   return (
     <div className="flex min-h-screen flex-col gap-4">
       <SidebarProvider
-        defaultOpen={defaultOpen}
-        shortcut="b"
+        defaultOpen={leftSidebarDefaultOpen}
         style={
           {
             "--sidebar-width": "12rem",
@@ -93,10 +90,11 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
           </div>
         </main>
       </SidebarProvider>
+      
       {/* RIGHT SIDEBAR / PLAYGROUND */}
       <SidebarProvider
         shortcut="p"
-        defaultOpen={defaultOpen}
+        defaultOpen={rightSidebarDefaultOpen}
         style={
           {
             "--sidebar-width": "24rem", // Tailwind w-96
