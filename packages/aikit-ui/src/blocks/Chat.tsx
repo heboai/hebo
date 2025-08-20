@@ -168,13 +168,6 @@ export default function Chat({ models, apiKey }: ChatProps) {
           />
         </PromptInputToolbar>
       </PromptInput>
-
-      {/* Error display */}
-      {state.error && (
-        <div className="mt-2 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
-          {state.error}
-        </div>
-      )}
     </div>
   );
 }
