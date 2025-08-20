@@ -23,21 +23,22 @@ export function withAudit<TTable extends TableWithAudit>(
   table: TTable,
   ctx: AuditContext,
 ) {
+  const where = (extra?: SQL) => {
+    // NOTE: As soon as auth is implemented, also include user/tenant scoping here,
+    // e.g. and(eq(table.createdBy, ctx.userId), ...). For now we only filter soft-deleted rows.
+    // FUTURE: add user/tenant scoping here
+    return extra
+      ? and(isNull((table as any).deletedAt), extra)
+      : isNull((table as any).deletedAt);
+  };
   return {
-    where(extra?: SQL) {
-      // NOTE: As soon as auth is implemented, also include user/tenant scoping here,
-      // e.g. and(eq(table.createdBy, ctx.userId), ...). For now we only filter soft-deleted rows.
-      // FUTURE: add user/tenant scoping here
-      return extra
-        ? and(isNull((table as any).deletedAt), extra)
-        : isNull((table as any).deletedAt);
-    },
+    where,
 
     select(db: UniversalDbClient, extra?: SQL) {
       return (db as any)
         .select()
         .from(table as any)
-        .where(this.where(extra));
+        .where(where(extra));
     },
 
     insert(db: UniversalDbClient, values: object) {
@@ -59,7 +60,7 @@ export function withAudit<TTable extends TableWithAudit>(
           updatedBy: ctx.userId,
           updatedAt: sql`now()`,
         })
-        .where(this.where(extra));
+        .where(where(extra));
     },
 
     delete(db: UniversalDbClient, extra?: SQL) {
@@ -69,7 +70,7 @@ export function withAudit<TTable extends TableWithAudit>(
           deletedAt: sql`now()`,
           deletedBy: ctx.userId,
         })
-        .where(this.where(extra));
+        .where(where(extra));
     },
   } as const;
 }
