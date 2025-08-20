@@ -1,6 +1,7 @@
 import { t } from "elysia";
 
 import { agents } from "@hebo/db/schema/agents";
+import supportedModels from "@hebo/shared-data/supported-models.json";
 
 import {
   createSchemaFactory,
@@ -17,11 +18,15 @@ const _selectAgent = createSelectSchema(agents);
 
 const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS] as const;
 
+export const SupportedModelNames = new Set(supportedModels.map((m) => m.name));
+
 // DTOs
 // The create agent schema accepts a default model name which is later used to insert the branch record for that agent.
 export const CreateBody = t.Intersect([
   t.Omit(_createAgent, [...OMIT_FIELDS, "slug"]),
-  t.Object({ defaultModel: t.String() }),
+  t.Object({
+    defaultModel: t.String({ enum: [...SupportedModelNames] }),
+  }),
 ]);
 export type CreateBody = typeof CreateBody.static;
 

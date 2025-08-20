@@ -3,7 +3,6 @@ import { status } from "elysia";
 
 import { withAudit } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
-import supportedModels from "@hebo/shared-data/supported-models.json";
 
 import { BranchService } from "~/modules/branches/service";
 import { createSlug } from "~/utils/create-slug";
@@ -11,15 +10,13 @@ import { getDb } from "~/utils/request-db";
 
 import * as AgentsModel from "./model";
 
-const SupportedModelNames = new Set(supportedModels.map((m) => m.name));
-
 export const AgentService = {
   async createAgent(input: AgentsModel.CreateBody, userId: string) {
     const slug = createSlug(input.name, true);
 
     const { defaultModel, ...agentData } = input;
 
-    if (!SupportedModelNames.has(defaultModel))
+    if (!AgentsModel.SupportedModelNames.has(defaultModel))
       throw status(400, AgentsModel.InvalidModel.const);
 
     const agentsRepo = withAudit(agents, { userId });
