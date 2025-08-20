@@ -10,22 +10,24 @@ export const getDb = (): UniversalDbClient => {
   return requestDbStorage.getStore() ?? baseDb;
 };
 
-export const runWithRequestDb = async <T>(
+export const runWithRequestDb = <T>(
   client: UniversalDbClient,
   fn: () => Promise<T>,
 ): Promise<T> => {
-  return await requestDbStorage.run(client, fn);
+  return requestDbStorage.run(client, fn);
 };
 
 // Wrap a handler in a request-scoped transaction and expose it via ALS
-export const withRequestTransaction = <TArgs extends any[], TResult>(
+export const withRequestTransaction = <TArgs extends unknown[], TResult>(
   handler: (...args: TArgs) => Promise<TResult>,
 ) => {
-  return async (...args: TArgs): Promise<TResult> => {
-    return await baseDb.transaction(async (tx) => {
-      return await runWithRequestDb(tx, async () => {
-        return await handler(...args);
-      });
-    });
+  return (...args: TArgs): Promise<TResult> => {
+    const existingClient = requestDbStorage.getStore();
+    if (existingClient) {
+      return handler(...args);
+    }
+    return baseDb.transaction((tx) =>
+      runWithRequestDb(tx, () => handler(...args)),
+    );
   };
 };

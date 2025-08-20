@@ -22,12 +22,11 @@ export const AgentService = {
     if (!SupportedModelNames.has(defaultModel))
       throw status(400, AgentsModel.InvalidModel.const);
 
-    const client = getDb();
     const agentsRepo = withAudit(agents, { userId });
 
     // Insert the agent record and its initial branch; rely on request-level transaction when present
     const [agent] = await agentsRepo
-      .insert(client, { ...agentData, slug })
+      .insert(getDb(), { ...agentData, slug })
       .onConflictDoNothing()
       .returning();
 
