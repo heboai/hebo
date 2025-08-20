@@ -1,8 +1,9 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { Elysia, status } from "elysia";
 
-import { db } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
+
+import { getDb } from "~/utils/request-db";
 
 export const agentId = new Elysia({ name: "agent-id" })
   .derive(async ({ params }) => {
@@ -10,7 +11,7 @@ export const agentId = new Elysia({ name: "agent-id" })
 
     if (!agentSlug) throw status(400, "agentSlug is required");
 
-    const [agent] = await db
+    const [agent] = await getDb()
       .select({ id: agents.id })
       .from(agents)
       .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)));
