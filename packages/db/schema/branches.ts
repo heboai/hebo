@@ -1,5 +1,12 @@
 import { isNull, sql } from "drizzle-orm";
-import { pgTable, jsonb, uuid, uniqueIndex, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  jsonb,
+  uuid,
+  uniqueIndex,
+  index,
+  type AnyPgColumn,
+} from "drizzle-orm/pg-core";
 
 import { agents } from "./agents";
 import { audit } from "./mixin/audit";
@@ -12,7 +19,7 @@ export const branches = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     agentId: uuid("agent_id")
-      .references(() => agents.id, { onDelete: "cascade" })
+      .references((): AnyPgColumn => agents.id, { onDelete: "cascade" })
       .notNull(),
     ...slug,
     models: jsonb("models").$type<Json>().notNull(),
