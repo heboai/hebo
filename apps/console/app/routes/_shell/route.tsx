@@ -51,7 +51,7 @@ export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidate
 export default function ShellLayout({loaderData}: Route.ComponentProps) {
   const { user } = useSnapshot(authStore);
 
-  // Independent sidebar states
+  // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
   const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
 
