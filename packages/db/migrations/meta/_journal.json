@@ -8,6 +8,13 @@
       "when": 1754997985389,
       "tag": "0000_create_tables_agents_branches",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1755686760704,
+      "tag": "0001_add_indexes",
+      "breakpoints": true
     }
   ]
 }
