@@ -14,7 +14,8 @@ export const agentId = new Elysia({ name: "agent-id" })
     const [agent] = await getDb()
       .select({ id: agents.id })
       .from(agents)
-      .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)));
+      .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)))
+      .limit(1);
 
     if (!agent) throw status(404, "Agent not found");
 
