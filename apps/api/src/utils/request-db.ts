@@ -17,21 +17,6 @@ export const runWithRequestDb = <T>(
   return requestDbStorage.run(client, fn);
 };
 
-// Wrap a handler in a request-scoped transaction and expose it via ALS
-export const withRequestTransaction = <TArgs extends unknown[], TResult>(
-  handler: (...args: TArgs) => Promise<TResult>,
-) => {
-  return (...args: TArgs): Promise<TResult> => {
-    const existingClient = requestDbStorage.getStore();
-    if (existingClient) {
-      return handler(...args);
-    }
-    return baseDb.transaction((tx) =>
-      runWithRequestDb(tx, () => handler(...args)),
-    );
-  };
-};
-
 export const runInRequestTransaction = <T>(
   fn: () => Promise<T>,
 ): Promise<T> => {

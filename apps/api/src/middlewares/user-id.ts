@@ -1,9 +1,6 @@
 import { Elysia } from "elysia";
 
-/**
- * Temporary user identity injector until real auth is wired in.
- * Exposes `userId` on the request context.
- */
+// FUTURE: remove this once auth is wired in
 export const userId = new Elysia({ name: "user-id" })
   .derive(() => {
     // FUTURE: Replace with real auth derived user id

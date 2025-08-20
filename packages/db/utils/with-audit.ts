@@ -3,7 +3,6 @@ import { and, isNull, sql, type SQL } from "drizzle-orm";
 import type { UniversalDbClient } from "../drizzle";
 import type { AnyPgColumn } from "drizzle-orm/pg-core";
 
-// Minimal structural type for tables that include audit columns
 type TableWithAudit = {
   deletedAt: AnyPgColumn;
   deletedBy: AnyPgColumn;
@@ -25,7 +24,7 @@ export function withAudit<TTable extends TableWithAudit>(
   ctx: AuditContext,
 ) {
   const where = (extra?: SQL) => {
-    // NOTE: As soon as auth is implemented, also include user/tenant scoping here,
+    // FUTURE: As soon as auth is implemented, also include user/tenant scoping here,
     // e.g. and(eq(table.createdBy, ctx.userId), ...). For now we only filter soft-deleted rows.
     // FUTURE: add user/tenant scoping here
     return extra
