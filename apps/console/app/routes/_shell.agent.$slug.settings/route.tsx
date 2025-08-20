@@ -14,7 +14,7 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
     const result = await api.agents({ agentSlug: String(formData.get("slug")) }).delete();
 
     return result.error
-      ? { error: result.error.value }
+      ? { error: result.error.value?.toString() }
       : redirect("/");
 }
 

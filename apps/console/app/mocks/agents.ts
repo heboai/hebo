@@ -3,40 +3,33 @@ import slugify from "slugify";
 
 import { db } from "~/mocks/db";
 
-if (!db.hasCollection("agents")) {
-  db.createCollection("agents");
-}
-
-interface Agent {
-  name: string;
-  slug: string;
-  branches?: string[];
-}
 export const agentHandlers = [
   http.post("/api/v1/agents", async ({ request }) => {
-    const body = (await request.json()) as Agent;
+    const body = (await request.json()) as ReturnType<typeof db.agent.create>;
 
-    const tmpAgent = {
-      id: crypto.randomUUID(),
+    // always create main branch by default
+    const branch = db.branch.create({ slug: "main", name: "main" });
+
+    const agent = {
       name: body.name,
       slug: slugify(body.name, { lower: true, strict: true }),
-      branches: ["main"], // always create ['main'] by default
+      branches: [branch],
     };
 
-    if (db.getCollection("agents").findBy({ slug: tmpAgent.slug })) {
+    try {
+      db.agent.create(agent);
+    } catch {
       return new HttpResponse("Agent with the same name already exists", {
         status: 409,
       });
     }
 
-    const newAgent = db.getCollection("agents").insert(tmpAgent);
-
     await delay(2000);
-    return HttpResponse.json(newAgent, { status: 201 });
+    return HttpResponse.json(agent, { status: 201 });
   }),
 
   http.get("/api/v1/agents", async () => {
-    const agents = db.getCollection("agents").records;
+    const agents = db.agent.getAll();
 
     await delay(1000);
     return HttpResponse.json(agents);
@@ -45,17 +38,16 @@ export const agentHandlers = [
   http.delete<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug",
     async ({ params }) => {
-      const tmpAgent = {
-        slug: params.agentSlug,
-      };
-
-      if (!db.getCollection("agents").findBy(tmpAgent)) {
+      try {
+        db.agent.delete({
+          where: { slug: { equals: params.agentSlug } },
+          strict: true,
+        });
+      } catch {
         return new HttpResponse("Agent with the slug not found", {
           status: 404,
         });
       }
-
-      db.getCollection("agents").remove(tmpAgent);
 
       await delay(500);
       return new HttpResponse(undefined, { status: 204 });

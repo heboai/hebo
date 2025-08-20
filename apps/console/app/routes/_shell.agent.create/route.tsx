@@ -17,7 +17,7 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
     });
 
     return result.error
-      ? { error: result.error.value }
+      ? { error: result.error.value?.toString() }
       : redirect(`/agent/${result.data.slug}`);
 }
 
