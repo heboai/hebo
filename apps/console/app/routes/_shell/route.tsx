@@ -107,7 +107,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
         <SidebarTrigger
           icon={<SquareChevronRight size={24} color="black" />}
           text="Playground"
-          className="fixed top-4 right-12 z-50 p-2"
+          className="fixed top-4 right-2 z-50 w-fit"
         />
 
         <Sidebar side="right" collapsible="offcanvas">
