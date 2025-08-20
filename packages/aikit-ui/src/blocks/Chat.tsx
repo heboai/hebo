@@ -1,15 +1,19 @@
 "use client";
 
 import { createGroq } from "@ai-sdk/groq";
+import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@hebo/aikit-ui/_ai-elements/conversation";
-import { Message, MessageContent } from "@hebo/aikit-ui/_ai-elements/message";
+import {
+  Message as Message,
+  MessageContent,
+} from "@hebo/aikit-ui/_ai-elements/message";
 import {
   PromptInput,
   PromptInputButton,
@@ -38,80 +42,88 @@ interface ChatProps {
 
 export function Chat({ models, apiKey }: ChatProps) {
   const [currentModel, setCurrentModel] = useState(models[0]?.id || "");
-
-  const groqModel = createGroq({
-    apiKey,
-  });
-
-  const [messages, setMessages] = useState<
-    Array<{
-      id: string;
-      role: "user" | "assistant";
-      content: string;
-    }>
-  >([]);
+  const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-  };
+  const groq = createGroq({
+    apiKey,
+  });
 
-  const handleCustomSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
-
-    setIsLoading(true);
-
-    // Add user message
-    const userMessage = {
-      id: crypto.randomUUID(),
-      role: "user" as const,
-      content: input,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInput(""); // Clear input immediately
-
-    try {
-      const { generateText } = await import("ai");
-
-      // Prepare conversation history
-      const conversationHistory = [...messages, userMessage].map((msg) => ({
-        role: msg.role as "user" | "assistant",
-        content: msg.content,
-      }));
-
-      // Generate AI response
-      const { text: outputText } = await generateText({
-        model: groqModel(currentModel),
-        messages: conversationHistory,
-      });
-
-      // Add AI response
-      const assistantMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant" as const,
-        content: outputText || "Sorry, I encountered an error.",
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error("Error generating response:", error);
-      const errorMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant" as const,
-        content: "Sorry, I encountered an error.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
+  const renderMessagePart = useCallback((part: UIMessage["parts"][0]) => {
+    if (part.type === "text") return part.text;
+    if (part.type === "dynamic-tool" && "input" in part) {
+      return JSON.stringify(part.input);
     }
-  };
+    return "";
+  }, []);
 
-  const handleReset = () => {
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setInput(e.target.value);
+    },
+    [],
+  );
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (!input.trim() || isLoading) return;
+
+      setIsLoading(true);
+
+      // Add user message
+      const userMessage: UIMessage = {
+        id: crypto.randomUUID(),
+        role: "user",
+        parts: [{ type: "text", text: input }],
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+      setInput(""); // Clear input immediately
+
+      try {
+        // Generate AI response
+        const { text } = await generateText({
+          model: groq(currentModel),
+          messages: [...messages, userMessage].map((msg) => ({
+            role: msg.role,
+            content: renderMessagePart(msg.parts[0]),
+          })),
+        });
+
+        // Add AI response
+        const assistantMessage: UIMessage = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          parts: [
+            { type: "text", text: text || "Sorry, I encountered an error." },
+          ],
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+      } catch (error) {
+        console.error("Error:", error);
+        const errorMessage: UIMessage = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          parts: [{ type: "text", text: "Sorry, I encountered an error." }],
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [input, isLoading, messages, currentModel, groq],
+  );
+
+  const handleReset = useCallback(() => {
     setMessages([]);
-  };
+  }, []);
+
+  const handleModelChange = useCallback((modelId: string) => {
+    setCurrentModel(modelId);
+  }, []);
 
   return (
     <div className="flex h-full flex-col">
@@ -128,7 +140,7 @@ export function Chat({ models, apiKey }: ChatProps) {
           {messages.map((message) => (
             <Message from={message.role} key={message.id}>
               <MessageContent>
-                <div>{message.content}</div>
+                <div>{renderMessagePart(message.parts[0])}</div>
               </MessageContent>
             </Message>
           ))}
@@ -137,7 +149,7 @@ export function Chat({ models, apiKey }: ChatProps) {
       </Conversation>
 
       {/* Input area */}
-      <PromptInput onSubmit={handleCustomSubmit} className="relative mt-4">
+      <PromptInput onSubmit={handleSubmit} className="relative mt-4">
         <PromptInputTextarea
           onChange={handleInputChange}
           value={input}
@@ -147,7 +159,7 @@ export function Chat({ models, apiKey }: ChatProps) {
           <PromptInputTools>
             {/* Model selector */}
             <PromptInputModelSelect
-              onValueChange={setCurrentModel}
+              onValueChange={handleModelChange}
               value={currentModel}
               disabled={isLoading}
             >
