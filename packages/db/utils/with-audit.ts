@@ -9,8 +9,8 @@ type TableWithAudit = {
   deletedBy: AnyPgColumn;
   createdBy: AnyPgColumn;
   updatedBy: AnyPgColumn;
-  createdAt?: AnyPgColumn;
-  updatedAt?: AnyPgColumn;
+  createdAt: AnyPgColumn;
+  updatedAt: AnyPgColumn;
 };
 
 export type AuditContext = { userId: string };
