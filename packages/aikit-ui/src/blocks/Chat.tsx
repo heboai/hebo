@@ -102,8 +102,7 @@ export function Chat({ models, apiKey }: ChatProps) {
         };
 
         setMessages((prev) => [...prev, assistantMessage]);
-      } catch (error) {
-        console.error("Error:", error);
+      } catch {
         const errorMessage: UIMessage = {
           id: crypto.randomUUID(),
           role: "assistant",
