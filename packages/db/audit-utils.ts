@@ -27,7 +27,7 @@ export function withAudit<TTable extends TableWithAudit>(
     where(extra?: SQL) {
       // NOTE: As soon as auth is implemented, also include user/tenant scoping here,
       // e.g. and(eq(table.createdBy, ctx.userId), ...). For now we only filter soft-deleted rows.
-      // TODO: add user/tenant scoping here
+      // FUTURE: add user/tenant scoping here
       return extra
         ? and(isNull((table as any).deletedAt), extra)
         : isNull((table as any).deletedAt);

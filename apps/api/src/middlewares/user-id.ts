@@ -6,7 +6,7 @@ import { Elysia } from "elysia";
  */
 export const userId = new Elysia({ name: "user-id" })
   .derive(() => {
-    // TODO: Replace with real auth derived user id
+    // FUTURE: Replace with real auth derived user id
     const userId = "dummy" as const;
     return { userId } as const;
   })

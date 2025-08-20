@@ -31,7 +31,7 @@ export const AgentService = {
       .onConflictDoNothing()
       .returning();
 
-    // TODO: Apply a fallback strategy with retries with different slugs
+    // FUTURE: Apply a fallback strategy with retries with different slugs
     if (!agent) throw status(409, AgentsModel.AlreadyExists.const);
 
     await BranchService.createInitialBranch(agent.id, defaultModel, userId);
