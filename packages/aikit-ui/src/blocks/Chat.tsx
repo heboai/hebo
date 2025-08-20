@@ -81,13 +81,16 @@ export default function Chat({ models, apiKey }: ChatProps) {
       };
 
       actions.addMessage(assistantMessage);
-    } catch (error) {
-      console.error("Error generating text:", error);
-
+    } catch {
       const errorMessage: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        parts: [{ type: "text", text: "Sorry, I encountered an error." }],
+        parts: [
+          {
+            type: "text",
+            text: "Sorry, I encountered an error.",
+          },
+        ],
       };
 
       actions.addMessage(errorMessage);
