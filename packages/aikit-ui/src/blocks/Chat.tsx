@@ -1,6 +1,6 @@
 "use client";
 
-import { createGroq } from "@ai-sdk/groq";
+import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
 import { useState, useCallback, useRef, useEffect } from "react";
@@ -38,9 +38,10 @@ interface Model {
 interface ChatProps {
   models: Model[];
   apiKey: string;
+  baseUrl?: string;
 }
 
-export function Chat({ models, apiKey }: ChatProps) {
+export function Chat({ models, apiKey, baseUrl }: ChatProps) {
   const [currentModel, setCurrentModel] = useState(models[0]?.id || "");
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
@@ -50,8 +51,9 @@ export function Chat({ models, apiKey }: ChatProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const latestMessageRef = useRef<HTMLDivElement>(null);
 
-  const groq = createGroq({
+  const openai = createOpenAI({
     apiKey,
+    ...(baseUrl && { baseURL: baseUrl }),
   });
 
   // Auto-scroll to latest message for screen readers
@@ -129,7 +131,7 @@ export function Chat({ models, apiKey }: ChatProps) {
       try {
         // Generate AI response
         const { text } = await generateText({
-          model: groq(currentModel),
+          model: openai(currentModel),
           messages: [...messages, userMessage].map((msg) => ({
             role: msg.role,
             content: renderMessagePart(msg.parts[0]),
@@ -159,7 +161,7 @@ export function Chat({ models, apiKey }: ChatProps) {
         setTimeout(() => textareaRef.current?.focus(), 100);
       }
     },
-    [input, isLoading, messages, currentModel, groq],
+    [input, isLoading, messages, currentModel, openai],
   );
 
   const handleReset = useCallback(() => {
