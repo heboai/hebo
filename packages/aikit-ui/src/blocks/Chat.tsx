@@ -131,7 +131,7 @@ export function Chat({ models, apiKey, baseUrl }: ChatProps) {
       try {
         // Generate AI response
         const { text } = await generateText({
-          model: openai(currentModel),
+          model: openai.chat(currentModel),
           messages: [...messages, userMessage].map((msg) => ({
             role: msg.role,
             content: renderMessagePart(msg.parts[0]),
