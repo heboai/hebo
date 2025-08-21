@@ -23,14 +23,12 @@ const createApi = () =>
         },
       }),
     )
-    .get("/", () => "Hebo API says hello!")
+    .get("/", () => "🚀 Hebo API says hello!")
     .group("/v1", (app) => app.use(agentsModule.use(branchesModule)));
 
 if (import.meta.main) {
   const app = createApi().listen(PORT);
-  console.log(
-    `🚀 Hebo API listening on ${app.server!.url} (Bun ${Bun.version})`,
-  );
+  console.log(`🚀 Hebo API running at ${app.server!.url}`);
 }
 
 export type Api = ReturnType<typeof createApi>;
