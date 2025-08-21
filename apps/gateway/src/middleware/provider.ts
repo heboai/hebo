@@ -11,6 +11,7 @@ export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY! });
 const voyage = createVoyage({ apiKey: process.env.VOYAGE_API_KEY! });
 
+// FUTURE more robust logic based on supported-models.json
 const isEmbedding = (id: string) => /^voyage-/i.test(id);
 
 // FUTURE support AWS Bedrock
