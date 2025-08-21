@@ -27,5 +27,5 @@ CREATE TABLE "branches" (
 );
 --> statement-breakpoint
 ALTER TABLE "branches" ADD CONSTRAINT "branches_agent_id_agents_id_fk" FOREIGN KEY ("agent_id") REFERENCES "public"."agents"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE UNIQUE INDEX "unique_slug" ON "agents" USING btree ("slug") WHERE "agents"."deleted_at" is null;--> statement-breakpoint
-CREATE UNIQUE INDEX "unique_slug_per_agent" ON "branches" USING btree ("agent_id","slug") WHERE "branches"."deleted_at" is null;
+CREATE UNIQUE INDEX "unique_slug" ON "agents" USING btree ("slug");--> statement-breakpoint
+CREATE UNIQUE INDEX "unique_slug_per_agent" ON "branches" USING btree ("agent_id","slug");
