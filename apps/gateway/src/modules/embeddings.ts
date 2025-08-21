@@ -13,9 +13,11 @@ export const embeddings = new Elysia({
     async ({ body, provider }) => {
       const { model, input } = body;
 
+      const embeddingModel = provider.embedding(model);
+
       if (Array.isArray(input)) {
         const { embeddings, usage } = await embedMany({
-          model: provider.embedding(model),
+          model: embeddingModel,
           values: input,
         });
         return {
@@ -34,7 +36,7 @@ export const embeddings = new Elysia({
       }
 
       const { embedding, usage } = await embed({
-        model: provider.embedding(model),
+        model: embeddingModel,
         value: input,
       });
       return {
@@ -50,7 +52,7 @@ export const embeddings = new Elysia({
     {
       body: t.Object({
         model: t.String(),
-        input: t.Union([t.String(), t.Array(t.String())]),
+        input: t.Union([t.String(), t.Array(t.String(), { minItems: 1 })]),
       }),
     },
   );

@@ -1,8 +1,4 @@
-import {
-  generateText,
-  streamText,
-  type ModelMessage,
-} from "ai";
+import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
 import { provider } from "~/middleware/provider";
@@ -17,9 +13,11 @@ export const completions = new Elysia({
     async ({ body, provider }) => {
       const { model, messages, temperature = 1, stream = false } = body;
 
+      const chatModel = provider.chat(model);
+
       if (stream) {
         const result = await streamText({
-          model: provider.chat(model),
+          model: chatModel,
           messages: messages as ModelMessage[],
           temperature,
         });
@@ -27,7 +25,7 @@ export const completions = new Elysia({
       }
 
       const result = await generateText({
-        model: provider.chat(model),
+        model: chatModel,
         messages: messages as ModelMessage[],
         temperature,
       });

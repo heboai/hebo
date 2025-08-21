@@ -19,11 +19,32 @@ const pickEmbedding = (id: string): EmbeddingModel<string> => {
 };
 
 const chatOrThrow = (id: string): LanguageModel => {
-  if (isEmbedding(id)) throw new Error(`Model "${id}" is an embedding model`);
+  if (isEmbedding(id)) {
+    const err = new Error(`Model "${id}" is an embedding model`) as Error & {
+      status: number;
+      type: string;
+      code: string;
+    };
+    err.status = 400;
+    err.type = "invalid_request_error";
+    err.code = "model_mismatch";
+    throw err;
+  }
   return pickChat(id);
 };
+
 const embeddingOrThrow = (id: string): EmbeddingModel<string> => {
-  if (!isEmbedding(id)) throw new Error(`Model "${id}" is a chat model`);
+  if (!isEmbedding(id)) {
+    const err = new Error(`Model "${id}" is a chat model`) as Error & {
+      status: number;
+      type: string;
+      code: string;
+    };
+    err.status = 400;
+    err.type = "invalid_request_error";
+    err.code = "model_mismatch";
+    throw err;
+  }
   return pickEmbedding(id);
 };
 
