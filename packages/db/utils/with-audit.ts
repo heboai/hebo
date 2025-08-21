@@ -13,7 +13,6 @@ type AuditCols =
   | "deletedAt"
   | "deletedBy";
 
-// Keep the table truly generic, but refine the columns map locally
 type ColumnsWithAudit<T extends AnyPgTable> = T["_"]["columns"] &
   Record<AuditCols, AnyPgColumn>;
 
@@ -39,7 +38,6 @@ export const withAudit = <TTable extends AnyPgTable>(
       return db.select().from(table).where(where(extra));
     },
 
-    // Services pass only domain fields; we inject audit fields here.
     insert(
       db: UniversalDbClient,
       values: Omit<InferInsertModel<TTable>, AuditCols>,
