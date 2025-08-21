@@ -32,7 +32,5 @@ export const createApp = () =>
 
 if (import.meta.main) {
   const app = createApp().listen(PORT);
-  console.log(
-    `🐵 Hebo Gateway is running at ${app.server?.hostname}:${app.server?.port}`,
-  );
+  console.log(`🐵 Hebo Gateway is running at ${app.server!.url}`);
 }
