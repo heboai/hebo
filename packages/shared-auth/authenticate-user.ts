@@ -14,7 +14,7 @@ const jwks = createRemoteJWKSet(
 );
 
 const jwt = () =>
-  new Elysia({ name: "jwt" })
+  new Elysia({ name: "hebo-jwt" })
     .derive(({ request }) => ({
       jwt: request.headers.get("x-access-token") ?? undefined,
     }))
@@ -83,15 +83,14 @@ const checkApiKey = async (key: string): Promise<string> => {
  */
 export const authenticateUser = () =>
   new Elysia({ name: "authenticate-user" })
-    .state("userId", undefined as string | undefined)
     .use(bearer())
     .use(jwt())
-    .onBeforeHandle(async ({ bearer: apiKey, jwt: jwtToken, store }) => {
+    .derive(async ({ bearer: apiKey, jwt: jwtToken }) => {
       const mode = pickOneAuthMethod(apiKey, jwtToken);
-
-      store.userId =
+      const userId =
         mode === "jwt"
           ? await verifyJwt(jwtToken!)
           : await checkApiKey(apiKey!);
+      return { userId } as const;
     })
     .as("scoped");
