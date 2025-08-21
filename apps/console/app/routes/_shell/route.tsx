@@ -115,10 +115,10 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
           <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
               <Chat modelsConfig={{
-                __supportedTypes: ["llama-3.1-8b-instant"],
+                __supportedTypes: ["meta-llama/llama-4-scout-17b-16e-instruct"],
                 models: [{
-                  alias: "Llama3.1-8b Instant",
-                  type: "llama-3.1-8b-instant",
+                  alias: "Llama4 Scout 17B Instruct",
+                  type: "meta-llama/llama-4-scout-17b-16e-instruct",
                   endpoint: {
                     baseUrl: import.meta.env.VITE_GATEWAY_URL!,
                     apiKey: "",
