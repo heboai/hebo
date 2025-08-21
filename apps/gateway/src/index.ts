@@ -1,3 +1,4 @@
+import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
@@ -10,13 +11,14 @@ const PORT = Number(process.env.GATEWAY_PORT) || 3002;
 
 const createApp = () =>
   new Elysia()
+    .use(logger())
     // FUTURE make cors more strict for production
     .use(cors())
     .use(
       swagger({
         documentation: {
           info: {
-            title: "Hebo API",
+            title: "Hebo AI Gateway",
             version: "0.0.1",
           },
         },
