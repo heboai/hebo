@@ -7,7 +7,7 @@ export const slug = {
 };
 
 export const createSlugLowercaseCheck = <TTable extends { slug: AnyPgColumn }>(
-  tableName: "agents" | "branches",
+  tableName: string,
   table: TTable,
 ) =>
   check(
