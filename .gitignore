@@ -61,3 +61,7 @@ hebo.db
 
 #eslint
 .eslintcache
+
+# bun
+server
+*.bun-build
