@@ -1,7 +1,15 @@
-import { and, isNull, sql, type SQL, type InferInsertModel } from "drizzle-orm";
+import {
+  and,
+  isNull,
+  sql,
+  getTableColumns,
+  type SQL,
+  type InferInsertModel,
+} from "drizzle-orm";
 
 import type { UniversalDbClient } from "../drizzle";
 import type { AnyPgTable, AnyPgColumn } from "drizzle-orm/pg-core";
+
 
 export type AuditContext = { userId: string };
 
@@ -13,18 +21,21 @@ type AuditCols =
   | "deletedAt"
   | "deletedBy";
 
-type ColumnsWithAudit<T extends AnyPgTable> = T["_"]["columns"] &
+// Using the runtime-safe API. This type refines the returned columns map
+// to ensure our audit fields are present, without touching the table type itself.
+type ColumnsWithAudit<T extends AnyPgTable> = ReturnType<
+  typeof getTableColumns<T>
+> &
   Record<AuditCols, AnyPgColumn>;
 
 export const withAudit = <TTable extends AnyPgTable>(
   table: TTable,
   ctx: AuditContext,
 ) => {
-  const cols = table._.columns as ColumnsWithAudit<TTable>;
+  const cols = getTableColumns(table) as ColumnsWithAudit<TTable>;
 
   // FUTURE: As soon as auth is implemented, also include user/tenant scoping here,
   // e.g. and(eq(table.createdBy, ctx.userId), ...). For now we only filter soft-deleted rows.
-  // FUTURE: add user/tenant scoping here
   const where = (extra?: SQL) =>
     extra ? and(isNull(cols.deletedAt), extra) : isNull(cols.deletedAt);
 
@@ -32,9 +43,9 @@ export const withAudit = <TTable extends AnyPgTable>(
     where,
 
     select(db: UniversalDbClient, extra?: SQL) {
-      // Drizzle generic guard sometimes misfires here for generic wrappers:
-      // See: https://github.com/drizzle-team/drizzle-orm/issues/4069 and related threads.
-      // @ts-expect-error — false positive for generic wrappers
+      // See related generic-guard issue:
+      // https://github.com/drizzle-team/drizzle-orm/issues/4069
+      // @ts-expect-error — Drizzle conditional type false-positives for generic wrappers
       return db.select().from(table).where(where(extra));
     },
 
