@@ -38,7 +38,7 @@ export const completions = new Elysia({
     });
 
     return {
-      id: "chatcmpl_" + crypto.randomUUID(),
+      id: "chatcmpl-" + crypto.randomUUID(),
       object: "chat.completion",
       created: Math.floor(Date.now() / 1000),
       model,

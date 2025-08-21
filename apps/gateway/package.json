@@ -3,11 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "sideEffects": false,
-  "module": "src/index.js",
+  "engines": {
+    "bun": ">=1.2.19"
+  },
+  "type": "module",
   "scripts": {
     "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile=server",
     "dev": "bun run --watch src/index.ts | pino-pretty",
     "lint": "bunx eslint .",
+    "prestart": "bun run build",
     "start": "./server",
     "clean": "rimraf .turbo node_modules server"
   },
