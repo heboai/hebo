@@ -3,7 +3,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 
 import {
   Conversation,
@@ -30,22 +30,22 @@ import {
 import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
 
 // Types based on models.schema.json
-interface ModelEndpoint {
+type ModelEndpoint = {
   baseUrl: string;
   provider: "aws" | "custom" | "openai";
   apiKey: string;
-}
+};
 
-interface ModelConfig {
+type ModelConfig = {
   alias: string;
   type: string;
   endpoint?: ModelEndpoint;
-}
+};
 
-interface ModelsConfig {
+type ModelsConfig = {
   __supportedTypes: string[];
   models: ModelConfig[];
-}
+};
 
 type ChatProps = { modelsConfig: ModelsConfig };
 
@@ -61,7 +61,6 @@ export function Chat({ modelsConfig }: ChatProps) {
 
   // Accessibility refs
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const latestMessageRef = useRef<HTMLDivElement>(null);
 
   // Get current model config
   const currentModel =
@@ -73,17 +72,6 @@ export function Chat({ modelsConfig }: ChatProps) {
     apiKey: currentModel.endpoint?.apiKey || "",
     baseURL: currentModel.endpoint?.baseUrl || "",
   });
-
-  // Auto-scroll to latest message for screen readers
-  useEffect(() => {
-    if (latestMessageRef.current && messages.length > 0) {
-      const lastMessage = messages.at(-1);
-      if (lastMessage?.role === "assistant") {
-        // Announce new assistant message to screen readers
-        latestMessageRef.current.focus();
-      }
-    }
-  }, [messages]);
 
   const renderMessagePart = (part: UIMessage["parts"][0]) => {
     if (part.type === "text") return part.text;
