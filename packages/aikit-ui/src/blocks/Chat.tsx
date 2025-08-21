@@ -67,22 +67,18 @@ export function Chat({ models, apiKey, baseUrl }: ChatProps) {
     }
   }, [messages]);
 
-  const renderMessagePart = useCallback((part: UIMessage["parts"][0]) => {
+  const renderMessagePart = (part: UIMessage["parts"][0]) => {
     if (part.type === "text") return part.text;
     if (part.type === "dynamic-tool" && "input" in part) {
       return JSON.stringify(part.input);
     }
     return "";
-  }, []);
+  };
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setInput(e.target.value);
-    },
-    [],
-  );
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+  };
 
-  // Enhanced keyboard handling
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       // Submit on Enter (but allow Shift+Enter for new lines)
@@ -164,17 +160,17 @@ export function Chat({ models, apiKey, baseUrl }: ChatProps) {
     [input, isLoading, messages, currentModel, openai],
   );
 
-  const handleReset = useCallback(() => {
+  const handleReset = () => {
     setMessages([]);
     // Focus textarea after reset
     setTimeout(() => textareaRef.current?.focus(), 100);
-  }, []);
+  };
 
-  const handleModelChange = useCallback((modelId: string) => {
+  const handleModelChange = (modelId: string) => {
     setCurrentModel(modelId);
     // Return focus to textarea after model change
     setTimeout(() => textareaRef.current?.focus(), 100);
-  }, []);
+  };
 
   return (
     <div className="flex h-full flex-col">
