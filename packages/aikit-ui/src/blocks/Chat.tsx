@@ -225,10 +225,6 @@ export function Chat({ modelsConfig }: ChatProps) {
                 textareaRef.current?.blur();
               }
             }
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r") {
-              e.preventDefault();
-              handleReset();
-            }
           }}
           value={input}
           disabled={isLoading}
@@ -240,8 +236,7 @@ export function Chat({ modelsConfig }: ChatProps) {
 
         {/* Hidden help text */}
         <div id="input-help" className="sr-only">
-          Press Enter to send message, Shift+Enter for new line, Escape to
-          clear, Ctrl/Cmd+R to reset
+          Press Enter to send message, Shift+Enter for new line, Escape to clear
         </div>
 
         <PromptInputToolbar>
