@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Loader2Icon, SendHorizontal, SquareIcon, XIcon } from "lucide-react";
 import { Children } from "react";
 
@@ -41,14 +42,15 @@ export type PromptInputTextareaProps = ComponentProps<typeof Textarea> & {
   maxHeight?: number;
 };
 
-export function PromptInputTextarea({
+export const PromptInputTextarea = React.forwardRef<HTMLTextAreaElement, PromptInputTextareaProps>(function PromptInputTextarea({
   onChange,
+  onKeyDown,
   className,
   placeholder = "Start prompting ...",
   minHeight = 48,
   maxHeight = 164,
   ...props
-}: PromptInputTextareaProps) {
+}: PromptInputTextareaProps, ref) {
   const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === "Enter") {
       if (e.shiftKey) {
@@ -74,15 +76,19 @@ export function PromptInputTextarea({
         className,
       )}
       name="message"
+      ref={ref}
       onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
         onChange?.(e);
       }}
-      onKeyDown={handleKeyDown}
+      onKeyDown={(e) => {
+        handleKeyDown(e);
+        onKeyDown?.(e);
+      }}
       placeholder={placeholder}
       {...props}
     />
   );
-}
+});
 
 export type PromptInputToolbarProps = HTMLAttributes<HTMLDivElement>;
 

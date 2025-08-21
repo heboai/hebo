@@ -3,7 +3,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 import {
   Conversation,
@@ -61,6 +61,7 @@ export function Chat({ modelsConfig }: ChatProps) {
 
   // Accessibility refs
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Get current model config
   const currentModel =
@@ -85,33 +86,7 @@ export function Chat({ modelsConfig }: ChatProps) {
     setInput(e.target.value);
   };
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      // Submit on Enter (but allow Shift+Enter for new lines)
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        if (input.trim() && !isLoading) {
-          handleSubmit(e as any);
-        }
-      }
-
-      // Escape to focus/clear input
-      if (e.key === "Escape") {
-        if (input) {
-          setInput("");
-        } else {
-          textareaRef.current?.blur();
-        }
-      }
-
-      // Ctrl+R to reset conversation
-      if ((e.ctrlKey || e.metaKey) && e.key === "r") {
-        e.preventDefault();
-        handleReset();
-      }
-    },
-    [input, isLoading],
-  );
+  // No global keyboard handler; attach element-specific handlers below
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -178,16 +153,48 @@ export function Chat({ modelsConfig }: ChatProps) {
     setTimeout(() => textareaRef.current?.focus(), 100);
   };
 
+  // Auto-focus when Chat becomes visible
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const focusInput = () => textareaRef.current?.focus();
+
+    // If already visible, focus immediately
+    const rect = container.getBoundingClientRect();
+    const isVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+    if (isVisible) {
+      focusInput();
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            focusInput();
+          }
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col" ref={containerRef}>
       {/* Header Controls */}
       <div className="absolute top-4 left-4 z-10 flex items-center">
         <Button
           variant="ghost"
           size="icon"
           onClick={handleReset}
-          aria-label="Clear conversation (Ctrl+R)"
-          title="Clear conversation (Ctrl+R)"
+          aria-label="Clear conversation"
+          title="Clear conversation"
         >
           <IterationCcw size={20} />
         </Button>
@@ -242,7 +249,19 @@ export function Chat({ modelsConfig }: ChatProps) {
           ref={textareaRef}
           id="chat-input"
           onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              if (input) {
+                setInput("");
+              } else {
+                textareaRef.current?.blur();
+              }
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r") {
+              e.preventDefault();
+              handleReset();
+            }
+          }}
           value={input}
           disabled={isLoading}
           placeholder="Start prompting..."
@@ -254,7 +273,7 @@ export function Chat({ modelsConfig }: ChatProps) {
         {/* Hidden help text */}
         <div id="input-help" className="sr-only">
           Press Enter to send message, Shift+Enter for new line, Escape to
-          clear, Ctrl+R to reset conversation
+          clear, Ctrl/Cmd+R to reset
         </div>
 
         <PromptInputToolbar>
