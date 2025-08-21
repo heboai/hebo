@@ -9,6 +9,7 @@ const voyage = createVoyage({ apiKey: process.env.VOYAGE_API_KEY! });
 
 const isEmbedding = (id: string) => /^voyage-/i.test(id);
 
+// FUTURE support AWS Bedrock
 const pickChat = (id: string): LanguageModel => {
   return groq(id);
 };
