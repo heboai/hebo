@@ -1,7 +1,7 @@
 [
   {
-    "name": "llama-4-scout",
-    "displayName": "LLaMA 4 Scout",
+    "name": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "displayName": "LLaMA 4 Scout 17B Instruct",
     "rateLimit": 40000000
   },
   {
