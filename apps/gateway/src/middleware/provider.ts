@@ -46,10 +46,8 @@ const embeddingOrThrow = (id: string): EmbeddingModel<string> => {
 };
 
 export const provider = new Elysia({ name: "provider" })
-  .decorate(() => ({
-    provider: {
-      chat: chatOrThrow,
-      embedding: embeddingOrThrow,
-    },
-  }))
+  .decorate("provider", {
+    chat: chatOrThrow,
+    embedding: embeddingOrThrow,
+  } as const)
   .as("scoped");
