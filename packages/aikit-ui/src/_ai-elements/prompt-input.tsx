@@ -12,7 +12,7 @@ import {
 } from "@hebo/aikit-ui/_shadcn/ui/select";
 import { Textarea } from "@hebo/aikit-ui/_shadcn/ui/textarea";
 import { cn } from "@hebo/aikit-ui/lib/utils";
-import { Button } from "../_shadcn/ui/button";
+import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
 
 import type { ChatStatus } from "ai";
 import type {

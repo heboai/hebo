@@ -27,8 +27,7 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from "@hebo/aikit-ui/_ai-elements/prompt-input";
-
-import { Button } from "../_shadcn/ui/button";
+import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
 
 // Types based on models.schema.json
 interface ModelEndpoint {
@@ -48,9 +47,7 @@ interface ModelsConfig {
   models: ModelConfig[];
 }
 
-interface ChatProps {
-  modelsConfig: ModelsConfig;
-}
+type ChatProps = { modelsConfig: ModelsConfig };
 
 export function Chat({ modelsConfig }: ChatProps) {
   // Use the first (and currently only) model as default
