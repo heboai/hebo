@@ -51,7 +51,7 @@ export const embeddings = new Elysia({
     },
     {
       body: t.Object({
-        model: t.String(),
+        model: t.String({ minLength: 1 }),
         input: t.Union([t.String(), t.Array(t.String(), { minItems: 1 })]),
       }),
     },

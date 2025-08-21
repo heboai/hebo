@@ -15,32 +15,28 @@ const pickChat = (id: string): LanguageModel => groq(id);
 const pickEmbedding = (id: string): EmbeddingModel<string> =>
   voyage.textEmbeddingModel(id);
 
+const badRequest = (message: string, code = "model_mismatch") => {
+  const err = new Error(message) as Error & {
+    status: number;
+    type: string;
+    code: string;
+  };
+  err.status = 400;
+  err.type = "invalid_request_error";
+  err.code = code;
+  return err;
+};
+
 const chatOrThrow = (id: string): LanguageModel => {
   if (isEmbedding(id)) {
-    const err = new Error(`Model "${id}" is an embedding model`) as Error & {
-      status: number;
-      type: string;
-      code: string;
-    };
-    err.status = 400;
-    err.type = "invalid_request_error";
-    err.code = "model_mismatch";
-    throw err;
+    throw badRequest(`Model "${id}" is an embedding model`);
   }
   return pickChat(id);
 };
 
 const embeddingOrThrow = (id: string): EmbeddingModel<string> => {
   if (!isEmbedding(id)) {
-    const err = new Error(`Model "${id}" is a chat model`) as Error & {
-      status: number;
-      type: string;
-      code: string;
-    };
-    err.status = 400;
-    err.type = "invalid_request_error";
-    err.code = "model_mismatch";
-    throw err;
+    throw badRequest(`Model "${id}" is a chat model`);
   }
   return pickEmbedding(id);
 };

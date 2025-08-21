@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 
 import supportedModels from "@hebo/shared-data/supported-models.json";
 
-const SUPPORTED_MODELS = supportedModels.map((m) => m.name);
+const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
 export const models = new Elysia({
   name: "models",
