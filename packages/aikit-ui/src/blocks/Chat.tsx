@@ -32,7 +32,7 @@ import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
 // Types based on models.schema.json
 type ModelEndpoint = {
   baseUrl: string;
-  provider: "aws" | "custom" | "openai";
+  provider: "openai";
   apiKey: string;
 };
 
