@@ -7,7 +7,8 @@ CREATE TABLE "agents" (
 	"updated_by" text NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"deleted_by" text,
-	"deleted_at" timestamp with time zone
+	"deleted_at" timestamp with time zone,
+	CONSTRAINT "agents_slug_lowercase" CHECK ("agents"."slug" = lower("agents"."slug"))
 );
 --> statement-breakpoint
 CREATE TABLE "branches" (
@@ -21,9 +22,10 @@ CREATE TABLE "branches" (
 	"updated_by" text NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"deleted_by" text,
-	"deleted_at" timestamp with time zone
+	"deleted_at" timestamp with time zone,
+	CONSTRAINT "branches_slug_lowercase" CHECK ("branches"."slug" = lower("branches"."slug"))
 );
 --> statement-breakpoint
 ALTER TABLE "branches" ADD CONSTRAINT "branches_agent_id_agents_id_fk" FOREIGN KEY ("agent_id") REFERENCES "public"."agents"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE UNIQUE INDEX "unique_slug" ON "agents" USING btree (LOWER("slug"));--> statement-breakpoint
-CREATE UNIQUE INDEX "unique_slug_per_agent" ON "branches" USING btree ("agent_id",LOWER("slug")) WHERE "branches"."deleted_at" is null;
+CREATE UNIQUE INDEX "unique_slug" ON "agents" USING btree ("slug");--> statement-breakpoint
+CREATE UNIQUE INDEX "unique_slug_per_agent" ON "branches" USING btree ("agent_id","slug");

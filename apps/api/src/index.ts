@@ -1,3 +1,4 @@
+import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
@@ -9,6 +10,7 @@ const PORT = Number(process.env.PORT) || 3001;
 
 const createApi = () =>
   new Elysia()
+    .use(logger())
     // make cors more strict for production
     .use(cors())
     .use(
@@ -21,12 +23,12 @@ const createApi = () =>
         },
       }),
     )
-    .get("/", () => "Hebo API says hello!")
+    .get("/", () => "🚀 Hebo API says hello!")
     .group("/v1", (app) => app.use(agentsModule.use(branchesModule)));
 
 if (import.meta.main) {
-  createApi().listen(PORT);
-  console.log(`🚀 Hebo API listening on port ${PORT} (Bun ${process.version})`);
+  const app = createApi().listen(PORT);
+  console.log(`🚀 Hebo API running at ${app.server!.url}`);
 }
 
 export type Api = ReturnType<typeof createApi>;
