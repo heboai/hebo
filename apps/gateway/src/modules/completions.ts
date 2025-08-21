@@ -59,7 +59,16 @@ export const completions = new Elysia({
             t.Literal("assistant"),
             t.Literal("tool"),
           ]),
-          content: t.String(),
+          content: t.Union([
+            t.String(),
+            t.Array(
+              t.Object({
+                type: t.Literal("text"),
+                text: t.String(),
+              }),
+              { minItems: 1 },
+            ),
+          ]),
           name: t.Optional(t.String()),
           tool_call_id: t.Optional(t.String()),
         }),

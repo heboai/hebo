@@ -9,7 +9,7 @@ import { models } from "~/modules/models";
 
 const PORT = Number(process.env.GATEWAY_PORT) || 3002;
 
-const createApp = () =>
+export const createApp = () =>
   new Elysia()
     .use(logger())
     // FUTURE make cors more strict for production

@@ -11,6 +11,7 @@
     "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile=server",
     "dev": "bun run --watch src/index.ts | pino-pretty",
     "lint": "bunx eslint .",
+    "type-check": "bunx tsc --noEmit",
     "prestart": "bun run build",
     "start": "./server",
     "clean": "rimraf .turbo node_modules server"
