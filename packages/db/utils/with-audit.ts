@@ -19,6 +19,7 @@ export type AuditContext = { userId: string };
  * - filter out soft-deleted records (deletedAt IS NULL)
  * - set audit fields (createdBy/updatedBy/deletedBy, updatedAt) on writes
  */
+// FUTURE: Fix type inference degradation
 export function withAudit<TTable extends TableWithAudit>(
   table: TTable,
   ctx: AuditContext,
