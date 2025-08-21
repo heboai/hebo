@@ -15,7 +15,8 @@ export const completions = new Elysia({
     if (stream) {
       const result = await streamText({
         model: groq(model),
-        messages: messages,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Vercel AI SDK will handle
+        messages: messages as any,
         temperature,
       });
       return result.toTextStreamResponse();
@@ -23,7 +24,8 @@ export const completions = new Elysia({
 
     const result = await generateText({
       model: groq(model),
-      messages: messages,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Vercel AI SDK will handle
+      messages: messages as any,
       temperature,
     });
 
