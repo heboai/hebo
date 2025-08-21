@@ -1,20 +1,25 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Elysia, status } from "elysia";
 
 import { agents } from "@hebo/db/schema/agents";
+import { withAudit } from "@hebo/db/utils/with-audit";
 
 import { getDb } from "~/utils/request-db";
 
+import { userId } from "./user-id";
+
 export const agentId = new Elysia({ name: "agent-id" })
-  .derive(async ({ params }) => {
+  .use(userId)
+  .derive(async (ctx) => {
+    const { params } = ctx;
+    const userId = (ctx as { userId: string }).userId;
     const agentSlug = (params as { agentSlug?: string }).agentSlug;
 
     if (!agentSlug) throw status(400, "agentSlug is required");
 
-    const [agent] = await getDb()
-      .select({ id: agents.id })
-      .from(agents)
-      .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)))
+    const audit = withAudit(agents, { userId });
+    const [agent] = await audit
+      .select(getDb(), eq(agents.slug, agentSlug))
       .limit(1);
 
     if (!agent) throw status(404, "Agent not found");
