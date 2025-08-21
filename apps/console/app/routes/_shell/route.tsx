@@ -56,7 +56,8 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
   const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
 
   return (
-    <div className="flex min-h-screen flex-col gap-4">
+    <div className="relative flex min-h-screen">
+      {/* LEFT SIDEBAR */}
       <SidebarProvider
         defaultOpen={leftSidebarDefaultOpen}
         style={
@@ -85,50 +86,51 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
         <main className="relative flex w-full flex-1 flex-col gap-4 p-4">
           <SidebarTrigger className="fixed -m-1.5" />
 
-          <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
+          <div className="flex-1 mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 p-4 py-8">
             <Outlet />
           </div>
         </main>
       </SidebarProvider>
       
-      {/* RIGHT SIDEBAR / PLAYGROUND */}
-      <SidebarProvider
-        shortcut="p"
-        defaultOpen={rightSidebarDefaultOpen}
-        style={
-          {
-            "--sidebar-width": "24rem", // Tailwind w-96
-            "--sidebar-width-mobile": "24rem",
-            "--sidebar-width-icon": "0rem", // No icon state, fully collapse
-          } as React.CSSProperties
-        }
-      >
-        {/* Floating trigger */}
-        <SidebarTrigger
-          icon={<SquareChevronRight size={24} color="black" />}
-          text="Playground"
-          className="fixed top-4 right-2 z-50 w-fit"
-        />
+      {/* RIGHT SIDEBAR - Positioned absolutely */}
+      <div className="absolute top-0 right-0 h-full z-40">
+        <SidebarProvider
+          shortcut="p"
+          defaultOpen={rightSidebarDefaultOpen}
+          style={
+            {
+              "--sidebar-width": "24rem",
+              "--sidebar-width-mobile": "24rem", 
+              "--sidebar-width-icon": "0rem",
+            } as React.CSSProperties
+          }
+        >
+          {/* Floating trigger */}
+          <SidebarTrigger
+            icon={<SquareChevronRight size={24} color="black" />}
+            text="Playground"
+            className="fixed top-4 right-2 z-50 w-fit"
+          />
 
-        <Sidebar side="right" collapsible="offcanvas">
-          <SidebarContent>
-            <Chat modelsConfig={{
-              __supportedTypes: ["llama-3.1-8b-instant"],
-              models: [{
-                alias: "Llama 3.1 8B",
-                type: "llama-3.1-8b-instant",
-                endpoint: {
-                  baseUrl: import.meta.env.VITE_GATEWAY_URL!,
-                  apiKey: import.meta.env.VITE_GROQ_API_KEY!,
-                  provider: "openai"
-                }
-              }]
-            }} />
-          </SidebarContent>
-
-          <SidebarRail />
-        </Sidebar>
-      </SidebarProvider>
+          <Sidebar side="right" collapsible="offcanvas">
+            <SidebarContent>
+              <Chat modelsConfig={{
+                __supportedTypes: ["llama-3.1-8b-instant"],
+                models: [{
+                  alias: "Llama 3.1 8B",
+                  type: "llama-3.1-8b-instant",
+                  endpoint: {
+                    baseUrl: import.meta.env.VITE_GATEWAY_URL!,
+                    apiKey: import.meta.env.VITE_GROQ_API_KEY!,
+                    provider: "openai"
+                  }
+                }]
+              }} />
+            </SidebarContent>
+            <SidebarRail />
+          </Sidebar>
+        </SidebarProvider>
+      </div>
     </div>
   );
 }
