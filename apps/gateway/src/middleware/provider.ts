@@ -2,14 +2,17 @@ import { createGroq } from "@ai-sdk/groq";
 import { Elysia } from "elysia";
 import { createVoyage } from "voyage-ai-provider";
 
+import supportedModels from "@hebo/shared-data/supported-models.json";
+
 import type { LanguageModel, EmbeddingModel } from "ai";
+
+export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY! });
 const voyage = createVoyage({ apiKey: process.env.VOYAGE_API_KEY! });
 
 const isEmbedding = (id: string) => /^voyage-/i.test(id);
 
-// FUTURE throw on unsupported models
 // FUTURE support AWS Bedrock
 const pickChat = (id: string): LanguageModel => groq(id);
 
@@ -28,7 +31,17 @@ const badRequest = (message: string, code = "model_mismatch") => {
   return err;
 };
 
+export const supportedOrThrow = (id: string) => {
+  if (!(id in SUPPORTED_MODELS)) {
+    throw badRequest(
+      `Unknown or unsupported model "${id}"`,
+      "model_unsupported",
+    );
+  }
+};
+
 const chatOrThrow = (id: string): LanguageModel => {
+  supportedOrThrow(id);
   if (isEmbedding(id)) {
     throw badRequest(`Model "${id}" is an embedding model`);
   }
@@ -36,6 +49,7 @@ const chatOrThrow = (id: string): LanguageModel => {
 };
 
 const embeddingOrThrow = (id: string): EmbeddingModel<string> => {
+  supportedOrThrow(id);
   if (!isEmbedding(id)) {
     throw badRequest(`Model "${id}" is a chat model`);
   }

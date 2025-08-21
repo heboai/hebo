@@ -1,8 +1,6 @@
 import { Elysia, t } from "elysia";
 
-import supportedModels from "@hebo/shared-data/supported-models.json";
-
-const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
+import { SUPPORTED_MODELS, supportedOrThrow } from "~/middleware/provider";
 
 export const models = new Elysia({
   name: "models",
@@ -42,7 +40,9 @@ export const models = new Elysia({
     "/:id",
     ({ params }) => {
       const { id } = params;
-      // FUTURE: throw on unsupported models
+
+      supportedOrThrow(id);
+
       return {
         id,
         object: "model",
