@@ -7,7 +7,7 @@ import { completions } from "~/modules/completions";
 import { embeddings } from "~/modules/embeddings";
 import { models } from "~/modules/models";
 
-import { oaiErrors } from "./middleware/oai-error";
+import { oaiErrors } from "./middleware/oai-errors";
 
 const PORT = Number(process.env.GATEWAY_PORT) || 3002;
 
