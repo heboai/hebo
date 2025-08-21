@@ -27,6 +27,8 @@ export const models = new Elysia({
       return { id, object: "model", owned_by: "gateway" };
     },
     {
-      params: t.Object(t.String({ enum: [...SUPPORTED_MODELS] })),
+      params: t.Object({
+        id: t.String({ enum: [...SUPPORTED_MODELS] }),
+      }),
     },
   );
