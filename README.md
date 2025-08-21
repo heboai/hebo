@@ -8,7 +8,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 / (hebo)
 ├── apps/                   # Deployable targets
 │   ├── api/                # API server (ElysiaJS)
-│   └── console/            # Cloud Console (React Router)
+│   ├── console/            # Cloud Console (React Router)
 │   └── gateway/            # AI Gateway (Elysia JS & Vercel AI SDK)
 │
 ├── packages/               # Shareable libraries
