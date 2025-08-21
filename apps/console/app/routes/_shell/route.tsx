@@ -117,11 +117,11 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
               <Chat modelsConfig={{
                 __supportedTypes: ["llama-3.1-8b-instant"],
                 models: [{
-                  alias: "Llama 3.1 8B",
+                  alias: "Llama3.1-8b Instant",
                   type: "llama-3.1-8b-instant",
                   endpoint: {
                     baseUrl: import.meta.env.VITE_GATEWAY_URL!,
-                    apiKey: import.meta.env.VITE_GROQ_API_KEY!,
+                    apiKey: "",
                     provider: "openai"
                   }
                 }]
