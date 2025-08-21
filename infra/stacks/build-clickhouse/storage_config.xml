@@ -3,7 +3,7 @@
     <disks>
       <s3_disk>
         <type>s3</type>
-        <endpoint>https://tmp-hebo-clickhouse.s3.ap-southeast-5.amazonaws.com/</endpoint>
+        <endpoint from_env="S3_BUCKET"/>
         <use_environment_credentials>true</use_environment_credentials>
         <metadata_path>/var/lib/clickhouse/disks/s3_disk/</metadata_path>
       </s3_disk>
@@ -24,5 +24,8 @@
       </s3_main>
     </policies>
   </storage_configuration>
+  <merge_tree>
+    <storage_policy>s3_main</storage_policy>
+  </merge_tree>
   <postgresql_port>9005</postgresql_port>
 </clickhouse>
