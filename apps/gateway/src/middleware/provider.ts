@@ -10,13 +10,10 @@ const voyage = createVoyage({ apiKey: process.env.VOYAGE_API_KEY! });
 const isEmbedding = (id: string) => /^voyage-/i.test(id);
 
 // FUTURE support AWS Bedrock
-const pickChat = (id: string): LanguageModel => {
-  return groq(id);
-};
+const pickChat = (id: string): LanguageModel => groq(id);
 
-const pickEmbedding = (id: string): EmbeddingModel<string> => {
-  return voyage.textEmbeddingModel(id);
-};
+const pickEmbedding = (id: string): EmbeddingModel<string> =>
+  voyage.textEmbeddingModel(id);
 
 const chatOrThrow = (id: string): LanguageModel => {
   if (isEmbedding(id)) {
@@ -49,7 +46,7 @@ const embeddingOrThrow = (id: string): EmbeddingModel<string> => {
 };
 
 export const provider = new Elysia({ name: "provider" })
-  .derive(() => ({
+  .decorate(() => ({
     provider: {
       chat: chatOrThrow,
       embedding: embeddingOrThrow,
