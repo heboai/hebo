@@ -1,5 +1,5 @@
 import { createGroq } from "@ai-sdk/groq";
-import { type ModelMessage, generateText, streamText } from "ai";
+import { generateText, streamText } from "ai";
 import { Elysia, t } from "elysia";
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY! });
@@ -10,17 +10,7 @@ export const completions = new Elysia({
 }).post(
   "/",
   async ({ body }) => {
-    const {
-      model,
-      messages,
-      temperature = 1,
-      stream = false,
-    } = body as {
-      model: string;
-      messages: ModelMessage[];
-      temperature?: number;
-      stream?: boolean;
-    };
+    const { model, messages, temperature = 1, stream = false } = body;
 
     if (stream) {
       const result = await streamText({
@@ -31,7 +21,7 @@ export const completions = new Elysia({
       return result.toTextStreamResponse();
     }
 
-    const r = await generateText({
+    const result = await generateText({
       model: groq(model),
       messages: messages,
       temperature,
@@ -45,16 +35,16 @@ export const completions = new Elysia({
       choices: [
         {
           index: 0,
-          message: { role: "assistant", content: r.text },
+          message: { role: "assistant", content: result.text },
           finish_reason: "stop",
         },
       ],
-      usage: r.usage && {
-        prompt_tokens: r.usage.inputTokens ?? 0,
-        completion_tokens: r.usage.outputTokens ?? 0,
+      usage: result.usage && {
+        prompt_tokens: result.usage.inputTokens ?? 0,
+        completion_tokens: result.usage.outputTokens ?? 0,
         total_tokens:
-          r.usage.totalTokens ??
-          (r.usage.inputTokens ?? 0) + (r.usage.outputTokens ?? 0),
+          result.usage.totalTokens ??
+          (result.usage.inputTokens ?? 0) + (result.usage.outputTokens ?? 0),
       },
     };
   },
@@ -73,8 +63,9 @@ export const completions = new Elysia({
           name: t.Optional(t.String()),
           tool_call_id: t.Optional(t.String()),
         }),
+        { minItems: 1 },
       ),
-      temperature: t.Optional(t.Number()),
+      temperature: t.Optional(t.Number({ minimum: 0, maximum: 2 })),
       stream: t.Optional(t.Boolean()),
     }),
   },

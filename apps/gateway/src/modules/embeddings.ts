@@ -19,7 +19,7 @@ export const embeddings = new Elysia({
       });
       return {
         object: "list",
-        data: embeddings.map((e, i) => ({
+        data: embeddings.map((e: number[], i: number) => ({
           object: "embedding",
           embedding: e,
           index: i,
@@ -49,7 +49,12 @@ export const embeddings = new Elysia({
   {
     body: t.Object({
       model: t.String(),
-      input: t.Union([t.String(), t.Array(t.String())]),
+      input: t.Union([
+        t.String(),
+        t.Array(t.String()),
+        t.Array(t.Number()),
+        t.Array(t.Array(t.Number())),
+      ]),
     }),
   },
 );
