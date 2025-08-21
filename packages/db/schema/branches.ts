@@ -1,4 +1,4 @@
-import { isNull, sql } from "drizzle-orm";
+import { isNull } from "drizzle-orm";
 import {
   pgTable,
   jsonb,
@@ -9,7 +9,7 @@ import {
 
 import { agents } from "./agents";
 import { audit } from "./mixin/audit";
-import { slug } from "./mixin/slug";
+import { slug, createSlugLowercaseCheck } from "./mixin/slug";
 
 type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
@@ -25,9 +25,11 @@ export const branches = pgTable(
     ...audit,
   },
   (table) => [
-    // Case-insensitive unique slug per agent
+    // Enforce lowercase slug at the DB level
+    createSlugLowercaseCheck("branches", table),
+    // Unique slug per agent for non-deleted rows
     uniqueIndex("unique_slug_per_agent")
-      .on(table.agentId, sql`LOWER(${table.slug})`)
+      .on(table.agentId, table.slug)
       .where(isNull(table.deletedAt)),
   ],
 );

@@ -1,8 +1,8 @@
-import { isNull, sql } from "drizzle-orm";
+import { isNull } from "drizzle-orm";
 import { uuid, pgTable, uniqueIndex } from "drizzle-orm/pg-core";
 
 import { audit } from "./mixin/audit";
-import { slug } from "./mixin/slug";
+import { slug, createSlugLowercaseCheck } from "./mixin/slug";
 
 export const agents = pgTable(
   "agents",
@@ -12,9 +12,9 @@ export const agents = pgTable(
     ...audit,
   },
   (table) => [
-    // Case-insensitive unique slug for non-deleted rows
-    uniqueIndex("unique_slug")
-      .on(sql`LOWER(${table.slug})`)
-      .where(isNull(table.deletedAt)),
+    // Enforce lowercase slug at the DB level
+    createSlugLowercaseCheck("agents", table),
+    // Unique slug for non-deleted rows
+    uniqueIndex("unique_slug").on(table.slug).where(isNull(table.deletedAt)),
   ],
 );

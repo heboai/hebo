@@ -1,5 +1,5 @@
 {
-  "id": "1b9ddc02-9fe5-4718-aaf8-b0edc83b302e",
+  "id": "876ab1d0-ba2c-4974-84e1-14183c1044a0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -71,13 +71,14 @@
           "name": "unique_slug",
           "columns": [
             {
-              "expression": "LOWER(\"slug\")",
+              "expression": "slug",
+              "isExpression": false,
               "asc": true,
-              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": true,
+          "where": "\"agents\".\"deleted_at\" is null",
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -87,7 +88,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "agents_slug_lowercase": {
+          "name": "agents_slug_lowercase",
+          "value": "\"agents\".\"slug\" = lower(\"agents\".\"slug\")"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.branches": {
@@ -175,9 +181,9 @@
               "nulls": "last"
             },
             {
-              "expression": "LOWER(\"slug\")",
+              "expression": "slug",
+              "isExpression": false,
               "asc": true,
-              "isExpression": true,
               "nulls": "last"
             }
           ],
@@ -202,7 +208,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "branches_slug_lowercase": {
+          "name": "branches_slug_lowercase",
+          "value": "\"branches\".\"slug\" = lower(\"branches\".\"slug\")"
+        }
+      },
       "isRLSEnabled": false
     }
   },
