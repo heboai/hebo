@@ -6,7 +6,7 @@
   "module": "src/index.js",
   "scripts": {
     "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile=server",
-    "dev": "bun run --watch src/index.ts",
+    "dev": "bun run --watch src/index.ts | pino-pretty",
     "lint": "bunx eslint .",
     "start": "./server",
     "clean": "rimraf .turbo node_modules server"
@@ -26,6 +26,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "bun-types": "^1.2.19"
+    "bun-types": "^1.2.19",
+    "pino-pretty": "^13.1.1"
   }
 }
