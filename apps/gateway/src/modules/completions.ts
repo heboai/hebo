@@ -1,5 +1,5 @@
 import { createGroq } from "@ai-sdk/groq";
-import { generateText, streamText } from "ai";
+import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY! });
@@ -15,8 +15,7 @@ export const completions = new Elysia({
     if (stream) {
       const result = await streamText({
         model: groq(model),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Vercel AI SDK will handle
-        messages: messages as any,
+        messages: messages as ModelMessage[],
         temperature,
       });
       return result.toTextStreamResponse();
@@ -24,8 +23,7 @@ export const completions = new Elysia({
 
     const result = await generateText({
       model: groq(model),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Vercel AI SDK will handle
-      messages: messages as any,
+      messages: messages as ModelMessage[],
       temperature,
     });
 
