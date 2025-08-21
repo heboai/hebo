@@ -30,19 +30,34 @@ import {
 
 import { Button } from "../_shadcn/ui/button";
 
-interface Model {
-  id: string;
-  name: string;
+// Types based on models.schema.json
+interface ModelEndpoint {
+  baseUrl: string;
+  provider: "aws" | "custom" | "openai";
+  apiKey: string;
+}
+
+interface ModelConfig {
+  alias: string;
+  type: string;
+  endpoint?: ModelEndpoint;
+}
+
+interface ModelsConfig {
+  __supportedTypes: string[];
+  models: ModelConfig[];
 }
 
 interface ChatProps {
-  models: Model[];
-  apiKey: string;
-  baseUrl?: string;
+  modelsConfig: ModelsConfig;
 }
 
-export function Chat({ models, apiKey, baseUrl }: ChatProps) {
-  const [currentModel, setCurrentModel] = useState(models[0]?.id || "");
+export function Chat({ modelsConfig }: ChatProps) {
+  // Use the first (and currently only) model as default
+  const defaultModel = modelsConfig.models[0];
+  const [currentModelAlias, setCurrentModelAlias] = useState(
+    defaultModel.alias,
+  );
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -51,9 +66,15 @@ export function Chat({ models, apiKey, baseUrl }: ChatProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const latestMessageRef = useRef<HTMLDivElement>(null);
 
+  // Get current model config
+  const currentModel =
+    modelsConfig.models.find((m) => m.alias === currentModelAlias) ||
+    defaultModel;
+
+  // Create OpenAI client based on current model
   const openai = createOpenAI({
-    apiKey,
-    ...(baseUrl && { baseURL: baseUrl }),
+    apiKey: currentModel.endpoint?.apiKey || "",
+    baseURL: currentModel.endpoint?.baseUrl || "",
   });
 
   // Auto-scroll to latest message for screen readers
@@ -125,9 +146,9 @@ export function Chat({ models, apiKey, baseUrl }: ChatProps) {
       setInput(""); // Clear input immediately
 
       try {
-        // Generate AI response
+        // Generate AI response using the current model's type
         const { text } = await generateText({
-          model: openai.chat(currentModel),
+          model: openai.chat(currentModel.type),
           messages: [...messages, userMessage].map((msg) => ({
             role: msg.role,
             content: renderMessagePart(msg.parts[0]),
@@ -166,8 +187,8 @@ export function Chat({ models, apiKey, baseUrl }: ChatProps) {
     setTimeout(() => textareaRef.current?.focus(), 100);
   };
 
-  const handleModelChange = (modelId: string) => {
-    setCurrentModel(modelId);
+  const handleModelChange = (modelAlias: string) => {
+    setCurrentModelAlias(modelAlias);
     // Return focus to textarea after model change
     setTimeout(() => textareaRef.current?.focus(), 100);
   };
@@ -256,20 +277,23 @@ export function Chat({ models, apiKey, baseUrl }: ChatProps) {
             {/* Model selector */}
             <PromptInputModelSelect
               onValueChange={handleModelChange}
-              value={currentModel}
+              value={currentModelAlias}
               disabled={isLoading}
               aria-label="Select AI model"
             >
               <PromptInputModelSelectTrigger
-                aria-label={`Current model: ${models.find((m) => m.id === currentModel)?.name || "Unknown"}`}
+                aria-label={`Current model: ${currentModel.alias}`}
               >
                 <Bot />
                 <PromptInputModelSelectValue />
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>
-                {models.map((model) => (
-                  <PromptInputModelSelectItem key={model.id} value={model.id}>
-                    {model.name}
+                {modelsConfig.models.map((model) => (
+                  <PromptInputModelSelectItem
+                    key={model.alias}
+                    value={model.alias}
+                  >
+                    {model.alias}
                   </PromptInputModelSelectItem>
                 ))}
               </PromptInputModelSelectContent>

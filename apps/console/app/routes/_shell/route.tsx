@@ -35,7 +35,7 @@ export const unstable_clientMiddleware = [authMiddleware];
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents } = await api.agents.get();
 
-  const activeAgent = params.slug ? agents!.find((a) => a.slug === params.slug) : undefined;
+  const activeAgent = params.slug ? agents!.find((a: any) => a.slug === params.slug) : undefined;
 
   if (params.slug && !activeAgent)
     throw new Response("Agent Not Found", { status: 404 });
@@ -112,10 +112,18 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
 
         <Sidebar side="right" collapsible="offcanvas">
           <SidebarContent>
-            <Chat models={supportedModels.map((model) => ({
-              id: model.name,
-              name: model.displayName,
-            }))} apiKey={import.meta.env.VITE_GROQ_API_KEY} />
+            <Chat modelsConfig={{
+              __supportedTypes: ["llama-3.1-8b-instant"],
+              models: [{
+                alias: "Llama 3.1 8B",
+                type: "llama-3.1-8b-instant",
+                endpoint: {
+                  baseUrl: import.meta.env.VITE_GATEWAY_URL!,
+                  apiKey: import.meta.env.VITE_GROQ_API_KEY!,
+                  provider: "openai"
+                }
+              }]
+            }} />
           </SidebarContent>
 
           <SidebarRail />
