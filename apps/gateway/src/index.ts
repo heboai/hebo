@@ -7,6 +7,8 @@ import { completions } from "~/modules/completions";
 import { embeddings } from "~/modules/embeddings";
 import { models } from "~/modules/models";
 
+import { oaiErrors } from "./middleware/oai-error";
+
 const PORT = Number(process.env.GATEWAY_PORT) || 3002;
 
 export const createApp = () =>
@@ -24,6 +26,7 @@ export const createApp = () =>
         },
       }),
     )
+    .use(oaiErrors)
     .get("/", () => "🐵 Hebo AI Gateway says hello!")
     .group("/v1", (app) => app.use(completions).use(embeddings).use(models));
 
