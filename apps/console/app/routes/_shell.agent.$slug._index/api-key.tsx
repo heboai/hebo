@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
-import { cn } from "@hebo/aikit-ui/src/lib/utils";
+import { cn } from "@hebo/ui/lib/utils";
 
 import { authService } from "~/lib/auth";
 

@@ -2,7 +2,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '../_shadcn/ui/avatar';
+} from '@hebo/aikit-ui/_shadcn/ui/avatar';
 import type { ComponentProps, HTMLAttributes } from 'react';
 import { cn } from '@hebo/aikit-ui/lib/utils';
 import type { UIMessage } from 'ai';
