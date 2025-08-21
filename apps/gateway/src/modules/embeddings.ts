@@ -49,12 +49,7 @@ export const embeddings = new Elysia({
   {
     body: t.Object({
       model: t.String(),
-      input: t.Union([
-        t.String(),
-        t.Array(t.String()),
-        t.Array(t.Number()),
-        t.Array(t.Array(t.Number())),
-      ]),
+      input: t.Union([t.String(), t.Array(t.String())]),
     }),
   },
 );
