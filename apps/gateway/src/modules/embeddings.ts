@@ -30,21 +30,21 @@ export const embeddings = new Elysia({
           total_tokens: usage.tokens ?? 0,
         },
       };
-    } else {
-      const { embedding, usage } = await embed({
-        model: voyage.textEmbeddingModel(model),
-        value: input,
-      });
-      return {
-        object: "list",
-        data: [{ object: "embedding", embedding, index: 0 }],
-        model,
-        usage: usage && {
-          prompt_tokens: usage.tokens ?? 0,
-          total_tokens: usage.tokens ?? 0,
-        },
-      };
     }
+
+    const { embedding, usage } = await embed({
+      model: voyage.textEmbeddingModel(model),
+      value: input,
+    });
+    return {
+      object: "list",
+      data: [{ object: "embedding", embedding, index: 0 }],
+      model,
+      usage: usage && {
+        prompt_tokens: usage.tokens ?? 0,
+        total_tokens: usage.tokens ?? 0,
+      },
+    };
   },
   {
     body: t.Object({
