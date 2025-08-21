@@ -9,7 +9,7 @@
     "clean": "rimraf .turbo node_modules"
   },
   "dependencies": {
-    "@ai-sdk/groq": "^2.0.10",
+    "@ai-sdk/openai": "^2.0.17",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
