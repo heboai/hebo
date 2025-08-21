@@ -1,10 +1,11 @@
-import { Elysia } from "elysia";
+import { Elysia, status } from "elysia";
 
-// FUTURE: remove this once auth is wired in
+import { authenticateUser } from "@hebo/shared-auth";
+
 export const userId = new Elysia({ name: "user-id" })
-  .derive(() => {
-    // FUTURE: Replace with real auth derived user id
-    const userId = "dummy" as const;
-    return { userId } as const;
+  .use(authenticateUser())
+  .derive(({ store }) => {
+    if (!store.userId) throw status(401, "Unauthorized");
+    return { userId: store.userId } as const;
   })
   .as("scoped");
