@@ -3,7 +3,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 
 import {
   Conversation,
@@ -152,38 +152,6 @@ export function Chat({ modelsConfig }: ChatProps) {
     // Return focus to textarea after model change
     setTimeout(() => textareaRef.current?.focus(), 100);
   };
-
-  // Auto-focus when Chat becomes visible
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const focusInput = () => textareaRef.current?.focus();
-
-    // If already visible, focus immediately
-    const rect = container.getBoundingClientRect();
-    const isVisible = rect.bottom > 0 && rect.top < window.innerHeight;
-    if (isVisible) {
-      focusInput();
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            focusInput();
-          }
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(container);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
 
   return (
     <div className="flex h-full flex-col" ref={containerRef}>
