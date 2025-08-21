@@ -10,7 +10,13 @@ import { agents } from "./agents";
 import { audit } from "./mixin/audit";
 import { slug, createSlugLowercaseCheck } from "./mixin/slug";
 
-type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
+type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JsonValue }
+  | JsonValue[];
 
 export const branches = pgTable(
   "branches",
@@ -20,7 +26,7 @@ export const branches = pgTable(
       .references((): AnyPgColumn => agents.id, { onDelete: "cascade" })
       .notNull(),
     ...slug,
-    models: jsonb("models").$type<Json>().notNull(),
+    models: jsonb("models").$type<JsonValue>().notNull(),
     ...audit,
   },
   (table) => [
