@@ -11,7 +11,7 @@ const PORT = Number(process.env.API_PORT) || 3001;
 const createApi = () =>
   new Elysia()
     .use(logger())
-    // make cors more strict for production
+    // FUTURE:make cors more strict for production
     .use(cors())
     .use(
       swagger({

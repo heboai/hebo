@@ -35,6 +35,7 @@ const pickOneAuthMethod = (apiKey?: string | null, jwt?: string | null) => {
 const verifyJwt = async (token: string): Promise<string> => {
   try {
     const { payload } = await jwtVerify(token, jwks);
+    if (!payload.sub) throw status(403, "Invalid or expired JWT");
     return String(payload.sub);
   } catch {
     throw status(403, "Invalid or expired JWT");
@@ -78,7 +79,7 @@ const checkApiKey = async (key: string): Promise<string> => {
  *   • Both credentials supplied        → 401
  *   • Supplied but invalid credential  → 403
  *
- * On success the plugin decorates `ctx.store` with:
+ * On success the plugin derives and exposes on `ctx`:
  *   • `userId` – the authenticated user's ID (API-key owner or JWT subject)
  */
 export const authenticateUser = () =>
