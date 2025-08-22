@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 
-import { userId } from "~/middlewares/user-id";
+import { authenticateUser } from "@hebo/shared-auth";
 
 import * as AgentsModel from "./model";
 import { AgentService } from "./service";
@@ -9,7 +9,7 @@ export const agentsModule = new Elysia({
   name: "agents-module",
   prefix: "/agents",
 })
-  .use(userId)
+  .use(authenticateUser())
   .post(
     "/",
     async ({ body, set, userId }) => {

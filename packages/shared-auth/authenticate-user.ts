@@ -80,7 +80,7 @@ const checkApiKey = async (key: string): Promise<string> => {
  *   • `userId` – the authenticated user's ID (API-key owner or JWT subject)
  */
 const authenticateUserStackAuth = () =>
-  new Elysia({ name: "authenticate-user" })
+  new Elysia({ name: "authenticate-user-stack-auth" })
     .use(bearer())
     .use(accessToken())
     .derive(async ({ bearer: apiKey, jwt: jwtToken }) => {
@@ -90,6 +90,9 @@ const authenticateUserStackAuth = () =>
           ? await verifyJwt(jwtToken!)
           : await checkApiKey(apiKey!);
       return { userId } as const;
+    })
+    .onBeforeHandle(({ userId }) => {
+      if (!userId) throw status(401, "Unauthorized");
     })
     .as("scoped");
 
@@ -116,6 +119,9 @@ const authenticateUserLocalhost = () => {
       if (!isLocalHost && !isLocalClient) throw status(403, "Forbidden");
 
       return { userId: "dummy" } as const;
+    })
+    .onBeforeHandle(({ userId }) => {
+      if (!userId) throw status(401, "Unauthorized");
     })
     .as("scoped");
 };

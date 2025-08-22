@@ -1,7 +1,8 @@
 import { Elysia, t } from "elysia";
 
+import { authenticateUser } from "@hebo/shared-auth";
+
 import { agentId } from "~/middlewares/agent-id";
-import { userId } from "~/middlewares/user-id";
 import * as AgentsModel from "~/modules/agents/model";
 
 import * as BranchesModel from "./model";
@@ -11,7 +12,7 @@ export const branchesModule = new Elysia({
   name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
-  .use(userId)
+  .use(authenticateUser())
   .use(agentId)
   .post(
     "/",

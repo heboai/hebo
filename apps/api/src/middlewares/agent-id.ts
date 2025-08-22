@@ -3,13 +3,12 @@ import { Elysia, status } from "elysia";
 
 import { agents } from "@hebo/db/schema/agents";
 import { withAudit } from "@hebo/db/utils/with-audit";
+import { authenticateUser } from "@hebo/shared-auth";
 
 import { getDb } from "~/utils/request-db";
 
-import { userId } from "./user-id";
-
 export const agentId = new Elysia({ name: "agent-id" })
-  .use(userId)
+  .use(authenticateUser())
   .derive(async (ctx) => {
     const { params } = ctx;
     const userId = (ctx as { userId: string }).userId;
