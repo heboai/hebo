@@ -6,12 +6,8 @@ const isLocalClientIp = (ip: string) => {
   const candidate = ip.trim();
   if (!candidate) return false;
   try {
-    let addr = ipaddr.parse(candidate);
-    if (addr.kind() === "ipv6" && (addr as ipaddr.IPv6).isIPv4MappedAddress()) {
-      addr = (addr as ipaddr.IPv6).toIPv4Address();
-    }
-    const range = (addr as ipaddr.IPv4 | ipaddr.IPv6).range();
-    return range === "loopback";
+    const addr = ipaddr.process(candidate) as ipaddr.IPv4 | ipaddr.IPv6;
+    return addr.range() === "loopback";
   } catch {
     return false;
   }
