@@ -50,10 +50,9 @@ type ModelsConfig = {
 type ChatProps = { modelsConfig: ModelsConfig };
 
 export function Chat({ modelsConfig }: ChatProps) {
-  // Use the first model as the default selection
-  const defaultModel = modelsConfig.models[0];
-  const [currentModelAlias, setCurrentModelAlias] = useState(
-    defaultModel.alias,
+  // Use lazy initializer to safely pick first model ID or empty string
+  const [currentModelAlias, setCurrentModelAlias] = useState(() =>
+    modelsConfig.models.length > 0 ? modelsConfig.models[0].alias : "",
   );
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
@@ -63,16 +62,18 @@ export function Chat({ modelsConfig }: ChatProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Get current model config
-  const currentModel =
-    modelsConfig.models.find((m) => m.alias === currentModelAlias) ||
-    defaultModel;
+  // Get current model config - only return a model if we have a valid alias and it exists
+  const currentModel = currentModelAlias
+    ? modelsConfig.models.find((m) => m.alias === currentModelAlias)
+    : undefined;
 
-  // Create OpenAI client based on current model
-  const openai = createOpenAI({
-    apiKey: currentModel.endpoint?.apiKey || "",
-    baseURL: currentModel.endpoint?.baseUrl || "",
-  });
+  // Create OpenAI client based on current model (only if model exists)
+  const openai = currentModel
+    ? createOpenAI({
+        apiKey: currentModel.endpoint?.apiKey || "",
+        baseURL: currentModel.endpoint?.baseUrl || "",
+      })
+    : undefined;
 
   const renderMessagePart = (part: UIMessage["parts"][0]) => {
     if (part.type === "text") return part.text;
@@ -91,7 +92,8 @@ export function Chat({ modelsConfig }: ChatProps) {
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (!input.trim() || isLoading) return;
+      // Guard against submission when no model is selected
+      if (!input.trim() || isLoading || !currentModel || !openai) return;
 
       setIsLoading(true);
 
@@ -241,45 +243,51 @@ export function Chat({ modelsConfig }: ChatProps) {
 
         <PromptInputToolbar>
           <PromptInputTools>
-            {/* Model selector */}
-            <PromptInputModelSelect
-              onValueChange={handleModelChange}
-              value={currentModelAlias}
-              disabled={isLoading}
-              aria-label="Select AI model"
-            >
-              <PromptInputModelSelectTrigger
-                aria-label={`Current model: ${currentModel.alias}`}
+            {/* Model selector - show hint when no models available */}
+            {modelsConfig.models.length === 0 ? (
+              <div className="text-muted-foreground px-3 py-2 text-sm">
+                No models available
+              </div>
+            ) : (
+              <PromptInputModelSelect
+                onValueChange={handleModelChange}
+                value={currentModelAlias}
+                disabled={isLoading || modelsConfig.models.length === 0}
+                aria-label="Select AI model"
               >
-                <Bot />
-                <PromptInputModelSelectValue />
-              </PromptInputModelSelectTrigger>
-              <PromptInputModelSelectContent>
-                {modelsConfig.models.map((model) => (
-                  <PromptInputModelSelectItem
-                    key={model.alias}
-                    value={model.alias}
-                  >
-                    {model.alias}
-                  </PromptInputModelSelectItem>
-                ))}
-              </PromptInputModelSelectContent>
-            </PromptInputModelSelect>
+                <PromptInputModelSelectTrigger
+                  aria-label={`Current model: ${currentModel?.alias || "None"}`}
+                >
+                  <Bot />
+                  <PromptInputModelSelectValue />
+                </PromptInputModelSelectTrigger>
+                <PromptInputModelSelectContent>
+                  {modelsConfig.models.map((model) => (
+                    <PromptInputModelSelectItem
+                      key={model.alias}
+                      value={model.alias}
+                    >
+                      {model.alias}
+                    </PromptInputModelSelectItem>
+                  ))}
+                </PromptInputModelSelectContent>
+              </PromptInputModelSelect>
+            )}
           </PromptInputTools>
 
           {/* Attachment button */}
           <PromptInputButton
             className="absolute right-10 bottom-1"
-            disabled={isLoading}
+            disabled={isLoading || !currentModel}
             aria-label="Attach file"
             title="Attach file"
           >
             <PaperclipIcon size={16} />
           </PromptInputButton>
 
-          {/* Submit button */}
+          {/* Submit button - disable when no model is selected */}
           <PromptInputSubmit
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isLoading || !currentModel}
             className="absolute right-1 bottom-1"
             aria-label={
               isLoading ? "Sending message..." : "Send message (Enter)"

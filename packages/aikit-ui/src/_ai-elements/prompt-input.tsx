@@ -81,8 +81,10 @@ export const PromptInputTextarea = React.forwardRef<HTMLTextAreaElement, PromptI
         onChange?.(e);
       }}
       onKeyDown={(e) => {
-        handleKeyDown(e);
         onKeyDown?.(e);
+        if (!e.defaultPrevented) {
+          handleKeyDown(e);
+        }
       }}
       placeholder={placeholder}
       {...props}
