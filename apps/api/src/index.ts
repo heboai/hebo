@@ -8,11 +8,24 @@ import { branchesModule } from "~/modules/branches";
 
 const PORT = Number(process.env.PORT) || 3001;
 
+const corsConfig = {
+  origin: (request: Request) => {
+    const origin = request.headers.get("origin");
+    if (!origin) return true;
+    if (process.env.NODE_ENV === "development") return true;
+    try {
+      const { hostname } = new URL(origin);
+      return hostname.endsWith(".hebo.ai");
+    } catch {
+      return false;
+    }
+  },
+};
+
 const createApi = () =>
   new Elysia()
     .use(logger())
-    // make cors more strict for production
-    .use(cors())
+    .use(cors(corsConfig))
     .use(
       swagger({
         documentation: {
