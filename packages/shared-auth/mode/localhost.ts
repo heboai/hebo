@@ -1,6 +1,6 @@
 import { Elysia, status } from "elysia";
 import { ip as elysiaIp } from "elysia-ip";
-import ipaddr from "ipaddr.js";
+import * as ipaddr from "ipaddr.js";
 
 const isLocalClientIp = (ip: string) => {
   const candidate = ip.trim();
