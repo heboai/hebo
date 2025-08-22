@@ -1,13 +1,23 @@
 import { Elysia, status } from "elysia";
-import { ip as elysiaIp } from "elysia-ip";
 import * as ipaddr from "ipaddr.js";
 
-const isLocalClientIp = (ip: string) => {
-  const candidate = ip.trim();
-  if (!candidate) return false;
+const isLocalhostIp = (raw: string) => {
+  const s = raw.trim();
+  if (!s) return false;
   try {
-    const addr = ipaddr.process(candidate) as ipaddr.IPv4 | ipaddr.IPv6;
-    return addr.range() === "loopback";
+    const addr = ipaddr.process(s) as ipaddr.IPv4 | ipaddr.IPv6;
+
+    if (addr.range() === "loopback") return true;
+
+    if (
+      addr.kind() === "ipv6" &&
+      (addr as ipaddr.IPv6).isIPv4MappedAddress?.()
+    ) {
+      const v4 = (addr as ipaddr.IPv6).toIPv4Address();
+      if (v4.range() === "loopback") return true;
+    }
+
+    return false;
   } catch {
     return false;
   }
@@ -17,11 +27,13 @@ export const authenticateUserLocalhost = () => {
   console.warn(
     '⚠️ [auth] Localhost mode: userId="dummy"; non-local requests will be 403',
   );
+
   return new Elysia({ name: "authenticate-user-localhost" })
-    .use(elysiaIp({ checkHeaders: [], headersOnly: false }))
-    .derive(({ ip }) => {
-      const clientIp = (ip ?? "").trim();
-      if (!isLocalClientIp(clientIp)) throw status(403, "Forbidden");
+    .derive(({ server, request }) => {
+      const got = server?.requestIP(request);
+      const clientIp = typeof got === "string" ? got : (got?.address ?? "");
+
+      if (!isLocalhostIp(clientIp)) throw status(403, "Forbidden");
       return { userId: "dummy" } as const;
     })
     .onBeforeHandle(({ userId }) => {
