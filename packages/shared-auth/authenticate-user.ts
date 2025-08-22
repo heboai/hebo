@@ -95,7 +95,7 @@ const authenticateUserStackAuth = () =>
 
 const authenticateUserLocalhost = () => {
   console.warn(
-    '⚠️ [auth] Using authenticateUserLocalhost: deriving userId="dummy" for localhost; non-local requests will be 403',
+    '⚠️ [auth] Localhost mode: userId="dummy"; non-local requests will be 403',
   );
   return new Elysia({ name: "authenticate-user-localhost" })
     .derive(({ request }) => {
