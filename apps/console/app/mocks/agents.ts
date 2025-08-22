@@ -13,6 +13,16 @@ export const agentHandlers = [
     const agentId = crypto.randomUUID();
     const agentSlug = slugify(body.name, { lower: true, strict: true });
 
+    // Enforce unique slug like the real DB
+    const existing = db.agent.findFirst({
+      where: { slug: { equals: agentSlug.toLowerCase() } },
+    });
+    if (existing) {
+      return new HttpResponse("Agent with the same name already exists", {
+        status: 409,
+      });
+    }
+
     // Create the agent first
     const agent = {
       id: agentId,
