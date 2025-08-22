@@ -2,10 +2,7 @@ import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-const projectId = process.env.VITE_STACK_PROJECT_ID!;
-const secretServerKey = process.env.STACK_SECRET_SERVER_KEY!;
-if (!projectId || !secretServerKey)
-  throw new Error("STACK auth env vars missing");
+import { isStackAuthEnabled, projectId, secretServerKey } from "./env";
 
 const jwks = createRemoteJWKSet(
   new URL(
@@ -82,7 +79,7 @@ const checkApiKey = async (key: string): Promise<string> => {
  * On success the plugin derives and exposes on `ctx`:
  *   • `userId` – the authenticated user's ID (API-key owner or JWT subject)
  */
-export const authenticateUser = () =>
+const authenticateUserStackAuth = () =>
   new Elysia({ name: "authenticate-user" })
     .use(bearer())
     .use(accessToken())
@@ -95,3 +92,35 @@ export const authenticateUser = () =>
       return { userId } as const;
     })
     .as("scoped");
+
+const authenticateUserLocalhost = () => {
+  console.warn(
+    '⚠️ [auth] Using authenticateUserLocalhost: deriving userId="dummy" for localhost; non-local requests will be 403',
+  );
+  return new Elysia({ name: "authenticate-user-localhost" })
+    .derive(({ request }) => {
+      const host =
+        request.headers.get("x-forwarded-host") ??
+        request.headers.get("host") ??
+        "";
+      const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
+      const clientIp = forwardedFor.split(",")[0]?.trim() ?? "";
+
+      const isLocalHost =
+        /^localhost(?::\d+)?$/i.test(host) ||
+        /^127\.0\.0\.1(?::\d+)?$/.test(host) ||
+        /^\[::1\](?::\d+)?$/.test(host);
+      const isLocalClient =
+        clientIp === "" || clientIp === "127.0.0.1" || clientIp === "::1";
+
+      if (!isLocalHost && !isLocalClient) throw status(403, "Forbidden");
+
+      return { userId: "dummy" } as const;
+    })
+    .as("scoped");
+};
+
+export const authenticateUser = () =>
+  isStackAuthEnabled
+    ? authenticateUserStackAuth()
+    : authenticateUserLocalhost();
