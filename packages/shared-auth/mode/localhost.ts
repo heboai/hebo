@@ -18,7 +18,7 @@ export const authenticateUserLocalhost = () => {
     '⚠️ [auth] Localhost mode: userId="dummy"; non-local requests will be 403',
   );
   return new Elysia({ name: "authenticate-user-localhost" })
-    .use(elysiaIp())
+    .use(elysiaIp({ checkHeaders: [], headersOnly: false }))
     .derive(({ ip }) => {
       const clientIp = (ip ?? "").trim();
       if (!isLocalClientIp(clientIp)) throw status(403, "Forbidden");
