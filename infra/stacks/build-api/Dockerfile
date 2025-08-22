@@ -26,8 +26,8 @@ COPY . .
 
 WORKDIR /repo/apps/api
 
-# Build the application
-RUN bun run build
+# Build the production binary per Elysia guidance
+RUN bun run build:bin
 
 ########################  runner stage  ########################
 FROM oven/bun:1.2.18 AS runner
@@ -37,10 +37,7 @@ RUN adduser --system --ingroup bun appuser
 
 WORKDIR /repo
 
-# Copy only production dependencies from deps stage
-COPY --chown=appuser:bun --from=deps /repo/node_modules ./node_modules
-
-# Copy built application from builder stage
+# Copy only the compiled binary from builder stage
 COPY --chown=appuser:bun --from=builder /repo/apps/api/dist ./apps/api/dist
 
 USER appuser
@@ -49,4 +46,5 @@ WORKDIR /repo/apps/api
 
 EXPOSE 3001
 
-CMD ["bun", "run", "dist/index.js"] 
+# Run the compiled binary
+CMD ["./dist/server"] 
