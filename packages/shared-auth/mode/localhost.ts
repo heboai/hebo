@@ -1,39 +1,45 @@
 import { Elysia, status } from "elysia";
-import * as ipaddr from "ipaddr.js";
+import isLocalhostIp from "is-localhost-ip";
 
-const isLocalhostIp = (raw: string) => {
-  const s = raw.trim();
-  if (!s) return false;
+declare global {
+  var __HEBO_WARNED_LOCALHOST: boolean | undefined;
+}
+
+const warnLocalhostOnce = () => {
+  if (globalThis.__HEBO_WARNED_LOCALHOST) return;
+  console.warn(
+    '⚠️ [auth] Localhost mode: userId="dummy"; non-local requests will be 403',
+  );
+  globalThis.__HEBO_WARNED_LOCALHOST = true;
+};
+
+const getHostname = (hostHeader: string | null) => {
+  const raw = (hostHeader ?? "").trim();
+  if (!raw) return "";
   try {
-    const addr = ipaddr.process(s) as ipaddr.IPv4 | ipaddr.IPv6;
-
-    if (addr.range() === "loopback") return true;
-
-    if (
-      addr.kind() === "ipv6" &&
-      (addr as ipaddr.IPv6).isIPv4MappedAddress?.()
-    ) {
-      const v4 = (addr as ipaddr.IPv6).toIPv4Address();
-      if (v4.range() === "loopback") return true;
-    }
-
-    return false;
+    return new URL(`http://${raw}`).hostname;
   } catch {
-    return false;
+    return raw;
   }
 };
 
 export const authenticateUserLocalhost = () => {
-  console.warn(
-    '⚠️ [auth] Localhost mode: userId="dummy"; non-local requests will be 403',
-  );
-
+  warnLocalhostOnce();
   return new Elysia({ name: "authenticate-user-localhost" })
-    .derive(({ server, request }) => {
+    .derive(async ({ server, request }) => {
       const got = server?.requestIP(request);
-      const clientIp = typeof got === "string" ? got : (got?.address ?? "");
+      const clientIp = (
+        typeof got === "string" ? got : (got?.address ?? "")
+      ).trim();
+      const hostHeader = request.headers.get("host");
+      const hostname = getHostname(hostHeader);
+      const [ipIsLocal, hostIsLocal] = await Promise.all([
+        isLocalhostIp(clientIp),
+        isLocalhostIp(hostname),
+      ]);
 
-      if (!isLocalhostIp(clientIp)) throw status(403, "Forbidden");
+      if (!(ipIsLocal && hostIsLocal)) throw status(403, "Forbidden");
+
       return { userId: "dummy" } as const;
     })
     .onBeforeHandle(({ userId }) => {
