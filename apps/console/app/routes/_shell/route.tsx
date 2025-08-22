@@ -115,8 +115,15 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
         >
           {/* Floating trigger */}
           <SidebarTrigger
-            icon={<SquareChevronRight size={24} color="black" />}
-            text="Playground"
+            icon={
+              <div className="flex items-center gap-2">
+                <SquareChevronRight size={24} color="black" />
+                <span>Playground</span>
+                <span className="text-muted-foreground">
+                  {/Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? '⌘P' : 'Ctrl P'}
+                </span>
+              </div>
+            }
             className="fixed top-4 right-2 z-50 w-fit"
           />
 

@@ -264,7 +264,6 @@ function SidebarTrigger({
   className,
   onClick,
   icon = <PanelLeftIcon />, // default icon
-  text = "",  // default text
   ...props
 }: SidebarTriggerProps) {
   const { toggleSidebar } = useSidebar()
@@ -283,7 +282,6 @@ function SidebarTrigger({
       {...props}
     >
       {icon}
-      <span>{text}</span>
     </Button>
   )
 }
