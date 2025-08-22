@@ -11,11 +11,14 @@ const jwks = createRemoteJWKSet(
 );
 
 const accessToken = () =>
-  new Elysia({ name: "access-token" })
-    .derive(({ request }) => ({
-      jwt: request.headers.get("x-access-token") ?? undefined,
-    }))
-    .as("scoped");
+  new Elysia({ name: "access-token" }).derive(
+    { as: "global" },
+    function deriveAccessToken({ request }) {
+      return {
+        jwt: request.headers.get("x-access-token") ?? undefined,
+      } as const;
+    },
+  );
 
 const pickOneAuthMethod = (apiKey?: string | null, jwt?: string | null) => {
   const hasApiKey = !!apiKey;
@@ -79,4 +82,4 @@ export const authenticateUserStackAuth = () =>
     .onBeforeHandle(({ userId }) => {
       if (!userId) throw status(401, "Unauthorized");
     })
-    .as("scoped");
+    .as("global");

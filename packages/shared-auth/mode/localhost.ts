@@ -31,5 +31,5 @@ export const authenticateUserLocalhost = () => {
     .onBeforeHandle(({ userId }) => {
       if (!userId) throw status(401, "Unauthorized");
     })
-    .as("scoped");
+    .as("global");
 };
