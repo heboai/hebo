@@ -50,7 +50,7 @@ type ModelsConfig = {
 type ChatProps = { modelsConfig: ModelsConfig };
 
 export function Chat({ modelsConfig }: ChatProps) {
-  // Use the first (and currently only) model as default
+  // Use the first model as the default selection
   const defaultModel = modelsConfig.models[0];
   const [currentModelAlias, setCurrentModelAlias] = useState(
     defaultModel.alias,
