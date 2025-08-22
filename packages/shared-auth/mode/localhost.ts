@@ -1,33 +1,36 @@
 import { Elysia, status } from "elysia";
+import { ip as elysiaIp } from "elysia-ip";
+import ipaddr from "ipaddr.js";
 
-const getHostAndClientIp = (request: Request) => {
-  const hostHeader =
-    request.headers.get("host") ??
-    request.headers.get("x-forwarded-host") ??
-    "";
-
-  const realIp = request.headers.get("x-real-ip")?.trim() ?? "";
-  const forwardedFor = request.headers.get("x-forwarded-for") ?? "";
-  const forwardedForFirst = forwardedFor.split(",")[0]?.trim() ?? "";
-  const clientIp = realIp || forwardedForFirst || "";
-
-  return { host: hostHeader.trim(), clientIp } as const;
+const isLocalClientIp = (ip: string) => {
+  const candidate = ip.trim();
+  if (!candidate) return false;
+  try {
+    let addr = ipaddr.parse(candidate);
+    if (addr.kind() === "ipv6" && (addr as ipaddr.IPv6).isIPv4MappedAddress()) {
+      addr = (addr as ipaddr.IPv6).toIPv4Address();
+    }
+    const range = (addr as ipaddr.IPv4 | ipaddr.IPv6).range();
+    return (
+      range === "loopback" ||
+      range === "private" ||
+      range === "linkLocal" ||
+      range === "uniqueLocal"
+    );
+  } catch {
+    return false;
+  }
 };
-
-const isLocalHost = (host: string) =>
-  /^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i.test(host);
-
-const isLocalClientIp = (ip: string) => ip === "127.0.0.1" || ip === "::1";
 
 export const authenticateUserLocalhost = () => {
   console.warn(
     '⚠️ [auth] Localhost mode: userId="dummy"; non-local requests will be 403',
   );
   return new Elysia({ name: "authenticate-user-localhost" })
-    .derive(({ request }) => {
-      const { host, clientIp } = getHostAndClientIp(request);
-      if (!isLocalHost(host) && !isLocalClientIp(clientIp))
-        throw status(403, "Forbidden");
+    .use(elysiaIp())
+    .derive(({ ip }) => {
+      const clientIp = (ip ?? "").trim();
+      if (!isLocalClientIp(clientIp)) throw status(403, "Forbidden");
       return { userId: "dummy" } as const;
     })
     .onBeforeHandle(({ userId }) => {
