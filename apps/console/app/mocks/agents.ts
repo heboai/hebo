@@ -5,19 +5,32 @@ import { db } from "~/mocks/db";
 
 export const agentHandlers = [
   http.post("/api/v1/agents", async ({ request }) => {
-    const body = (await request.json()) as ReturnType<typeof db.agent.create>;
+    const body = (await request.json()) as {
+      name: string;
+      defaultModel: string;
+    };
 
-    // always create main branch by default
-    const branch = db.branch.create({ slug: "main", name: "main" });
+    const agentId = crypto.randomUUID();
+    const agentSlug = slugify(body.name, { lower: true, strict: true });
 
+    // Create the agent first
     const agent = {
+      id: agentId,
       name: body.name,
-      slug: slugify(body.name, { lower: true, strict: true }),
-      branches: [branch],
+      slug: agentSlug,
     };
 
     try {
-      db.agent.create(agent);
+      const createdAgent = db.agent.create(agent);
+
+      // Create the main branch with the default model
+      db.branch.create({
+        agentId: agentId,
+        slug: "main",
+        name: "main",
+        models: [{ alias: "default", type: body.defaultModel }],
+        agent: createdAgent,
+      });
     } catch {
       return new HttpResponse("Agent with the same name already exists", {
         status: 409,

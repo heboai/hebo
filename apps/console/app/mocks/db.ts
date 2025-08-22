@@ -1,16 +1,19 @@
-import { factory, primaryKey, manyOf } from "@mswjs/data";
+import { factory, primaryKey, oneOf } from "@mswjs/data";
 
 const createDb = () =>
   factory({
     agent: {
-      slug: primaryKey(String),
-      name: String,
-      branches: manyOf("branch"),
-    },
-    branch: {
       id: primaryKey(() => crypto.randomUUID()),
       slug: String,
       name: String,
+    },
+    branch: {
+      id: primaryKey(() => crypto.randomUUID()),
+      agentId: () => crypto.randomUUID(), // Fixed: Changed from String to UUID generator
+      slug: String,
+      name: String,
+      models: Object,
+      agent: oneOf("agent"),
     },
   });
 
