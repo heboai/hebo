@@ -1,0 +1,82 @@
+import { bearer } from "@elysiajs/bearer";
+import { Elysia, status } from "elysia";
+import { createRemoteJWKSet, jwtVerify } from "jose";
+
+import { projectId, secretServerKey } from "../env";
+
+const jwks = createRemoteJWKSet(
+  new URL(
+    `https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`,
+  ),
+);
+
+const accessToken = () =>
+  new Elysia({ name: "access-token" })
+    .derive(({ request }) => ({
+      jwt: request.headers.get("x-access-token") ?? undefined,
+    }))
+    .as("scoped");
+
+const pickOneAuthMethod = (apiKey?: string | null, jwt?: string | null) => {
+  const hasApiKey = !!apiKey;
+  const hasJwt = !!jwt;
+  if (!hasApiKey && !hasJwt) throw status(401, "Unauthorized");
+  if (hasApiKey && hasJwt)
+    throw status(
+      401,
+      "Provide exactly one credential: Authorization or X-Access-Token",
+    );
+  return hasApiKey ? "apiKey" : "jwt";
+};
+
+const verifyJwt = async (token: string): Promise<string> => {
+  try {
+    const { payload } = await jwtVerify(token, jwks);
+    if (!payload.sub) throw status(403, "Invalid or expired JWT");
+    return String(payload.sub);
+  } catch {
+    throw status(403, "Invalid or expired JWT");
+  }
+};
+
+const checkApiKey = async (key: string): Promise<string> => {
+  const res = await fetch(
+    "https://api.stack-auth.com/api/v1/user-api-keys/check",
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-stack-access-type": "server",
+        "x-stack-project-id": projectId,
+        "x-stack-secret-server-key": secretServerKey,
+      },
+      body: JSON.stringify({ api_key: key }),
+    },
+  );
+  if (res.status !== 200) throw status(403, "Invalid API key");
+  try {
+    const data = await res.json();
+    const userId = (data as any)?.user_id as string | undefined;
+    if (!userId) throw new Error("missing user_id");
+    return userId;
+  } catch {
+    throw status(403, "Invalid API key response");
+  }
+};
+
+export const authenticateUserStackAuth = () =>
+  new Elysia({ name: "authenticate-user-stack-auth" })
+    .use(bearer())
+    .use(accessToken())
+    .derive(async ({ bearer: apiKey, jwt: jwtToken }) => {
+      const mode = pickOneAuthMethod(apiKey, jwtToken);
+      const userId =
+        mode === "jwt"
+          ? await verifyJwt(jwtToken!)
+          : await checkApiKey(apiKey!);
+      return { userId } as const;
+    })
+    .onBeforeHandle(({ userId }) => {
+      if (!userId) throw status(401, "Unauthorized");
+    })
+    .as("scoped");
