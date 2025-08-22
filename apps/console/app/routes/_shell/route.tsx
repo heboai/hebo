@@ -22,9 +22,8 @@ import type { Route } from "./+types/route";
 import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
-import { Chat } from "@hebo/aikit-ui/src/blocks/Chat";
+import { PlaygroundSidebar } from "./sidebar-playground";
 import { SquareChevronRight } from "lucide-react";
-import supportedModels from "@hebo/shared-data/supported-models.json";
 
 async function authMiddleware() {
   await authService.ensureSignedIn();
@@ -34,13 +33,22 @@ export const unstable_clientMiddleware = [authMiddleware];
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents } = await api.agents.get();
-
-  const activeAgent = params.slug ? agents!.find((a: any) => a.slug === params.slug) : undefined;
-
-  if (params.slug && !activeAgent)
-    throw new Response("Agent Not Found", { status: 404 });
-
-  return { agents, activeAgent };
+  
+  if (!params.slug) {
+    return { agents, activeAgent: undefined, branches: [], activeBranch: undefined };
+  }
+  
+  const activeAgent = agents?.find((a: any) => a.slug === params.slug);
+  if (!activeAgent) throw new Response("Agent Not Found", { status: 404 });
+  
+  const { data: branches = [] } = await api.agents[params.slug].branches.get();
+  
+  return { 
+    agents, 
+    activeAgent, 
+    branches, 
+    activeBranch: branches.find((b: any) => b.slug === "main") || branches[0]
+  };
 }
 
 export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
@@ -114,18 +122,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
 
           <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
-              <Chat modelsConfig={{
-                __supportedTypes: ["meta-llama/llama-4-scout-17b-16e-instruct"],
-                models: [{
-                  alias: "Llama4 Scout 17B Instruct",
-                  type: "meta-llama/llama-4-scout-17b-16e-instruct",
-                  endpoint: {
-                    baseUrl: import.meta.env.VITE_GATEWAY_URL!,
-                    apiKey: "",
-                    provider: "openai"
-                  }
-                }]
-              }} />
+              <PlaygroundSidebar activeBranch={loaderData.activeBranch} />
             </SidebarContent>
             <SidebarRail />
           </Sidebar>
