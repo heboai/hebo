@@ -57,6 +57,7 @@ function SidebarProvider({
   open: openProp,
   onOpenChange: setOpenProp,
   shortcut = "b",
+  cookieName,
   className,
   style,
   children,
@@ -66,6 +67,7 @@ function SidebarProvider({
   open?: boolean
   onOpenChange?: (open: boolean) => void
   shortcut?: string
+  cookieName?: string
 }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
@@ -84,9 +86,10 @@ function SidebarProvider({
       }
 
       // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      const cookieNameToUse = cookieName || SIDEBAR_COOKIE_NAME
+      document.cookie = `${cookieNameToUse}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
-    [setOpenProp, open]
+    [setOpenProp, open, cookieName]
   )
 
   // Helper to toggle the sidebar.

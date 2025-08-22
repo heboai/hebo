@@ -67,6 +67,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
     <div className="relative flex min-h-screen">
       {/* LEFT SIDEBAR */}
       <SidebarProvider
+        cookieName="left_sidebar_state"
         defaultOpen={leftSidebarDefaultOpen}
         style={
           {
@@ -103,6 +104,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
       {/* RIGHT SIDEBAR - Positioned absolutely */}
       <div className="absolute top-0 right-0 h-full z-40">
         <SidebarProvider
+          cookieName="right_sidebar_state"
           shortcut="p"
           defaultOpen={rightSidebarDefaultOpen}
           style={
