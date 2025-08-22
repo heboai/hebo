@@ -9,7 +9,7 @@ const createDb = () =>
     },
     branch: {
       id: primaryKey(() => crypto.randomUUID()),
-      agentId: () => crypto.randomUUID(), // Fixed: Changed from String to UUID generator
+      agentId: String,
       slug: String,
       name: String,
       models: Object,

@@ -8,7 +8,7 @@ type ModelConfig = {
   type: string;
   endpoint?: {
     baseUrl: string;
-    provider: "aws" | "custom";
+    provider: "openai";
     apiKey: string;
   };
 };
@@ -44,16 +44,25 @@ export const branchHandlers = [
         agent: agent,
       };
 
+      // Enforce unique (agentId, slug) like the real DB
+      const dup = db.branch.findFirst({
+        where: {
+          agentId: { equals: agent.id },
+          slug: { equals: branch.slug },
+        },
+      });
+      if (dup) {
+        return new HttpResponse("Branch already exists", { status: 409 });
+      }
       try {
         const createdBranch = db.branch.create(branch);
         // Return the branch without the agent relationship for API response
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { agent, ...branchResponse } = createdBranch;
-
         await delay(200);
         return HttpResponse.json(branchResponse, { status: 201 });
       } catch {
-        return new HttpResponse("Branch with the same name already exists", {
+        return new HttpResponse("Unable to create branch", {
           status: 409,
         });
       }
