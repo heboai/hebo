@@ -11,12 +11,7 @@ const isLocalClientIp = (ip: string) => {
       addr = (addr as ipaddr.IPv6).toIPv4Address();
     }
     const range = (addr as ipaddr.IPv4 | ipaddr.IPv6).range();
-    return (
-      range === "loopback" ||
-      range === "private" ||
-      range === "linkLocal" ||
-      range === "uniqueLocal"
-    );
+    return range === "loopback";
   } catch {
     return false;
   }
