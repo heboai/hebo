@@ -1,12 +1,14 @@
 import { Elysia, t } from "elysia";
 
+import { authenticateUser } from "@hebo/shared-auth";
+
 import { SUPPORTED_MODELS, supportedOrThrow } from "~/middleware/provider";
 
 export const models = new Elysia({
   name: "models",
   prefix: "/models",
 })
-
+  .use(authenticateUser())
   .get(
     "/",
     () => {

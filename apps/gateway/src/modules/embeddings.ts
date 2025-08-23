@@ -1,12 +1,15 @@
 import { embed, embedMany } from "ai";
 import { Elysia, t } from "elysia";
 
+import { authenticateUser } from "@hebo/shared-auth";
+
 import { provider } from "~/middleware/provider";
 
 export const embeddings = new Elysia({
   name: "embeddings",
   prefix: "/embeddings",
 })
+  .use(authenticateUser())
   .use(provider)
   .post(
     "/",

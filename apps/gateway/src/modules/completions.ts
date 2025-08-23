@@ -1,12 +1,15 @@
 import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
+import { authenticateUser } from "@hebo/shared-auth";
+
 import { provider } from "~/middleware/provider";
 
 export const completions = new Elysia({
   name: "completions",
   prefix: "/chat/completions",
 })
+  .use(authenticateUser())
   .use(provider)
   .post(
     "/",
@@ -16,7 +19,7 @@ export const completions = new Elysia({
       const chatModel = provider.chat(model);
 
       if (stream) {
-        const result = await streamText({
+        const result = streamText({
           model: chatModel,
           messages: messages as ModelMessage[],
           temperature,
