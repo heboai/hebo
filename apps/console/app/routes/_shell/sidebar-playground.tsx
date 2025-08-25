@@ -28,7 +28,6 @@ export function PlaygroundSidebar({ activeBranch }: PlaygroundSidebarProps) {
       endpoint: {
         baseUrl: import.meta.env.VITE_GATEWAY_URL!,
         apiKey: "",
-        provider: "openai" as const
       }
     }]
   };
