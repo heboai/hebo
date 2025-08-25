@@ -30,5 +30,5 @@ export const authenticateUserLocalhost = () => {
       if (!(ipIsLocal && hostIsLocal)) throw status(403, "Forbidden");
       return { userId: "dummy" } as const;
     })
-    .as("global");
+    .as("scoped");
 };

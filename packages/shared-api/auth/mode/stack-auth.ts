@@ -71,4 +71,4 @@ export const authenticateUserStackAuth = () =>
       if (!userId) throw status(401, "Unauthorized");
       return { userId } as const;
     })
-    .as("global");
+    .as("scoped");
