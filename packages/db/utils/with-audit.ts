@@ -1,15 +1,15 @@
 import {
   and,
+  eq,
+  getTableColumns,
   isNull,
   sql,
-  getTableColumns,
   type SQL,
   type InferInsertModel,
 } from "drizzle-orm";
 
 import type { UniversalDbClient } from "../drizzle";
 import type { AnyPgTable, AnyPgColumn } from "drizzle-orm/pg-core";
-
 
 export type AuditContext = { userId: string };
 
@@ -34,10 +34,10 @@ export const withAudit = <TTable extends AnyPgTable>(
 ) => {
   const cols = getTableColumns(table) as ColumnsWithAudit<TTable>;
 
-  // FUTURE: As soon as auth is implemented, also include user/tenant scoping here,
-  // e.g. and(eq(table.createdBy, ctx.userId), ...). For now we only filter soft-deleted rows.
   const where = (extra?: SQL) =>
-    extra ? and(isNull(cols.deletedAt), extra) : isNull(cols.deletedAt);
+    extra
+      ? and(eq(cols.createdBy, ctx.userId), isNull(cols.deletedAt), extra)
+      : and(eq(cols.createdBy, ctx.userId), isNull(cols.deletedAt));
 
   return {
     where,

@@ -6,12 +6,12 @@ import { Elysia } from "elysia";
 import { agentsModule } from "~/modules/agents";
 import { branchesModule } from "~/modules/branches";
 
-const PORT = Number(process.env.PORT) || 3001;
+const PORT = Number(process.env.API_PORT) || 3001;
 
 const createApi = () =>
   new Elysia()
     .use(logger())
-    // make cors more strict for production
+    // FUTURE:make cors more strict for production
     .use(cors())
     .use(
       swagger({

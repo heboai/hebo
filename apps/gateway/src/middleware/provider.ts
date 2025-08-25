@@ -33,7 +33,7 @@ const badRequest = (message: string, code = "model_mismatch") => {
 };
 
 export const supportedOrThrow = (id: string) => {
-  if (!(id in SUPPORTED_MODELS)) {
+  if (!SUPPORTED_MODELS.includes(id)) {
     throw badRequest(
       `Unknown or unsupported model "${id}"`,
       "model_unsupported",
