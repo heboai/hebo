@@ -19,9 +19,7 @@
   "dependencies": {
     "@ai-sdk/groq": "^2.0.11",
     "@bogeychan/elysia-logger": "^0.1.10",
-    "@elysiajs/bearer": "^1.3.0",
     "@elysiajs/cors": "^1.3.3",
-    "@elysiajs/jwt": "^1.3.2",
     "@elysiajs/swagger": "^1.3.1",
     "@hebo/shared-auth": "workspace:*",
     "@hebo/shared-data": "workspace:*",
