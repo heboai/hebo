@@ -1,4 +1,4 @@
-import { Chat } from "@hebo/aikit-ui/src/blocks/Chat";
+import { Chat } from "@hebo/aikit-ui/blocks/Chat";
 
 type Branch = {
   models?: Array<{

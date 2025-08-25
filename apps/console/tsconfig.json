@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
-      "@hebo/ui/*": ["../../packages/ui/src/*"]
+      "@hebo/ui/*": ["../../packages/ui/src/*"],
+      "@hebo/aikit-ui/*": ["../../packages/aikit-ui/src/*"]
     },
     "rootDirs": [".", "./.react-router/types"],
     "types": ["node", "vite/client"],
