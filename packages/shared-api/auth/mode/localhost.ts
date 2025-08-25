@@ -13,37 +13,15 @@ const warnLocalhostOnce = () => {
   globalThis.__HEBO_WARNED_LOCALHOST = true;
 };
 
-const getRequestHostname = () =>
-  new Elysia({ name: "get-request-hostname" })
-    .derive(({ request }) => {
-      const hostHeader = request.headers.get("host");
-      const raw = (hostHeader ?? "").trim();
-      if (!raw) return { hostname: "" } as const;
-      try {
-        const hostname = new URL(`http://${raw}`).hostname;
-        return { hostname } as const;
-      } catch {
-        return { hostname: raw } as const;
-      }
-    })
-    .as("scoped");
-
-const getClientIp = () =>
-  new Elysia({ name: "get-client-ip" })
-    .derive(({ server, request }) => {
-      const got = server?.requestIP(request);
-      return {
-        clientIp: (typeof got === "string" ? got : (got?.address ?? "")).trim(),
-      } as const;
-    })
-    .as("scoped");
-
 export const authenticateUserLocalhost = () => {
   warnLocalhostOnce();
   return new Elysia({ name: "authenticate-user-localhost" })
-    .use(getRequestHostname())
-    .use(getClientIp())
-    .derive(async ({ hostname, clientIp }) => {
+    .derive(async ({ request, server }) => {
+      const got = server?.requestIP(request);
+      const clientIp = (
+        typeof got === "string" ? got : (got?.address ?? "")
+      ).trim();
+      const hostname = new URL(request.url).hostname.trim();
       const [ipIsLocal, hostIsLocal] = await Promise.all([
         isLocalhost(clientIp),
         isLocalhost(hostname),

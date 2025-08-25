@@ -11,16 +11,6 @@ const jwks = createRemoteJWKSet(
   ),
 );
 
-const accessToken = () =>
-  new Elysia({ name: "access-token" }).derive(
-    { as: "global" },
-    function deriveAccessToken({ request }) {
-      return {
-        jwt: request.headers.get("x-access-token") ?? undefined,
-      } as const;
-    },
-  );
-
 const pickOneAuthMethod = (apiKey?: string | null, jwt?: string | null) => {
   const hasApiKey = !!apiKey;
   const hasJwt = !!jwt;
@@ -71,13 +61,13 @@ const checkApiKey = async (key: string): Promise<string> => {
 export const authenticateUserStackAuth = () =>
   new Elysia({ name: "authenticate-user-stack-auth" })
     .use(bearer())
-    .use(accessToken())
-    .derive(async ({ bearer: apiKey, jwt: jwtToken }) => {
-      const mode = pickOneAuthMethod(apiKey, jwtToken);
+    .derive(async ({ request, bearer }) => {
+      const accessToken = request.headers.get("x-access-token") ?? undefined;
+      const mode = pickOneAuthMethod(bearer, accessToken);
       const userId =
         mode === "jwt"
-          ? await verifyJwt(jwtToken!)
-          : await checkApiKey(apiKey!);
+          ? await verifyJwt(accessToken!)
+          : await checkApiKey(bearer!);
       return { userId } as const;
     })
     .onBeforeHandle(({ userId }) => {
