@@ -163,7 +163,7 @@ export function PromptInputSubmit({
   children,
   ...props
 }: PromptInputSubmitProps) {
-  let Icon = <SendHorizontal className="size-4" />;
+  let Icon = <SendHorizontal color="#525252"/>;
 
   switch (status) {
     case "submitted": {
@@ -214,7 +214,7 @@ export function PromptInputModelSelectTrigger({
   return (
     <SelectTrigger
       className={cn(
-        "border-none bg-transparent font-medium text-muted-foreground shadow-none transition-colors absolute bottom-1",
+        "border-none bg-transparent font-medium text-muted-foreground shadow-none transition-colors absolute bottom-1 text-[#525252]",
         'hover:bg-accent hover:text-foreground [&[aria-expanded="true"]]:bg-accent [&[aria-expanded="true"]]:text-foreground',
         className,
       )}
