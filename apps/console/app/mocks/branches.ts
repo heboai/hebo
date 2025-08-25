@@ -13,18 +13,13 @@ type ModelConfig = {
   };
 };
 
-type ModelsData = {
-  models: ModelConfig[];
-  __supportedTypes: string[];
-};
-
 export const branchHandlers = [
   http.post<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async ({ request, params }) => {
       const body = (await request.json()) as {
         name: string;
-        models: ModelsData;
+        models: ModelConfig[];
       };
 
       // Find the agent by slug to get the agentId

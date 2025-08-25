@@ -38,7 +38,7 @@ export const agentHandlers = [
         agentId: agentId,
         slug: "main",
         name: "main",
-        models: [{ alias: "Default Model", type: body.defaultModel }],
+        models: [{ alias: "default", type: body.defaultModel }],
         agent: createdAgent,
       });
     } catch {

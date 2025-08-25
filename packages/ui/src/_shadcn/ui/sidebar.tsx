@@ -260,7 +260,6 @@ function Sidebar({
 
 interface SidebarTriggerProps extends React.ComponentProps<typeof Button> {
   icon?: React.ReactNode
-  text?: string
 }
 
 function SidebarTrigger({
