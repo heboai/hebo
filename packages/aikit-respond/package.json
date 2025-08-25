@@ -1,15 +1,16 @@
 {
   "name": "@hebo/aikit-respond",
   "version": "0.0.1",
-  "private": true,
-  "type": "module",
+  "devDependencies": {
+    "@types/qs": "^6.9.15"
+  },
   "exports": {
     ".": "./src/index.ts"
   },
+  "private": true,
   "scripts": {
     "clean": "rimraf .turbo node_modules",
     "lint": "bunx eslint ."
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "type": "module"
 }

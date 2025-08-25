@@ -20,30 +20,25 @@ export class SignatureVerificationError extends RespondIoError {
 
 function verifySignature(
   body: string,
-  signatureHeader: string | undefined | null,
+  signature: string,
   signingKey: string,
 ): void {
-  if (!signatureHeader) {
+  if (!signature) {
     throw new SignatureVerificationError("Missing signature header.");
   }
 
-  const parts = signatureHeader.split(",");
-  const timestamp = parts.find((part) => part.startsWith("t="))?.split("=")[1];
-  const signature = parts.find((part) => part.startsWith("v1="))?.split("=")[1];
-
-  if (!timestamp || !signature) {
-    throw new SignatureVerificationError("Invalid signature header format.");
-  }
-
-  const signedPayload = `${timestamp}.${body}`;
+  console.log("signature", signature);
   const expectedSignature = crypto
     .createHmac("sha256", signingKey)
-    .update(signedPayload)
-    .digest("hex");
+    .update(body)
+    .digest("base64");
+
+  console.log("expectedSignature", expectedSignature);
 
   if (signature !== expectedSignature) {
     throw new SignatureVerificationError("Signature mismatch.");
   }
+  console.log("Signature verified.");
 }
 
 // --- Public API ---
@@ -57,7 +52,6 @@ interface HandlerConfig {
 }
 
 export interface WebhookConfig {
-  headerName?: string;
   getEventType?: (payload: any) => string;
 }
 
@@ -67,11 +61,9 @@ export interface WebhookConfig {
  */
 export class RespondIoWebhook {
   private readonly eventHandlers = new Map<string, HandlerConfig>();
-  private readonly headerName: string;
   private readonly getEventType: (payload: any) => string;
 
   constructor(config?: WebhookConfig) {
-    this.headerName = config?.headerName ?? "x-respond-signature";
     this.getEventType =
       config?.getEventType ?? ((payload) => payload?.event_type);
   }
@@ -131,8 +123,11 @@ export class RespondIoWebhook {
     const { signingKey, callback } = handlerConfig;
 
     // 4. Verify signature
-    //const signature = headers[this.headerName] as string | undefined | null;
-    //verifySignature(body, signature, signingKey);
+    const signature = headers["x-webhook-signature"] as
+      | string
+      | undefined
+      | null;
+    verifySignature(body, signature, signingKey);
 
     // 5. Execute the callback with the trusted payload
     await callback(payload);
