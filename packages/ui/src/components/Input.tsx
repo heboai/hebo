@@ -1,4 +1,4 @@
-import { cn } from "@hebo/aikit-ui/src/lib/utils";
+import { cn } from "@hebo/aikit-ui/lib/utils";
 import { CopyToClipboardButton } from "@hebo/ui/_mintlify/code/CopyToClipboardButton";
 import { Input as ShadCNInput } from "@hebo/ui/_shadcn/ui/input";
 
