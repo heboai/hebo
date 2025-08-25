@@ -6,12 +6,24 @@ import { db } from "~/mocks/db";
 type ModelConfig = {
   alias: string;
   type: string;
-  endpoint?: {
-    baseUrl: string;
-    provider: "openai";
-    apiKey: string;
-  };
 };
+
+type MockBranch = {
+  id: string;
+  agentId: string;
+  slug: string;
+  name: string;
+  models: ModelConfig[];
+  agent?: any;
+};
+
+// Helper to clean branch response like real API
+const cleanBranchResponse = (branch: MockBranch) => ({
+  name: branch.name,
+  slug: branch.slug,
+  models: branch.models,
+  // Real API omits: id, agentId, createdAt, updatedAt, etc.
+});
 
 export const branchHandlers = [
   http.post<{ agentSlug: string }>(
@@ -35,7 +47,10 @@ export const branchHandlers = [
         agentId: agent.id,
         name: body.name,
         slug: slugify(body.name, { lower: true, strict: true }),
-        models: body.models,
+        models: body.models.map((model) => ({
+          alias: model.alias,
+          type: model.type,
+        })),
         agent: agent,
       };
 
@@ -46,16 +61,17 @@ export const branchHandlers = [
           slug: { equals: branch.slug },
         },
       });
+
       if (dup) {
         return new HttpResponse("Branch already exists", { status: 409 });
       }
+
       try {
         const createdBranch = db.branch.create(branch);
-        // Return the branch without the agent relationship for API response
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { agent, ...branchResponse } = createdBranch;
         await delay(200);
-        return HttpResponse.json(branchResponse, { status: 201 });
+        return HttpResponse.json(cleanBranchResponse(createdBranch), {
+          status: 201,
+        });
       } catch {
         return new HttpResponse("Unable to create branch", {
           status: 409,
@@ -81,12 +97,7 @@ export const branchHandlers = [
         .findMany({
           where: { agentId: { equals: agent.id } },
         })
-        .map((branch) => {
-          // Remove the agent relationship from response
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { agent, ...branchResponse } = branch;
-          return branchResponse;
-        });
+        .map((branch) => cleanBranchResponse(branch)); // Clean each branch response
 
       await delay(1000);
       return HttpResponse.json(branches);
