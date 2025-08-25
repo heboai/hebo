@@ -1,71 +1,54 @@
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { status } from "elysia";
 
-import { db } from "@hebo/db";
 import { agents } from "@hebo/db/schema/agents";
-import supportedModels from "@hebo/shared-data/supported-models.json";
+import { withAudit } from "@hebo/db/utils/with-audit";
 
-import type { AuditFields } from "~/middlewares/audit-fields";
 import { BranchService } from "~/modules/branches/service";
 import { createSlug } from "~/utils/create-slug";
+import { getDb, runInRequestTransaction } from "~/utils/request-db";
 
 import * as AgentsModel from "./model";
 
-const SupportedModelNames = new Set(supportedModels.map((m) => m.name));
-
-// TODO: reduce audit fields boilerplate by using helpers from the db package. example here: https://gist.github.com/heiwen/edda78c2b3f5c544cb71ade03ecc1110
 export const AgentService = {
-  async createAgent(input: AgentsModel.CreateBody, auditFields: AuditFields) {
-    const slug = createSlug(input.name, true);
+  async createAgent(input: AgentsModel.CreateBody, userId: string) {
+    return runInRequestTransaction(async () => {
+      const slug = createSlug(input.name, true);
+      const { defaultModel, ...agentData } = input;
 
-    const { defaultModel, ...agentData } = input;
+      if (!AgentsModel.SupportedModelNames.has(defaultModel))
+        throw status(400, AgentsModel.InvalidModel.const);
 
-    if (!SupportedModelNames.has(defaultModel))
-      throw status(400, AgentsModel.InvalidModel.const);
+      const agentsRepo = withAudit(agents, { userId });
 
-    // Insert the agent record and its initial branch in a single transaction
-    const agent = await db.transaction(async (tx) => {
-      const [createdAgent] = await tx
-        .insert(agents)
-        .values({
-          ...agentData,
-          slug,
-          createdBy: auditFields.createdBy,
-          updatedBy: auditFields.updatedBy,
-        })
+      // Insert the agent record and its initial branch; rely on request-level transaction when present
+      const [agent] = await agentsRepo
+        .insert(getDb(), { ...agentData, slug })
         .onConflictDoNothing()
         .returning();
 
-      // TODO: Apply a fallback strategy with retries with different slugs
-      if (!createdAgent) throw status(409, AgentsModel.AlreadyExists.const);
+      // FUTURE: Apply a fallback strategy with retries with different slugs
+      if (!agent) throw status(409, AgentsModel.AlreadyExists.const);
 
-      await BranchService.createInitialBranch(
-        createdAgent.id,
-        defaultModel,
-        auditFields,
-        tx,
-      );
-
-      return createdAgent;
+      await BranchService.createInitialBranch(agent.id, defaultModel, userId);
+      return agent;
     });
-
-    return agent;
   },
 
-  async listAgents() {
-    const agentList = await db
-      .select()
-      .from(agents)
-      .where(isNull(agents.deletedAt))
+  async listAgents(userId: string) {
+    const agentsRepo = withAudit(agents, { userId });
+    const agentList = await agentsRepo
+      .select(getDb())
       .orderBy(asc(agents.createdAt));
     return agentList;
   },
 
-  async getAgentBySlug(agentSlug: string) {
-    const [agent] = await db
-      .select()
-      .from(agents)
-      .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)));
+  async getAgentBySlug(agentSlug: string, userId: string) {
+    const agentsRepo = withAudit(agents, { userId });
+    const [agent] = await agentsRepo.select(
+      getDb(),
+      eq(agents.slug, agentSlug),
+    );
 
     if (!agent) {
       throw status(404, AgentsModel.NotFound.const);
@@ -76,12 +59,11 @@ export const AgentService = {
   async updateAgent(
     agentSlug: string,
     input: AgentsModel.UpdateBody,
-    auditFields: AuditFields,
+    userId: string,
   ) {
-    const [agent] = await db
-      .update(agents)
-      .set({ ...input, updatedBy: auditFields.updatedBy })
-      .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)))
+    const agentsRepo = withAudit(agents, { userId });
+    const [agent] = await agentsRepo
+      .update(getDb(), { ...input }, eq(agents.slug, agentSlug))
       .returning();
 
     if (!agent) {
@@ -90,12 +72,8 @@ export const AgentService = {
     return agent;
   },
 
-  async softDeleteAgent(agentSlug: string, auditFields: AuditFields) {
-    const deletedAt = new Date();
-
-    await db
-      .update(agents)
-      .set({ deletedBy: auditFields.deletedBy, deletedAt })
-      .where(and(eq(agents.slug, agentSlug), isNull(agents.deletedAt)));
+  async softDeleteAgent(agentSlug: string, userId: string) {
+    const agentsRepo = withAudit(agents, { userId });
+    await agentsRepo.delete(getDb(), eq(agents.slug, agentSlug));
   },
 };

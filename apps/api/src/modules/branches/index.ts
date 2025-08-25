@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 
 import { agentId } from "~/middlewares/agent-id";
-import { auditFields } from "~/middlewares/audit-fields";
+import { userId } from "~/middlewares/user-id";
 import * as AgentsModel from "~/modules/agents/model";
 
 import * as BranchesModel from "./model";
@@ -11,17 +11,13 @@ export const branchesModule = new Elysia({
   name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
-  .use(auditFields)
+  .use(userId)
   .use(agentId)
   .post(
     "/",
-    // TODO:use ajv to validate the models field
-    async ({ body, set, agentId, auditFields }) => {
-      const branch = await BranchService.createBranch(
-        agentId,
-        body,
-        auditFields,
-      );
+    // FUTURE: use Ajv to validate the models field
+    async ({ body, set, agentId, userId }) => {
+      const branch = await BranchService.createBranch(agentId, body, userId);
       set.status = 201;
       return branch;
     },
@@ -37,8 +33,8 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/",
-    async ({ set, agentId }) => {
-      const list = await BranchService.listBranches(agentId);
+    async ({ set, agentId, userId }) => {
+      const list = await BranchService.listBranches(agentId, userId);
       set.status = 200;
       return list;
     },
@@ -49,10 +45,11 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/:branchSlug",
-    async ({ params, set, agentId }) => {
+    async ({ params, set, agentId, userId }) => {
       const branch = await BranchService.getBranchBySlug(
         agentId,
         params.branchSlug,
+        userId,
       );
       set.status = 200;
       return branch;
@@ -67,12 +64,12 @@ export const branchesModule = new Elysia({
   )
   .put(
     "/:branchSlug",
-    async ({ params, body, set, agentId, auditFields }) => {
+    async ({ params, body, set, agentId, userId }) => {
       const branch = await BranchService.updateBranch(
         agentId,
         params.branchSlug,
         body,
-        auditFields,
+        userId,
       );
       set.status = 200;
       return branch;

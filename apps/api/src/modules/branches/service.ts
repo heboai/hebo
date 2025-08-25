@@ -1,35 +1,25 @@
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { status } from "elysia";
 
-import { db } from "@hebo/db";
-import type { UniversalDbClient } from "@hebo/db";
 import { branches } from "@hebo/db/schema/branches";
+import { withAudit } from "@hebo/db/utils/with-audit";
 
-import type { AuditFields } from "~/middlewares/audit-fields";
 import { createSlug } from "~/utils/create-slug";
+import { getDb } from "~/utils/request-db";
 
 import * as BranchesModel from "./model";
 
-// TODO: reduce audit fields boilerplate by using helpers from the db package. example here: https://gist.github.com/heiwen/edda78c2b3f5c544cb71ade03ecc1110
-// TODO: make accept the client the default from the request context
 export const BranchService = {
   async createBranch(
     agentId: string,
     input: BranchesModel.CreateBody,
-    auditFields: AuditFields,
-    client: UniversalDbClient = db,
+    userId: string,
   ) {
     const slug = createSlug(input.name);
 
-    const [branch] = await client
-      .insert(branches)
-      .values({
-        agentId,
-        ...input,
-        slug,
-        createdBy: auditFields.createdBy,
-        updatedBy: auditFields.updatedBy,
-      })
+    const branchesRepo = withAudit(branches, { userId });
+    const [branch] = await branchesRepo
+      .insert(getDb(), { agentId, ...input, slug })
       .onConflictDoNothing()
       .returning();
 
@@ -41,8 +31,7 @@ export const BranchService = {
   async createInitialBranch(
     agentId: string,
     defaultModel: string,
-    auditFields: AuditFields,
-    client: UniversalDbClient = db,
+    userId: string,
   ) {
     const model = { alias: "default" as const, type: defaultModel };
     return this.createBranch(
@@ -51,31 +40,24 @@ export const BranchService = {
         name: "main",
         models: [model],
       } as BranchesModel.CreateBody,
-      auditFields,
-      client,
+      userId,
     );
   },
 
-  async listBranches(agentId: string) {
-    const branchList = await db
-      .select()
-      .from(branches)
-      .where(and(eq(branches.agentId, agentId), isNull(branches.deletedAt)))
+  async listBranches(agentId: string, userId: string) {
+    const branchesRepo = withAudit(branches, { userId });
+    const branchList = await branchesRepo
+      .select(getDb(), eq(branches.agentId, agentId))
       .orderBy(asc(branches.createdAt));
     return branchList;
   },
 
-  async getBranchBySlug(agentId: string, branchSlug: string) {
-    const [branch] = await db
-      .select()
-      .from(branches)
-      .where(
-        and(
-          eq(branches.slug, branchSlug),
-          eq(branches.agentId, agentId),
-          isNull(branches.deletedAt),
-        ),
-      );
+  async getBranchBySlug(agentId: string, branchSlug: string, userId: string) {
+    const branchesRepo = withAudit(branches, { userId });
+    const [branch] = await branchesRepo.select(
+      getDb(),
+      and(eq(branches.slug, branchSlug), eq(branches.agentId, agentId)),
+    );
 
     if (!branch) throw status(404, BranchesModel.NotFound.const);
     return branch;
@@ -85,17 +67,14 @@ export const BranchService = {
     agentId: string,
     branchSlug: string,
     input: BranchesModel.UpdateBody,
-    auditFields: AuditFields,
+    userId: string,
   ) {
-    const [branch] = await db
-      .update(branches)
-      .set({ ...input, updatedBy: auditFields.updatedBy })
-      .where(
-        and(
-          eq(branches.slug, branchSlug),
-          eq(branches.agentId, agentId),
-          isNull(branches.deletedAt),
-        ),
+    const branchesRepo = withAudit(branches, { userId });
+    const [branch] = await branchesRepo
+      .update(
+        getDb(),
+        { ...input },
+        and(eq(branches.slug, branchSlug), eq(branches.agentId, agentId)),
       )
       .returning();
 

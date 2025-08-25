@@ -98,7 +98,10 @@ export function getConnectionConfig(): DbCredentials | string {
     // so every consumer (apps/api, scripts, etc.) points to the same DB file.
     if (process.env.PGLITE_PATH) return process.env.PGLITE_PATH;
 
-    const pkgDir = path.dirname(fileURLToPath(new URL("./", import.meta.url)));
+    // Resolve to the package root (packages/db) regardless of running from src or dist
+    const moduleDir = fileURLToPath(new URL(".", import.meta.url));
+    const isDistBuild = path.basename(moduleDir) === "dist";
+    const pkgDir = isDistBuild ? path.resolve(moduleDir, "..") : moduleDir;
     return path.resolve(pkgDir, "hebo.db");
   }
 

@@ -5,38 +5,31 @@ import {
 import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
 import { Pool } from "pg";
 
+import { isLocal, getConnectionConfig } from "./runtime-config";
 import { agents } from "./schema/agents";
 import { branches } from "./schema/branches";
-import { isLocal, getConnectionConfig } from "./utils";
 
-import type { DbCredentials } from "./utils";
+import type { DbCredentials } from "./runtime-config";
 
 const postgresSchema = {
   agents,
   branches,
 };
 
-// Create an intersection type that contains the shared API surface of both drivers.
-// This removes the problematic union that prevented calling methods like `.select()`
-// while still preserving IntelliSense for the common Drizzle query-builder methods.
-type PgliteDb = PgliteDatabase<typeof postgresSchema>;
-type PostgresDb = NodePgDatabase<typeof postgresSchema>;
-export type UniversalDb = PgliteDb & PostgresDb;
+// Driver-specific DB types
+export type PostgresDb = NodePgDatabase<typeof postgresSchema>;
+export type PgliteDb = PgliteDatabase<typeof postgresSchema>;
+export type UniversalDb = PostgresDb | PgliteDb;
 
-// Extract transaction client types for both drivers and expose a unified type
-type PostgresTx = Parameters<PostgresDb["transaction"]>[0] extends (
-  tx: infer T,
-  ...args: any
-) => any
+// Helper to extract the tx client type from a DB type
+type TxOf<D> = D extends {
+  transaction: (fn: (tx: infer T, ...args: any[]) => any, ...a: any[]) => any;
+}
   ? T
   : never;
-type PgliteTx = Parameters<PgliteDb["transaction"]>[0] extends (
-  tx: infer T,
-  ...args: any
-) => any
-  ? T
-  : never;
-export type UniversalDbClient = UniversalDb | PostgresTx | PgliteTx;
+
+// Accept top-level DB or a tx client from either driver
+export type UniversalDbClient = UniversalDb | TxOf<PostgresDb> | TxOf<PgliteDb>;
 
 // Factory function to build the correct DB instance at module init.
 const initDb = (): UniversalDb => {
@@ -47,25 +40,17 @@ const initDb = (): UniversalDb => {
     return drizzlePgLite({
       schema: postgresSchema,
       connection: { dataDir },
-    }) as unknown as UniversalDb;
+    });
   }
 
   // Remote/production – PostgreSQL via pg Pool
   const { host, port, user, password, database } =
     getConnectionConfig() as DbCredentials;
+
   const pool = new Pool({ host, port, user, password, database });
-  return drizzlePostgres(pool, {
-    schema: postgresSchema,
-  }) as unknown as UniversalDb;
+
+  return drizzlePostgres(pool, { schema: postgresSchema });
 };
 
-// By default we expose `db` with its inferred type from `initDb()` to maintain
-// type safety while allowing universal usage of the query builder regardless
-// of which dialect is active at runtime.
-export const db = initDb();
-
-// Separate typed export for consumers who want strict typing without losing
-// type safety globally
-export const typedDb: UniversalDb = db;
-
-export { isLocal } from "./utils";
+// Export a properly typed db without casts
+export const db: UniversalDb = initDb();
