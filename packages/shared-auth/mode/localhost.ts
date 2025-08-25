@@ -1,5 +1,5 @@
 import { Elysia, status } from "elysia";
-import isLocalhostIp from "is-localhost-ip";
+import isLocalhost from "is-localhost-ip";
 
 declare global {
   var __HEBO_WARNED_LOCALHOST: boolean | undefined;
@@ -45,8 +45,8 @@ export const authenticateUserLocalhost = () => {
     .use(getClientIp())
     .derive(async ({ hostname, clientIp }) => {
       const [ipIsLocal, hostIsLocal] = await Promise.all([
-        isLocalhostIp(clientIp),
-        isLocalhostIp(hostname),
+        isLocalhost(clientIp),
+        isLocalhost(hostname),
       ]);
 
       if (!(ipIsLocal && hostIsLocal)) throw status(403, "Forbidden");
