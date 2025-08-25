@@ -16,7 +16,7 @@ const warnLocalhostOnce = () => {
 export const authenticateUserLocalhost = () => {
   warnLocalhostOnce();
   return new Elysia({ name: "authenticate-user-localhost" })
-    .derive(async ({ request, server }) => {
+    .resolve(async ({ request, server }) => {
       const got = server?.requestIP(request);
       const clientIp = (
         typeof got === "string" ? got : (got?.address ?? "")
@@ -28,11 +28,7 @@ export const authenticateUserLocalhost = () => {
       ]);
 
       if (!(ipIsLocal && hostIsLocal)) throw status(403, "Forbidden");
-
       return { userId: "dummy" } as const;
-    })
-    .onBeforeHandle(({ userId }) => {
-      if (!userId) throw status(401, "Unauthorized");
     })
     .as("global");
 };
