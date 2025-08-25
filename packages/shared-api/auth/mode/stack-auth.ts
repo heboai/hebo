@@ -2,7 +2,8 @@ import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-import { projectId, secretServerKey } from "../env";
+export const projectId = process.env.VITE_STACK_PROJECT_ID ?? "";
+export const secretServerKey = process.env.STACK_SECRET_SERVER_KEY ?? "";
 
 const jwks = createRemoteJWKSet(
   new URL(

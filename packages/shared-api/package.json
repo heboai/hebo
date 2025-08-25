@@ -1,11 +1,11 @@
 {
-  "name": "@hebo/shared-auth",
+  "name": "@hebo/shared-api",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./authenticate-user.ts"
+    "./auth/*": "./auth/*.ts"
   },
   "scripts": {
     "clean": "rimraf .turbo node_modules"

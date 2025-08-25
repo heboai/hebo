@@ -1,6 +1,7 @@
-import { isStackAuthEnabled } from "./env";
 import { authenticateUserLocalhost } from "./mode/localhost";
-import { authenticateUserStackAuth } from "./mode/stack-auth";
+import { authenticateUserStackAuth, projectId } from "./mode/stack-auth";
+
+export const isStackAuthEnabled = projectId.trim().length > 0;
 
 export const authenticateUser = () =>
   isStackAuthEnabled

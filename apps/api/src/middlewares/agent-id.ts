@@ -3,7 +3,7 @@ import { Elysia, status } from "elysia";
 
 import { agents } from "@hebo/db/schema/agents";
 import { withAudit } from "@hebo/db/utils/with-audit";
-import { authenticateUser } from "@hebo/shared-auth";
+import { authenticateUser } from "@hebo/shared-api/auth/authenticate-user";
 
 import { getDb } from "~/utils/request-db";
 

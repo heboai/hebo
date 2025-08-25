@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 
-import { authenticateUser } from "@hebo/shared-auth";
+import { authenticateUser } from "@hebo/shared-api/auth/authenticate-user";
 
 import { SUPPORTED_MODELS, supportedOrThrow } from "~/middleware/provider";
 

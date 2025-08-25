@@ -30,7 +30,7 @@
     "@elysiajs/cors": "^1.3.3",
     "@elysiajs/swagger": "^1.3.1",
     "@hebo/db": "workspace:*",
-    "@hebo/shared-auth": "workspace:*",
+    "@hebo/shared-api": "workspace:*",
     "@hebo/shared-data": "workspace:*",
     "@sinclair/typebox": "^0.34.38",
     "crypto-random-string": "^5.0.0",

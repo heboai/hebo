@@ -1,7 +1,7 @@
 import { embed, embedMany } from "ai";
 import { Elysia, t } from "elysia";
 
-import { authenticateUser } from "@hebo/shared-auth";
+import { authenticateUser } from "@hebo/shared-api/auth/authenticate-user";
 
 import { provider } from "~/middleware/provider";
 

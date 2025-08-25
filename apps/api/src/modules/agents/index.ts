@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 
-import { authenticateUser } from "@hebo/shared-auth";
+import { authenticateUser } from "@hebo/shared-api/auth/authenticate-user";
 
 import * as AgentsModel from "./model";
 import { AgentService } from "./service";
