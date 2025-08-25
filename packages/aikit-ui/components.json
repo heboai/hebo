@@ -11,9 +11,9 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@hebo/ui/_shadcn",
+    "components": "@hebo/aikit-ui/_shadcn",
     "utils": "@hebo/aikit-ui/lib/utils",
-    "ui": "@hebo/ui/_shadcn/ui",
+    "ui": "@hebo/aikit-ui/_shadcn/ui",
     "lib": "@hebo/aikit-ui/lib",
     "hooks": "@hebo/aikit-ui/hooks"
   },

@@ -20,6 +20,7 @@
       "@hebo/api/*": ["apps/api/src/*"],
       "@hebo/db/*": ["packages/db/*"],
       "@hebo/ui/*": ["packages/ui/src/*"],
+      "@hebo/aikit-ui/*": ["packages/aikit-ui/src/*"],
       "@hebo/shared-data/*": ["packages/shared-data/*"]
     }
   },

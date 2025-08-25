@@ -9,4 +9,4 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "@hebo/ui/_shadcn/ui/select";
+} from "@hebo/aikit-ui/_shadcn/ui/select";
