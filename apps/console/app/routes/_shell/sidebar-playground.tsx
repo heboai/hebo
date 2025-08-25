@@ -26,7 +26,7 @@ export function PlaygroundSidebar({ activeBranch }: PlaygroundSidebarProps) {
       alias: activeBranch.models[0].alias,
       type: activeBranch.models[0].type,
       endpoint: {
-        baseUrl: import.meta.env.VITE_GATEWAY_URL!,
+        baseUrl: import.meta.env.VITE_GATEWAY_URL ?? "",
         apiKey: "",
       }
     }]
