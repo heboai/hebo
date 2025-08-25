@@ -62,6 +62,49 @@ app.listen(3000, () => {
 });
 ```
 
+### Example with Hono
+
+With Hono, you can get the raw body text using `c.req.text()` and the headers using `c.req.header()`.
+
+```ts
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import { RespondIoWebhook } from "@hebo/aikit-respond";
+import type { RespondIoError } from "@hebo/aikit-respond";
+
+const app = new Hono();
+
+// 1. Create and configure the webhook handler instance.
+const webhookHandler = new RespondIoWebhook()
+  .on("message.created", process.env.RESPOND_IO_MESSAGE_KEY!, (data) => {
+    console.log("Got a new message:", data.message.text);
+  })
+  .on("contact.updated", process.env.RESPOND_IO_CONTACT_KEY!, (data) => {
+    console.log("Contact was updated:", data.contact.name);
+  });
+
+// 2. Create the route handler.
+app.post("/webhook/respond-io", async (c) => {
+  try {
+    // In Hono, you must await the raw body text
+    const body = await c.req.text();
+    const headers = c.req.header();
+
+    // 3. Pass the request to the handler.
+    await webhookHandler.process(body, headers);
+    return c.text("OK", 200);
+  } catch (error) {
+    const err = error as RespondIoError | Error;
+    console.error("[Respond.io Webhook Error]", err.message);
+    return c.text(err.message, 400);
+  }
+});
+
+serve(app, () => {
+  console.log("Server listening on port 3000");
+});
+```
+
 ## API
 
 ### `new RespondIoWebhook(config?)`
