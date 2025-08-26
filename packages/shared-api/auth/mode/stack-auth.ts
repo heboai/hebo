@@ -11,32 +11,16 @@ const jwks = createRemoteJWKSet(
   ),
 );
 
-const determineAuthMode = (
-  apiKey?: string | null,
-  jwt?: string | null,
-): "apiKey" | "jwt" => {
-  const hasApiKey = !!apiKey;
-  const hasJwt = !!jwt;
-  if (!hasApiKey && !hasJwt) throw status(401, "Unauthorized");
-  if (hasApiKey && hasJwt)
-    throw status(
-      401,
-      "Provide exactly one credential: Authorization (Bearer API key) or stack-access cookie",
-    );
-  return hasApiKey ? "apiKey" : "jwt";
-};
-
-const verifyJwt = async (token: string): Promise<string> => {
+const verifyJwt = async (token: string): Promise<string | undefined> => {
   try {
     const { payload } = await jwtVerify(token, jwks);
-    if (!payload.sub) throw status(403, "Invalid or expired JWT");
-    return String(payload.sub);
+    return payload.sub;
   } catch {
-    throw status(403, "Invalid or expired JWT");
+    // FUTURE: log potential error
   }
 };
 
-const checkApiKey = async (key: string): Promise<string> => {
+const checkApiKey = async (key: string): Promise<string | undefined> => {
   const res = await fetch(
     "https://api.stack-auth.com/api/v1/user-api-keys/check",
     {
@@ -50,27 +34,29 @@ const checkApiKey = async (key: string): Promise<string> => {
       body: JSON.stringify({ api_key: key }),
     },
   );
-  if (res.status !== 200) throw status(403, "Invalid API key");
-  try {
-    const data = await res.json();
-    const userId = (data as any)?.user_id as string | undefined;
-    if (!userId) throw new Error("missing user_id");
-    return userId;
-  } catch {
-    throw status(403, "Invalid API key response");
-  }
+  if (res.status === 200) {
+    const { user_id } = await res.json();
+    return user_id;
+  } else; // FUTURE: log potential error
 };
 
-export const authenticateUserStackAuth = () =>
-  new Elysia({ name: "authenticate-user-stack-auth" })
-    .use(bearer())
-    .resolve(async ({ bearer: apiKey, cookie }) => {
-      const raw = cookie["stack-access"]?.value;
-      const jwt = raw ? JSON.parse(decodeURIComponent(raw))[1] : undefined;
-      const mode = determineAuthMode(apiKey, jwt);
-      const userId =
-        mode === "jwt" ? await verifyJwt(jwt!) : await checkApiKey(apiKey!);
-      if (!userId) throw status(401, "Unauthorized");
-      return { userId } as const;
-    })
-    .as("scoped");
+export const authenticateUserStackAuth = new Elysia({
+  name: "authenticate-user-stack-auth",
+})
+  .use(bearer())
+  .resolve(async ({ bearer: apiKey, cookie }) => {
+    const jwt =
+      cookie["stack-access"]?.value &&
+      JSON.parse(decodeURIComponent(cookie["stack-access"]!.value))[1];
+
+    if (apiKey && jwt)
+      throw status(
+        401,
+        "Provide exactly one credential: Bearer API Key or JWT Cookie",
+      );
+
+    if (apiKey) return { userId: await checkApiKey(apiKey) } as const;
+
+    if (jwt) return { userId: await verifyJwt(jwt!) } as const;
+  })
+  .as("global");

@@ -1,15 +1,12 @@
 import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
-import { authenticateUser } from "@hebo/shared-api/auth/authenticate-user";
-
 import { provider } from "~/middleware/provider";
 
 export const completions = new Elysia({
   name: "completions",
   prefix: "/chat/completions",
 })
-  .use(authenticateUser())
   .use(provider)
   .post(
     "/",

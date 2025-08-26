@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 
-import { authenticateUser } from "@hebo/shared-api/auth/authenticate-user";
+import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import { agentId } from "~/middlewares/agent-id";
 import * as AgentsModel from "~/modules/agents/model";
@@ -12,13 +12,13 @@ export const branchesModule = new Elysia({
   name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
-  .use(authenticateUser())
+  .use(authService)
   .use(agentId)
   .post(
     "/",
     // FUTURE: use Ajv to validate the models field
     async ({ body, set, agentId, userId }) => {
-      const branch = await BranchService.createBranch(agentId, body, userId);
+      const branch = await BranchService.createBranch(agentId, body, userId!);
       set.status = 201;
       return branch;
     },
@@ -35,7 +35,7 @@ export const branchesModule = new Elysia({
   .get(
     "/",
     async ({ set, agentId, userId }) => {
-      const list = await BranchService.listBranches(agentId, userId);
+      const list = await BranchService.listBranches(agentId, userId!);
       set.status = 200;
       return list;
     },
@@ -50,7 +50,7 @@ export const branchesModule = new Elysia({
       const branch = await BranchService.getBranchBySlug(
         agentId,
         params.branchSlug,
-        userId,
+        userId!,
       );
       set.status = 200;
       return branch;
@@ -70,7 +70,7 @@ export const branchesModule = new Elysia({
         agentId,
         params.branchSlug,
         body,
-        userId,
+        userId!,
       );
       set.status = 200;
       return branch;

@@ -3,18 +3,18 @@ import { Elysia, status } from "elysia";
 
 import { agents } from "@hebo/db/schema/agents";
 import { withAudit } from "@hebo/db/utils/with-audit";
-import { authenticateUser } from "@hebo/shared-api/auth/authenticate-user";
+import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import { getDb } from "~/utils/request-db";
 
 export const agentId = new Elysia({ name: "agent-id" })
-  .use(authenticateUser())
+  .use(authService)
   .derive(async ({ params, userId }) => {
     const agentSlug = (params as { agentSlug?: string }).agentSlug;
 
     if (!agentSlug) throw status(400, "agentSlug is required");
 
-    const audit = withAudit(agents, { userId });
+    const audit = withAudit(agents, { userId: userId! });
     const [agent] = await audit
       .select(getDb(), eq(agents.slug, agentSlug))
       .limit(1);

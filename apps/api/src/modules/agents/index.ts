@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 
-import { authenticateUser } from "@hebo/shared-api/auth/authenticate-user";
+import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import * as AgentsModel from "./model";
 import { AgentService } from "./service";
@@ -9,11 +9,11 @@ export const agentsModule = new Elysia({
   name: "agents-module",
   prefix: "/agents",
 })
-  .use(authenticateUser())
+  .use(authService)
   .post(
     "/",
     async ({ body, set, userId }) => {
-      const agent = await AgentService.createAgent(body, userId);
+      const agent = await AgentService.createAgent(body, userId!);
       set.status = 201;
       return agent;
     },
@@ -30,7 +30,7 @@ export const agentsModule = new Elysia({
   .get(
     "/",
     async ({ set, userId }) => {
-      const agentList = await AgentService.listAgents(userId);
+      const agentList = await AgentService.listAgents(userId!);
       set.status = 200;
       return agentList;
     },
@@ -40,7 +40,10 @@ export const agentsModule = new Elysia({
   .get(
     "/:agentSlug",
     async ({ params, set, userId }) => {
-      const agent = await AgentService.getAgentBySlug(params.agentSlug, userId);
+      const agent = await AgentService.getAgentBySlug(
+        params.agentSlug,
+        userId!,
+      );
       set.status = 200;
       return agent;
     },
@@ -55,7 +58,7 @@ export const agentsModule = new Elysia({
       const agent = await AgentService.updateAgent(
         params.agentSlug,
         body,
-        userId,
+        userId!,
       );
       set.status = 200;
       return agent;
@@ -71,7 +74,7 @@ export const agentsModule = new Elysia({
     async ({ params, set, userId }) => {
       const agent = await AgentService.softDeleteAgent(
         params.agentSlug,
-        userId,
+        userId!,
       );
       set.status = 204;
       return agent;

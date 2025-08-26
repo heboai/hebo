@@ -3,6 +3,7 @@ import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 
+import { authService } from "@hebo/shared-api/auth/auth-service";
 import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 
 import { agentsModule } from "~/modules/agents";
@@ -24,8 +25,15 @@ const createApi = () =>
         },
       }),
     )
+    .use(authService)
     .get("/", () => "🚀 Hebo API says hello!")
-    .group("/v1", (app) => app.use(agentsModule.use(branchesModule)));
+    .group(
+      "/v1",
+      {
+        isSignedIn: true,
+      },
+      (app) => app.use(agentsModule.use(branchesModule)),
+    );
 
 if (import.meta.main) {
   const app = createApi().listen(PORT);
