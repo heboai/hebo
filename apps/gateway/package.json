@@ -23,6 +23,7 @@
     "@elysiajs/cors": "^1.3.3",
     "@elysiajs/jwt": "^1.3.2",
     "@elysiajs/swagger": "^1.3.1",
+    "@hebo/shared-api": "workspace:*",
     "@hebo/shared-data": "workspace:*",
     "ai": "^5.0.19",
     "elysia": "^1.3.8",
