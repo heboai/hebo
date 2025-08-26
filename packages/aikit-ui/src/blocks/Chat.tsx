@@ -201,7 +201,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
             }
           }}
           value={input}
-          disabled={isLoading}
           placeholder="Start prompting..."
           aria-label="Chat message input"
           aria-describedby="input-help"
