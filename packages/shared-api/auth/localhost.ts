@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import isLocalhost from "is-localhost-ip";
 
-export const authenticateUserLocalhost = new Elysia({
+export const authServiceLocalhost = new Elysia({
   name: "authenticate-user-localhost",
 })
   .onStart(async () => {
@@ -24,4 +24,4 @@ export const authenticateUserLocalhost = new Elysia({
 
     return { userId: ipIsLocal && hostIsLocal ? "dummy" : undefined } as const;
   })
-  .as("global");
+  .as("scoped");

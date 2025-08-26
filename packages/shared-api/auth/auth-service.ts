@@ -1,26 +1,21 @@
-import Elysia from "elysia";
+import { Elysia, status } from "elysia";
 
-import { authenticateUserLocalhost } from "./mode/localhost";
-import { authenticateUserStackAuth, projectId } from "./mode/stack-auth";
+import { authServiceLocalhost } from "./localhost";
+import { authServiceStackAuth, projectId } from "./stack-auth";
 
 const isStackAuthEnabled = projectId.trim().length > 0;
 
 const chosenAuth = isStackAuthEnabled
-  ? authenticateUserStackAuth
-  : authenticateUserLocalhost;
+  ? authServiceStackAuth
+  : authServiceLocalhost;
 
 export const authService = new Elysia({ name: "Service.Auth" })
   .use(chosenAuth)
   .macro({
-    isSignedIn(enabled: boolean) {
-      if (!enabled) return {};
-      return {
-        beforeHandle({ userId }) {
-          if (!userId) {
-            throw new Response("Unauthorized", { status: 401 });
-          }
-        },
-      };
+    isSignedIn: {
+      beforeHandle({ userId }) {
+        if (!userId) throw status(401, "Unauthorized");
+      },
     },
   })
-  .as("global");
+  .as("scoped");
