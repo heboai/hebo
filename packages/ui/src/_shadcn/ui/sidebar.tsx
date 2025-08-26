@@ -30,6 +30,7 @@ const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
+const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
@@ -56,8 +57,6 @@ function SidebarProvider({
   defaultOpen = true,
   open: openProp,
   onOpenChange: setOpenProp,
-  shortcut = "b",
-  cookieName,
   className,
   style,
   children,
@@ -66,8 +65,6 @@ function SidebarProvider({
   defaultOpen?: boolean
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  shortcut?: string
-  cookieName?: string
 }) {
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
@@ -86,10 +83,9 @@ function SidebarProvider({
       }
 
       // This sets the cookie to keep the sidebar state.
-      const cookieNameToUse = cookieName || SIDEBAR_COOKIE_NAME
-      document.cookie = `${cookieNameToUse}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
-    [setOpenProp, open, cookieName]
+    [setOpenProp, open]
   )
 
   // Helper to toggle the sidebar.
@@ -101,7 +97,7 @@ function SidebarProvider({
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
-        event.key === shortcut &&
+        event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
         (event.metaKey || event.ctrlKey)
       ) {
         event.preventDefault()
@@ -257,17 +253,11 @@ function Sidebar({
   )
 }
 
-
-interface SidebarTriggerProps extends React.ComponentProps<typeof Button> {
-  icon?: React.ReactNode
-}
-
 function SidebarTrigger({
   className,
   onClick,
-  icon = <PanelLeftIcon />, // default icon
   ...props
-}: SidebarTriggerProps) {
+}: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -275,7 +265,7 @@ function SidebarTrigger({
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
-      size="default"
+      size="icon"
       className={cn("size-7", className)}
       onClick={(event) => {
         onClick?.(event)
@@ -283,11 +273,11 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      {icon}
+      <PanelLeftIcon />
+      <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
 }
-
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
   const { toggleSidebar } = useSidebar()
