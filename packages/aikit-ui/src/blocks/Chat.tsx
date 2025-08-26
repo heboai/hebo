@@ -243,35 +243,29 @@ export function Chat({ modelsConfig }: ChatProps) {
         <PromptInputToolbar>
           <PromptInputTools>
             {/* Model selector - show hint when no models available */}
-            {modelsConfig.models.length === 0 ? (
-              <div className="text-muted-foreground px-3 py-2 text-sm">
-                No models available
-              </div>
-            ) : (
-              <PromptInputModelSelect
-                onValueChange={handleModelChange}
-                value={currentModelAlias}
-                disabled={isLoading || modelsConfig.models.length === 0}
-                aria-label="Select AI model"
+            <PromptInputModelSelect
+              onValueChange={handleModelChange}
+              value={currentModelAlias}
+              disabled={isLoading}
+              aria-label="Select AI model"
+            >
+              <PromptInputModelSelectTrigger
+                aria-label={`Current model: ${currentModel?.alias || "None"}`}
               >
-                <PromptInputModelSelectTrigger
-                  aria-label={`Current model: ${currentModel?.alias || "None"}`}
-                >
-                  <Bot />
-                  <PromptInputModelSelectValue />
-                </PromptInputModelSelectTrigger>
-                <PromptInputModelSelectContent>
-                  {modelsConfig.models.map((model) => (
-                    <PromptInputModelSelectItem
-                      key={model.alias}
-                      value={model.alias}
-                    >
-                      {model.alias}
-                    </PromptInputModelSelectItem>
-                  ))}
-                </PromptInputModelSelectContent>
-              </PromptInputModelSelect>
-            )}
+                <Bot />
+                <PromptInputModelSelectValue />
+              </PromptInputModelSelectTrigger>
+              <PromptInputModelSelectContent>
+                {modelsConfig.models.map((model) => (
+                  <PromptInputModelSelectItem
+                    key={model.alias}
+                    value={model.alias}
+                  >
+                    {model.alias}
+                  </PromptInputModelSelectItem>
+                ))}
+              </PromptInputModelSelectContent>
+            </PromptInputModelSelect>
           </PromptInputTools>
 
           {/* Attachment button */}
