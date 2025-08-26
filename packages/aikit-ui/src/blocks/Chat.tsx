@@ -30,20 +30,17 @@ import {
 import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
 
 // Types based on models.schema.json
-type ModelEndpoint = {
-  baseUrl: string;
-  apiKey: string;
-};
-
-type ModelConfig = {
-  alias: string;
-  type: string;
-  endpoint?: ModelEndpoint;
-};
-
 type ModelsConfig = {
   __supportedTypes: string[];
-  models: ModelConfig[];
+  models: Array<{
+    alias: string;
+    type: string;
+    endpoint?: {
+      baseUrl: string;
+      provider: "aws" | "custom";
+      apiKey: string;
+    };
+  }>;
 };
 
 export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
