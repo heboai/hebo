@@ -19,7 +19,7 @@
     "dev": "bun --hot src/index.ts | pino-pretty",
     "lint": "bunx eslint .",
     "start": "./server",
-    "clean": "rimraf .turbo node_modules dist"
+    "clean": "rimraf .turbo node_modules dist server tsconfig.tsbuildinfo .*.bun-build"
   },
   "devDependencies": {
     "bun-types": "^1.2.19",

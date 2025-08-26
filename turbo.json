@@ -10,7 +10,8 @@
         ".next/**",
         "out/**",
         "build/**",
-        ".build-complete"
+        ".build-complete",
+        "server"
       ],
       "inputs": [
         "src/**/*.tsx",
