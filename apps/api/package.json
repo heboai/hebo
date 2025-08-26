@@ -4,22 +4,19 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./src/index.ts"
     }
   },
   "scripts": {
-    "build:bin": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile server",
-    "build:types": "tsc -p tsconfig.types.json",
-    "build": "bun run build:bin && bun run build:types",
+    "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile server",
     "dev": "bun --hot src/index.ts | pino-pretty",
     "lint": "bunx eslint .",
+    "type-check": "bunx tsc --noEmit",
+    "prestart": "bun run build",
     "start": "./server",
-    "clean": "rimraf .turbo node_modules dist server tsconfig.tsbuildinfo .*.bun-build"
+    "clean": "rimraf .turbo node_modules server tsconfig.tsbuildinfo .*.bun-build"
   },
   "devDependencies": {
     "bun-types": "^1.2.19",

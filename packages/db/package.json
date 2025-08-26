@@ -26,7 +26,6 @@
     "check": "drizzle-kit check"
   },
   "dependencies": {
-    "@libsql/client": "^0.15.9",
     "pg": "^8.16.3"
   },
   "peerDependencies": {
