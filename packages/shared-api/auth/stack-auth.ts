@@ -1,5 +1,5 @@
 import { logger } from "@bogeychan/elysia-logger";
-import { Logger } from "@bogeychan/elysia-logger/types";
+import { type Logger } from "@bogeychan/elysia-logger/types";
 import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
