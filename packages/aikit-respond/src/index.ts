@@ -27,18 +27,14 @@ function verifySignature(
     throw new SignatureVerificationError("Missing signature header.");
   }
 
-  console.log("signature", signature);
   const expectedSignature = crypto
     .createHmac("sha256", signingKey)
     .update(body)
     .digest("base64");
 
-  console.log("expectedSignature", expectedSignature);
-
   if (signature !== expectedSignature) {
     throw new SignatureVerificationError("Signature mismatch.");
   }
-  console.log("Signature verified.");
 }
 
 // --- Public API ---
