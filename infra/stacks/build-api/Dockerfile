@@ -32,6 +32,8 @@ RUN bun run build
 ########################  runner stage  ########################
 FROM oven/bun:1.2.18 AS runner
 
+ENV NODE_ENV=production
+
 # Create an unprivileged user
 RUN adduser --system --ingroup bun appuser
 
