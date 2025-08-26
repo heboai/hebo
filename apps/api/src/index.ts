@@ -37,7 +37,7 @@ const createApi = () =>
 
 if (import.meta.main) {
   const app = createApi().listen(PORT);
-  console.log(`🚀 Hebo API running at ${app.server!.url}`);
+  console.log(`🐵 Hebo API running at ${app.server!.url}`);
 }
 
 export type Api = ReturnType<typeof createApi>;
