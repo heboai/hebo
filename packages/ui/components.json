@@ -12,10 +12,10 @@
   },
   "aliases": {
     "components": "@hebo/ui/_shadcn",
-    "utils": "@hebo/aikit-ui/lib/utils",
+    "utils": "@hebo/ui/lib/utils",
     "ui": "@hebo/ui/_shadcn/ui",
-    "lib": "@hebo/aikit-ui/lib",
-    "hooks": "@hebo/aikit-ui/hooks"
+    "lib": "@hebo/ui/lib",
+    "hooks": "@hebo/ui/hooks"
   },
   "iconLibrary": "lucide"
 }
