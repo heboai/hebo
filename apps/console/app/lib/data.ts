@@ -9,7 +9,6 @@ const url = isDevLocal
   : import.meta.env.VITE_API_URL!;
 
 export const api = treaty<Api>(url, {
-  // Enable CORS-compatibility
-  // TODO: test whether it actually works
+  // FUTURE: Enable CORS-compatibility
   fetch: { credentials: "include" },
 }).v1;
