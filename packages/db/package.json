@@ -4,18 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./drizzle.ts",
-      "default": "./drizzle.ts"
-    },
-    "./schema/*": {
-      "types": "./schema/*.ts",
-      "default": "./schema/*.ts"
-    },
-    "./utils/*": {
-      "types": "./utils/*.ts",
-      "default": "./utils/*.ts"
-    }
+    "./*": "./*.ts"
   },
   "scripts": {
     "clean": "rimraf .turbo node_modules hebo.db",
