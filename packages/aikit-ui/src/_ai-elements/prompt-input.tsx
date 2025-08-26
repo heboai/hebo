@@ -163,7 +163,7 @@ export function PromptInputSubmit({
   children,
   ...props
 }: PromptInputSubmitProps) {
-  let Icon = <SendHorizontal color="#525252"/>;
+  let Icon = <SendHorizontal />;
 
   switch (status) {
     case "submitted": {

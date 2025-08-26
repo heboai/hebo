@@ -157,7 +157,7 @@ export function Chat({ modelsConfig }: ChatProps) {
   return (
     <div className="flex h-full flex-col" ref={containerRef}>
       {/* Header Controls */}
-      <div className="absolute top-4 left-4 z-10 flex items-center">
+      <div className="absolute top-4 left-4 flex items-center">
         <Button
           variant="ghost"
           size="icon"
@@ -165,7 +165,7 @@ export function Chat({ modelsConfig }: ChatProps) {
           aria-label="Clear conversation"
           title="Clear conversation"
         >
-          <IterationCcw size={20} color="#525252" />
+          <IterationCcw size={20} />
         </Button>
       </div>
 
@@ -257,7 +257,7 @@ export function Chat({ modelsConfig }: ChatProps) {
                 <PromptInputModelSelectTrigger
                   aria-label={`Current model: ${currentModel?.alias || "None"}`}
                 >
-                  <Bot color="#525252" />
+                  <Bot />
                   <PromptInputModelSelectValue />
                 </PromptInputModelSelectTrigger>
                 <PromptInputModelSelectContent>
@@ -281,13 +281,13 @@ export function Chat({ modelsConfig }: ChatProps) {
             aria-label="Attach file"
             title="Attach file"
           >
-            <PaperclipIcon size={16} color="#525252" />
+            <PaperclipIcon size={16} />
           </PromptInputButton>
 
           {/* Submit button - disable when no model is selected */}
           <PromptInputSubmit
             disabled={!input.trim() || isLoading || !currentModel}
-            className="absolute right-1 bottom-1 text-[#525252]"
+            className="absolute right-1 bottom-1"
             aria-label={
               isLoading ? "Sending message..." : "Send message (Enter)"
             }
