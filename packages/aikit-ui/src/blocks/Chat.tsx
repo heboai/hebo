@@ -46,9 +46,7 @@ type ModelsConfig = {
   models: ModelConfig[];
 };
 
-type ChatProps = { modelsConfig: ModelsConfig };
-
-export function Chat({ modelsConfig }: ChatProps) {
+export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   // Use lazy initializer to safely pick first model ID or empty string
   const [currentModelAlias, setCurrentModelAlias] = useState(() =>
     modelsConfig.models.length > 0 ? modelsConfig.models[0].alias : "",
