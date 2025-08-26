@@ -242,7 +242,7 @@ export function Chat({ modelsConfig }: ChatProps) {
 
         <PromptInputToolbar>
           <PromptInputTools>
-            {/* Model selector - show hint when no models available */}
+            {/* Model selector */}
             <PromptInputModelSelect
               onValueChange={handleModelChange}
               value={currentModelAlias}
@@ -250,7 +250,7 @@ export function Chat({ modelsConfig }: ChatProps) {
               aria-label="Select AI model"
             >
               <PromptInputModelSelectTrigger
-                aria-label={`Current model: ${currentModel?.alias || "None"}`}
+                aria-label={`Current model: ${currentModelAlias}`}
               >
                 <Bot />
                 <PromptInputModelSelectValue />
