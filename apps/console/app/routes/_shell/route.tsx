@@ -102,7 +102,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
       </SidebarProvider>
       
       {/* RIGHT SIDEBAR - Positioned absolutely */}
-      <div className="absolute top-0 right-0 h-full z-40">
+      <div className="top-0 right-0 h-full z-40">
         <SidebarProvider
           cookieName="right_sidebar_state"
           shortcut="p"
