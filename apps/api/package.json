@@ -13,12 +13,12 @@
     }
   },
   "scripts": {
-    "build:bin": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile dist/server",
+    "build:bin": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile server",
     "build:types": "tsc -p tsconfig.types.json",
     "build": "bun run build:bin && bun run build:types",
     "dev": "bun --hot src/index.ts | pino-pretty",
     "lint": "bunx eslint .",
-    "start": "bun dist/server",
+    "start": "./server",
     "clean": "rimraf .turbo node_modules dist"
   },
   "devDependencies": {
