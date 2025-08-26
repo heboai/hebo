@@ -80,10 +80,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
     return "";
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-  };
-
   // No global keyboard handler; attach element-specific handlers below
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -131,14 +127,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
     }
   };
 
-  const handleReset = () => {
-    setMessages([]);
-  };
-
-  const handleModelChange = (modelAlias: string) => {
-    setCurrentModelAlias(modelAlias);
-  };
-
   return (
     <div className="flex h-full flex-col" ref={containerRef}>
       {/* Header Controls */}
@@ -146,7 +134,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleReset}
+          onClick={() => setMessages([])}
           aria-label="Clear conversation"
           title="Clear conversation"
         >
@@ -202,7 +190,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
         <PromptInputTextarea
           ref={textareaRef}
           id="chat-input"
-          onChange={handleInputChange}
+          onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Escape") {
               if (input) {
@@ -229,7 +217,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
           <PromptInputTools>
             {/* Model selector */}
             <PromptInputModelSelect
-              onValueChange={handleModelChange}
+              onValueChange={(alias) => setCurrentModelAlias(alias)}
               value={currentModelAlias}
               disabled={isLoading}
               aria-label="Select AI model"
