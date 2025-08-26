@@ -1,8 +1,9 @@
 export const corsConfig =
   process.env.NODE_ENV === "production"
     ? {
-        // Matches any HTTP or HTTPS origin that ends with "hebo.ai"
-        origin: /^https?:\/\/([^/?#]*)\.?hebo\.ai/,
+        // Matches HTTPS origins for exact "hebo.ai" or subdomains (e.g., "app.hebo.ai"),
+        // requires a dot for subdomains and anchors to end of string
+        origin: /^https:\/\/(?:hebo\.ai|(?:[a-z0-9-]+\.)+hebo\.ai)$/i,
       }
     : {
         origin: true,
