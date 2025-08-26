@@ -13,7 +13,8 @@ const PORT = Number(process.env.API_PORT) || 3001;
 
 const createApi = () =>
   new Elysia()
-    .use(logger())
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- any needed because of typing issue in @bogyechan
+    .use(logger() as any)
     .use(cors(corsConfig))
     .use(
       swagger({
@@ -40,4 +41,4 @@ if (import.meta.main) {
   console.log(`🐵 Hebo API running at ${app.server!.url}`);
 }
 
-export type Api = ReturnType<typeof createApi>;
+export type Api = typeof createApi;
