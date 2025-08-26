@@ -130,7 +130,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   return (
     <div className="flex h-full flex-col" ref={containerRef}>
       {/* Header Controls */}
-      <div className="absolute top-4 left-4 z-20 flex items-center">
+      <div className="absolute top-4 left-4 z-10 flex items-center">
         <Button
           variant="ghost"
           size="icon"
