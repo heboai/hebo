@@ -11,14 +11,14 @@ const jwks = createRemoteJWKSet(
   ),
 );
 
-const pickOneAuthMethod = (apiKey?: string | null, jwt?: string | null) => {
+const determineAuthMode = (apiKey?: string | null, jwt?: string | null) => {
   const hasApiKey = !!apiKey;
   const hasJwt = !!jwt;
   if (!hasApiKey && !hasJwt) throw status(401, "Unauthorized");
   if (hasApiKey && hasJwt)
     throw status(
       401,
-      "Provide exactly one credential: Authorization or X-Access-Token",
+      "Provide exactly one credential: Authorization (Bearer API key) or stack-access cookie",
     );
   return hasApiKey ? "apiKey" : "jwt";
 };
@@ -66,7 +66,7 @@ export const authenticateUserStackAuth = () =>
       const accessToken = raw
         ? JSON.parse(decodeURIComponent(raw))[1]
         : undefined;
-      const mode = pickOneAuthMethod(apiKey, accessToken);
+      const mode = determineAuthMode(apiKey, accessToken);
       const userId =
         mode === "jwt"
           ? await verifyJwt(accessToken!)
