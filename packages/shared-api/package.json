@@ -1,0 +1,16 @@
+{
+  "name": "@hebo/shared-api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./cors/*": "./cors/*.ts"
+  },
+  "scripts": {
+    "clean": "rimraf .turbo node_modules"
+  },
+  "devDependencies": {
+    "bun-types": "^1.2.19"
+  }
+}

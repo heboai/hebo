@@ -27,6 +27,8 @@ RUN bun run build:bin
 ########################  runner stage  ########################
 FROM oven/bun:1.2.18 AS runner
 
+ENV NODE_ENV=production
+
 RUN adduser --system --ingroup bun appuser
 
 WORKDIR /repo

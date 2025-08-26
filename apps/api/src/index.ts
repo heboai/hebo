@@ -3,6 +3,8 @@ import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
 
+import { corsConfig } from "@hebo/shared-api/cors/cors-config";
+
 import { agentsModule } from "~/modules/agents";
 import { branchesModule } from "~/modules/branches";
 
@@ -11,8 +13,7 @@ const PORT = Number(process.env.PORT) || 3001;
 const createApi = () =>
   new Elysia()
     .use(logger())
-    // make cors more strict for production
-    .use(cors())
+    .use(cors(corsConfig))
     .use(
       swagger({
         documentation: {
