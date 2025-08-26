@@ -1,17 +1,17 @@
 [
   {
     "name": "meta-llama/llama-4-scout-17b-16e-instruct",
-    "displayName": "LLaMA 4 Scout 17B Instruct",
+    "displayName": "LLaMA 4 Scout",
     "rateLimit": 40000000
   },
   {
     "name": "claude-3-5-sonnet-20241022",
-    "displayName": "Claude 3.5 Sonnet (Oct 2024)",
+    "displayName": "Claude 3.5 Sonnet",
     "rateLimit": 0
   },
   {
     "name": "claude-3-haiku-20240307",
-    "displayName": "Claude 3 Haiku (Mar 2024)",
+    "displayName": "Claude 3 Haiku",
     "rateLimit": 0
   },
   {
