@@ -1,11 +1,6 @@
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-// ---------------------------------------------
-// Safe (optional) access to `Resource` from SST.
-// ---------------------------------------------
 
 const requireModule = createRequire(import.meta.url);
 
@@ -46,17 +41,10 @@ const heboDb = ResourceSafe
  * 3. Otherwise, treat as local environment.
  */
 export const isLocal: boolean = (() => {
-  // If an explicit PostgreSQL host env is set, assume remote.
   if (process.env.PG_HOST) return false;
-
-  // If we detect an SST-provided Postgres host, assume remote.
   const remoteHost = safeRead(() => (heboDb as any).host);
   return !remoteHost;
 })();
-
-// ---------------------------------------------------------
-// Unified helper that returns the Drizzle configuration for local or remote environments.
-// ---------------------------------------------------------
 
 export type DbCredentials = {
   host: string;
