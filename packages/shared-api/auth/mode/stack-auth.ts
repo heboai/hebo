@@ -64,7 +64,6 @@ export const authenticateUserStackAuth = () =>
     .resolve(async ({ bearer, cookie }) => {
       const raw = cookie["stack-access"]?.value;
       const [, accessToken] = JSON.parse(decodeURIComponent(raw ?? ""));
-
       const mode = pickOneAuthMethod(bearer, accessToken);
       const userId =
         mode === "jwt"
