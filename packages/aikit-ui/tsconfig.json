@@ -6,6 +6,6 @@
       "@hebo/aikit-ui/*": ["./*"]
     }
   },
-  "include": ["src", "src/vite-env.d.ts"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
