@@ -56,7 +56,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Accessibility refs
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const promptInputTextareaRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Get current model config - only return a model if we have a valid alias and it exists
@@ -188,7 +188,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
         aria-label="Chat input form"
       >
         <PromptInputTextarea
-          ref={textareaRef}
+          ref={promptInputTextareaRef}
           id="chat-input"
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -196,7 +196,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
               if (input) {
                 setInput("");
               } else {
-                textareaRef.current?.blur();
+                promptInputTextareaRef.current?.blur();
               }
             }
           }}
