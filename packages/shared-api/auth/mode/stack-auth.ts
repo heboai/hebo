@@ -11,7 +11,10 @@ const jwks = createRemoteJWKSet(
   ),
 );
 
-const determineAuthMode = (apiKey?: string | null, jwt?: string | null) => {
+const determineAuthMode = (
+  apiKey?: string | null,
+  jwt?: string | null,
+): "apiKey" | "jwt" => {
   const hasApiKey = !!apiKey;
   const hasJwt = !!jwt;
   if (!hasApiKey && !hasJwt) throw status(401, "Unauthorized");
@@ -63,14 +66,10 @@ export const authenticateUserStackAuth = () =>
     .use(bearer())
     .resolve(async ({ bearer: apiKey, cookie }) => {
       const raw = cookie["stack-access"]?.value;
-      const accessToken = raw
-        ? JSON.parse(decodeURIComponent(raw))[1]
-        : undefined;
-      const mode = determineAuthMode(apiKey, accessToken);
+      const jwt = raw ? JSON.parse(decodeURIComponent(raw))[1] : undefined;
+      const mode = determineAuthMode(apiKey, jwt);
       const userId =
-        mode === "jwt"
-          ? await verifyJwt(accessToken!)
-          : await checkApiKey(apiKey!);
+        mode === "jwt" ? await verifyJwt(jwt!) : await checkApiKey(apiKey!);
       if (!userId) throw status(401, "Unauthorized");
       return { userId } as const;
     })
