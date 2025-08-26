@@ -61,16 +61,16 @@ const checkApiKey = async (key: string): Promise<string> => {
 export const authenticateUserStackAuth = () =>
   new Elysia({ name: "authenticate-user-stack-auth" })
     .use(bearer())
-    .resolve(async ({ bearer, cookie }) => {
+    .resolve(async ({ bearer: apiKey, cookie }) => {
       const raw = cookie["stack-access"]?.value;
       const accessToken = raw
         ? JSON.parse(decodeURIComponent(raw))[1]
         : undefined;
-      const mode = pickOneAuthMethod(bearer, accessToken);
+      const mode = pickOneAuthMethod(apiKey, accessToken);
       const userId =
         mode === "jwt"
           ? await verifyJwt(accessToken!)
-          : await checkApiKey(bearer!);
+          : await checkApiKey(apiKey!);
       if (!userId) throw status(401, "Unauthorized");
       return { userId } as const;
     })
