@@ -128,20 +128,15 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
-      setTimeout(() => textareaRef.current?.focus(), 100);
     }
   };
 
   const handleReset = () => {
     setMessages([]);
-    // Focus textarea after reset
-    setTimeout(() => textareaRef.current?.focus(), 100);
   };
 
   const handleModelChange = (modelAlias: string) => {
     setCurrentModelAlias(modelAlias);
-    // Return focus to textarea after model change
-    setTimeout(() => textareaRef.current?.focus(), 100);
   };
 
   return (
