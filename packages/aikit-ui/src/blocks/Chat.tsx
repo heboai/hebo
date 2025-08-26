@@ -3,7 +3,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useRef } from "react";
 
 import {
   Conversation,
@@ -86,59 +86,51 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
 
   // No global keyboard handler; attach element-specific handlers below
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      // Guard against submission when no model is selected
-      if (!input.trim() || isLoading || !currentModel || !openai) return;
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading || !currentModel || !openai) return;
 
-      setIsLoading(true);
+    setIsLoading(true);
 
-      // Add user message
-      const userMessage: UIMessage = {
+    const userMessage: UIMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      parts: [{ type: "text", text: input }],
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+
+    try {
+      const { text } = await generateText({
+        model: openai.chat(currentModel.type),
+        messages: [...messages, userMessage].map((msg) => ({
+          role: msg.role,
+          content: renderMessagePart(msg.parts[0]),
+        })),
+      });
+
+      const assistantMessage: UIMessage = {
         id: crypto.randomUUID(),
-        role: "user",
-        parts: [{ type: "text", text: input }],
+        role: "assistant",
+        parts: [
+          { type: "text", text: text || "Sorry, I encountered an error." },
+        ],
       };
 
-      setMessages((prev) => [...prev, userMessage]);
-      setInput(""); // Clear input immediately
-
-      try {
-        // Generate AI response using the current model's type
-        const { text } = await generateText({
-          model: openai.chat(currentModel.type),
-          messages: [...messages, userMessage].map((msg) => ({
-            role: msg.role,
-            content: renderMessagePart(msg.parts[0]),
-          })),
-        });
-
-        // Add AI response
-        const assistantMessage: UIMessage = {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          parts: [
-            { type: "text", text: text || "Sorry, I encountered an error." },
-          ],
-        };
-
-        setMessages((prev) => [...prev, assistantMessage]);
-      } catch {
-        const errorMessage: UIMessage = {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          parts: [{ type: "text", text: "Sorry, I encountered an error." }],
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-      } finally {
-        setIsLoading(false);
-        // Return focus to textarea after response
-        setTimeout(() => textareaRef.current?.focus(), 100);
-      }
-    },
-    [input, isLoading, messages, currentModel, openai],
-  );
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch {
+      const errorMessage: UIMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        parts: [{ type: "text", text: "Sorry, I encountered an error." }],
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => textareaRef.current?.focus(), 100);
+    }
+  };
 
   const handleReset = () => {
     setMessages([]);
