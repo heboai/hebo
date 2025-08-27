@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-
 import {
   drizzle as drizzlePostgres,
   NodePgDatabase,
@@ -12,8 +10,6 @@ import { branches } from "./schema/branches";
 
 import type { DbCredentials } from "./runtime-config";
 import type { PgliteDatabase } from "drizzle-orm/pglite";
-
-const requireModule = createRequire(import.meta.url);
 
 const postgresSchema = {
   agents,
@@ -29,7 +25,7 @@ type TxOf<D> = D extends {
   ? T
   : never;
 
-const initDb = (): UniversalDb => {
+const initDb = async (): Promise<UniversalDb> => {
   if (isLocal) {
     // Local development – PGLite via pglite client
     const dataDir = getConnectionConfig() as string;
@@ -40,7 +36,7 @@ const initDb = (): UniversalDb => {
     }) => PgliteDatabase<typeof postgresSchema>;
 
     // Import pglite only in local development
-    const { drizzle: drizzlePgLite } = requireModule("drizzle-orm/pglite") as {
+    const { drizzle: drizzlePgLite } = (await import("drizzle-orm/pglite")) as {
       drizzle: DrizzlePgLite;
     };
 
@@ -59,5 +55,5 @@ const initDb = (): UniversalDb => {
   return drizzlePostgres(pool, { schema: postgresSchema });
 };
 
-export const db: UniversalDb = initDb();
+export const db: UniversalDb = await initDb();
 export type UniversalDbClient = UniversalDb | TxOf<PostgresDb> | TxOf<PgliteDb>;
