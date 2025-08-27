@@ -22,7 +22,7 @@ COPY . .
 
 WORKDIR /repo/apps/api
 
-RUN bun run build:bin
+RUN bun run build
 
 ########################  runner stage  ########################
 FROM oven/bun:1.2.18 AS runner
