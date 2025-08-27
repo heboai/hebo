@@ -63,7 +63,6 @@ export class RespondIoWebhook {
   private errorHandler: ErrorHandler = (err) => {
     throw err;
   };
-  private readonly getEventType: (payload: WebhookPayload) => string;
 
   constructor() {}
 
@@ -129,8 +128,6 @@ export class RespondIoWebhook {
         );
       }
 
-      const signature = headers["x-webhook-signature"] as string | undefined;
-
       const handler = this.eventHandlers.get(eventType);
 
       if (!handler) {
@@ -140,6 +137,16 @@ export class RespondIoWebhook {
       }
 
       // Verify signature for the handler *before* executing
+      // Normalize header names to lowercase and pick the first value if arrays are passed
+      const normalizedHeaders = Object.fromEntries(
+        Object.entries(headers).map(([k, v]) => [
+          k.toLowerCase(),
+          Array.isArray(v) ? v[0] : v,
+        ]),
+      );
+      const signature = normalizedHeaders["x-webhook-signature"] as
+        | string
+        | undefined;
       verifySignature(body, signature, handler.signingKey);
 
       // Execute the handler

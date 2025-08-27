@@ -5,7 +5,7 @@ A library to help setup webhook for respond.io integration using a clean, event-
 ## Installation
 
 ```bash
-bun install @hebo/aikit-respond
+bun add @hebo/aikit-respond
 ```
 
 ## Usage
