@@ -12,7 +12,7 @@ const createAuthService = async () => {
   }
 };
 
-export const authService = new Elysia({ name: "Service.Auth" })
+export const authService = new Elysia({ name: "auth-service" })
   .use(await createAuthService())
   .macro({
     isSignedIn: {
