@@ -2,7 +2,7 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
-import vpcConnectorSecurityGroup from "./security-group";
+import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
 
 const stackProjectId = new sst.Secret("StackProjectId");
@@ -12,7 +12,7 @@ const heboGatewayConnector = new aws.apprunner.VpcConnector(
   "HeboGatewayConnector",
   {
     subnets: heboVpc.privateSubnets,
-    securityGroups: [vpcConnectorSecurityGroup.id],
+    securityGroups: [heboSecurityGroup.id],
     vpcConnectorName:
       $app.stage === "production"
         ? "hebo-gateway"
