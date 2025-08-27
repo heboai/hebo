@@ -19,7 +19,6 @@ This library provides a `RespondIoWebhook` class that allows you to register a h
 ```ts
 import express from "express";
 import { RespondIoWebhook, RespondIoEvents } from "@hebo/aikit-respond";
-import type { MessageReceivedPayload } from "@hebo/aikit-respond";
 
 const app = express();
 
@@ -28,19 +27,19 @@ const webhook = new RespondIoWebhook();
 
 // 2. Register handlers for each event type.
 webhook.on(
-  RespondIoEvents.MESSAGE_RECEIVED,
+  RespondIoEvents.MessageReceived,
   process.env.RESPOND_IO_SIGNING_KEY!,
-  (payload: MessageReceivedPayload) => {
+  (payload) => {
     // This callback is only executed for 'message.received' events
     // after the signature has been successfully verified.
-    // The `payload` is automatically typed!
+    // The `payload` is of type `any`.
     console.log("Got a new message:", payload.message.message.text);
     // Add your business logic here (e.g., save to database, send a reply).
   },
 );
 
 webhook.on(
-  RespondIoEvents.CONVERSATION_CLOSED,
+  RespondIoEvents.ConversationClosed,
   process.env.RESPOND_IO_SIGNING_KEY!,
   (payload) => {
     console.log(`Conversation ${payload.conversation.summary} was closed.`);
@@ -77,6 +76,56 @@ app.listen(3000, () => {
 });
 ```
 
+### Example with Hono
+
+With Hono, you can get the raw body text using `c.req.text()` and the headers using `c.req.header()`.
+
+```ts
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import { RespondIoWebhook, RespondIoEvents } from "@hebo/aikit-respond";
+
+const app = new Hono();
+
+// 1. Create and configure the webhook handler instance.
+const webhook = new RespondIoWebhook();
+
+// 2. Register handlers for each event type.
+webhook.on(
+  RespondIoEvents.MessageReceived,
+  process.env.RESPOND_IO_SIGNING_KEY!,
+  (payload) => {
+    console.log("Got a new message:", payload.message.message.text);
+  },
+);
+
+// 3. (Optional) Register a global error handler.
+webhook.onError((error) => {
+  console.error("[Respond.io Webhook Error]", error.message);
+});
+
+// 4. Create the route handler.
+app.post("/webhook/respond-io", async (c) => {
+  try {
+    // In Hono, you must await the raw body text
+    const body = await c.req.text();
+    const headers = c.req.header();
+
+    // 5. Pass the request to the handler.
+    await webhook.process(body, headers);
+    return c.text("OK", 200);
+  } catch (error) {
+    // Errors from the webhook handler are caught here if not handled by `onError`
+    // or if `onError` re-throws them.
+    return c.text((error as Error).message, 400);
+  }
+});
+
+serve(app, (info) => {
+  console.log(`Server listening on http://localhost:${info.port}`);
+});
+```
+
 ## API
 
 ### `new RespondIoWebhook(config?)`
@@ -90,9 +139,9 @@ Creates a new webhook handler instance.
 
 Registers a handler for a specific event type. This will overwrite any existing handler for the same event.
 
-- `eventType` (`string`): The event type string (e.g., from `RespondIoEvents`).
+- `eventType` (`RespondIoEvents`): The event type enum.
 - `signingKey` (`string`): The signing key for this specific event type.
-- `callback` (`(payload: T) => void | Promise<void>`): The function to execute when a verified event is received. The `payload` argument is automatically typed based on the `eventType`.
+- `callback` (`(payload: any) => void | Promise<void>`): The function to execute when a verified event is received. The `payload` argument is of type `any`.
 - **Returns**: The `RespondIoWebhook` instance for chaining.
 
 ### `.onError(callback)`

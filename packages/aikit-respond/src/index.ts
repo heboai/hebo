@@ -1,6 +1,11 @@
 import crypto from "node:crypto";
 
-import { EventPayloadMap } from "./types";
+export enum RespondIoEvents {
+  MessageReceived = "message.received",
+  MessageSent = "message.sent",
+  ContactAssigneeUpdated = "contact.assignee.updated",
+  ConversationClosed = "conversation.closed",
+}
 
 // --- Custom Error Types ---
 
@@ -21,13 +26,12 @@ export class SignatureVerificationError extends RespondIoError {
 // --- Type Definitions ---
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type EventHandler<T = any> = (payload: T) => void | Promise<void>;
+type EventHandler = (payload: any) => void | Promise<void>;
 type ErrorHandler = (error: Error) => void | Promise<void>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-interface HandlerConfig<T = any> {
+interface HandlerConfig {
   signingKey: string;
-  callback: EventHandler<T>;
+  callback: EventHandler;
 }
 
 export interface WebhookConfig {
@@ -59,7 +63,7 @@ function verifySignature(
 }
 
 /**
- * A builder and handler for respond.io webhooks with a focus on type-safety.
+ * A builder and handler for respond.io webhooks.
  */
 export class RespondIoWebhook {
   private readonly eventHandlers = new Map<string, HandlerConfig>();
@@ -76,14 +80,14 @@ export class RespondIoWebhook {
 
   /**
    * Registers a handler for a specific event type. This will overwrite any existing handler for the same event type.
-   * @param eventType The event type (e.g., from `RespondIoEvents`).
+   * @param eventType The event type string.
    * @param signingKey The signing key for this event.
    * @param callback The function to execute when this event is received.
    */
-  public on<E extends keyof EventPayloadMap>(
-    eventType: E,
+  public on(
+    eventType: RespondIoEvents,
     signingKey: string,
-    callback: EventHandler<EventPayloadMap[E]>,
+    callback: EventHandler,
   ): this {
     if (typeof signingKey !== "string") {
       throw new RespondIoError(
