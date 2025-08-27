@@ -13,7 +13,7 @@ const PORT = Number(process.env.API_PORT) || 3001;
 
 const createApi = () =>
   new Elysia()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- any needed because of typing issue in @bogyechan
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- any needed because of typing issue in @bogeychan
     .use(logger() as any)
     .use(cors(corsConfig))
     .use(
