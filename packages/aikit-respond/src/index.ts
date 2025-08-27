@@ -64,8 +64,6 @@ export class RespondIoWebhook {
     throw err;
   };
 
-  constructor() {}
-
   /**
    * Registers a handler for a specific event type. This will overwrite any existing handler for the same event type.
    * @param eventType The event type string.

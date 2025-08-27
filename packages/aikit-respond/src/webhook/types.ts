@@ -49,7 +49,7 @@ export interface MessageReceivedPayload {
     message: {
       type: string; // 'text', 'image', etc.
       text?: string;
-      // FUTURE Other message type fields can be added here
+      // FUTURE: Other message type fields can be added here
     };
     timestamp: number;
   };
