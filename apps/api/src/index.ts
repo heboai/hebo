@@ -41,4 +41,4 @@ if (import.meta.main) {
   console.log(`🐵 Hebo API running at ${app.server!.url}`);
 }
 
-export type Api = typeof ReturnValue<createApi>;
+export type Api = ReturnValue<typeof createApi>;
