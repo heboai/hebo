@@ -11,6 +11,7 @@ yarn-error.log*
 # Build outputs
 dist
 build
+server
 
 # Environment files
 .env
@@ -105,4 +106,4 @@ jspm_packages/
 .tern-port
 
 # Bun cache
-.bun 
+.bun

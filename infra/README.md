@@ -65,11 +65,12 @@ Next.js application with edge deployment:
 
 ## Docker Deployment Process
 
-The API deployment follows a containerized approach:
+The services deployment follows a containerized approach with a generic build pipeline:
 
-### Build Process (`stacks/build-api/`)
+### Build Process (`stacks/build-service/`)
 
 1. **Dockerfile**: Multi-stage build with Bun 1.2.18
+   - Parameterized by `SERVICE` (`api` or `gateway`) and `PORT`
    - Dependencies stage with Bun
    - Runtime stage with non-root user
    - Optimized for production
@@ -77,13 +78,15 @@ The API deployment follows a containerized approach:
 2. **Image Publishing Script** (`publish-image.sh`):
 
    ```bash
-   # Build and publish to ECR Public
-   ./infra/stacks/build-api/publish-image.sh
+   # Build and publish to ECR Public (from repo root)
+   bun -v # ensure bun is installed
+   ./infra/stacks/build-service/publish-image.sh api
+   ./infra/stacks/build-service/publish-image.sh gateway
    ```
 
 3. **ECR Public Registry**:
-   - Repository: `hebo-api`
-   - Image: `public.ecr.aws/m1o3d3n5/hebo-api:latest`
+   - API Repository/Image: `public.ecr.aws/m1o3d3n5/hebo-api:latest`
+   - Gateway Repository/Image: `public.ecr.aws/m1o3d3n5/hebo-gateway:latest`
    - Region: `us-east-1`
 
 ## Deployment
@@ -104,12 +107,12 @@ bun run deploy
 bun run deploy --stage production
 ```
 
-### Publish API Container Image
+### Publish Service Container Images
 
 ```bash
 # Build and push to ECR Public
-cd infra/stacks/build-api
-./publish-image.sh
+bun run --cwd infra docker:push:api
+bun run --cwd infra docker:push:gateway
 ```
 
 ## Environment Variables

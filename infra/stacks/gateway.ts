@@ -25,7 +25,7 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
   sourceConfiguration: {
     imageRepository: {
       imageConfiguration: {
-        port: "3001",
+        port: "3002",
         runtimeEnvironmentVariables: {
           PG_HOST: heboDatabase.host,
           PG_PORT: heboDatabase.port.apply((port) => port.toString()),

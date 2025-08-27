@@ -3,4 +3,4 @@
   "architectures": ["x86_64"],
   "operatingSystems": ["Linux"],
   "usageText": "docker pull public.ecr.aws/m1o3d3n5/hebo-api:latest"
-} 
+}
