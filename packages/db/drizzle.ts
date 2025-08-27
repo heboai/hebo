@@ -6,7 +6,6 @@ import {
 } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-
 import { isLocal, getConnectionConfig } from "./runtime-config";
 import { agents } from "./schema/agents";
 import { branches } from "./schema/branches";
