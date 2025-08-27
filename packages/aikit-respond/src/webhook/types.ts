@@ -12,10 +12,6 @@ export interface HandlerConfig {
   callback: EventHandler;
 }
 
-export interface WebhookConfig {
-  getEventType?: (payload: WebhookPayload) => string;
-}
-
 // --- Common Base Interfaces ---
 
 interface BaseUser {
@@ -43,8 +39,7 @@ interface BaseChannel {
 
 export interface MessageReceivedPayload {
   event_type: "message.received";
-  //timestamp: number;
-  timestamp: string;
+  timestamp: number;
   contact: BaseContact & { assignee: BaseUser };
   channel: BaseChannel;
   message: {
@@ -56,13 +51,12 @@ export interface MessageReceivedPayload {
       text?: string;
       // Other message type fields can be added here
     };
-    //timestamp: number;
-    timestamp: string;
+    timestamp: number;
   };
 }
 
 export interface MessageSentPayload {
-  event: "message.sent";
+  event_type: "message.sent";
   traffic: "outgoing";
   channelMessageId: number;
   timestamp: number;

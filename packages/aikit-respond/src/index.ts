@@ -4,12 +4,7 @@ import {
   EventHandler,
   ErrorHandler,
   HandlerConfig,
-  WebhookConfig,
   WebhookPayload,
-  
-  
-  
-  
 } from "./webhook/types";
 
 // --- Custom Error Types ---
@@ -36,8 +31,6 @@ export enum RespondIoEvents {
   ContactAssigneeUpdated = "contact.assignee.updated",
   ConversationClosed = "conversation.closed",
 }
-
-
 
 // --- Internal Verification Logic ---
 
@@ -72,10 +65,7 @@ export class RespondIoWebhook {
   };
   private readonly getEventType: (payload: WebhookPayload) => string;
 
-  constructor(config?: WebhookConfig) {
-    this.getEventType =
-      config?.getEventType ?? ((payload) => payload?.event_type);
-  }
+  constructor() {}
 
   /**
    * Registers a handler for a specific event type. This will overwrite any existing handler for the same event type.
@@ -131,8 +121,9 @@ export class RespondIoWebhook {
         throw new Error("Failed to parse request body as JSON.");
       }
 
-      const eventType = this.getEventType(payload);
-      if (typeof eventType !== "string") {
+      const eventType = payload.event_type;
+      // eventType should be in RespondIoEvents
+      if (Object.values(RespondIoEvents).includes(eventType) === false) {
         throw new RespondIoError(
           "Could not determine event type from request body.",
         );
@@ -159,4 +150,10 @@ export class RespondIoWebhook {
   }
 }
 
-export {type MessageReceivedPayload, type MessageSentPayload, type ContactAssigneeUpdatedPayload, type ConversationClosedPayload, type WebhookPayload} from "./webhook/types";
+export {
+  type MessageReceivedPayload,
+  type MessageSentPayload,
+  type ContactAssigneeUpdatedPayload,
+  type ConversationClosedPayload,
+  type WebhookPayload,
+} from "./webhook/types";
