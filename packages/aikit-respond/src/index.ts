@@ -137,7 +137,6 @@ export class RespondIoWebhook {
       }
 
       // Verify signature for the handler *before* executing
-      // Normalize header names to lowercase and pick the first value if arrays are passed
       const normalizedHeaders = Object.fromEntries(
         Object.entries(headers).map(([k, v]) => [
           k.toLowerCase(),
