@@ -1,11 +1,16 @@
 import crypto from "node:crypto";
 
-export enum RespondIoEvents {
-  MessageReceived = "message.received",
-  MessageSent = "message.sent",
-  ContactAssigneeUpdated = "contact.assignee.updated",
-  ConversationClosed = "conversation.closed",
-}
+import {
+  EventHandler,
+  ErrorHandler,
+  HandlerConfig,
+  WebhookConfig,
+  WebhookPayload,
+  
+  
+  
+  
+} from "./webhook/types";
 
 // --- Custom Error Types ---
 
@@ -25,19 +30,14 @@ export class SignatureVerificationError extends RespondIoError {
 
 // --- Type Definitions ---
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type EventHandler = (payload: any) => void | Promise<void>;
-type ErrorHandler = (error: Error) => void | Promise<void>;
-
-interface HandlerConfig {
-  signingKey: string;
-  callback: EventHandler;
+export enum RespondIoEvents {
+  MessageReceived = "message.received",
+  MessageSent = "message.sent",
+  ContactAssigneeUpdated = "contact.assignee.updated",
+  ConversationClosed = "conversation.closed",
 }
 
-export interface WebhookConfig {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getEventType?: (payload: any) => string;
-}
+
 
 // --- Internal Verification Logic ---
 
@@ -70,8 +70,7 @@ export class RespondIoWebhook {
   private errorHandler: ErrorHandler = (err) => {
     throw err;
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private readonly getEventType: (payload: any) => string;
+  private readonly getEventType: (payload: WebhookPayload) => string;
 
   constructor(config?: WebhookConfig) {
     this.getEventType =
@@ -122,12 +121,10 @@ export class RespondIoWebhook {
    */
   public async process(
     body: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     headers: Record<string, any>,
   ): Promise<void> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let payload: any;
+      let payload: WebhookPayload;
       try {
         payload = JSON.parse(body);
       } catch {
@@ -161,3 +158,5 @@ export class RespondIoWebhook {
     }
   }
 }
+
+export {type MessageReceivedPayload, type MessageSentPayload, type ContactAssigneeUpdatedPayload, type ConversationClosedPayload, type WebhookPayload} from "./webhook/types";
