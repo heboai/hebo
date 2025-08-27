@@ -1,16 +1,19 @@
 import { Elysia, status } from "elysia";
 
-import { authServiceLocalhost } from "./localhost";
-import { authServiceStackAuth, projectId } from "./stack-auth";
+import { projectId } from "./stack-auth";
 
-const isStackAuthEnabled = projectId.trim().length > 0;
-
-const chosenAuth = isStackAuthEnabled
-  ? authServiceStackAuth
-  : authServiceLocalhost;
+const createAuthService = async () => {
+  if (projectId.trim().length > 0) {
+    const { authServiceStackAuth } = await import("./stack-auth");
+    return authServiceStackAuth;
+  } else {
+    const { authServiceLocalhost } = await import("./localhost");
+    return authServiceLocalhost;
+  }
+};
 
 export const authService = new Elysia({ name: "Service.Auth" })
-  .use(chosenAuth)
+  .use(await createAuthService())
   .macro({
     isSignedIn: {
       beforeHandle({ userId }) {
