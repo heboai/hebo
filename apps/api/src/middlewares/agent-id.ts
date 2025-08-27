@@ -9,7 +9,7 @@ import { getDb } from "~/utils/request-db";
 
 export const agentId = new Elysia({ name: "agent-id" })
   .use(authService)
-  .derive(async ({ params, userId }) => {
+  .resolve(async ({ params, userId }) => {
     const agentSlug = (params as { agentSlug?: string }).agentSlug;
 
     if (!agentSlug) throw status(400, "agentSlug is required");
