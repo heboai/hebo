@@ -27,7 +27,7 @@ const createApi = () =>
       }),
     )
     .use(authService)
-    .get("/", () => "🚀 Hebo API says hello!")
+    .get("/", () => "🐵 Hebo API says hello!")
     .group(
       "/v1",
       {
