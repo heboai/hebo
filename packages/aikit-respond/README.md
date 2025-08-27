@@ -80,7 +80,7 @@ app.listen(3000, () => {
 
 With Hono, you can get the raw body text using `c.req.text()` and the headers using `c.req.header()`.
 
-```ts
+````ts
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { RespondIoWebhook, RespondIoEvents } from "@hebo/aikit-respond";
@@ -124,6 +124,107 @@ app.post("/webhook/respond-io", async (c) => {
 serve(app, (info) => {
   console.log(`Server listening on http://localhost:${info.port}`);
 });
+
+### Example with AWS Lambda (API Gateway)
+
+When using AWS Lambda with API Gateway, the raw request body is available in `event.body` and headers in `event.headers`.
+
+```ts
+import { RespondIoWebhook, RespondIoEvents } from "@hebo/aikit-respond";
+
+// 1. Create and configure the webhook handler instance.
+const webhook = new RespondIoWebhook();
+
+// 2. Register handlers for each event type.
+webhook.on(
+  RespondIoEvents.MessageReceived,
+  process.env.RESPOND_IO_SIGNING_KEY!,
+  (payload) => {
+    console.log("Got a new message:", payload.message.message.text);
+    // Add your business logic here.
+  },
+);
+
+// 3. (Optional) Register a global error handler.
+webhook.onError((error) => {
+  console.error("[Respond.io Webhook Error]", error.message);
+});
+
+// 4. Export the Lambda handler function.
+export const handler = async (event: { body: string; headers: Record<string, string> }) => {
+  try {
+    // 5. Pass the raw body and headers to the handler.
+    await webhook.process(event.body, event.headers);
+    return {
+      statusCode: 200,
+      body: JSON.stringify("OK"),
+    };
+  } catch (error) {
+    // Errors from the webhook handler are caught here if not handled by `onError`
+    // or if `onError` re-throws them.
+    console.error("[Respond.io Webhook Error]", error.message);
+    return {
+      statusCode: 400,
+      body: JSON.stringify((error as Error).message),
+    };
+  }
+};
+
+### Example with AWS Lambda (SQS Trigger)
+
+If your Lambda function is triggered by an SQS queue, the original webhook body and headers must be embedded within the SQS message. The `process` method requires these for signature verification.
+
+```ts
+import { RespondIoWebhook, RespondIoEvents } from "@hebo/aikit-respond";
+
+// 1. Create and configure the webhook handler instance.
+const webhook = new RespondIoWebhook();
+
+// 2. Register handlers for each event type.
+webhook.on(
+  RespondIoEvents.MessageReceived,
+  process.env.RESPOND_IO_SIGNING_KEY!,
+  (payload) => {
+    console.log("Got a new message:", payload.message.message.text);
+    // Add your business logic here.
+  },
+);
+
+// 3. (Optional) Register a global error handler.
+webhook.onError((error) => {
+  console.error("[Respond.io Webhook Error]", error.message);
+});
+
+// 4. Export the Lambda handler function.
+//    Assuming the SQS message body contains a JSON string like:
+//    { "rawBody": "...", "headers": { "x-webhook-signature": "..." } }
+export const handler = async (event: { Records: Array<{ body: string; messageId: string }> }) => {
+  for (const record of event.Records) {
+    try {
+      // Parse the SQS message body to get the original webhook data
+      const sqsMessage = JSON.parse(record.body);
+      const originalRawBody = sqsMessage.rawBody;
+      const originalHeaders = sqsMessage.headers;
+
+      if (!originalRawBody || !originalHeaders) {
+        throw new Error("SQS message body missing 'rawBody' or 'headers' properties.");
+      }
+
+      // 5. Pass the original raw body and headers to the handler.
+      await webhook.process(originalRawBody, originalHeaders);
+      console.log("Webhook processed successfully for SQS message:", record.messageId);
+    } catch (error) {
+      // Errors from the webhook handler are caught here if not handled by `onError`
+      // or if `onError` re-throws them.
+      console.error("[Respond.io Webhook Error] processing SQS record:", record.messageId, error.message);
+      // Depending on your Dead-Letter Queue (DLQ) configuration, you might re-throw here
+      // to indicate that the message processing failed for this record.
+      // throw error;
+    }
+  }
+};
+````
+
 ```
 
 ## API
@@ -167,3 +268,4 @@ The library can throw the following errors from the `.process()` method if they 
 - `RespondIoError`: A generic error, e.g., if no handler is registered for an event.
 - `SignatureVerificationError`: Thrown when the webhook signature is invalid or missing.
 - `Error`: Thrown if the request body cannot be parsed as JSON.
+```

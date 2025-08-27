@@ -9,7 +9,7 @@
   },
   "private": true,
   "scripts": {
-    "clean": "rimraf .turbo node_modules",
+    "clean": "rm -rf .turbo node_modules",
     "lint": "bunx eslint ."
   },
   "type": "module"
