@@ -1,6 +1,6 @@
 # aikit-respond
 
-A library to help setup webhook for respond.io integration using a clean, event-based builder.
+A library to help setup webhook for respond.io integration using a clean, event-based API.
 
 ## Installation
 
@@ -80,12 +80,9 @@ app.listen(3000, () => {
 
 ## API
 
-### `new RespondIoWebhook(config?)`
+### `new RespondIoWebhook()`
 
 Creates a new webhook handler instance.
-
-- `config` (`WebhookConfig`, optional):
-  - `getEventType` (`(payload: WebhookPayload) => string`, optional): A function to extract the event type from the parsed body. Defaults to `(payload) => payload.event_type`.
 
 ### `.on(eventType, signingKey, callback)`
 
