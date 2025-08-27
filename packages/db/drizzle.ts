@@ -1,41 +1,49 @@
+import { createRequire } from "node:module";
+
 import {
   drizzle as drizzlePostgres,
   NodePgDatabase,
 } from "drizzle-orm/node-postgres";
-import { drizzle as drizzlePgLite, PgliteDatabase } from "drizzle-orm/pglite";
 import { Pool } from "pg";
+
 
 import { isLocal, getConnectionConfig } from "./runtime-config";
 import { agents } from "./schema/agents";
 import { branches } from "./schema/branches";
 
 import type { DbCredentials } from "./runtime-config";
+import type { PgliteDatabase } from "drizzle-orm/pglite";
+
+const requireModule = createRequire(import.meta.url);
 
 const postgresSchema = {
   agents,
   branches,
 };
 
-// Driver-specific DB types
-export type PostgresDb = NodePgDatabase<typeof postgresSchema>;
-export type PgliteDb = PgliteDatabase<typeof postgresSchema>;
-export type UniversalDb = PostgresDb | PgliteDb;
-
-// Helper to extract the tx client type from a DB type
+type PostgresDb = NodePgDatabase<typeof postgresSchema>;
+type PgliteDb = PgliteDatabase<typeof postgresSchema>;
+type UniversalDb = PostgresDb | PgliteDb;
 type TxOf<D> = D extends {
   transaction: (fn: (tx: infer T, ...args: any[]) => any, ...a: any[]) => any;
 }
   ? T
   : never;
 
-// Accept top-level DB or a tx client from either driver
-export type UniversalDbClient = UniversalDb | TxOf<PostgresDb> | TxOf<PgliteDb>;
-
-// Factory function to build the correct DB instance at module init.
 const initDb = (): UniversalDb => {
   if (isLocal) {
     // Local development – PGLite via pglite client
     const dataDir = getConnectionConfig() as string;
+
+    type DrizzlePgLite = (config: {
+      schema: typeof postgresSchema;
+      connection: { dataDir: string };
+    }) => PgliteDatabase<typeof postgresSchema>;
+
+    // Import pglite only in local development
+    const { drizzle: drizzlePgLite } = requireModule("drizzle-orm/pglite") as {
+      drizzle: DrizzlePgLite;
+    };
 
     return drizzlePgLite({
       schema: postgresSchema,
@@ -52,5 +60,5 @@ const initDb = (): UniversalDb => {
   return drizzlePostgres(pool, { schema: postgresSchema });
 };
 
-// Export a properly typed db without casts
 export const db: UniversalDb = initDb();
+export type UniversalDbClient = UniversalDb | TxOf<PostgresDb> | TxOf<PgliteDb>;
