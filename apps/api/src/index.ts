@@ -18,6 +18,7 @@ const createApi = () =>
     .use(cors(corsConfig))
     .use(
       swagger({
+        // FUTURE: document security schemes
         documentation: {
           info: {
             title: "Hebo API",
