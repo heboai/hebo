@@ -80,7 +80,7 @@ app.listen(3000, () => {
 
 With Hono, you can get the raw body text using `c.req.text()` and the headers using `c.req.header()`.
 
-````ts
+```ts
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { RespondIoWebhook, RespondIoEvents } from "@hebo/aikit-respond";
@@ -124,6 +124,7 @@ app.post("/webhook/respond-io", async (c) => {
 serve(app, (info) => {
   console.log(`Server listening on http://localhost:${info.port}`);
 });
+```
 
 ### Example with AWS Lambda (API Gateway)
 
@@ -151,7 +152,10 @@ webhook.onError((error) => {
 });
 
 // 4. Export the Lambda handler function.
-export const handler = async (event: { body: string; headers: Record<string, string> }) => {
+export const handler = async (event: {
+  body: string;
+  headers: Record<string, string>;
+}) => {
   try {
     // 5. Pass the raw body and headers to the handler.
     await webhook.process(event.body, event.headers);
@@ -169,6 +173,7 @@ export const handler = async (event: { body: string; headers: Record<string, str
     };
   }
 };
+```
 
 ### Example with AWS Lambda (SQS Trigger)
 
@@ -198,7 +203,9 @@ webhook.onError((error) => {
 // 4. Export the Lambda handler function.
 //    Assuming the SQS message body contains a JSON string like:
 //    { "rawBody": "...", "headers": { "x-webhook-signature": "..." } }
-export const handler = async (event: { Records: Array<{ body: string; messageId: string }> }) => {
+export const handler = async (event: {
+  Records: Array<{ body: string; messageId: string }>;
+}) => {
   for (const record of event.Records) {
     try {
       // Parse the SQS message body to get the original webhook data
@@ -207,24 +214,31 @@ export const handler = async (event: { Records: Array<{ body: string; messageId:
       const originalHeaders = sqsMessage.headers;
 
       if (!originalRawBody || !originalHeaders) {
-        throw new Error("SQS message body missing 'rawBody' or 'headers' properties.");
+        throw new Error(
+          "SQS message body missing 'rawBody' or 'headers' properties.",
+        );
       }
 
       // 5. Pass the original raw body and headers to the handler.
       await webhook.process(originalRawBody, originalHeaders);
-      console.log("Webhook processed successfully for SQS message:", record.messageId);
+      console.log(
+        "Webhook processed successfully for SQS message:",
+        record.messageId,
+      );
     } catch (error) {
       // Errors from the webhook handler are caught here if not handled by `onError`
       // or if `onError` re-throws them.
-      console.error("[Respond.io Webhook Error] processing SQS record:", record.messageId, error.message);
+      console.error(
+        "[Respond.io Webhook Error] processing SQS record:",
+        record.messageId,
+        error.message,
+      );
       // Depending on your Dead-Letter Queue (DLQ) configuration, you might re-throw here
       // to indicate that the message processing failed for this record.
       // throw error;
     }
   }
 };
-````
-
 ```
 
 ## API
@@ -268,4 +282,7 @@ The library can throw the following errors from the `.process()` method if they 
 - `RespondIoError`: A generic error, e.g., if no handler is registered for an event.
 - `SignatureVerificationError`: Thrown when the webhook signature is invalid or missing.
 - `Error`: Thrown if the request body cannot be parsed as JSON.
+
+```
+
 ```
