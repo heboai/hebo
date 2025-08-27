@@ -5,9 +5,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": "."
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["**/*.ts", "../apps/api/api.ts", "../sst.config.ts"],
-  "exclude": ["node_modules"]
-} 
+  "include": ["**/*.ts", "../sst.config.ts"]
+}

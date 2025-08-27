@@ -9,6 +9,7 @@ The infrastructure consists of several key components:
 - **VPC**: Network isolation and security
 - **Database**: Aurora PostgreSQL with global clustering
 - **API**: Containerized API deployed on AWS App Runner
+- **Gateway** Containerized Gateway deployed on AWS App Runner
 - **Frontend**: Next.js application with edge deployment
 
 ## Infrastructure Components
@@ -26,7 +27,7 @@ Aurora PostgreSQL database with advanced features:
 
 - **Engine**: PostgreSQL 17.5
 - **Global Clustering**: Multi-region replication for production
-- **Scaling**: 
+- **Scaling**:
   - Production: Aurora Serverless v2 with 1 replica
   - Preview: Auto-scaling with pause after 20 minutes of inactivity
 - **Security**: Encrypted storage and proxy connection
@@ -42,12 +43,22 @@ Containerized API deployed on AWS App Runner:
 - **VPC Integration**: Connected to database through VPC connector
 - **Auto-deployment**: Disabled for manual control
 
+### Gateway (`stacks/gateway.ts`)
+
+Containerized Gateway deployed on AWS App Runner:
+
+- **Container**: Docker image from ECR Public (`public.ecr.aws/m1o3d3n5/hebo-gateway:latest`)
+- **Runtime**: Bun 1.2.18 with Elysia 1.3.8 framework
+- **Port**: 3002 (configurable)
+- **VPC Integration**: Connected to database through VPC connector
+- **Auto-deployment**: Disabled for manual control
+
 ### Frontend (`stacks/app.ts`)
 
 Next.js application with edge deployment:
 
 - **Framework**: Next.js with edge rendering
-- **Domain**: 
+- **Domain**:
   - Production: `cloud.hebo.ai`
   - Preview: `{stage}.cloud.hebo.ai`
 - **Environment**: Connected to API and external services
@@ -64,6 +75,7 @@ The API deployment follows a containerized approach:
    - Optimized for production
 
 2. **Image Publishing Script** (`publish-image.sh`):
+
    ```bash
    # Build and publish to ECR Public
    ./infra/stacks/build-api/publish-image.sh
@@ -103,15 +115,15 @@ cd infra/stacks/build-api
 ## Environment Variables
 
 ### Database Secrets
+
 - `HeboDbUsername`: Database username
 - `HeboDbPassword`: Database password
 
 ### Frontend Secrets
+
 - `StackProjectId`: Stack project identifier
 - `StackPublishableClientKey`: Stack publishable key
 - `StackSecretServerKey`: Stack secret key
-- `PosthogKey`: PostHog analytics key
-- `PosthogHost`: PostHog host URL
 
 ## Security
 
@@ -157,4 +169,4 @@ aws rds describe-db-clusters --db-cluster-identifier <cluster-id>
 - **Preview**: Database pauses after 20 minutes of inactivity
 - **Production**: Aurora Serverless v2 with minimum 0.5 ACU
 - **Container**: Multi-stage builds reduce image size
-- **Edge**: Global distribution reduces latency 
+- **Edge**: Global distribution reduces latency

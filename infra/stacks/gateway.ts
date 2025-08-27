@@ -8,15 +8,20 @@ import heboVpc from "./vpc";
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 
-const heboApiConnector = new aws.apprunner.VpcConnector("HeboApiConnector", {
-  subnets: heboVpc.privateSubnets,
-  securityGroups: [vpcConnectorSecurityGroup.id],
-  vpcConnectorName:
-    $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`,
-});
+const heboGatewayConnector = new aws.apprunner.VpcConnector(
+  "HeboGatewayConnector",
+  {
+    subnets: heboVpc.privateSubnets,
+    securityGroups: [vpcConnectorSecurityGroup.id],
+    vpcConnectorName:
+      $app.stage === "production"
+        ? "hebo-gateway"
+        : `${$app.stage}-hebo-gateway`,
+  },
+);
 
-const heboApi = new aws.apprunner.Service("HeboApi", {
-  serviceName: "hebo-api",
+const heboGateway = new aws.apprunner.Service("HeboGateway", {
+  serviceName: "hebo-gateway",
   sourceConfiguration: {
     imageRepository: {
       imageConfiguration: {
@@ -31,7 +36,7 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
           STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
         },
       },
-      imageIdentifier: "public.ecr.aws/m1o3d3n5/hebo-api:latest",
+      imageIdentifier: "public.ecr.aws/m1o3d3n5/hebo-gateway:latest",
       imageRepositoryType: "ECR_PUBLIC",
     },
     autoDeploymentsEnabled: false,
@@ -39,11 +44,11 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
   networkConfiguration: {
     egressConfiguration: {
       egressType: "VPC",
-      vpcConnectorArn: heboApiConnector.arn,
+      vpcConnectorArn: heboGatewayConnector.arn,
     },
   },
 });
 
-export const heboApiUrl = heboApi.serviceUrl;
+export const heboGatewayUrl = heboGateway.serviceUrl;
 
-export default heboApi;
+export default heboGateway;
