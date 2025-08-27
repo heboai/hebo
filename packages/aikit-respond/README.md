@@ -111,7 +111,7 @@ Processes an incoming webhook request.
 
 ## Exported Types
 
-In addition to `RespondIoWebhook`, `RespondIoEvents`, `EventHandler`, `ErrorHandler`, `HandlerConfig`, `WebhookConfig`, and `WebhookPayload`, the following specific payload interfaces are also exported for direct use:
+In addition to `RespondIoWebhook`, `RespondIoEvents`, `EventHandler`, `ErrorHandler`, `HandlerConfig`, and `WebhookPayload`, the following specific payload interfaces are also exported for direct use:
 
 - `MessageReceivedPayload`
 - `MessageSentPayload`
