@@ -14,7 +14,7 @@ import {
 
 import { authService } from "~/lib/auth";
 import { api } from "~/lib/data";
-import { getCookie } from "~/lib/utils";
+import { getCookie, getKeyboardShortcut } from "~/lib/utils";
 import { authStore } from "~/state/auth";
 
 import type { Route } from "./+types/route";
@@ -67,8 +67,9 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
     <div className="relative flex min-h-screen">
       {/* LEFT SIDEBAR */}
       <SidebarProvider
-        cookieName="left_sidebar_state"
         defaultOpen={leftSidebarDefaultOpen}
+        cookieName="left_sidebar_state"
+        shortcut="b"
         style={
           {
             "--sidebar-width": "12rem",
@@ -95,14 +96,14 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
         <main className="relative flex w-full flex-1 flex-col gap-4 p-4">
           <SidebarTrigger className="fixed -m-1.5" />
 
-          <div className="flex-1 mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 p-4 py-8">
+          <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
             <Outlet />
           </div>
         </main>
       </SidebarProvider>
       
-      {/* RIGHT SIDEBAR - Positioned absolutely */}
-      <div className="top-0 right-0 h-full z-40">
+      {/* RIGHT SIDEBAR */}
+      <div className="top-0 right-0 h-full">
         <SidebarProvider
           cookieName="right_sidebar_state"
           shortcut="p"
@@ -116,19 +117,16 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
           }
         >
           {/* Floating trigger */}
-          <SidebarTrigger
-            icon={
-              <div className="flex items-center gap-2">
-                <SquareChevronRight size={24} color="black" />
-                <span>Playground</span>
-                <span className="text-muted-foreground">
-                  {/Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? '⌘P' : 'Ctrl P'}
-                </span>
-              </div>
-            }
-            className="fixed top-4 right-2 z-50 w-fit"
-          />
-
+          <SidebarTrigger 
+              className="fixed top-4 right-2 w-fit" 
+              icon={<div className="flex items-center space-x-1">
+                  <SquareChevronRight className="size-4" />
+                  <span className="m-1">Playground</span>
+                  <span className="text-muted-foreground">
+                    {getKeyboardShortcut("P")}
+                  </span>
+                </div>} 
+              />
           <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
               <PlaygroundSidebar activeBranch={loaderData.activeBranch} />
