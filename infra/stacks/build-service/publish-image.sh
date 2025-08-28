@@ -16,13 +16,11 @@ fi
 case "${SERVICE}" in
   api)
     REPOSITORY_NAME="hebo-api"
-    WORKSPACE="@hebo/api"
-    PORT="3001"
+    DOCKERFILE="infra/stacks/build-service/Dockerfile.api"
     ;;
   gateway)
     REPOSITORY_NAME="hebo-gateway"
-    WORKSPACE="@hebo/gateway"
-    PORT="3002"
+    DOCKERFILE="infra/stacks/build-service/Dockerfile.gateway"
     ;;
   *)
     echo "❌ Invalid SERVICE: ${SERVICE}. Expected 'api' or 'gateway'"
@@ -64,10 +62,7 @@ cd ../../../
 
 docker build \
   -t "${LOCAL_IMAGE_NAME}:${IMAGE_TAG}" \
-  -f infra/stacks/build-service/Dockerfile \
-  --build-arg SERVICE="${SERVICE}" \
-  --build-arg WORKSPACE="${WORKSPACE}" \
-  --build-arg PORT="${PORT}" \
+  -f "${DOCKERFILE}" \
   .
 
 # Tag
