@@ -6,20 +6,11 @@ WORKDIR /repo
 ENV NODE_ENV=production
 
 COPY package.json bun.lock bunfig.toml ./
-COPY apps/api/package.json ./apps/api/
-COPY packages/db/package.json ./packages/db/
-COPY packages/shared-api/package.json ./packages/shared-api/
-COPY packages/shared-data/package.json ./packages/shared-data/
-
-RUN mkdir -p apps/api packages/db packages/shared-api packages/shared-data infra
+COPY apps/api ./apps/api
+COPY packages ./packages
 
 # FUTURE: add --frozen-lockfile/--production flag when installing 2 times in a row won't change the output.
 RUN bun install --ignore-scripts
-
-COPY apps ./apps
-COPY packages ./packages
-COPY infra ./infra
-COPY *.ts *.js *.json *.toml ./
 
 WORKDIR /repo/apps/api
 
