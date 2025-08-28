@@ -1,28 +1,25 @@
-# syntax=docker/dockerfile:1
-
-########################  deps stage  ########################
-FROM oven/bun:1.2.18 AS deps
-
-WORKDIR /repo
-
-COPY bun.lock bunfig.toml package.json ./
-COPY apps/api/package.json apps/api/package.json
-COPY packages/db/package.json packages/db/package.json
-COPY packages/shared-api/package.json packages/shared-api/package.json
-COPY packages/shared-data/package.json packages/shared-data/package.json
-
-RUN bun install --filter "@hebo/api" --frozen-lockfile --production
-
 ########################  builder stage  ########################
-FROM oven/bun:1.2.18 AS builder
+FROM oven/bun:latest AS builder
 
 WORKDIR /repo
 
 ENV NODE_ENV=production
 
-COPY --from=deps /repo/node_modules ./node_modules
+COPY package.json bun.lock bunfig.toml ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/db/package.json ./packages/db/
+COPY packages/shared-api/package.json ./packages/shared-api/
+COPY packages/shared-data/package.json ./packages/shared-data/
 
-COPY . .
+RUN mkdir -p apps/api packages/db packages/shared-api packages/shared-data infra
+
+# FUTURE: add --frozen-lockfile/--production flag when installing 2 times in a row won't change the output.
+RUN bun install --ignore-scripts
+
+COPY apps ./apps
+COPY packages ./packages
+COPY infra ./infra
+COPY *.ts *.js *.json *.toml ./
 
 WORKDIR /repo/apps/api
 
