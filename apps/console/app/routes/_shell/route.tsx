@@ -34,21 +34,12 @@ export const unstable_clientMiddleware = [authMiddleware];
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents } = await api.agents.get();
   
-  if (!params.slug) {
-    return { agents, activeAgent: undefined, branches: [], activeBranch: undefined };
-  }
-  
-  const activeAgent = agents?.find((a: any) => a.slug === params.slug);
-  if (!activeAgent) throw new Response("Agent Not Found", { status: 404 });
-  
-  const { data: branches = [] } = await api.agents[params.slug].branches.get();
-  
-  return { 
-    agents, 
-    activeAgent, 
-    branches, 
-    activeBranch: branches.find((b: any) => b.slug === "main") || branches[0]
-  };
+  const activeAgent = params.slug ? agents!.find((a: any) => a.slug === params.slug) : undefined;
+
+  if (params.slug && !activeAgent)
+    throw new Response("Agent Not Found", { status: 404 });
+
+  return { agents, activeAgent };
 }
 
 export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
@@ -129,7 +120,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
               />
           <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
-              <PlaygroundSidebar activeBranch={loaderData.activeBranch} />
+              <PlaygroundSidebar activeBranch={loaderData.activeAgent?.branches} />
             </SidebarContent>
             <SidebarRail />
           </Sidebar>
