@@ -184,15 +184,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
           ref={promptInputTextareaRef}
           id="chat-input"
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              if (input) {
-                setInput("");
-              } else {
-                promptInputTextareaRef.current?.blur();
-              }
-            }
-          }}
           value={input}
           placeholder="Start prompting..."
           aria-label="Chat message input"
