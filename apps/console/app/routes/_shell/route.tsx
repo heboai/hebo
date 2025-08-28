@@ -35,11 +35,19 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents } = await api.agents.get();
   
   const activeAgent = params.slug ? agents!.find((a: any) => a.slug === params.slug) : undefined;
+  
+  // Add branch slug identification
+  const activeBranch = (params as any).branchSlug && activeAgent 
+    ? activeAgent.branches?.find((b: any) => b.slug === (params as any).branchSlug)
+    : undefined;
 
   if (params.slug && !activeAgent)
     throw new Response("Agent Not Found", { status: 404 });
+    
+  if ((params as any).branchSlug && !activeBranch)
+    throw new Response("Branch Not Found", { status: 404 });
 
-  return { agents, activeAgent };
+  return { agents, activeAgent, activeBranch };
 }
 
 export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
@@ -120,7 +128,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
               />
           <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
-              <PlaygroundSidebar activeBranch={loaderData.activeAgent?.branches} />
+              <PlaygroundSidebar activeBranch={loaderData.activeBranch} />
             </SidebarContent>
             <SidebarRail />
           </Sidebar>

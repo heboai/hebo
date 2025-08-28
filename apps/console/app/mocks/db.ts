@@ -11,6 +11,7 @@ const createDb = () =>
       id: primaryKey(() => crypto.randomUUID()),
       slug: String,
       name: String,
+      models: Array,
     },
   });
 
