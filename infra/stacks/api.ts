@@ -2,11 +2,22 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
+import heboPublicRegistryInfo from "./registry";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
 
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
+
+const heboApiImage = new docker.Image("hebo-api-image", {
+  build: {
+    context: "../../",
+    dockerfile: "../../infra/stacks/build-service/Dockerfile.api",
+    platform: "linux/amd64",
+  },
+  imageName: `public.ecr.aws/m1o3d3n5/hebo-api:latest`,
+  registry: heboPublicRegistryInfo,
+});
 
 const heboApiConnector = new aws.apprunner.VpcConnector("HeboApiConnector", {
   subnets: heboVpc.privateSubnets,
@@ -31,7 +42,7 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
           STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
         },
       },
-      imageIdentifier: "public.ecr.aws/m1o3d3n5/hebo-api:latest",
+      imageIdentifier: heboApiImage.imageName,
       imageRepositoryType: "ECR_PUBLIC",
     },
     autoDeploymentsEnabled: false,
