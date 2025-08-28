@@ -65,26 +65,18 @@ Next.js application with edge deployment:
 
 ## Docker Deployment Process
 
-The services deployment follows a containerized approach with a generic build pipeline:
+Services based on AWS AppRunner rely on docker containers.
 
 ### Build Process (`stacks/build-service/`)
 
-1. **Dockerfile**: Multi-stage build with Bun 1.x
-   - Parameterized by `SERVICE` (`api` or `gateway`) and `PORT`
+1. **Dockerfiles**: Multi-stage builds with Bun 1.x
+   - **API Dockerfile**: Optimized for the API service (port 3001)
+   - **Gateway Dockerfile**: Optimized for the Gateway service (port 3002)
    - Dependencies stage with Bun
-   - Runtime stage with non-root user
+   - Runtime stage with Distroless base image
    - Optimized for production
 
-2. **Image Publishing Script** (`publish-image.sh`):
-
-   ```bash
-   # Build and publish to ECR Public (from repo root)
-   bun -v # ensure bun is installed
-   ./infra/stacks/build-service/publish-image.sh api
-   ./infra/stacks/build-service/publish-image.sh gateway
-   ```
-
-3. **ECR Public Registry**:
+2. **ECR Public Registry**:
    - API Repository/Image: `public.ecr.aws/m1o3d3n5/hebo-api:latest`
    - Gateway Repository/Image: `public.ecr.aws/m1o3d3n5/hebo-gateway:latest`
    - Region: `us-east-1`
@@ -107,27 +99,6 @@ bun run deploy
 bun run deploy --stage production
 ```
 
-### Publish Service Container Images
-
-```bash
-# Build and push to ECR Public
-bun run --cwd infra docker:push:api
-bun run --cwd infra docker:push:gateway
-```
-
-## Environment Variables
-
-### Database Secrets
-
-- `HeboDbUsername`: Database username
-- `HeboDbPassword`: Database password
-
-### Frontend Secrets
-
-- `StackProjectId`: Stack project identifier
-- `StackPublishableClientKey`: Stack publishable key
-- `StackSecretServerKey`: Stack secret key
-
 ## Security
 
 - **VPC Isolation**: All resources run within private subnets
@@ -140,22 +111,6 @@ bun run --cwd infra docker:push:gateway
 - **Database**: Aurora Serverless v2 with automatic scaling
 - **API**: App Runner with automatic scaling based on load
 - **Frontend**: Edge deployment for global performance
-
-## Troubleshooting
-
-### Common Issues
-
-1. **VPC Connector Issues**:
-   - Verify security group rules
-   - Check subnet configuration
-
-2. **Database Connection**:
-   - Ensure VPC connector is properly configured
-   - Verify database credentials in secrets
-
-3. **Container Image Publishing**:
-   - Check ECR Public login status
-   - Verify Docker build context
 
 ### Logs and Debugging
 
