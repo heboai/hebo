@@ -16,7 +16,7 @@ export const completions = new Elysia({
       const chatModel = provider.chat(model);
 
       if (stream) {
-        const result = await streamText({
+        const result = streamText({
           model: chatModel,
           messages: messages as ModelMessage[],
           temperature,
