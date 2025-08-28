@@ -6,11 +6,6 @@
     "docker:build:api": "cd ../ && docker build --no-cache -t hebo-api -f infra/stacks/build-service/Dockerfile.api .",
     "docker:build:gateway": "cd ../ && docker build --no-cache -t hebo-gateway -f infra/stacks/build-service/Dockerfile.gateway .",
     "docker:run:api": "docker run -p 3001:3001 hebo-api",
-    "docker:run:gateway": "docker run -p 3002:3002 hebo-gateway",
-    "docker:push:api": "infra/stacks/build-service/publish-image.sh api",
-    "docker:push:gateway": "infra/stacks/build-service/publish-image.sh gateway",
-    "ecr:login": "aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws",
-    "ecr:setup:api": "aws ecr-public create-repository --repository-name hebo/api --region us-east-1 || true",
-    "ecr:setup:gateway": "aws ecr-public create-repository --repository-name hebo/gateway --region us-east-1 || true"
+    "docker:run:gateway": "docker run -p 3002:3002 hebo-gateway"
   }
 }
