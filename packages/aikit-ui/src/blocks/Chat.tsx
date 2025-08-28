@@ -43,7 +43,7 @@ type ModelsConfig = {
 
 export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   const [currentModelAlias, setCurrentModelAlias] = useState(
-    modelsConfig.models[0].alias,
+    modelsConfig.models.length > 0 ? modelsConfig.models[0].alias : "",
   );
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
