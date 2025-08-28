@@ -25,7 +25,7 @@ The Virtual Private Cloud provides network isolation and security for all resour
 
 Aurora PostgreSQL database with advanced features:
 
-- **Engine**: PostgreSQL 17.5
+- **Engine**: PostgreSQL 17.x
 - **Global Clustering**: Multi-region replication for production
 - **Scaling**:
   - Production: Aurora Serverless v2 with 1 replica
@@ -38,7 +38,7 @@ Aurora PostgreSQL database with advanced features:
 Containerized API deployed on AWS App Runner:
 
 - **Container**: Docker image from ECR Public (`public.ecr.aws/m1o3d3n5/hebo-api:latest`)
-- **Runtime**: Bun 1.2.18 with Elysia 1.3.8 framework
+- **Runtime**: Bun 1.x with ElysiaJS 1.x framework
 - **Port**: 3001 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
 - **Auto-deployment**: Disabled for manual control
@@ -48,7 +48,7 @@ Containerized API deployed on AWS App Runner:
 Containerized Gateway deployed on AWS App Runner:
 
 - **Container**: Docker image from ECR Public (`public.ecr.aws/m1o3d3n5/hebo-gateway:latest`)
-- **Runtime**: Bun 1.2.18 with Elysia 1.3.8 framework
+- **Runtime**: Bun 1.x with ElysiaJS 1.x framework
 - **Port**: 3002 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
 - **Auto-deployment**: Disabled for manual control
@@ -69,7 +69,7 @@ The services deployment follows a containerized approach with a generic build pi
 
 ### Build Process (`stacks/build-service/`)
 
-1. **Dockerfile**: Multi-stage build with Bun 1.2.18
+1. **Dockerfile**: Multi-stage build with Bun 1.x
    - Parameterized by `SERVICE` (`api` or `gateway`) and `PORT`
    - Dependencies stage with Bun
    - Runtime stage with non-root user
