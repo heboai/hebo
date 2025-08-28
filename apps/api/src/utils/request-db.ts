@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
-import { db as baseDb } from "@hebo/db";
-import type { UniversalDbClient } from "@hebo/db";
+import { db as baseDb } from "@hebo/db/drizzle";
+import type { UniversalDbClient } from "@hebo/db/drizzle";
 
 // Per-request storage of the active DB client (transaction if present)
 const requestDbStorage = new AsyncLocalStorage<UniversalDbClient>();

@@ -1,11 +1,6 @@
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-// ---------------------------------------------
-// Safe (optional) access to `Resource` from SST.
-// ---------------------------------------------
 
 const requireModule = createRequire(import.meta.url);
 
@@ -46,17 +41,10 @@ const heboDb = ResourceSafe
  * 3. Otherwise, treat as local environment.
  */
 export const isLocal: boolean = (() => {
-  // If an explicit PostgreSQL host env is set, assume remote.
   if (process.env.PG_HOST) return false;
-
-  // If we detect an SST-provided Postgres host, assume remote.
   const remoteHost = safeRead(() => (heboDb as any).host);
   return !remoteHost;
 })();
-
-// ---------------------------------------------------------
-// Unified helper that returns the Drizzle configuration for local or remote environments.
-// ---------------------------------------------------------
 
 export type DbCredentials = {
   host: string;
@@ -94,6 +82,15 @@ export function getDrizzleConfig(): LocalConfig | RemoteConfig {
 
 export function getConnectionConfig(): DbCredentials | string {
   if (isLocal) {
+    // dev-only guard for compiled binaries / prod runs
+    if (import.meta.url.startsWith("file:///$bunfs")) {
+      // Bun single-file executables run code from a virtual FS (/$bunfs).
+      // PGlite and its data dir are not meant for this context.
+      throw new Error(
+        "[DB] PGlite is dev-only. The compiled binary is running under /$bunfs.\n" +
+          "Use Postgres in compiled/prod builds or run with `bun --hot` in dev.",
+      );
+    }
     // Prefer explicit env var; otherwise resolve to a stable path next to this package
     // so every consumer (apps/api, scripts, etc.) points to the same DB file.
     if (process.env.PGLITE_PATH) return process.env.PGLITE_PATH;
