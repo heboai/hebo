@@ -31,13 +31,11 @@ import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
 
 // Types based on models.schema.json
 type ModelsConfig = {
-  __supportedTypes: string[];
   models: Array<{
     alias: string;
     type: string;
     endpoint?: {
       baseUrl: string;
-      provider: "aws" | "custom";
       apiKey: string;
     };
   }>;
@@ -54,7 +52,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
 
   // Accessibility refs
   const promptInputTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Get current model config - only return a model if we have a valid alias and it exists
   const currentModel = currentModelAlias
@@ -125,7 +122,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   };
 
   return (
-    <div className="flex h-full flex-col" ref={containerRef}>
+    <div className="flex h-full flex-col">
       {/* Header Controls */}
       <div className="absolute top-4 left-4 z-10 flex items-center">
         <Button
