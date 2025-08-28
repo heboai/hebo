@@ -8,28 +8,25 @@
   },
   "type": "module",
   "scripts": {
-    "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile=server",
+    "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile=dist/server",
     "dev": "bun run --watch src/index.ts | pino-pretty",
     "lint": "bunx eslint .",
     "type-check": "bunx tsc --noEmit",
     "prestart": "bun run build",
-    "start": "./server",
-    "clean": "rimraf .turbo node_modules server"
+    "start": "./dist/server",
+    "clean": "rimraf .turbo node_modules dist tsconfig.tsbuildinfo .*.bun-build"
   },
   "dependencies": {
     "@ai-sdk/groq": "^2.0.11",
     "@bogeychan/elysia-logger": "^0.1.10",
-    "@elysiajs/bearer": "^1.3.0",
     "@elysiajs/cors": "^1.3.3",
-    "@elysiajs/jwt": "^1.3.2",
     "@elysiajs/swagger": "^1.3.1",
     "@hebo/shared-api": "workspace:*",
     "@hebo/shared-data": "workspace:*",
     "ai": "^5.0.19",
-    "elysia": "^1.3.8",
-    "jose": "^6.0.12",
+    "elysia": "^1.3.20",
     "voyage-ai-provider": "^2.0.0",
-    "zod": "^4.0.17"
+    "zod": "^4.1.0"
   },
   "devDependencies": {
     "bun-types": "^1.2.19",
