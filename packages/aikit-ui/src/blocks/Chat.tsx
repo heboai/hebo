@@ -42,9 +42,8 @@ type ModelsConfig = {
 };
 
 export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
-  // Use lazy initializer to safely pick first model ID or empty string
-  const [currentModelAlias, setCurrentModelAlias] = useState(() =>
-    modelsConfig.models.length > 0 ? modelsConfig.models[0].alias : "",
+  const [currentModelAlias, setCurrentModelAlias] = useState(
+    modelsConfig.models[0].alias,
   );
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
