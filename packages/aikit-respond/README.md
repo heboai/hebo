@@ -10,7 +10,7 @@ bun add @hebo/aikit-respond
 
 ## Usage
 
-This library provides a `RespondIoWebhook` class that allows you to register a handler for different webhook event types. It automatically handles signature verification.
+This library provides a `RespondIoWebhook` class for handling webhooks and a `RespondIoClient` class for interacting with the Respond.io API.
 
 ### Example with Express
 
@@ -78,7 +78,7 @@ app.listen(3000, () => {
 });
 ```
 
-## API
+## Webhook Usage
 
 ### `new RespondIoWebhook()`
 
@@ -109,7 +109,7 @@ Processes an incoming webhook request.
 - **Returns**: A promise that resolves when the appropriate handler has been executed.
 - **Throws**: `SignatureVerificationError`, `RespondIoError`, or `Error` if no `onError` handler is registered.
 
-## Exported Types
+### Exported Types
 
 In addition to `RespondIoWebhook`, `RespondIoEvents`, `EventHandler`, `ErrorHandler`, `HandlerConfig`, and `WebhookPayload`, the following specific payload interfaces are also exported for direct use:
 
@@ -118,10 +118,125 @@ In addition to `RespondIoWebhook`, `RespondIoEvents`, `EventHandler`, `ErrorHand
 - `ContactAssigneeUpdatedPayload`
 - `ConversationClosedPayload`
 
-## Errors
+### Errors
 
 The library can throw the following errors from the `.process()` method if they are not handled by an `onError` callback:
 
 - `RespondIoError`: A generic error, e.g., if no handler is registered for an event.
 - `SignatureVerificationError`: Thrown when the webhook signature is invalid or missing.
 - `Error`: Thrown if the request body cannot be parsed as JSON.
+
+## API Client Usage
+
+This library also provides a client for sending messages and interacting with the Respond.io API.
+
+### Example with AWS Lambda
+
+```ts
+import { RespondIoClient } from "@hebo/aikit-respond";
+
+// Initialize the RespondIo client with your API key.
+// It's recommended to use environment variables for sensitive information.
+const respondIoClient = new RespondIoClient({
+  apiKey: process.env.RESPOND_IO_API_KEY!,
+});
+
+export const handler = async (event: {
+  contactIdentifier: string; // e.g., "id:123", "phone:+1234567890"
+  messageText: string;
+}) => {
+  try {
+    const { contactIdentifier, messageText } = event;
+
+    // Send a text message to the specified contact.
+    const response = await respondIoClient.sendMessage(contactIdentifier, {
+      message: {
+        type: "text",
+        text: messageText,
+      },
+    });
+
+    console.log("Message sent successfully:", response);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "Message sent successfully",
+        messageId: response.messageId,
+      }),
+    };
+  } catch (error) {
+    console.error("Error sending message:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Failed to send message",
+        error: (error as Error).message,
+      }),
+    };
+  }
+};
+```
+
+### `new RespondIoClient(config)`
+
+Creates a new Respond.io API client instance.
+
+- `config` (`RespondIoClientConfig`):
+  - `apiKey` (`string`): Your Respond.io API key.
+  - `apiBaseUrl` (`string`, optional): The base URL for the Respond.io API. Defaults to `https://api.respond.io/v2`.
+
+### `.sendMessage(contactIdentifier, message)`
+
+Sends a message to a specific contact.
+
+- `contactIdentifier` (`string`): The identifier of the contact (e.g., `id:123`, `phone:+1234567890`).
+- `message` (`any`): The message payload. Refer to Respond.io API documentation for message formats.
+- **Returns**: A promise that resolves with the API response.
+
+### `.sendMediaMessage(contactIdentifier, mediaUrl, caption?)`
+
+Sends a media message (image, video, audio, file) to a specific contact.
+
+- `contactIdentifier` (`string`): The identifier of the contact.
+- `mediaUrl` (`string`): The URL of the media file.
+- `caption` (`string`, optional): The caption for the media.
+- **Returns**: A promise that resolves with the API response.
+
+### `.sendTemplateMessage(contactIdentifier, templateId, variables?)`
+
+Sends a template message to a specific contact.
+
+- `contactIdentifier` (`string`): The identifier of the contact.
+- `templateId` (`string`): The ID of the template to send.
+- `variables` (`Record<string, any>`, optional): An object containing variables for the template.
+- **Returns**: A promise that resolves with the API response.
+
+### `.createContact(contactData)`
+
+Creates a new contact.
+
+- `contactData` (`any`): The contact data. Refer to Respond.io API documentation for contact data format.
+- **Returns**: A promise that resolves with the API response.
+
+### `.updateContact(contactIdentifier, contactData)`
+
+Updates an existing contact.
+
+- `contactIdentifier` (`string`): The identifier of the contact to update.
+- `contactData` (`any`): The updated contact data.
+- **Returns**: A promise that resolves with the API response.
+
+### `.getContact(contactIdentifier)`
+
+Retrieves contact details.
+
+- `contactIdentifier` (`string`): The identifier of the contact.
+- **Returns**: A promise that resolves with the API response.
+
+### `.closeConversation(contactIdentifier)`
+
+Closes the conversation with a specific contact.
+
+- `contactIdentifier` (`string`): The identifier of the contact.
+- **Returns**: A promise that resolves with the API response.
