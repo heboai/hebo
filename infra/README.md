@@ -53,7 +53,7 @@ Containerized Gateway deployed on AWS App Runner:
 - **VPC Integration**: Connected to database through VPC connector
 - **Auto-deployment**: Disabled for manual control
 
-### Frontend (`stacks/app.ts`)
+### App (`stacks/app.ts`)
 
 Next.js application with edge deployment:
 
@@ -67,7 +67,7 @@ Next.js application with edge deployment:
 
 Services based on AWS AppRunner rely on docker containers.
 
-### Build Process (`stacks/build-service/`)
+### Build Process
 
 1. **Dockerfiles**: Multi-stage builds with Bun 1.x
    - **API Dockerfile**: Optimized for the API service (port 3001)
