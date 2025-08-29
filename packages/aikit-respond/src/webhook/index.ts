@@ -105,3 +105,5 @@ export class RespondIoWebhook {
     }
   }
 }
+export * from "./types";
+export * from "./errors";

@@ -40,9 +40,7 @@ export class RespondIoClient {
     try {
       const response = await this.kyInstance.post(
         `contact/${identifier}/message`,
-        {
-          json: payload,
-        },
+        payload,
       );
       return await response.json<SendMessageResponse>();
     } catch (error) {
@@ -76,3 +74,6 @@ export class RespondIoClient {
   // public async createContact(...) { ... }
   // public async getContact(...) { ... }
 }
+
+export * from "./types";
+export * from "./errors";
