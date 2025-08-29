@@ -18,7 +18,7 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
 
     return result.error
       ? { error: result.error.value?.toString() }
-      : redirect(`/agent/${result.data.slug}`);
+      : redirect(`/agent/${result.data.slug}/branch/${result.data.branches[0].slug}`);
 }
 
 export default function Create({ actionData }: Route.ComponentProps) {

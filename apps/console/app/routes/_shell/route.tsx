@@ -34,25 +34,26 @@ export const unstable_clientMiddleware = [authMiddleware];
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents } = await api.agents.get();
   
-  const activeAgent = params.agentSlug ? agents!.find((a: any) => a.agentSlug === params.agentSlug) : undefined;
+  // Change from params.slug to params.agentSlug
+  const activeAgent = params.agentSlug ? agents!.find((a: any) => a.slug === params.agentSlug) : undefined;
   
   // Add branch slug identification
-  const activeBranch = (params as any).branchSlug && activeAgent 
-    ? activeAgent.branches?.find((b: any) => b.branchSlug === (params as any).branchSlug)
+  const activeBranch = params.branchSlug && activeAgent 
+    ? activeAgent.branches?.find((b: any) => b.slug === params.branchSlug)
     : undefined;
 
   if (params.agentSlug && !activeAgent)
     throw new Response("Agent Not Found", { status: 404 });
     
-  if ((params as any).branchSlug && !activeBranch)
+  if (params.branchSlug && !activeBranch)
     throw new Response("Branch Not Found", { status: 404 });
 
   return { agents, activeAgent, activeBranch };
 }
 
 export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
-  // Only reload data if the slug exists and changed
-  return nextParams.slug !== undefined && currentParams.slug !== nextParams.slug;
+  // Update to use agentSlug instead of slug
+  return nextParams.agentSlug !== undefined && currentParams.agentSlug !== nextParams.agentSlug;
 }
 
 export default function ShellLayout({loaderData}: Route.ComponentProps) {
