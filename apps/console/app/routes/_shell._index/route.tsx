@@ -8,20 +8,9 @@ async function defaultAgentMiddleware() {
   // FUTURE fade-in the next page
   // FUTURE remember last agent and branch in session storage
   
-  if (!agents?.length) {
-    throw redirect("/agent/create");
+  if (agents!.length > 0) {
+    throw redirect(`/agent/${agents![0]?.slug}/branch/${agents![0]?.branches![0]?.slug}`);
   }
-
-  try {
-    const { data: branches } = await api.agents({ agentSlug: agents[0].slug }).branches.get();
-    
-    if (branches?.length) {
-      throw redirect(`/agent/${agents[0].slug}/branch/${branches[0].slug}`);
-    }
-  } catch {
-    // API error or no branches - fallback to create
-  }
-  
   throw redirect("/agent/create");
 }
 
