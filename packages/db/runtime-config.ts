@@ -1,125 +1,47 @@
-import { createRequire } from "node:module";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const requireModule = createRequire(import.meta.url);
-
-// `sst` might not be installed or the code might be running outside the
-// SST multiplexer.  So we attempt to synchronously require it and gracefully
-// handle any failures.
-let ResourceSafe: any | undefined;
-try {
-  ResourceSafe = requireModule("sst").Resource;
-} catch {
-  // Module not found or other error – treat as non-SST environment.
-  ResourceSafe = undefined;
-}
-
-// Helper to safely access a nested property on the Resource proxy.  If the
-// proxy throws (because the SST resource map hasn't been initialised) we catch
-// the error and return undefined instead – ensuring local development doesn't
-// explode.
-const safeRead = <T>(fn: () => T): T | undefined => {
-  try {
-    return fn();
-  } catch {
-    return undefined;
-  }
-};
+import { ResourceSafe, safeRead } from "../sst";
 
 // Cached view of the HeboDatabase resource (if present & accessible).
 const heboDb = ResourceSafe
   ? (safeRead(() => ResourceSafe.HeboDatabase) ?? {})
   : {};
 
-/**
- * Determines if the current runtime should be considered "local".
- *
- * Logic hierarchy:
- * 1. If PG_HOST environment variable is set, assume remote (not local).
- * 2. If we detect an SST-provided PostgreSQL host, assume remote (not local).
- * 3. Otherwise, treat as local environment.
- */
-export const isLocal: boolean = (() => {
-  if (process.env.PG_HOST) return false;
-  const remoteHost = safeRead(() => (heboDb as any).host);
-  return !remoteHost;
-})();
-
-export type DbCredentials = {
-  host: string;
-  port: number;
-  user: string;
-  password: string;
-  database: string;
-};
-export type LocalConfig = {
-  driver: string;
+export type DbConfig = {
   dbCredentials: {
-    url: string;
+    host: string;
+    port: number;
+    user: string;
+    password: string;
+    database: string;
+    ssl: boolean;
   };
 };
-export type RemoteConfig = {
-  dbCredentials: DbCredentials;
-};
 
-export function getDrizzleConfig(): LocalConfig | RemoteConfig {
-  const connectionConfig = getConnectionConfig();
-
-  if (isLocal) {
-    return {
-      driver: "pglite",
-      dbCredentials: { url: connectionConfig as string },
-    } as LocalConfig;
-  }
-
+export function getDrizzleConfig(): DbConfig {
   return {
     dbCredentials: {
-      ...(connectionConfig as DbCredentials),
+      host:
+        safeRead(() => (heboDb as any).host) ??
+        process.env.POSTGRES_HOST ??
+        "localhost",
+      port:
+        safeRead(() => (heboDb as any).port) ??
+        Number(process.env.POSTGRES_PORT ?? 5432),
+      user:
+        safeRead(() => (heboDb as any).username) ??
+        process.env.POSTGRES_USER ??
+        "postgres",
+      password:
+        safeRead(() => (heboDb as any).password) ??
+        process.env.POSTGRES_PASSWORD ??
+        "",
+      database:
+        safeRead(() => (heboDb as any).database) ??
+        process.env.POSTGRES_DB ??
+        "hebo",
+      ssl:
+        (safeRead(() => (heboDb as any).ssl) ?? process.env.POSTGRES_SSL)
+          ? JSON.parse(process.env.POSTGRES_SSL as string)
+          : true,
     },
-  } as RemoteConfig;
-}
-
-export function getConnectionConfig(): DbCredentials | string {
-  if (isLocal) {
-    // dev-only guard for compiled binaries / prod runs
-    if (import.meta.url.startsWith("file:///$bunfs")) {
-      // Bun single-file executables run code from a virtual FS (/$bunfs).
-      // PGlite and its data dir are not meant for this context.
-      throw new Error(
-        "[DB] PGlite is dev-only. The compiled binary is running under /$bunfs.\n" +
-          "Use Postgres in compiled/prod builds or run with `bun --hot` in dev.",
-      );
-    }
-    // Prefer explicit env var; otherwise resolve to a stable path next to this package
-    // so every consumer (apps/api, scripts, etc.) points to the same DB file.
-    if (process.env.PGLITE_PATH) return process.env.PGLITE_PATH;
-
-    // Resolve to the package root (packages/db) regardless of running from src or dist
-    const moduleDir = fileURLToPath(new URL(".", import.meta.url));
-    const isDistBuild = path.basename(moduleDir) === "dist";
-    const pkgDir = isDistBuild ? path.resolve(moduleDir, "..") : moduleDir;
-    return path.resolve(pkgDir, "hebo.db");
-  }
-
-  // "Remote" – PostgreSQL.  Pull from SST first, then ENV.
-  return {
-    host:
-      safeRead(() => (heboDb as any).host) ??
-      process.env.PG_HOST ??
-      "localhost",
-    port:
-      safeRead(() => (heboDb as any).port) ??
-      Number(process.env.PG_PORT ?? 5432),
-    user:
-      safeRead(() => (heboDb as any).username) ??
-      process.env.PG_USER ??
-      "postgres",
-    password:
-      safeRead(() => (heboDb as any).password) ?? process.env.PG_PASSWORD ?? "",
-    database:
-      safeRead(() => (heboDb as any).database) ??
-      process.env.PG_DATABASE ??
-      "hebo",
-  };
+  } as DbConfig;
 }

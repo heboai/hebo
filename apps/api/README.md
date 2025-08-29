@@ -40,11 +40,11 @@ bun run build
 The API expects the following environment variables when deployed:
 
 - `PORT`: Server port (default: 3001)
-- `PG_HOST`: PostgreSQL host
-- `PG_PORT`: PostgreSQL port
-- `PG_USER`: PostgreSQL username
-- `PG_PASSWORD`: PostgreSQL password
-- `PG_DATABASE`: PostgreSQL database name
+- `POSTGRES_HOST`: PostgreSQL host
+- `POSTGRES_PORT`: PostgreSQL port
+- `POSTGRES_USER`: PostgreSQL username
+- `POSTGRES_PASSWORD`: PostgreSQL password
+- `POSTGRES_DB`: PostgreSQL database name
 
 ## Deployment
 

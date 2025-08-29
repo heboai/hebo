@@ -1,6 +1,12 @@
 name: hebo
 
 services:
+  postgres:
+    image: postgres:17.2-alpine
+    env_file: ./packages/db/.env
+    ports:
+      - 5432:5432
+
   clickhouse:
     image: clickhouse/clickhouse-server:25.8-alpine
     env_file: ./packages/clickhouse/.env

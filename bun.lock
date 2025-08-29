@@ -127,6 +127,13 @@
       "name": "@hebo/infra",
       "version": "0.0.1",
     },
+    "packages/clickhouse": {
+      "name": "@hebo/clickhouse",
+      "version": "0.0.1",
+      "dependencies": {
+        "@clickhouse/client": "^1.12.1",
+      },
+    },
     "packages/db": {
       "name": "@hebo/db",
       "version": "0.0.1",
@@ -134,7 +141,6 @@
         "pg": "^8.16.3",
       },
       "devDependencies": {
-        "@electric-sql/pglite": "^0.3.7",
         "@types/pg": "^8.15.5",
         "drizzle-kit": "^0.31.4",
       },
@@ -286,6 +292,10 @@
 
     "@bundled-es-modules/tough-cookie": ["@bundled-es-modules/tough-cookie@0.1.6", "", { "dependencies": { "@types/tough-cookie": "^4.0.5", "tough-cookie": "^4.1.4" } }, "sha512-dvMHbL464C0zI+Yqxbz6kZ5TOEp7GLW+pry/RWndAR8MJQAXZ2rPmIs8tziTZjeIyhSNZgZbCePtfSbdWqStJw=="],
 
+    "@clickhouse/client": ["@clickhouse/client@1.12.1", "", { "dependencies": { "@clickhouse/client-common": "1.12.1" } }, "sha512-7ORY85rphRazqHzImNXMrh4vsaPrpetFoTWpZYueCO2bbO6PXYDXp/GQ4DgxnGIqbWB/Di1Ai+Xuwq2o7DJ36A=="],
+
+    "@clickhouse/client-common": ["@clickhouse/client-common@1.12.1", "", {}, "sha512-ccw1N6hB4+MyaAHIaWBwGZ6O2GgMlO99FlMj0B0UEGfjxM9v5dYVYql6FpP19rMwrVAroYs/IgX2vyZEBvzQLg=="],
+
     "@date-fns/tz": ["@date-fns/tz@1.4.1", "", {}, "sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA=="],
 
     "@drizzle-team/brocli": ["@drizzle-team/brocli@0.10.2", "", {}, "sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w=="],
@@ -389,6 +399,8 @@
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
     "@hebo/api": ["@hebo/api@workspace:apps/api"],
+
+    "@hebo/clickhouse": ["@hebo/clickhouse@workspace:packages/clickhouse"],
 
     "@hebo/console": ["@hebo/console@workspace:apps/console"],
 
