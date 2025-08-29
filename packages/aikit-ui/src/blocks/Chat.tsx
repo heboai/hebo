@@ -36,7 +36,6 @@ type ModelsConfig = {
     type: string;
     endpoint?: {
       baseUrl: string;
-      apiKey: string;
     };
   }>;
 };
@@ -60,7 +59,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   // Create OpenAI client based on current model (only if model exists)
   const openai = currentModel
     ? createOpenAI({
-        apiKey: currentModel.endpoint?.apiKey || "",
+        apiKey: "",
         baseURL: currentModel.endpoint?.baseUrl || "",
       })
     : undefined;
