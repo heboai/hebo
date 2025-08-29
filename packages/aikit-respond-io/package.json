@@ -1,9 +1,6 @@
 {
   "name": "@hebo/aikit-respond-io",
   "version": "0.0.1",
-  "devDependencies": {
-    "@types/qs": "^6.9.15"
-  },
   "exports": {
     ".": "./src/index.ts"
   },
