@@ -7,7 +7,7 @@ import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@hebo/ui/hooks/use-mobile"
 import { cn } from "@hebo/ui/lib/utils"
-import { Button } from "@hebo/ui/_shadcn/ui/button"
+import { Button } from "@hebo/aikit-ui/_shadcn/ui/button"
 import { Input } from "@hebo/ui/_shadcn/ui/input"
 import { Separator } from "@hebo/ui/_shadcn/ui/separator"
 import {
@@ -41,8 +41,8 @@ type SidebarContextProps = {
   isMobile: boolean
   toggleSidebar: () => void
 }
-
-const SidebarContext = React.createContext<SidebarContextProps | null>(null)
+// Needed to access the context from outside the component
+export const SidebarContext = React.createContext<SidebarContextProps | null>(null)
 
 function useSidebar() {
   const context = React.useContext(SidebarContext)

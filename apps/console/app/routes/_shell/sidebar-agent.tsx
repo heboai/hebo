@@ -97,7 +97,7 @@ export function AgentSelect({
             <DropdownMenuSeparator />
             {agents.map((agent) => (
               <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
-                <Link to={`/agent/${agent.slug}`} viewTransition>
+                <Link to={`/agent/${agent.slug}/branch/main`} viewTransition>
                   {agent.name}
                   {agent.slug === activeAgent?.slug && (
                     <Check size={12} className="ml-auto" aria-hidden="true" />

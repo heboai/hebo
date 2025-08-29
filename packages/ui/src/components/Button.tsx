@@ -3,7 +3,7 @@ import { Loader2Icon } from "lucide-react";
 import {
   Button as ShadCNButton,
   buttonVariants,
-} from "@hebo/ui/_shadcn/ui/button";
+} from "@hebo/aikit-ui/_shadcn/ui/button";
 import { cn } from "@hebo/ui/lib/utils";
 
 import type { VariantProps } from "class-variance-authority";
