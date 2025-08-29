@@ -12,7 +12,7 @@ export function getCookie(name: string): string | undefined {
  * @param shortcut - The shortcut key (e.g., 'P' for the P key)
  * @returns The formatted shortcut string (e.g., '⌘P' on Mac, 'Ctrl P' on other platforms)
  */
-export const getKeyboardShortcut = (shortcut: string): string => {
+export const kbs = (shortcut: string): string => {
   if (typeof navigator === "undefined") {
     return `Ctrl ${shortcut}`;
   }

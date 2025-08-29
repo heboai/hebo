@@ -14,7 +14,7 @@ import {
 
 import { authService } from "~/lib/auth";
 import { api } from "~/lib/data";
-import { getCookie, getKeyboardShortcut } from "~/lib/utils";
+import { getCookie, kbs } from "~/lib/utils";
 import { authStore } from "~/state/auth";
 
 import type { Route } from "./+types/route";
@@ -123,7 +123,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
                   <SquareChevronRight className="size-4" />
                   <span className="m-1">Playground</span>
                   <span className="text-muted-foreground">
-                    {getKeyboardShortcut("P")}
+                    {kbs("P")}
                   </span>
                 </div>} 
               />
