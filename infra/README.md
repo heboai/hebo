@@ -9,7 +9,7 @@ The infrastructure consists of several key components:
 - **VPC**: Network isolation and security
 - **Database**: Aurora PostgreSQL with global clustering
 - **API**: Containerized API deployed on AWS App Runner
-- **Gateway** Containerized Gateway deployed on AWS App Runner
+- **Gateway**: Containerized Gateway deployed on AWS App Runner
 - **Frontend**: Next.js application with edge deployment
 
 ## Infrastructure Components
