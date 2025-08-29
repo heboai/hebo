@@ -127,7 +127,7 @@
       "name": "@hebo/infra",
       "version": "0.0.1",
     },
-    "packages/aikit-respond": {
+    "packages/aikit-respond-io": {
       "name": "@hebo/aikit-respond-io",
       "version": "0.0.1",
       "devDependencies": {
@@ -395,7 +395,7 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.10", "", {}, "sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ=="],
 
-    "@hebo/aikit-respond-io": ["@hebo/aikit-respond-io@workspace:packages/aikit-respond"],
+    "@hebo/aikit-respond-io": ["@hebo/aikit-respond-io@workspace:packages/aikit-respond-io"],
 
     "@hebo/api": ["@hebo/api@workspace:apps/api"],
 
