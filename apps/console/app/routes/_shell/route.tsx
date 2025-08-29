@@ -52,7 +52,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 }
 
 export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
-  // Update to use agentSlug instead of slug
+  // Only reload data if the slug exists and changed
   return nextParams.agentSlug !== undefined && currentParams.agentSlug !== nextParams.agentSlug;
 }
 
