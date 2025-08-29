@@ -5,12 +5,23 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "./cors/*": "./cors/*.ts"
+    "./*": "./*.ts"
   },
   "scripts": {
     "clean": "rimraf .turbo node_modules"
   },
+  "peerDependencies": {
+    "@bogeychan/elysia-logger": "^0.1.10",
+    "elysia": "^1.3.20"
+  },
   "devDependencies": {
-    "bun-types": "^1.2.19"
+    "@bogeychan/elysia-logger": "^0.1.10",
+    "bun-types": "^1.2.19",
+    "elysia": "^1.3.20",
+    "is-localhost-ip": "^2.0.0"
+  },
+  "dependencies": {
+    "@elysiajs/bearer": "^1.3.0",
+    "jose": "^6.0.12"
   }
 }

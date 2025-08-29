@@ -1,5 +1,5 @@
 {
-  "name": "@hebo/aikit-respond",
+  "name": "@hebo/aikit-respond-io",
   "version": "0.0.1",
   "devDependencies": {
     "@types/qs": "^6.9.15"

@@ -1,11 +1,11 @@
-# aikit-respond
+# aikit-respond-io
 
 A library to help setup webhook for respond.io integration using a clean, event-based API.
 
 ## Installation
 
 ```bash
-bun add @hebo/aikit-respond
+bun add @hebo/aikit-respond-io
 ```
 
 ## Usage
@@ -23,7 +23,7 @@ import {
   RespondIoEvents,
   MessageReceivedPayload,
   ConversationClosedPayload,
-} from "@hebo/aikit-respond";
+} from "@hebo/aikit-respond-io";
 
 const app = express();
 
