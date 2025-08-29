@@ -1,5 +1,5 @@
 ########################  builder stage  ########################
-FROM oven/bun:latest AS builder
+FROM oven/bun:1.2.21 AS builder
 
 WORKDIR /repo
 
