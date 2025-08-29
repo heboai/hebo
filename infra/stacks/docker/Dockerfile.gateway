@@ -3,31 +3,56 @@ FROM oven/bun:1.2.21 AS builder
 
 WORKDIR /repo
 
-ENV NODE_ENV=production
-
 COPY package.json bun.lock bunfig.toml ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/console/package.json ./apps/console/
 COPY apps/gateway/package.json ./apps/gateway/
 COPY packages/db/package.json ./packages/db/
 COPY packages/shared-api/package.json ./packages/shared-api/
 COPY packages/shared-data/package.json ./packages/shared-data/
 COPY packages/ui/package.json ./packages/ui/
 
-# FUTURE: add --frozen-lockfile/--production flag when installing 2 times in a row won't change the output.
-RUN bun install --ignore-scripts
+RUN bun install --frozen-lockfile --ignore-scripts
 
 COPY apps/gateway ./apps/gateway
 COPY packages ./packages
 
 WORKDIR /repo/apps/gateway
 
-RUN bun run build
+RUN bun build src/index.ts \
+  --compile \
+  --minify-whitespace \
+  --minify-syntax \
+  --target=bun \
+  --outfile=server
+
+########################  production deps stage  ########################
+FROM oven/bun:1.2.21 AS production-deps
+
+WORKDIR /repo
+
+ENV NODE_ENV=production
+
+COPY package.json bun.lock bunfig.toml ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/console/package.json ./apps/console/
+COPY apps/gateway/package.json ./apps/gateway/
+COPY packages/db/package.json ./packages/db/
+COPY packages/shared-api/package.json ./packages/shared-api/
+COPY packages/shared-data/package.json ./packages/shared-data/
+COPY packages/ui/package.json ./packages/ui/
+
+# Install only production dependencies
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 ########################  runner stage  ########################
 FROM gcr.io/distroless/base
 
 WORKDIR /app
 
-COPY --from=builder /repo/apps/gateway/dist/server .
+COPY --from=builder /repo/apps/gateway/server .
+
+COPY --from=production-deps /repo/node_modules ./node_modules
 
 EXPOSE 3002
 
