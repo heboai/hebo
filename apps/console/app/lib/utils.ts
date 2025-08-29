@@ -13,10 +13,6 @@ export function getCookie(name: string): string | undefined {
  * @returns The formatted shortcut string (e.g., '⌘P' on Mac, 'Ctrl P' on other platforms)
  */
 export const kbs = (shortcut: string): string => {
-  if (typeof navigator === "undefined") {
-    return `Ctrl ${shortcut}`;
-  }
-
   const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
   return isMac ? `⌘${shortcut}` : `Ctrl ${shortcut}`;
 };
