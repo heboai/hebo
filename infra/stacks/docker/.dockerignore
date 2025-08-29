@@ -107,3 +107,6 @@ jspm_packages/
 
 # Bun cache
 .bun
+
+# SST
+.sst
