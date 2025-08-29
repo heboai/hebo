@@ -11,6 +11,8 @@ const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 const groqApiKey = new sst.Secret("GroqApiKey");
 const voyagerApiKey = new sst.Secret("VoyagerApiKey");
 
+const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
+
 const heboGatewayPublicRepo = new aws.ecrpublic.Repository("hebo-gateway", {
   repositoryName: "hebo-gateway",
 });
@@ -21,7 +23,7 @@ const heboGatewayImage = new docker.Image("hebo-gateway-image", {
     dockerfile: "../../infra/stacks/docker/Dockerfile.gateway",
     platform: "linux/amd64",
   },
-  imageName: $interpolate`${heboGatewayPublicRepo.repositoryUri}:latest`,
+  imageName: $interpolate`${heboGatewayPublicRepo.repositoryUri}:${dockerTag}`,
   registry: heboPublicRegistryInfo,
 });
 
@@ -38,7 +40,8 @@ const heboGatewayConnector = new aws.apprunner.VpcConnector(
 );
 
 const heboGateway = new aws.apprunner.Service("HeboGateway", {
-  serviceName: "hebo-gateway",
+  serviceName:
+    $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`,
   sourceConfiguration: {
     imageRepository: {
       imageConfiguration: {

@@ -9,6 +9,8 @@ import heboVpc from "./vpc";
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 
+const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
+
 const heboApiPublicRepo = new aws.ecrpublic.Repository("hebo-api", {
   repositoryName: "hebo-api",
 });
@@ -19,7 +21,7 @@ const heboApiImage = new docker.Image("hebo-api-image", {
     dockerfile: "../../infra/stacks/docker/Dockerfile.api",
     platform: "linux/amd64",
   },
-  imageName: $interpolate`${heboApiPublicRepo.repositoryUri}:latest`,
+  imageName: $interpolate`${heboApiPublicRepo.repositoryUri}:${dockerTag}`,
   registry: heboPublicRegistryInfo,
 });
 
@@ -31,7 +33,8 @@ const heboApiConnector = new aws.apprunner.VpcConnector("HeboApiConnector", {
 });
 
 const heboApi = new aws.apprunner.Service("HeboApi", {
-  serviceName: "hebo-api",
+  serviceName:
+    $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`,
   sourceConfiguration: {
     imageRepository: {
       imageConfiguration: {
