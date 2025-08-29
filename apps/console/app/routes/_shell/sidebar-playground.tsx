@@ -8,7 +8,7 @@ type Branch = {
 };
 
 export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
-  const gatewayBaseUrl = import.meta.env.VITE_GATEWAY_URL?.toString().trim();
+  const gatewayBaseUrl = import.meta.env.VITE_GATEWAY_URL?.trim();
   
   if (!gatewayBaseUrl) {
     console.error(
