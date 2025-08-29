@@ -46,7 +46,7 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
           STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
         },
       },
-      imageIdentifier: heboApiImage.imageName,
+      imageIdentifier: heboApiImage.repoDigest,
       imageRepositoryType: "ECR_PUBLIC",
     },
     autoDeploymentsEnabled: false,
