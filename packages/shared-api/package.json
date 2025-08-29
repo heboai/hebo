@@ -8,7 +8,7 @@
     "./*": "./*.ts"
   },
   "scripts": {
-    "clean": "rimraf .turbo node_modules"
+    "clean": "git clean -fdX -e .env ."
   },
   "peerDependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",
