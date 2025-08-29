@@ -104,7 +104,7 @@ bun run deploy --stage production
 - **VPC Isolation**: All resources run within private subnets
 - **Encryption**: Database storage encrypted at rest
 - **IAM**: Least privilege access through SST
-- **Container Security**: Non-root user, minimal Alpine base image
+- **Container Security**: Non-root user, minimal Distroless base image
 
 ## Monitoring and Scaling
 
