@@ -1,8 +1,8 @@
-export type WebhookPayload =
-  | MessageReceivedPayload
-  | MessageSentPayload
-  | ContactAssigneeUpdatedPayload
-  | ConversationClosedPayload;
+export type webhookpayload =
+  | messagereceivedpayload
+  | messagesentpayload
+  | contactassigneeupdatedpayload
+  | conversationclosedpayload;
 
 export type EventHandler = (payload: WebhookPayload) => void | Promise<void>;
 export type ErrorHandler = (error: Error) => void | Promise<void>;
@@ -94,7 +94,7 @@ export interface ConversationClosedPayload {
     profilePic: string;
     countryCode: string;
     status: string;
-    assignee: object; // Can be an empty object
+    assignee: BaseUser | null | Record<string, never>; // May be empty
   };
   conversation: {
     category: string;
@@ -102,7 +102,7 @@ export interface ConversationClosedPayload {
     openedTime: number;
     openedBySource: string;
     closedTime: number;
-    closedBy: object; // Can be an empty object
+    closedBy: BaseUser | null | Record<string, never>; // May be empt
     closedBySource: string;
     firstResponseTime: number;
     resolutionTime: number;
