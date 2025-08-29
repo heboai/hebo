@@ -19,7 +19,7 @@ const heboApiImage = new docker.Image("hebo-api-image", {
     dockerfile: "../../infra/stacks/docker/Dockerfile.api",
     platform: "linux/amd64",
   },
-  imageName: `${heboApiPublicRepo.repositoryUri}:latest`,
+  imageName: $interpolate`${heboApiPublicRepo.repositoryUri}:latest`,
   registry: heboPublicRegistryInfo,
 });
 

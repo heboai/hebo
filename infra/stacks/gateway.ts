@@ -21,7 +21,7 @@ const heboGatewayImage = new docker.Image("hebo-gateway-image", {
     dockerfile: "../../infra/stacks/docker/Dockerfile.gateway",
     platform: "linux/amd64",
   },
-  imageName: `${heboGatewayPublicRepo.repositoryUri}:latest`,
+  imageName: $interpolate`${heboGatewayPublicRepo.repositoryUri}:latest`,
   registry: heboPublicRegistryInfo,
 });
 
