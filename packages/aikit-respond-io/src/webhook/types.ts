@@ -1,8 +1,10 @@
-export type webhookpayload =
-  | messagereceivedpayload
-  | messagesentpayload
-  | contactassigneeupdatedpayload
-  | conversationclosedpayload;
+// packages/aikit-respond-io/src/webhook/types.ts
+
+export type WebhookPayload =
+  | MessageReceivedPayload
+  | MessageSentPayload
+  | ContactAssigneeUpdatedPayload
+  | ConversationClosedPayload;
 
 export type EventHandler = (payload: WebhookPayload) => void | Promise<void>;
 export type ErrorHandler = (error: Error) => void | Promise<void>;
