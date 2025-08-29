@@ -36,6 +36,10 @@ type ModelsConfig = {
     type: string;
     endpoint?: {
       baseUrl: string;
+      fetch?: (
+        input: RequestInfo | URL,
+        init?: RequestInit,
+      ) => Promise<Response>;
     };
   }>;
 };
@@ -61,6 +65,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
     ? createOpenAI({
         apiKey: "",
         baseURL: currentModel.endpoint?.baseUrl || "",
+        fetch: currentModel.endpoint?.fetch,
       })
     : undefined;
 
