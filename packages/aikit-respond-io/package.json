@@ -1,0 +1,12 @@
+{
+  "name": "@hebo/aikit-respond-io",
+  "version": "0.0.1",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "bunx eslint ."
+  },
+  "type": "module"
+}
