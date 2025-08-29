@@ -1,0 +1,9 @@
+name: hebo
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.8-alpine
+    env_file: ./packages/clickhouse/.env
+    ports:
+      - 8123:8123
+      - 9000:9000
