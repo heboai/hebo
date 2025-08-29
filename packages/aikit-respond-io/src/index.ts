@@ -150,6 +150,7 @@ export class RespondIoWebhook {
       await handler.callback(payload);
     } catch (error) {
       await this.errorHandler(error as Error);
+      throw error; // ensure upstream can return 4xx/5xx
     }
   }
 }
