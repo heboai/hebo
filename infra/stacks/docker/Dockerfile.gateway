@@ -1,40 +1,32 @@
-########################  builder stage  ########################
-FROM oven/bun:1.2.21 AS builder
+# syntax=docker/dockerfile:1
 
+########################  pruner stage  ########################
+FROM oven/bun:1.2.21 AS pruner
+WORKDIR /repo
+RUN bun install --global turbo@2.5.6
+
+COPY . .
+
+RUN turbo prune @hebo/gateway --docker
+
+########################  installer + builder stage  ########################
+FROM oven/bun:1.2.21 AS builder
 WORKDIR /repo
 
-COPY package.json bun.lock bunfig.toml ./
-COPY apps/api/package.json ./apps/api/
-COPY apps/console/package.json ./apps/console/
-COPY apps/gateway/package.json ./apps/gateway/
-COPY packages/db/package.json ./packages/db/
-COPY packages/shared-api/package.json ./packages/shared-api/
-COPY packages/shared-data/package.json ./packages/shared-data/
-COPY packages/ui/package.json ./packages/ui/
-
+COPY --from=pruner /repo/out/json/ ./
 RUN bun install --frozen-lockfile --ignore-scripts
 
-COPY apps/gateway ./apps/gateway
-COPY packages ./packages
+COPY --from=pruner /repo/out/full/ ./
 
 WORKDIR /repo/apps/gateway
-
-RUN bun build src/index.ts \
-  --compile \
-  --minify-whitespace \
-  --minify-syntax \
-  --target=bun \
-  --outfile=server
+RUN bun run build
 
 ########################  runner stage  ########################
 FROM gcr.io/distroless/base
-
 WORKDIR /app
 
-COPY --from=builder /repo/apps/gateway/server .
+COPY --from=builder /repo/apps/gateway/dist/server .
 
 EXPOSE 3002
-
 USER 65532:65532
-
 ENTRYPOINT ["/app/server"]

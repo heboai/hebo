@@ -49,7 +49,6 @@
     "prettier": "^3.6.2",
     "react": "^19.1.1",
     "rimraf": "^6.0.1",
-    "sst": "^3.17.10",
     "tailwindcss": "^4.1.12",
     "turbo": "^2.5.5",
     "typescript": "^5.9.2",

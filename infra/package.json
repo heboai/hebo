@@ -2,5 +2,8 @@
   "name": "@hebo/infra",
   "version": "0.0.1",
   "private": true,
-  "scripts": {}
+  "scripts": {},
+  "devDependencies": {
+    "sst": "^3.17.10"
+  }
 }
