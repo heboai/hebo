@@ -35,11 +35,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents } = await api.agents.get();
   
   // Change from params.slug to params.agentSlug
-  const activeAgent = params.agentSlug ? agents!.find((a: any) => a.slug === params.agentSlug) : undefined;
+  const activeAgent = params.agentSlug ? agents!.find((a) => a.slug === params.agentSlug) : undefined;
   
   // Add branch slug identification
   const activeBranch = params.branchSlug && activeAgent 
-    ? activeAgent.branches?.find((b: any) => b.slug === params.branchSlug)
+    ? activeAgent.branches?.find((b) => b.slug === params.branchSlug)
     : undefined;
 
   if (params.agentSlug && !activeAgent)
