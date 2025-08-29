@@ -3,9 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"],
-      "@hebo/ui/*": ["../../packages/ui/src/*"],
-      "@hebo/aikit-ui/*": ["../../packages/aikit-ui/src/*"]
+      "~/*": ["./app/*"]
     },
     "rootDirs": [".", "./.react-router/types"],
     "types": ["node", "vite/client"],
