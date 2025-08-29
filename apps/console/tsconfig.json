@@ -7,7 +7,7 @@
       "@hebo/ui/*": ["../../packages/ui/src/*"]
     },
     "rootDirs": [".", "./.react-router/types"],
-    "types": ["node", "vite/client"],
+    "types": ["bun-types", "vite/client", "mdx"],
     "verbatimModuleSyntax": true
   },
   "include": [
