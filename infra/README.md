@@ -37,7 +37,7 @@ Aurora PostgreSQL database with advanced features:
 
 Containerized API deployed on AWS App Runner:
 
-- **Container**: Docker image from ECR Public (`public.ecr.aws/m1o3d3n5/hebo-api:latest`)
+- **Container**: Docker image from ECR Public
 - **Runtime**: Bun 1.x with ElysiaJS 1.x framework
 - **Port**: 3001 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
@@ -47,7 +47,7 @@ Containerized API deployed on AWS App Runner:
 
 Containerized Gateway deployed on AWS App Runner:
 
-- **Container**: Docker image from ECR Public (`public.ecr.aws/m1o3d3n5/hebo-gateway:latest`)
+- **Container**: Docker image from ECR Public
 - **Runtime**: Bun 1.x with ElysiaJS 1.x framework
 - **Port**: 3002 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
@@ -110,13 +110,17 @@ bun run deploy --stage production
 
 - **Database**: Aurora Serverless v2 with automatic scaling
 - **API**: App Runner with automatic scaling based on load
-- **Frontend**: Edge deployment for global performance
+- **Gateway**: App Runner with automatic scaling based on load
+- **App**: Edge deployment for global performance
 
 ### Logs and Debugging
 
 ```bash
 # View App Runner logs
 aws apprunner describe-service --service-arn <service-arn>
+
+# List operations and recent deployments
+aws apprunner list-operations --service-arn <service-arn>
 
 # Check database status
 aws rds describe-db-clusters --db-cluster-identifier <cluster-id>
