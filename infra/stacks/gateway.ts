@@ -11,13 +11,17 @@ const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 const GroqApiKey = new sst.Secret("GroqApiKey");
 const VoyagerApiKey = new sst.Secret("VoyagerApiKey");
 
+const heboGatewayPublicRepo = new aws.ecrpublic.Repository("hebo-gateway", {
+  repositoryName: "hebo-gateway",
+});
+
 const heboGatewayImage = new docker.Image("hebo-gateway-image", {
   build: {
     context: "../../",
-    dockerfile: "../../infra/stacks/build-service/Dockerfile.gateway",
+    dockerfile: "../../infra/stacks/docker/Dockerfile.gateway",
     platform: "linux/amd64",
   },
-  imageName: `public.ecr.aws/m1o3d3n5/hebo-gateway:latest`,
+  imageName: `${heboGatewayPublicRepo.repositoryUri}:latest`,
   registry: heboPublicRegistryInfo,
 });
 

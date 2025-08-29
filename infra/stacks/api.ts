@@ -9,13 +9,17 @@ import heboVpc from "./vpc";
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 
+const heboApiPublicRepo = new aws.ecrpublic.Repository("hebo-api", {
+  repositoryName: "hebo-api",
+});
+
 const heboApiImage = new docker.Image("hebo-api-image", {
   build: {
     context: "../../",
-    dockerfile: "../../infra/stacks/build-service/Dockerfile.api",
+    dockerfile: "../../infra/stacks/docker/Dockerfile.api",
     platform: "linux/amd64",
   },
-  imageName: `public.ecr.aws/m1o3d3n5/hebo-api:latest`,
+  imageName: `${heboApiPublicRepo.repositoryUri}:latest`,
   registry: heboPublicRegistryInfo,
 });
 
