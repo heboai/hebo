@@ -55,7 +55,7 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
           VOYAGER_API_KEY: voyagerApiKey.value,
         },
       },
-      imageIdentifier: heboGatewayImage.imageName,
+      imageIdentifier: heboGatewayImage.repoDigest,
       imageRepositoryType: "ECR_PUBLIC",
     },
     // Public ECR does not support automatic deployments
