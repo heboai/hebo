@@ -8,8 +8,8 @@ import heboVpc from "./vpc";
 
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
-const GroqApiKey = new sst.Secret("GroqApiKey");
-const VoyagerApiKey = new sst.Secret("VoyagerApiKey");
+const groqApiKey = new sst.Secret("GroqApiKey");
+const voyagerApiKey = new sst.Secret("VoyagerApiKey");
 
 const heboGatewayPublicRepo = new aws.ecrpublic.Repository("hebo-gateway", {
   repositoryName: "hebo-gateway",
@@ -51,8 +51,8 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
           PG_DATABASE: heboDatabase.database,
           VITE_STACK_PROJECT_ID: stackProjectId.value,
           STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
-          GROQ_API_KEY: GroqApiKey.value,
-          VOYAGER_API_KEY: VoyagerApiKey.value,
+          GROQ_API_KEY: groqApiKey.value,
+          VOYAGER_API_KEY: voyagerApiKey.value,
         },
       },
       imageIdentifier: heboGatewayImage.imageName,
