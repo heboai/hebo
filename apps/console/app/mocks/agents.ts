@@ -5,10 +5,7 @@ import { db } from "~/mocks/db";
 
 export const agentHandlers = [
   http.post("/api/v1/agents", async ({ request }) => {
-    const body = (await request.json()) as {
-      name: string;
-      defaultModel: string;
-    };
+    const body = (await request.json()) as ReturnType<typeof db.agent.create>;
 
     // always create main branch by default
     const branch = db.branch.create({
