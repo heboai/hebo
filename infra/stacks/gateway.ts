@@ -2,20 +2,24 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
-import heboPublicRegistryInfo from "./registry";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
+import appRunnerEcrAccessRole from "./iam";
 
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 const groqApiKey = new sst.Secret("GroqApiKey");
 const voyagerApiKey = new sst.Secret("VoyagerApiKey");
 
+const resourceName = $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
 
-const heboGatewayPublicRepo = new aws.ecrpublic.Repository("hebo-gateway", {
-  repositoryName: "hebo-gateway",
+const heboGatewayRepo = new aws.ecr.Repository(resourceName, {
+  forceDelete: true,
+  imageScanningConfiguration: { scanOnPush: true },
 });
+
+const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
 
 const heboGatewayImage = new docker.Image("hebo-gateway-image", {
   build: {
@@ -23,8 +27,15 @@ const heboGatewayImage = new docker.Image("hebo-gateway-image", {
     dockerfile: "../../infra/stacks/docker/Dockerfile.gateway",
     platform: "linux/amd64",
   },
-  imageName: $interpolate`${heboGatewayPublicRepo.repositoryUri}:${dockerTag}`,
-  registry: heboPublicRegistryInfo,
+  imageName: $interpolate`${heboGatewayRepo.repositoryUrl}:${dockerTag}`,
+  registry: {
+    server: heboGatewayRepo.repositoryUrl.apply(url => {
+      const parts = url.split('/');
+      return parts.slice(0, -1).join('/');
+    }),
+    username: ecrAuth.userName,
+    password: ecrAuth.password,
+  },
 });
 
 const heboGatewayConnector = new aws.apprunner.VpcConnector(
@@ -41,8 +52,11 @@ const heboGatewayConnector = new aws.apprunner.VpcConnector(
 
 const heboGateway = new aws.apprunner.Service("HeboGateway", {
   serviceName:
-    $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`,
+    resourceName,
   sourceConfiguration: {
+    authenticationConfiguration: {
+      accessRoleArn: appRunnerEcrAccessRole.arn,
+    },
     imageRepository: {
       imageConfiguration: {
         port: "3002",
@@ -58,11 +72,10 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
           VOYAGER_API_KEY: voyagerApiKey.value,
         },
       },
-      imageIdentifier: heboGatewayImage.repoDigest,
-      imageRepositoryType: "ECR_PUBLIC",
+      imageIdentifier: heboGatewayImage.imageName,
+      imageRepositoryType: "ECR",
     },
-    // Public ECR does not support automatic deployments
-    autoDeploymentsEnabled: false,
+    autoDeploymentsEnabled: true,
   },
   networkConfiguration: {
     egressConfiguration: {

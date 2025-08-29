@@ -2,18 +2,23 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
-import heboPublicRegistryInfo from "./registry";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
+import appRunnerEcrAccessRole from "./iam";
 
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
 
-const heboApiPublicRepo = new aws.ecrpublic.Repository("hebo-api", {
-  repositoryName: "hebo-api",
+const resourceName = $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
+
+const heboApiRepo = new aws.ecr.Repository(resourceName, {
+  forceDelete: true,
+  imageScanningConfiguration: { scanOnPush: true },
 });
+
+const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
 
 const heboApiImage = new docker.Image("hebo-api-image", {
   build: {
@@ -21,8 +26,15 @@ const heboApiImage = new docker.Image("hebo-api-image", {
     dockerfile: "../../infra/stacks/docker/Dockerfile.api",
     platform: "linux/amd64",
   },
-  imageName: $interpolate`${heboApiPublicRepo.repositoryUri}:${dockerTag}`,
-  registry: heboPublicRegistryInfo,
+  imageName: $interpolate`${heboApiRepo.repositoryUrl}:${dockerTag}`,
+  registry: {
+    server: heboApiRepo.repositoryUrl.apply(url => {
+      const parts = url.split('/');
+      return parts.slice(0, -1).join('/');
+    }),
+    username: ecrAuth.userName,
+    password: ecrAuth.password,
+  },
 });
 
 const heboApiConnector = new aws.apprunner.VpcConnector("HeboApiConnector", {
@@ -33,9 +45,11 @@ const heboApiConnector = new aws.apprunner.VpcConnector("HeboApiConnector", {
 });
 
 const heboApi = new aws.apprunner.Service("HeboApi", {
-  serviceName:
-    $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`,
+  serviceName: resourceName,
   sourceConfiguration: {
+    authenticationConfiguration: {
+      accessRoleArn: appRunnerEcrAccessRole.arn,
+    },
     imageRepository: {
       imageConfiguration: {
         port: "3001",
@@ -49,10 +63,10 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
           STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
         },
       },
-      imageIdentifier: heboApiImage.repoDigest,
-      imageRepositoryType: "ECR_PUBLIC",
+      imageIdentifier: heboApiImage.imageName,
+      imageRepositoryType: "ECR",
     },
-    autoDeploymentsEnabled: false,
+    autoDeploymentsEnabled: true,
   },
   networkConfiguration: {
     egressConfiguration: {
