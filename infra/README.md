@@ -63,24 +63,6 @@ Next.js application with edge deployment:
   - Preview: `{stage}.cloud.hebo.ai`
 - **Environment**: Connected to API and external services
 
-## Docker Deployment Process
-
-Services based on AWS App Runner rely on Docker containers.
-
-### Build Process
-
-1. **Dockerfiles**: Multi-stage builds with Bun 1.x
-   - **API Dockerfile**: Optimized for the API service (port 3001)
-   - **Gateway Dockerfile**: Optimized for the Gateway service (port 3002)
-   - Dependencies stage with Bun
-   - Runtime stage with Distroless base image
-   - Optimized for production
-
-2. **ECR Public Registry**:
-   - API Repository/Image: `public.ecr.aws/m1o3d3n5/hebo-api:latest`
-   - Gateway Repository/Image: `public.ecr.aws/m1o3d3n5/hebo-gateway:latest`
-   - Region: `us-east-1`
-
 ## Deployment
 
 ### Prerequisites
