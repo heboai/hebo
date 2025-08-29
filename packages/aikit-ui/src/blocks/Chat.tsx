@@ -64,6 +64,16 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       })
     : undefined;
 
+  useEffect(() => {
+    const available = modelsConfig.models ?? [];
+
+    if (available.length === 0) {
+      setCurrentModelAlias("");
+    } else if (!available.some((m) => m.alias === currentModelAlias)) {
+      setCurrentModelAlias(available[0].alias);
+    }
+  }, [modelsConfig.models, currentModelAlias]);
+
   const renderMessagePart = (part: UIMessage["parts"][0]) => {
     if (part.type === "text") return part.text;
     if (part.type === "dynamic-tool" && "input" in part) {
@@ -216,7 +226,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
 
         {/* Hidden help text */}
         <div id="input-help" className="sr-only">
-          Press Enter to send message, Shift+Enter for new line, Escape to clear
+          Press Enter to send message, Shift+Enter for new line
         </div>
 
         <PromptInputToolbar>
