@@ -1,15 +1,19 @@
+export interface TextMessage {
+  type: "text";
+  text: string;
+}
+
+export interface AttachmentMessage {
+  type: "attachment";
+  url: string;
+  fileName: string;
+  caption?: string;
+}
+
 /**
  * Represents the content of a message to be sent via Respond.io.
- * Extend this for other message types (e.g., image, file).
  */
-export interface MessageContent {
-  type: "text" | string; // 'text', 'image', 'file', etc.
-  text?: string; // Required for type 'text'
-  // Add properties for other message types as needed, e.g.,
-  // imageUrl?: string;
-  // fileUrl?: string;
-  // fileName?: string;
-}
+export type MessageContent = TextMessage | AttachmentMessage;
 
 /**
  * Represents the payload for sending a message to a contact via Respond.io.
@@ -40,3 +44,12 @@ export interface RespondIoClientConfig {
   apiKey: string;
   baseUrl?: string; // Optional: Defaults to Respond.io's official API URL
 }
+
+/**
+ * Represents a type-safe contact identifier for Respond.io.
+ * Can be in the format 'id:<string>', 'email:<string>', or 'phone:<string>'.
+ */
+export type ContactIdentifier =
+  | `id:${string}`
+  | `email:${string}`
+  | `phone:${string}`;
