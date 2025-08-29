@@ -14,15 +14,18 @@
     "studio": "drizzle-kit studio",
     "check": "drizzle-kit check"
   },
-  "dependencies": {
-    "pg": "^8.16.3"
-  },
   "peerDependencies": {
-    "drizzle-orm": ">=0.36.0"
+    "@electric-sql/pglite": "^0.3.7",
+    "@types/pg": "^8.15.5",
+    "drizzle-orm": "^0.44.5",
+    "bun-types": "^1.2.19",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.7",
     "@types/pg": "^8.15.5",
-    "drizzle-kit": "^0.31.4"
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.44.5",
+    "pg": "^8.16.3"
   }
 }
