@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
+      "@hebo/shared-api/*": ["../../packages/shared-api/*"],
+      "@hebo/shared-data/*": ["../../packages/shared-data/json/*"]
     },
     "types": ["bun-types"]
   }

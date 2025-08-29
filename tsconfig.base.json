@@ -20,7 +20,8 @@
       "@hebo/api/*": ["apps/api/src/*"],
       "@hebo/db/*": ["packages/db/*"],
       "@hebo/ui/*": ["packages/ui/src/*"],
-      "@hebo/shared-data/*": ["packages/shared-data/*"]
+      "@hebo/shared-data/*": ["packages/shared-data/json/*"],
+      "@hebo/shared-api/*": ["packages/shared-api/*"]
     }
   },
   "exclude": ["node_modules", "dist", ".next", ".react-router", ".turbo"]

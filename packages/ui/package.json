@@ -4,9 +4,6 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
-  "exports": {
-    "./*": "./src/*"
-  },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",
     "lint": "bunx eslint ."

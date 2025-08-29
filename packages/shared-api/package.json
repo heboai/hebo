@@ -4,9 +4,6 @@
   "private": true,
   "type": "module",
   "sideEffects": false,
-  "exports": {
-    "./*": "./*.ts"
-  },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" ."
   },
