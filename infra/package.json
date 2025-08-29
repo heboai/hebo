@@ -2,10 +2,5 @@
   "name": "@hebo/infra",
   "version": "0.0.1",
   "private": true,
-  "scripts": {
-    "docker:build:api": "cd ../ && docker build --no-cache -t hebo-api -f infra/stacks/build-service/Dockerfile.api .",
-    "docker:build:gateway": "cd ../ && docker build --no-cache -t hebo-gateway -f infra/stacks/build-service/Dockerfile.gateway .",
-    "docker:run:api": "docker run -p 3001:3001 hebo-api",
-    "docker:run:gateway": "docker run -p 3002:3002 hebo-gateway"
-  }
+  "scripts": {}
 }
