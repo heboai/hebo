@@ -50,7 +50,7 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
           PG_HOST: heboDatabase.host,
           PG_PORT: heboDatabase.port.apply((port) => port.toString()),
           PG_USER: heboDatabase.username,
-          PG_PASSWORD: heboDatabase.password,
+          PG_PASSWORD: new sst.Secret("HeboDbPassword").value,
           PG_DATABASE: heboDatabase.database,
           VITE_STACK_PROJECT_ID: stackProjectId.value,
           STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
