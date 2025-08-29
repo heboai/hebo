@@ -37,7 +37,7 @@ Aurora PostgreSQL database with advanced features:
 
 Containerized API deployed on AWS App Runner:
 
-- **Container**: Docker image from ECR Public
+- **Container**: Docker image from ECR
 - **Runtime**: Bun 1.x with ElysiaJS 1.x framework
 - **Port**: 3001 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
@@ -47,7 +47,7 @@ Containerized API deployed on AWS App Runner:
 
 Containerized Gateway deployed on AWS App Runner:
 
-- **Container**: Docker image from ECR Public
+- **Container**: Docker image from ECR
 - **Runtime**: Bun 1.x with ElysiaJS 1.x framework
 - **Port**: 3002 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
