@@ -65,7 +65,7 @@ Next.js application with edge deployment:
 
 ## Docker Deployment Process
 
-Services based on AWS AppRunner rely on docker containers.
+Services based on AWS App Runner rely on Docker containers.
 
 ### Build Process
 
