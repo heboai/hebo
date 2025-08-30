@@ -7,7 +7,7 @@ import { Copy, Check } from "lucide-react";
 import {
   copyToClipboard,
   CopyToClipboardResult,
-} from "../utils/copyToClipboard";
+} from "~/_mintlify/utils/copyToClipboard";
 
 export function CopyToClipboardButton({
   textToCopy,

@@ -11,11 +11,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@hebo/ui/_shadcn",
-    "utils": "@hebo/ui/lib/utils",
-    "ui": "@hebo/ui/_shadcn/ui",
-    "lib": "@hebo/ui/lib",
-    "hooks": "@hebo/ui/hooks"
+    "components": "~/_shadcn",
+    "utils": "~/lib/utils",
+    "ui": "~/_shadcn/ui",
+    "lib": "~/lib",
+    "hooks": "~/hooks"
   },
   "iconLibrary": "lucide"
 }

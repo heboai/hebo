@@ -1,4 +1,4 @@
-import { Skeleton as ShadCNSkeleton } from "../_shadcn/ui/skeleton";
+import { Skeleton as ShadCNSkeleton } from "~/_shadcn/ui/skeleton";
 
 interface SkeletonProps extends React.ComponentProps<"div"> {
   count: number;

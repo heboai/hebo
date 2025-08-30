@@ -1,7 +1,7 @@
 import { Loader2Icon } from "lucide-react";
 
-import { Button as ShadCNButton, buttonVariants } from "../_shadcn/ui/button";
-import { cn } from "../lib/utils";
+import { Button as ShadCNButton, buttonVariants } from "~/_shadcn/ui/button";
+import { cn } from "~/lib/utils";
 
 import type { VariantProps } from "class-variance-authority";
 

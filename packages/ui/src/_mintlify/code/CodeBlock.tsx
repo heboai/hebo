@@ -8,8 +8,8 @@ import {
   ReactElement,
 } from "react";
 
-import { CopyToClipboardResult } from "../utils/copyToClipboard";
-import { getNodeText } from "../utils/getNodeText";
+import { CopyToClipboardResult } from "~/_mintlify/utils/copyToClipboard";
+import { getNodeText } from "~/_mintlify/utils/getNodeText";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
 
 export interface CodeBlockPropsBase {

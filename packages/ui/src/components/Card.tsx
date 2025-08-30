@@ -6,4 +6,4 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
-} from "../_shadcn/ui/card";
+} from "~/_shadcn/ui/card";

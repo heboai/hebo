@@ -1,6 +1,6 @@
-import { CopyToClipboardButton } from "../_mintlify/code/CopyToClipboardButton";
-import { Input as ShadCNInput } from "../_shadcn/ui/input";
-import { cn } from "../lib/utils";
+import { CopyToClipboardButton } from "~/_mintlify/code/CopyToClipboardButton";
+import { Input as ShadCNInput } from "~/_shadcn/ui/input";
+import { cn } from "~/lib/utils";
 
 import type { LucideIcon } from "lucide-react";
 
