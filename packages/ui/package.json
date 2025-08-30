@@ -5,7 +5,9 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./*": "./src/*"
+    "./components/*": "./src/components/*.tsx",
+    "./_mintlify/*": "./src/_mintlify/*.tsx",
+    "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",

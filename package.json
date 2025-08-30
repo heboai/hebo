@@ -45,7 +45,6 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "lefthook": "^1.12.2",
     "prettier": "^3.6.2",
-    "react": "^19.1.1",
     "tailwindcss": "^4.1.12",
     "turbo": "^2.5.5",
     "typescript": "^5.9.2",
