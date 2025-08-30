@@ -6,7 +6,7 @@ import { Value } from "@sinclair/typebox/value";
 import { useNavigation, useSubmit } from "react-router";
 import { useForm } from "react-hook-form";
 
-import supportedModels from "@hebo/shared-data/supported-models.json";
+import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Button } from "@hebo/ui/components/Button";
 import {
   Card,

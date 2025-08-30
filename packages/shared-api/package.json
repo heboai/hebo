@@ -5,7 +5,8 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "./*": "./*.ts"
+    "./auth/*": "./auth/*.ts",
+    "./cors/*": "./cors/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" ."

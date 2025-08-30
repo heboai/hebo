@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./supported-models.json": "./json/supported-models.json",
-    "./models.schema.json": "./json/models.schema.json"
+    "./json/*": "./json/*.json"
   }
 }

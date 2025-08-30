@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./*.ts"
+    "./*": "./*.ts",
+    "./utils/*": "./utils/*.ts",
+    "./schema/*": "./schema/*.ts",
+    "./schema/mixin/*": "./schema/mixin/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",

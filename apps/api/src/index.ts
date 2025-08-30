@@ -6,15 +6,14 @@ import { Elysia } from "elysia";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 
-import { agentsModule } from "~/modules/agents";
-import { branchesModule } from "~/modules/branches";
+import { agentsModule } from "./modules/agents";
+import { branchesModule } from "./modules/branches";
 
 const PORT = Number(process.env.API_PORT) || 3001;
 
 const createApi = () =>
   new Elysia()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- any needed because of typing issue in @bogeychan
-    .use(logger() as any)
+    .use(logger())
     .use(cors(corsConfig))
     .use(
       swagger({
