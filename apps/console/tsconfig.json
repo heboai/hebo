@@ -3,9 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"],
-      "@hebo/ui/*": ["../../packages/ui/src/*"],
-      "@hebo/shared-data/*": ["../../packages/shared-data/json/*"]
+      "~/*": ["./app/*"]
     },
     "rootDirs": [".", "./.react-router/types"],
     "types": ["bun-types", "vite/client", "mdx"],

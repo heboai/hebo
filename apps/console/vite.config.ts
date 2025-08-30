@@ -30,6 +30,6 @@ export default defineConfig(({ mode }) => ({
     ...(mode === "development" ? [devtoolsJson()] : []),
   ],
   optimizeDeps: {
-    exclude: ["@hebo/ui", "@hebo/shared-data"],
+    exclude: ["@hebo/ui", "@hebo/shared-data", "@hebo/api"],
   },
 }));

@@ -1,5 +1,1 @@
-export {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@hebo/ui/_shadcn/ui/avatar";
+export { Avatar, AvatarImage, AvatarFallback } from "../_shadcn/ui/avatar";

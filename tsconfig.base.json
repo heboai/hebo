@@ -15,14 +15,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": false,
-    "baseUrl": ".",
-    "paths": {
-      "@hebo/api/*": ["apps/api/src/*"],
-      "@hebo/db/*": ["packages/db/*"],
-      "@hebo/ui/*": ["packages/ui/src/*"],
-      "@hebo/shared-data/*": ["packages/shared-data/json/*"],
-      "@hebo/shared-api/*": ["packages/shared-api/*"]
-    }
+    "baseUrl": "."
   },
-  "exclude": ["node_modules", "dist", ".next", ".react-router", ".turbo"]
+  "exclude": ["dist", ".next", ".react-router", ".turbo"]
 }

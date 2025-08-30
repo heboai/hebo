@@ -1,7 +1,7 @@
 import { t } from "elysia";
 
 import { agents } from "@hebo/db/schema/agents";
-import supportedModels from "@hebo/shared-data/supported-models.json";
+import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import {
   createSchemaFactory,

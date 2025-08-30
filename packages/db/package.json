@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "exports": {
+    "./*": "./*.ts"
+  },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",
     "lint": "bunx eslint .",
