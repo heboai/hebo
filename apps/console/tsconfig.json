@@ -7,8 +7,7 @@
       "@hebo/api": ["../api/src/index.ts"]
     },
     "rootDirs": [".", "./.react-router/types"],
-    "types": ["bun-types", "vite/client", "mdx"],
-    "verbatimModuleSyntax": true
+    "types": ["bun-types", "vite/client", "mdx"]
   },
   "include": [
     "**/*",

@@ -15,7 +15,8 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": false,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "verbatimModuleSyntax": true
   },
   "exclude": ["dist", ".next", ".react-router", ".turbo"]
 }
