@@ -62,7 +62,8 @@ jspm_packages/
 # Optional npm cache directory
 .npm
 
-# Optional eslint cache
+# eslint
+eslint.config.mjs
 .eslintcache
 
 # Microbundle cache
@@ -108,5 +109,23 @@ jspm_packages/
 # Bun cache
 .bun
 
+# Turbo cache
+.turbo
+
+# Cursor IDE
+.cursor
+.cursorrules
+
+# Local database
+local-db
+hebo.db
+
+# Build markers
+.build-complete
+
 # SST
 .sst
+sst-env.d.ts
+
+# prettier
+.prettierignore
