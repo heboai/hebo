@@ -5,9 +5,7 @@
   "type": "module",
   "exports": {
     "./*": "./*.ts",
-    "./utils/*": "./utils/*.ts",
-    "./schema/*": "./schema/*.ts",
-    "./schema/mixin/*": "./schema/mixin/*.ts"
+    "./utils/*": "./utils/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",
