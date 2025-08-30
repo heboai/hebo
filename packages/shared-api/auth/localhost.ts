@@ -1,5 +1,13 @@
 import { Elysia } from "elysia";
-import isLocalhost from "is-localhost-ip";
+
+const getIsLocalhost = async () => {
+  try {
+    const { default: isLocalhost } = await import("is-localhost-ip");
+    return isLocalhost;
+  } catch {
+    throw new Error("is-localhost-ip not available");
+  }
+};
 
 export const authServiceLocalhost = new Elysia({
   name: "authenticate-user-localhost",
@@ -16,6 +24,8 @@ export const authServiceLocalhost = new Elysia({
     );
 
     const hostname = new URL(request.url).hostname;
+
+    const isLocalhost = await getIsLocalhost();
 
     const [ipIsLocal, hostIsLocal] = await Promise.all([
       isLocalhost(clientIp),

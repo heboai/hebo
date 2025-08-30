@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./.sst/platform/config.d.ts" />
-
 export default $config({
   app(input) {
     return {
@@ -9,6 +8,7 @@ export default $config({
       protect: ["production"].includes(input?.stage),
       home: "aws",
       region: "us-east-1",
+      providers: { docker: "4.8.2" },
     };
   },
   async run() {
