@@ -5,7 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./_mintlify/*": "./src/_mintlify/*.tsx",
+    "./_mintlify/code/*": "./src/_mintlify/code/*.tsx",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/*": "./src/lib/*.ts"

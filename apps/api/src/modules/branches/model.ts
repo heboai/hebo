@@ -1,13 +1,14 @@
 import { t } from "elysia";
 
-import { branches } from "@hebo/db/schema/branches";
 
-import * as AgentsModel from "~/modules/agents/model";
+import * as AgentsModel from "~api/modules/agents/model";
 import {
   createSchemaFactory,
   AUDIT_FIELDS,
   ID_FIELDS,
-} from "~/utils/schema-factory";
+} from "~api/utils/schema-factory";
+
+import { branches } from "@hebo/db/schema/branches";
 
 const { createInsertSchema, createUpdateSchema, createSelectSchema } =
   createSchemaFactory({ typeboxInstance: t });

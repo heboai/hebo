@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 
-import { api } from "~/lib/data";
+import { api } from "~console/lib/data";
 
 async function defaultAgentMiddleware() {
   const { data: agents } = await api.agents.get();

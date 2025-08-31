@@ -9,4 +9,4 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-} from "~/_shadcn/ui/dialog";
+} from "~ui/_shadcn/ui/dialog";

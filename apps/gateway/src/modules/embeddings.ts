@@ -1,7 +1,7 @@
 import { embed, embedMany } from "ai";
 import { Elysia, t } from "elysia";
 
-import { provider } from "~/middleware/provider";
+import { provider } from "~gateway/middleware/provider";
 
 export const embeddings = new Elysia({
   name: "embeddings",

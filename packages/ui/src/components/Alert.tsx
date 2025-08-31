@@ -1,1 +1,1 @@
-export { Alert, AlertTitle, AlertDescription } from "~/_shadcn/ui/alert";
+export { Alert, AlertTitle, AlertDescription } from "~ui/_shadcn/ui/alert";

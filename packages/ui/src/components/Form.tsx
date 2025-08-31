@@ -7,4 +7,4 @@ export {
   FormDescription,
   FormMessage,
   FormField,
-} from "~/_shadcn/ui/form";
+} from "~ui/_shadcn/ui/form";

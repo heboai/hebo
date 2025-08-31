@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 import { Button } from "@hebo/ui/components/Button";
 
-import { isStackAuthEnabled } from "~/lib/env";
+import { isStackAuthEnabled } from "~console/lib/env";
 
 const StackOAuthSignIn = lazy(() =>
   import("@stackframe/react").then((mod) => ({

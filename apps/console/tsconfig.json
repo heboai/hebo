@@ -3,11 +3,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"],
-      "@hebo/api": ["../api/src/index.ts"]
+      "~console/*": ["./app/*"],
+      "~api": ["../api/src/index.ts"],
+      "~api/*": ["../api/src/*"]
     },
     "rootDirs": [".", "./.react-router/types"],
-    "types": ["bun-types", "vite/client", "mdx"]
+    "types": ["vite/client", "mdx"],
+    "verbatimModuleSyntax": true
   },
   "include": [
     "**/*",

@@ -1,9 +1,10 @@
 import { Elysia, t } from "elysia";
 
-import { authService } from "@hebo/shared-api/auth/auth-service";
 
-import { agentId } from "~/middlewares/agent-id";
-import * as AgentsModel from "~/modules/agents/model";
+import { agentId } from "~api/middlewares/agent-id";
+import * as AgentsModel from "~api/modules/agents/model";
+
+import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import * as BranchesModel from "./model";
 import { BranchService } from "./service";

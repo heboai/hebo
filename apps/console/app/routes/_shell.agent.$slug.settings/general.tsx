@@ -2,7 +2,7 @@
 
 import { Input } from "@hebo/ui/components/Input";
 
-import { AgentLogo } from "~/components/ui/AgentLogo";
+import { AgentLogo } from "~console/components/ui/AgentLogo";
 
 type ActiveAgent = {
   slug: string;

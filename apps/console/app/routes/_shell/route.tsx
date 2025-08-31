@@ -12,10 +12,10 @@ import {
   SidebarTrigger,
 } from "@hebo/ui/components/Sidebar";
 
-import { authService } from "~/lib/auth";
-import { api } from "~/lib/data";
-import { getCookie } from "~/lib/utils";
-import { authStore } from "~/state/auth";
+import { authService } from "~console/lib/auth";
+import { api } from "~console/lib/data";
+import { getCookie } from "~console/lib/utils";
+import { authStore } from "~console/state/auth";
 
 import type { Route } from "./+types/route";
 

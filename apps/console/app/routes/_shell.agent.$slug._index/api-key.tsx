@@ -5,7 +5,7 @@ import { Button } from "@hebo/ui/components/Button";
 import { Input } from "@hebo/ui/components/Input";
 import { cn } from "@hebo/ui/lib/utils";
 
-import { authService } from "~/lib/auth";
+import { authService } from "~console/lib/auth";
 
 export function GenerateApiKey() {
   const [loading, setLoading] = useState<"idle" | "loading" | "success">(

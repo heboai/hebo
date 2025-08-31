@@ -1,7 +1,7 @@
 
 import { redirect } from "react-router";
 
-import { api } from "~/lib/data";
+import { api } from "~console/lib/data";
 
 import type { Route } from "./+types/route";
 

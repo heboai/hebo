@@ -1,10 +1,10 @@
 import { lazy, Suspense } from "react";
 
-import { isStackAuthEnabled } from "~/lib/env";
+import { isStackAuthEnabled } from "~console/lib/env";
 
 import { Skeleton } from "@hebo/ui/components/Skeleton";
 
-import { AuthProvider } from "~/components/AuthProvider";
+import { AuthProvider } from "~console/components/AuthProvider";
 
 const StackAccountSettings = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.AccountSettings })),
