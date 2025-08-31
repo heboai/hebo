@@ -108,7 +108,7 @@ const eslintConfig = [
               position: 'after',
             },
             {
-              pattern: '~/**',
+              pattern: '~*/**',
               group: 'internal',
               position: 'after',
             },

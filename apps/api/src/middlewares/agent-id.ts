@@ -1,12 +1,11 @@
 import { eq } from "drizzle-orm";
 import { Elysia, status } from "elysia";
 
-import { getDb } from "~api/utils/request-db";
-
 import { agents } from "@hebo/db/schema/agents";
 import { withAudit } from "@hebo/db/utils/with-audit";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
+import { getDb } from "~api/utils/request-db";
 
 export const agentId = new Elysia({ name: "agent-id" })
   .use(authService)
