@@ -23,7 +23,7 @@ import {
   RespondIoEvents,
   MessageReceivedPayload,
   ConversationClosedPayload,
-} from "@hebo/aikit-respond-io";
+} from "@hebo/aikit-respond-io/webhook";
 
 const app = express();
 
