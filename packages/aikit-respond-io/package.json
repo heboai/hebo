@@ -23,10 +23,10 @@
   "scripts": {
     "prepublishOnly": "bun run build",
     "prebuild": "rm -rf dist .turbo",
-    "build": "tsc",
+    "build": "bunx tsc",
     "clean": "rm -rf dist .turbo",
     "lint": "bunx eslint .",
-    "dev": "tsc -w"
+    "dev": "bunx tsc -w"
   },
   "type": "module",
   "dependencies": {

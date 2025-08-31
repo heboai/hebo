@@ -58,14 +58,19 @@ export class RespondIoClient {
         throw new RespondIoNetworkError(
           `Respond.io Network Error: Request timed out - ${error.message}`,
         );
-      } else if (error instanceof Error && error.name === "TypeError") {
+      } else if (error instanceof Error) {
         // This can happen for various network reasons (e.g., DNS, connection refused)
-        throw new RespondIoNetworkError(
-          `Respond.io Network Error: No response received - ${error.message}`,
-        );
+        if (error.name === "TypeError") {
+          throw new RespondIoNetworkError(
+            `Respond.io Network Error: No response received - ${error.message}`,
+          );
+        }
+        throw new Error(`Respond.io Request Error: ${error.message}`);
       } else {
-        // Something happened in setting up the request that triggered an Error
-        throw new Error(`Respond.io Request Error: ${error}`);
+        // Something happened that triggered an error that wasn't an instance of Error
+        throw new TypeError(
+          `An unknown error occurred in Respond.io request: ${String(error)}`,
+        );
       }
     }
   }
