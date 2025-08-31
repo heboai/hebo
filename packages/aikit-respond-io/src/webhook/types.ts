@@ -1,9 +1,4 @@
-export enum RespondIoEvents {
-  MessageReceived = "message.received",
-  MessageSent = "message.sent",
-  ContactAssigneeUpdated = "contact.assignee.updated",
-  ConversationClosed = "conversation.closed",
-}
+// packages/aikit-respond-io/src/webhook/types.ts
 
 export type WebhookPayload =
   | MessageReceivedPayload
@@ -101,7 +96,7 @@ export interface ConversationClosedPayload {
     profilePic: string;
     countryCode: string;
     status: string;
-    assignee: object; // Can be an empty object
+    assignee: BaseUser | null | Record<string, never>; // May be empty
   };
   conversation: {
     category: string;
@@ -109,7 +104,7 @@ export interface ConversationClosedPayload {
     openedTime: number;
     openedBySource: string;
     closedTime: number;
-    closedBy: object; // Can be an empty object
+    closedBy: BaseUser | null | Record<string, never>; // May be empt
     closedBySource: string;
     firstResponseTime: number;
     resolutionTime: number;

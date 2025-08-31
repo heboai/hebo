@@ -6,7 +6,6 @@ export const models = new Elysia({
   name: "models",
   prefix: "/models",
 })
-
   .get(
     "/",
     () => {
