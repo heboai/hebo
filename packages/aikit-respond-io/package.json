@@ -21,9 +21,10 @@
     }
   },
   "scripts": {
-    "prepublishOnly": "bun run clean && bun run build",
+    "prepublishOnly": "bun run build",
+    "prebuild": "rm -rf dist .turbo",
     "build": "tsc",
-    "clean": "rm -rf .turbo node_modules dist",
+    "clean": "rm -rf dist .turbo",
     "lint": "bunx eslint .",
     "dev": "tsc -w"
   },
