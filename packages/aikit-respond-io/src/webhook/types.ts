@@ -1,4 +1,10 @@
 // packages/aikit-respond-io/src/webhook/types.ts
+export enum RespondIoEvents {
+  MessageReceived = "message.received",
+  MessageSent = "message.sent",
+  ContactAssigneeUpdated = "contact.assignee.updated",
+  ConversationClosed = "conversation.closed",
+}
 
 export type WebhookPayload =
   | MessageReceivedPayload
