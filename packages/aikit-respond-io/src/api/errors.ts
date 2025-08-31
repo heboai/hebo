@@ -22,10 +22,10 @@ export class RespondIoApiFailedError extends RespondIoApiError {
     message: string = "Respond.io API Error",
   ) {
     super(message);
-    this.name = "RespondIoApiError";
+    this.name = "RespondIoApiFailedError";
     this.statusCode = statusCode;
     this.apiResponse = apiResponse;
-    Object.setPrototypeOf(this, RespondIoApiError.prototype);
+    Object.setPrototypeOf(this, RespondIoApiFailedError.prototype);
   }
 }
 
