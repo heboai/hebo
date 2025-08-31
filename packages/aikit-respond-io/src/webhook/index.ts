@@ -1,4 +1,4 @@
-import { RespondIoError } from "./errors";
+import { RespondIoWebhookError } from "./errors";
 import {
   RespondIoEvents,
   EventHandler,
@@ -29,12 +29,12 @@ export class RespondIoWebhook {
     callback: EventHandler,
   ): this {
     if (typeof signingKey !== "string") {
-      throw new RespondIoError(
+      throw new RespondIoWebhookError(
         `Invalid signing key provided for event "${eventType}".`,
       );
     }
     if (typeof callback !== "function") {
-      throw new RespondIoError(
+      throw new RespondIoWebhookError(
         `Invalid callback function provided for event "${eventType}".`,
       );
     }
@@ -71,9 +71,12 @@ export class RespondIoWebhook {
         throw new Error("Failed to parse request body as JSON.");
       }
 
-      const eventType = payload.event_type;
-      if (Object.values(RespondIoEvents).includes(eventType) === false) {
-        throw new RespondIoError(
+      const eventType: string = payload.event_type;
+      if (
+        (Object.values(RespondIoEvents) as string[]).includes(eventType) ===
+        false
+      ) {
+        throw new RespondIoWebhookError(
           "Could not determine event type from request body.",
         );
       }
@@ -81,7 +84,7 @@ export class RespondIoWebhook {
       const handler = this.eventHandlers.get(eventType);
 
       if (!handler) {
-        throw new RespondIoError(
+        throw new RespondIoWebhookError(
           `No handler registered for event type: ${eventType}`,
         );
       }

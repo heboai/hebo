@@ -1,18 +1,18 @@
 /**
  * Base error class for all Respond.io related errors.
  */
-export class RespondIoError extends Error {
+export class RespondIoApiError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "RespondIoError";
-    Object.setPrototypeOf(this, RespondIoError.prototype);
+    this.name = "RespondIoApiError";
+    Object.setPrototypeOf(this, RespondIoApiError.prototype);
   }
 }
 
 /**
  * Represents an error returned by the Respond.io API (e.g., 4xx or 5xx status codes).
  */
-export class RespondIoApiError extends RespondIoError {
+export class RespondIoApiFailedError extends RespondIoApiError {
   public statusCode: number;
   public apiResponse: any; // The raw error response from the API
 
@@ -32,7 +32,7 @@ export class RespondIoApiError extends RespondIoError {
 /**
  * Represents a network-related error when communicating with Respond.io (e.g., no internet connection, timeout).
  */
-export class RespondIoNetworkError extends RespondIoError {
+export class RespondIoNetworkError extends RespondIoApiError {
   constructor(message: string = "Respond.io Network Error") {
     super(message);
     this.name = "RespondIoNetworkError";

@@ -1,6 +1,6 @@
 import ky, { HTTPError, TimeoutError, type KyInstance } from "ky";
 
-import { RespondIoApiError, RespondIoNetworkError } from "./errors";
+import { RespondIoApiFailedError, RespondIoNetworkError } from "./errors";
 import {
   ContactIdentifier,
   RespondIoClientConfig,
@@ -39,8 +39,8 @@ export class RespondIoClient {
   ): Promise<SendMessageResponse> {
     try {
       const response = await this.kyInstance.post(
-        `contact/${identifier}/message`,
-        payload,
+        `contact/${encodeURIComponent(identifier)}/message`,
+        { json: payload },
       );
       return await response.json<SendMessageResponse>();
     } catch (error) {
@@ -48,9 +48,9 @@ export class RespondIoClient {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         const errorBody = await error.response.json();
-        throw new RespondIoApiError(
+        throw new RespondIoApiFailedError(
           error.response.status,
-          errorBody,
+          { json: errorBody },
           `Respond.io API Error: ${error.response.status} - ${error.message}`,
         );
       } else if (error instanceof TimeoutError) {
@@ -65,7 +65,7 @@ export class RespondIoClient {
         );
       } else {
         // Something happened in setting up the request that triggered an Error
-        throw new Error(`Respond.io Request Error: ${error.message}`);
+        throw new Error(`Respond.io Request Error: ${error}`);
       }
     }
   }
