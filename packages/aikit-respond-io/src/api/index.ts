@@ -70,7 +70,7 @@ export class RespondIoClient {
     }
   }
 
-  // Add other Respond.io API methods here as needed
+  // FUTURE: Add other Respond.io API methods here as needed
   // public async createContact(...) { ... }
   // public async getContact(...) { ... }
 }

@@ -81,7 +81,13 @@ app.listen(3000, () => {
 ### API Client Example with AWS Lambda
 
 ```ts
-import { RespondIoClient } from "@hebo/aikit-respond";
+import {
+  RespondIoClient,
+  SendMessagePayload,
+  ContactIdentifier,
+  TextMessage,
+  SendMessageResponse,
+} from "@hebo/aikit-respond-io/api";
 
 // Initialize the RespondIo client with your API key.
 // It's recommended to use environment variables for sensitive information.
@@ -90,19 +96,25 @@ const respondIoClient = new RespondIoClient({
 });
 
 export const handler = async (event: {
-  contactIdentifier: string; // e.g., "id:123", "phone:+1234567890"
+  contactIdentifier: ContactIdentifier; // e.g., "id:123", "phone:+1234567890"
   messageText: string;
 }) => {
   try {
     const { contactIdentifier, messageText } = event;
 
-    // Send a text message to the specified contact.
-    const response = await respondIoClient.sendMessage(contactIdentifier, {
-      message: {
-        type: "text",
-        text: messageText,
-      },
-    });
+    const message: TextMessage = {
+      type: "text",
+      text: messageText,
+    };
+
+    const payload: SendMessagePayload = {
+      message: message,
+    };
+
+    const response: SendMessageResponse = await respondIoClient.sendMessage(
+      contactIdentifier,
+      payload,
+    );
 
     console.log("Message sent successfully:", response);
 
@@ -125,4 +137,3 @@ export const handler = async (event: {
   }
 };
 ```
-

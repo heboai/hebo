@@ -1,2 +1,2 @@
-export * from "./webhook";
-export * from "./respondio";
+export * as webhook from "./webhook";
+export * as api from "./api";
