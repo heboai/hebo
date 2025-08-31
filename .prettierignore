@@ -1,7 +1,2 @@
 **/_*/**
-**/dist/**
-**/node_modules/**
-**/.next/**
-**/.turbo/**
-**/.react-router/**
 apps/console/public/mockServiceWorker.js

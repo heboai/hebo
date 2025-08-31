@@ -1,13 +1,5 @@
 {
   "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "moduleResolution": "node",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": "."
-  },
-  "include": ["**/*.ts", "../apps/api/api.ts", "../sst.config.ts"],
-  "exclude": ["node_modules"]
-} 
+  "compilerOptions": {},
+  "include": ["**/*.ts", "../sst.config.ts"]
+}

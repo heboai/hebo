@@ -2,13 +2,8 @@
   "name": "@hebo/infra",
   "version": "0.0.1",
   "private": true,
-  "scripts": {
-    "docker:build": "cd ../ && docker build --no-cache -t hebo-api -f infra/stacks/build-api/Dockerfile .",
-    "docker:run": "docker run -p 3001:3001 hebo-api",
-    "docker:push": "npm run docker:build && npm run docker:tag && npm run ecr:login && npm run docker:push-ecr",
-    "docker:tag": "docker tag hebo-api:latest public.ecr.aws/hebo/api:latest",
-    "docker:push-ecr": "docker push public.ecr.aws/hebo/api:latest",
-    "ecr:login": "aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws",
-    "ecr:setup": "aws ecr-public create-repository --repository-name hebo/api --region us-east-1 || true"
+  "scripts": {},
+  "devDependencies": {
+    "sst": "^3.17.10"
   }
 }

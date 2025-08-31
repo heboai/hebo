@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import gitignore from 'eslint-config-flat-gitignore';
 import importPlugin from "eslint-plugin-import"
 import jsxA11y from "eslint-plugin-jsx-a11y"
 import noSecrets from "eslint-plugin-no-secrets"
@@ -16,8 +17,9 @@ import tseslint from "typescript-eslint";
 
 
 const eslintConfig = [
+  gitignore(),
   {
-    ignores: ['**/_*/**', '**/build/**', '**/dist/**', '**/node_modules/**', "**/.next/**", "**/.react-router/**", "**/.turbo/**"],
+    ignores: ['**/_*/**'],
   },
   {
     settings: {

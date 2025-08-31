@@ -8,8 +8,8 @@
     "./*": "./src/*"
   },
   "scripts": {
-    "lint": "bunx eslint .",
-    "clean": "rimraf .turbo node_modules"
+    "clean": "git clean -fdX -e \".env*\" .",
+    "lint": "bunx eslint ."
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
