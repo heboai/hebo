@@ -24,6 +24,7 @@ export class RespondIoClient {
         "Content-Type": "application/json",
       },
       timeout: 10_000, // 10 seconds timeout
+      retry: { limit: 0 },
     });
   }
 
