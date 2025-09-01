@@ -10,8 +10,8 @@ import React, {
   useState,
 } from "react";
 
-import { CopyToClipboardResult } from "~ui/_mintlify/utils/copyToClipboard";
-import { getNodeText } from "~ui/_mintlify/utils/getNodeText";
+import { CopyToClipboardResult } from "../utils/copyToClipboard";
+import { getNodeText } from "../utils/getNodeText";
 import { CodeBlockProps } from "./CodeBlock";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
 

@@ -23,4 +23,4 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-} from "~ui/_shadcn/ui/sidebar";
+} from "../_shadcn/ui/sidebar";
