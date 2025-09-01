@@ -6,17 +6,43 @@ export enum RespondIoEvents {
   ConversationClosed = "conversation.closed",
 }
 
+// New: Configuration for a single event type, allowing for future options.
+export interface WebhookEventConfig {
+  signingKey: string;
+  // Future options can be added here, e.g.:
+  // timeout?: number;
+}
+
+// Updated: Main config now uses WebhookEventConfig for extensibility.
+export interface RespondIoWebhookConfig {
+  /**
+   * A map of event types to their corresponding configurations.
+   */
+  events: Partial<Record<RespondIoEvents, WebhookEventConfig>>;
+}
+
+// A map from event type to its payload interface.
+export type EventPayloadMap = {
+  [RespondIoEvents.MessageReceived]: MessageReceivedPayload;
+  [RespondIoEvents.MessageSent]: MessageSentPayload;
+  [RespondIoEvents.ContactAssigneeUpdated]: ContactAssigneeUpdatedPayload;
+  [RespondIoEvents.ConversationClosed]: ConversationClosedPayload;
+};
+
 export type WebhookPayload =
   | MessageReceivedPayload
   | MessageSentPayload
   | ContactAssigneeUpdatedPayload
   | ConversationClosedPayload;
 
-export type EventHandler = (payload: WebhookPayload) => void | Promise<void>;
+export type EventHandler<T extends WebhookPayload = WebhookPayload> = (
+  payload: T,
+) => void | Promise<void>;
+
 export type ErrorHandler = (error: Error) => void | Promise<void>;
 
+// HandlerConfig no longer needs to store the signing key.
 export interface HandlerConfig {
-  signingKey: string;
   callback: EventHandler;
 }
 
