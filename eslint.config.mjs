@@ -96,7 +96,7 @@ const eslintConfig = [
           groups: [
             'builtin',     // JS runtime built-ins (fs, path)
             'external',    // NPM packages
-            'internal',    // Aliased paths (e.g. @/ or ~/)
+            'internal',    // Aliased paths
             ['parent', 'sibling', 'index'], // Relative imports
             'object',      // Imports like `import * as foo from 'bar'`
             'type',        // Type imports
