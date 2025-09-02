@@ -21,8 +21,6 @@
     }
   },
   "scripts": {
-    "prepublishOnly": "bun run build",
-    "prebuild": "rm -rf dist .turbo",
     "build": "bunx tsc",
     "clean": "git clean -fdX -e \".env*\" .",
     "lint": "bunx eslint .",

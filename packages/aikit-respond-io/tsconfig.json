@@ -4,8 +4,8 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
-    "noEmit": false,
-    "types": ["node"]
+    "types": ["bun-types"],
+    "noEmit": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.d.ts"]
