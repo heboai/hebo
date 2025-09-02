@@ -1,12 +1,37 @@
 {
   "name": "@hebo/aikit-respond-io",
   "version": "0.0.1",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./webhook": {
+      "import": "./dist/webhook/index.js",
+      "types": "./dist/webhook/index.d.ts"
+    },
+    "./api": {
+      "import": "./dist/api/index.js",
+      "types": "./dist/api/index.d.ts"
+    }
   },
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
-    "lint": "bunx eslint ."
+    "build": "bunx tsc",
+    "clean": "git clean -fdX -e \".env*\" .",
+    "lint": "bunx eslint .",
+    "dev": "bunx tsc -w"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "ky": "^1.9.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.2.19",
+    "typescript": "^5.4.5"
+  }
 }
