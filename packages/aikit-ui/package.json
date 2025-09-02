@@ -5,7 +5,8 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./blocks/*": "./src/blocks/*.tsx"
+    "./blocks/*": "./src/blocks/*.tsx",
+    "./_shadcn/*": "./src/_shadcn/*.tsx"
   },
   "scripts": {
     "lint": "bunx eslint .",
