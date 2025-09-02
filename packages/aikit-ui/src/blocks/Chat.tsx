@@ -3,7 +3,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 import {
   Conversation,
@@ -69,16 +69,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       })
     : undefined;
 
-  useEffect(() => {
-    const available = modelsConfig.models ?? [];
-
-    if (available.length === 0) {
-      setCurrentModelAlias("");
-    } else if (!available.some((m) => m.alias === currentModelAlias)) {
-      setCurrentModelAlias(available[0].alias);
-    }
-  }, [modelsConfig.models, currentModelAlias]);
-
   const renderMessagePart = (part: UIMessage["parts"][0]) => {
     if (part.type === "text") return part.text;
     if (part.type === "dynamic-tool" && "input" in part) {
@@ -86,32 +76,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
     }
     return "";
   };
-
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Don't focus if user is already typing in an input
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement ||
-        (e.target instanceof HTMLElement && e.target.isContentEditable)
-      ) {
-        return;
-      }
-
-      // Only trigger on Ctrl+L (Windows/Linux) or Cmd+L (Mac)
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "l") {
-        e.preventDefault(); // prevent browser's "focus address bar"
-        if (promptInputTextareaRef.current) {
-          promptInputTextareaRef.current.focus();
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleGlobalKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleGlobalKeyDown);
-    };
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
