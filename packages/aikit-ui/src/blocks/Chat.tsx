@@ -3,7 +3,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Conversation,
@@ -71,6 +71,27 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
             })),
       })
     : undefined;
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Skip if already in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target as HTMLElement)?.isContentEditable
+      )
+        return;
+
+      // Ctrl+i or Cmd+i to focus chat input
+      if ((e.ctrlKey || e.metaKey) && e.key === "i") {
+        e.preventDefault();
+        (document.querySelector("#chat-input") as HTMLTextAreaElement)?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleGlobalKeyDown);
+    return () => document.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
   const renderMessagePart = (part: UIMessage["parts"][0]) => {
     if (part.type === "text") return part.text;
