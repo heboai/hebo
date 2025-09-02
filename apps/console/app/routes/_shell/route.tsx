@@ -64,7 +64,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
   const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
 
   return (
-    <div className="relative flex min-h-screen">
+    <div className="flex min-h-screen gap-4">
       {/* LEFT SIDEBAR */}
       <SidebarProvider
         defaultOpen={leftSidebarDefaultOpen}
