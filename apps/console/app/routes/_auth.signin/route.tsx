@@ -5,10 +5,10 @@ import { Badge } from "@hebo/ui/components/Badge";
 import { Button } from "@hebo/ui/components/Button";
 import { Skeleton } from "@hebo/ui/components/Skeleton";
 
-import { AuthProvider } from "~/components/AuthProvider";
+import { AuthProvider } from "~console/components/AuthProvider";
 import { MagicLinkSignIn } from "./magiclink";
 import { OAuthSignIn } from "./oauth";
-import { Logo } from "~/components/ui/Logo";
+import { Logo } from "~console/components/ui/Logo";
 
 export default function SignIn() {
   return (

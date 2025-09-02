@@ -1,7 +1,7 @@
 import { lazy, useLayoutEffect, useState } from "react";
 
-import { getStackApp } from "~/lib/auth/stack-auth";
-import { isStackAuthEnabled } from "~/lib/env";
+import { getStackApp } from "~console/lib/auth/stack-auth";
+import { isStackAuthEnabled } from "~console/lib/env";
 
 const StackProvider = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.StackProvider })),

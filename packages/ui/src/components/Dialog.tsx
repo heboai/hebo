@@ -9,4 +9,4 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-} from "@hebo/ui/_shadcn/ui/dialog";
+} from "../_shadcn/ui/dialog";

@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     tsconfigPaths(),
     mdx({
-      providerImportSource: "~/mdx-components",
+      providerImportSource: "~console/mdx-components",
       rehypePlugins: [
         [
           rehypeShiki,
@@ -29,7 +29,4 @@ export default defineConfig(({ mode }) => ({
     reactRouter(),
     ...(mode === "development" ? [devtoolsJson()] : []),
   ],
-  optimizeDeps: {
-    exclude: ["@hebo/ui"],
-  },
 }));

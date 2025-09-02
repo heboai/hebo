@@ -4,8 +4,8 @@ import { status } from "elysia";
 import { branches } from "@hebo/db/schema/branches";
 import { withAudit } from "@hebo/db/utils/with-audit";
 
-import { createSlug } from "~/utils/create-slug";
-import { getDb } from "~/utils/request-db";
+import { createSlug } from "~api/utils/create-slug";
+import { getDb } from "~api/utils/request-db";
 
 import * as BranchesModel from "./model";
 

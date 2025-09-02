@@ -1,14 +1,9 @@
 "use client";
 
 import { clsx } from "clsx";
-import {
-  ComponentPropsWithoutRef,
-  ForwardedRef,
-  forwardRef,
-  ReactElement,
-} from "react";
+import * as React from "react"
 
-import { CopyToClipboardResult } from "../utils/copyToClipboard";
+import { type CopyToClipboardResult } from "../utils/copyToClipboard";
 import { getNodeText } from "../utils/getNodeText";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
 
@@ -21,14 +16,14 @@ export interface CodeBlockPropsBase {
 }
 
 export type CodeBlockProps = CodeBlockPropsBase &
-  Omit<ComponentPropsWithoutRef<"div">, keyof CodeBlockPropsBase>;
+  Omit<React.ComponentPropsWithoutRef<"div">, keyof CodeBlockPropsBase>;
 
-export const CodeBlock = forwardRef(function CodeBlock(
+export const CodeBlock = React.forwardRef(function CodeBlock(
   { title, onCopied, children, className, ...props }: CodeBlockProps,
-  ref: ForwardedRef<HTMLDivElement>,
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const Button = (
-    props: Partial<ComponentPropsWithoutRef<typeof CopyToClipboardButton>>,
+    props: Partial<React.ComponentPropsWithoutRef<typeof CopyToClipboardButton>>,
   ) => (
     <CopyToClipboardButton
       textToCopy={getNodeText(children)}
@@ -67,7 +62,7 @@ function CodeTitleBar({
   children,
 }: {
   title: string;
-  children?: ReactElement;
+  children?: React.ReactElement;
 }) {
   return (
     <div className="flex codeblock-header space-x-3">

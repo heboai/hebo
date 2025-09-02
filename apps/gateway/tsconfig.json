@@ -3,8 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~gateway/*": ["./src/*"]
     },
-    "types": ["bun-types"]
+    "types": ["bun-types"],
+    "verbatimModuleSyntax": true
   }
 }

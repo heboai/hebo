@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./*.ts"
+    "./*": "./*.ts",
+    "./utils/*": "./utils/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",

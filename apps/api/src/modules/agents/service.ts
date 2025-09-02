@@ -4,9 +4,9 @@ import { status } from "elysia";
 import { agents } from "@hebo/db/schema/agents";
 import { withAudit } from "@hebo/db/utils/with-audit";
 
-import { BranchService } from "~/modules/branches/service";
-import { createSlug } from "~/utils/create-slug";
-import { getDb, runInRequestTransaction } from "~/utils/request-db";
+import { BranchService } from "~api/modules/branches/service";
+import { createSlug } from "~api/utils/create-slug";
+import { getDb, runInRequestTransaction } from "~api/utils/request-db";
 
 import * as AgentsModel from "./model";
 

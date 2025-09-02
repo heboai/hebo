@@ -1,6 +1,9 @@
 import { Elysia, t } from "elysia";
 
-import { SUPPORTED_MODELS, supportedOrThrow } from "~/middleware/provider";
+import {
+  SUPPORTED_MODELS,
+  supportedOrThrow,
+} from "~gateway/middleware/provider";
 
 export const models = new Elysia({
   name: "models",

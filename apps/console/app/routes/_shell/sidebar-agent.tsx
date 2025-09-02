@@ -17,8 +17,8 @@ import {
   SidebarMenuItem,
 } from "@hebo/ui/components/Sidebar";
 
-import { AgentLogo } from "~/components/ui/AgentLogo";
-import { Logo } from "~/components/ui/Logo";
+import { AgentLogo } from "~console/components/ui/AgentLogo";
+import { Logo } from "~console/components/ui/Logo";
 
 type Agent = {
   name: string,

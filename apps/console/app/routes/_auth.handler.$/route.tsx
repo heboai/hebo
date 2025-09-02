@@ -11,8 +11,8 @@ const StackTheme = lazy(() =>
   import("@stackframe/react").then((mod) => ({ default: mod.StackTheme })),
 );
 
-import { getStackApp } from "~/lib/auth/stack-auth";
-import { isStackAuthEnabled } from "~/lib/env";
+import { getStackApp } from "~console/lib/auth/stack-auth";
+import { isStackAuthEnabled } from "~console/lib/env";
 
 export default function AuthHandler() {
   const location = useLocation();
