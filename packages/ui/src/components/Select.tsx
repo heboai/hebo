@@ -10,10 +10,9 @@ import {
 } from "../_shadcn/ui/select";
 
 type SelectProps = {
-  id?: string;
-  name: string;
-  items: Array<{ name: string; value: string }>;
-  placeholder: string;
+  name?: string;
+  items: Array<{ name: React.ReactNode; value: string }>;
+  placeholder?: string;
   defaultValue?: string;
   ["aria-describedby"]?: string;
 };
@@ -25,7 +24,7 @@ function Select({
   defaultValue,
   ...props
 }: SelectProps) {
-  const selectRef = useRef<React.ElementRef<typeof SelectTrigger>>(null);
+  const selectRef = useRef<React.ComponentRef<typeof SelectTrigger>>(null);
   const control = useControl({
     defaultValue,
     onFocus() {
