@@ -21,11 +21,6 @@ export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
       ...model,
       endpoint: {
         baseUrl: gatewayBaseUrl,
-        fetch: (input: RequestInfo | URL, init?: RequestInit) =>
-          fetch(input, {
-            ...init,
-            credentials: "include",
-          }),
       },
     })),
   };

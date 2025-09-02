@@ -62,7 +62,13 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
     ? createOpenAI({
         apiKey: "",
         baseURL: currentModel.endpoint?.baseUrl || "",
-        fetch: currentModel.endpoint?.fetch,
+        fetch:
+          currentModel.endpoint?.fetch ||
+          ((input: RequestInfo | URL, init?: RequestInit) =>
+            fetch(input, {
+              ...init,
+              credentials: "include",
+            })),
       })
     : undefined;
 
