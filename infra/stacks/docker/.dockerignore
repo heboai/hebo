@@ -1,4 +1,35 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ===============================
+# Docker-specific excludes
+# ===============================
+
+# Don't ignore workspace files
+!bun.lock
+!package.json
+
+# Git
+.git
+.github
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Tooling/config
+.prettierignore
+eslint.config.mjs
+.cursorrules
+
+# sst
+sst.config.ts
+
+# readme
+README.md
+
+# ===============================
+# Everything below is mirrored from .gitignore
+# (copied where it makes sense for Docker)
+# ===============================
 
 # dependencies
 node_modules
@@ -24,7 +55,6 @@ dist
 Thumbs.db
 *.pem
 .env*
-!.env.example
 .secrets
 .build-complete
 .node_repl_history
@@ -54,10 +84,7 @@ next-env.d.ts
 
 # IDE
 .idea
-.vscode/*
-!.vscode/extensions.json
-!.vscode/launch.json
-!.vscode/settings.json
+.vscode/
 *.swp
 *.swo
 

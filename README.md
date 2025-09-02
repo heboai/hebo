@@ -6,30 +6,31 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ```
 / (hebo)
-├── apps/                   # Deployable targets
-│   ├── api/                # API server (ElysiaJS)
-│   ├── console/            # Cloud Console (React Router)
-│   └── gateway/            # AI Gateway (Elysia JS & Vercel AI SDK)
+├── apps/                           # Deployable applications
+│   ├── api/                        # REST API server (ElysiaJS)
+│   ├── console/                    # Web console (React Router + Vite)
+│   └── gateway/                    # AI Gateway (ElysiaJS + Vercel AI SDK)
 │
-├── packages/               # Shareable libraries
-│   ├── db/                 # Database schema and migrations
-│   └── ui/                 # Common UI components
+├── packages/                       # Shared libraries and utilities
+│   ├── aikit-respond-io/           # Respond.io AI Kit integration
+│   ├── db/                         # Database schema, migrations & PGLite
+│   ├── shared-api/                 # API utilities (auth, CORS)
+│   ├── shared-data/                # Shared data models & schemas
+│   └── ui/                         # UI components (Shadcn + custom)
 │
-├── infra/                  # SST infrastructure stacks
-│   └── stacks/
-│       ├── api.ts
-│       ├── app.ts
-│       ├── db.ts
-│       └── vpc.ts
+├── infra/                          # Infrastructure as Code (SST)
+│   ├── stacks/                     # SST stacks
+│   └── package.json                # Infra dependencies
 │
 ├── .github/
-│   └── workflows/          # CI/CD pipelines
-│       ├── deploy.yml
-│       └── quality.yml
+│   └── workflows/                  # CI/CD pipelines
 │
-├── bunfig.toml             # Bun configuration
-├── sst.config.ts           # SST configuration
-└── turbo.json              # Turborepo configuration
+├── bunfig.toml                     # Bun configuration
+├── lefthook.yml                    # Git hooks configuration
+├── eslint.config.mjs               # ESLint configuration
+├── sst.config.ts                   # SST configuration
+├── tsconfig.base.json              # Base TypeScript configuration
+└── turbo.json                      # Turborepo configuration
 ```
 
 ## Getting Started

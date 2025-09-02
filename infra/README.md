@@ -9,6 +9,7 @@ The infrastructure consists of several key components:
 - **VPC**: Network isolation and security
 - **Database**: Aurora PostgreSQL with global clustering
 - **API**: Containerized API deployed on AWS App Runner
+- **Gateway**: Containerized Gateway deployed on AWS App Runner
 - **Frontend**: Next.js application with edge deployment
 
 ## Infrastructure Components
@@ -24,9 +25,9 @@ The Virtual Private Cloud provides network isolation and security for all resour
 
 Aurora PostgreSQL database with advanced features:
 
-- **Engine**: PostgreSQL 17.5
+- **Engine**: PostgreSQL 17.x
 - **Global Clustering**: Multi-region replication for production
-- **Scaling**: 
+- **Scaling**:
   - Production: Aurora Serverless v2 with 1 replica
   - Preview: Auto-scaling with pause after 20 minutes of inactivity
 - **Security**: Encrypted storage and proxy connection
@@ -36,43 +37,31 @@ Aurora PostgreSQL database with advanced features:
 
 Containerized API deployed on AWS App Runner:
 
-- **Container**: Docker image from ECR Public (`public.ecr.aws/m1o3d3n5/hebo-api:latest`)
-- **Runtime**: Bun 1.2.18 with Elysia 1.3.8 framework
+- **Container**: Docker image from ECR
+- **Runtime**: Bun 1.x with ElysiaJS 1.x framework
 - **Port**: 3001 (configurable)
 - **VPC Integration**: Connected to database through VPC connector
 - **Auto-deployment**: Disabled for manual control
 
-### Frontend (`stacks/app.ts`)
+### Gateway (`stacks/gateway.ts`)
+
+Containerized Gateway deployed on AWS App Runner:
+
+- **Container**: Docker image from ECR
+- **Runtime**: Bun 1.x with ElysiaJS 1.x framework
+- **Port**: 3002 (configurable)
+- **VPC Integration**: Connected to database through VPC connector
+- **Auto-deployment**: Disabled for manual control
+
+### App (`stacks/app.ts`)
 
 Next.js application with edge deployment:
 
 - **Framework**: Next.js with edge rendering
-- **Domain**: 
+- **Domain**:
   - Production: `cloud.hebo.ai`
   - Preview: `{stage}.cloud.hebo.ai`
 - **Environment**: Connected to API and external services
-
-## Docker Deployment Process
-
-The API deployment follows a containerized approach:
-
-### Build Process (`stacks/build-api/`)
-
-1. **Dockerfile**: Multi-stage build with Bun 1.2.18
-   - Dependencies stage with Bun
-   - Runtime stage with non-root user
-   - Optimized for production
-
-2. **Image Publishing Script** (`publish-image.sh`):
-   ```bash
-   # Build and publish to ECR Public
-   ./infra/stacks/build-api/publish-image.sh
-   ```
-
-3. **ECR Public Registry**:
-   - Repository: `hebo-api`
-   - Image: `public.ecr.aws/m1o3d3n5/hebo-api:latest`
-   - Region: `us-east-1`
 
 ## Deployment
 
@@ -92,61 +81,28 @@ bun run deploy
 bun run deploy --stage production
 ```
 
-### Publish API Container Image
-
-```bash
-# Build and push to ECR Public
-cd infra/stacks/build-api
-./publish-image.sh
-```
-
-## Environment Variables
-
-### Database Secrets
-- `HeboDbUsername`: Database username
-- `HeboDbPassword`: Database password
-
-### Frontend Secrets
-- `StackProjectId`: Stack project identifier
-- `StackPublishableClientKey`: Stack publishable key
-- `StackSecretServerKey`: Stack secret key
-- `PosthogKey`: PostHog analytics key
-- `PosthogHost`: PostHog host URL
-
 ## Security
 
 - **VPC Isolation**: All resources run within private subnets
 - **Encryption**: Database storage encrypted at rest
 - **IAM**: Least privilege access through SST
-- **Container Security**: Non-root user, minimal Alpine base image
+- **Container Security**: Non-root user, minimal Distroless base image
 
 ## Monitoring and Scaling
 
 - **Database**: Aurora Serverless v2 with automatic scaling
 - **API**: App Runner with automatic scaling based on load
-- **Frontend**: Edge deployment for global performance
-
-## Troubleshooting
-
-### Common Issues
-
-1. **VPC Connector Issues**:
-   - Verify security group rules
-   - Check subnet configuration
-
-2. **Database Connection**:
-   - Ensure VPC connector is properly configured
-   - Verify database credentials in secrets
-
-3. **Container Image Publishing**:
-   - Check ECR Public login status
-   - Verify Docker build context
+- **Gateway**: App Runner with automatic scaling based on load
+- **App**: Edge deployment for global performance
 
 ### Logs and Debugging
 
 ```bash
 # View App Runner logs
 aws apprunner describe-service --service-arn <service-arn>
+
+# List operations and recent deployments
+aws apprunner list-operations --service-arn <service-arn>
 
 # Check database status
 aws rds describe-db-clusters --db-cluster-identifier <cluster-id>
@@ -157,4 +113,4 @@ aws rds describe-db-clusters --db-cluster-identifier <cluster-id>
 - **Preview**: Database pauses after 20 minutes of inactivity
 - **Production**: Aurora Serverless v2 with minimum 0.5 ACU
 - **Container**: Multi-stage builds reduce image size
-- **Edge**: Global distribution reduces latency 
+- **Edge**: Global distribution reduces latency
