@@ -5,10 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./_shadcn/ui/*": "./src/_shadcn/ui/*.tsx",
-    "./blocks/*": "./src/blocks/*.tsx",
-    "./hooks/*": "./src/hooks/*.ts",
-    "./lib/*": "./src/lib/*.ts"
+    "./blocks/*": "./src/blocks/*.tsx"
   },
   "scripts": {
     "lint": "bunx eslint .",

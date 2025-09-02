@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { cn } from "@hebo/aikit-ui/lib/utils"
+import { cn } from "../../lib/utils"
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<"textarea">>(
   ({ className, ...props }, ref) => {

@@ -10,10 +10,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@hebo/aikit-ui/_shadcn/ui/select";
-import { Textarea } from "@hebo/aikit-ui/_shadcn/ui/textarea";
-import { cn } from "@hebo/aikit-ui/lib/utils";
-import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
+} from "../_shadcn/ui/select";
+import { Textarea } from "../_shadcn/ui/textarea";
+import { cn } from "../lib/utils";
+import { Button } from "../_shadcn/ui/button";
 
 import type { ChatStatus } from "ai";
 import type {

@@ -1,11 +1,11 @@
 'use client';
 
-import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
+import { Button } from "../_shadcn/ui/button";
 import { ArrowDownIcon } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { useCallback } from 'react';
 import { StickToBottom, useStickToBottomContext } from 'use-stick-to-bottom';
-import { cn } from '@hebo/aikit-ui/lib/utils';
+import { cn } from '../lib/utils';
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>;
 

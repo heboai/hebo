@@ -9,11 +9,8 @@ import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
-} from "@hebo/aikit-ui/_ai-elements/conversation";
-import {
-  Message as Message,
-  MessageContent,
-} from "@hebo/aikit-ui/_ai-elements/message";
+} from "../_ai-elements/conversation";
+import { Message as Message, MessageContent } from "../_ai-elements/message";
 import {
   PromptInput,
   PromptInputButton,
@@ -26,8 +23,8 @@ import {
   PromptInputTextarea,
   PromptInputToolbar,
   PromptInputTools,
-} from "@hebo/aikit-ui/_ai-elements/prompt-input";
-import { Button } from "@hebo/aikit-ui/_shadcn/ui/button";
+} from "../_ai-elements/prompt-input";
+import { Button } from "../_shadcn/ui/button";
 
 // Types based on models.schema.json
 type ModelsConfig = {
