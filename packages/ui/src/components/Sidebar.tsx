@@ -164,4 +164,4 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarContext,
-} from "@hebo/ui/_shadcn/ui/sidebar";
+} from "../_shadcn/ui/sidebar";
