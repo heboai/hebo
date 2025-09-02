@@ -7,8 +7,7 @@
   "exports": {
     "./_mintlify/code/*": "./src/_mintlify/code/*.tsx",
     "./components/*": "./src/components/*.tsx",
-    "./hooks/*": "./src/hooks/*.ts",
-    "./lib/*": "./src/lib/*.ts"
+    "./hooks/*": "./src/hooks/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",
