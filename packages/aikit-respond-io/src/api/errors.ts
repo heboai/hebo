@@ -32,7 +32,7 @@ export class RespondIoApiFailedError extends RespondIoApiError {
 /**
  * Represents a network-related error when communicating with Respond.io (e.g., no internet connection, timeout).
  */
-export class RespondIoNetworkError extends RespondIoApiError {
+export class RespondIoApiNetworkError extends RespondIoApiError {
   constructor(message: string = "Respond.io Network Error") {
     super(message);
     this.name = "RespondIoNetworkError";

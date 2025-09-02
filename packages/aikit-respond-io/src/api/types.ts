@@ -40,7 +40,7 @@ export interface SendMessageResponse {
 /**
  * Configuration for the Respond.io API client.
  */
-export interface RespondIoClientConfig {
+export interface RespondIoApiClientConfig {
   apiKey: string;
   baseUrl?: string; // Optional: Defaults to Respond.io's official API URL
 }

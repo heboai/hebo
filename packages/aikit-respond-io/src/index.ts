@@ -3,7 +3,7 @@ export { RespondIoWebhook } from "./webhook";
 export { RespondIoApiClient } from "./api";
 
 // Export the new high-level agent framework
-export { RespondIoApp } from "./agent";
+export { RespondIoAgent } from "./agent";
 
 // Export the action and trigger factories as namespaces
 
