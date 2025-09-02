@@ -10,9 +10,9 @@ bun add @hebo/aikit-respond-io
 
 ## Usage
 
-This library provides a `RespondIoWebhook` class that allows you to register a handler for different webhook event types. It automatically handles signature verification.
+This library provides a `RespondIoWebhook` class for handling webhooks and a `RespondIoClient` class for interacting with the Respond.io API.
 
-### Example with Express
+### Webhook Example with Express
 
 **Important**: You must use a middleware that provides the raw request body for signature verification. Do not use a middleware that parses the JSON body beforehand.
 
@@ -23,7 +23,7 @@ import {
   RespondIoEvents,
   MessageReceivedPayload,
   ConversationClosedPayload,
-} from "@hebo/aikit-respond-io";
+} from "@hebo/aikit-respond-io/webhook";
 
 const app = express();
 
@@ -78,50 +78,62 @@ app.listen(3000, () => {
 });
 ```
 
-## API
+### API Client Example with AWS Lambda
 
-### `new RespondIoWebhook()`
+```ts
+import {
+  RespondIoClient,
+  SendMessagePayload,
+  ContactIdentifier,
+  TextMessage,
+  SendMessageResponse,
+} from "@hebo/aikit-respond-io/api";
 
-Creates a new webhook handler instance.
+// Initialize the RespondIo client with your API key.
+// It's recommended to use environment variables for sensitive information.
+const respondIoClient = new RespondIoClient({
+  apiKey: process.env.RESPOND_IO_API_KEY!,
+});
 
-### `.on(eventType, signingKey, callback)`
+export const handler = async (event: {
+  contactIdentifier: ContactIdentifier; // e.g., "id:123", "phone:+1234567890"
+  messageText: string;
+}) => {
+  try {
+    const { contactIdentifier, messageText } = event;
 
-Registers a handler for a specific event type. This will overwrite any existing handler for the same event.
+    const message: TextMessage = {
+      type: "text",
+      text: messageText,
+    };
 
-- `eventType` (`RespondIoEvents`): The event type enum.
-- `signingKey` (`string`): The signing key for this specific event type.
-- `callback` (`(payload: WebhookPayload) => void | Promise<void>`): The function to execute when a verified event is received. The `payload` argument is of type `WebhookPayload`.
-- **Returns**: The `RespondIoWebhook` instance for chaining.
+    const payload: SendMessagePayload = {
+      message: message,
+    };
 
-### `.onError(callback)`
+    const response: SendMessageResponse = await respondIoClient.sendMessage(
+      contactIdentifier,
+      payload,
+    );
 
-Registers a global error handler. If an error occurs during processing, it will be passed to this function. If no `onError` handler is set, errors will be thrown from the `.process()` method.
+    console.log("Message sent successfully:", response);
 
-- `callback` (`(error: Error) => void | Promise<void>`): The function to execute when an error occurs.
-- **Returns**: The `RespondIoWebhook` instance for chaining.
-
-### `.process(body, headers)`
-
-Processes an incoming webhook request.
-
-- `body` (`string`): The raw request body string.
-- `headers` (`Record<string, any>`): The request headers.
-- **Returns**: A promise that resolves when the appropriate handler has been executed.
-- **Throws**: `SignatureVerificationError`, `RespondIoError`, or `Error` if no `onError` handler is registered.
-
-## Exported Types
-
-In addition to `RespondIoWebhook`, `RespondIoEvents`, `EventHandler`, `ErrorHandler`, `HandlerConfig`, and `WebhookPayload`, the following specific payload interfaces are also exported for direct use:
-
-- `MessageReceivedPayload`
-- `MessageSentPayload`
-- `ContactAssigneeUpdatedPayload`
-- `ConversationClosedPayload`
-
-## Errors
-
-The library can throw the following errors from the `.process()` method if they are not handled by an `onError` callback:
-
-- `RespondIoError`: A generic error, e.g., if no handler is registered for an event.
-- `SignatureVerificationError`: Thrown when the webhook signature is invalid or missing.
-- `Error`: Thrown if the request body cannot be parsed as JSON.
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "Message sent successfully",
+        messageId: response.messageId,
+      }),
+    };
+  } catch (error) {
+    console.error("Error sending message:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Failed to send message",
+        error: (error as Error).message,
+      }),
+    };
+  }
+};
+```

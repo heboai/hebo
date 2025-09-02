@@ -6,11 +6,10 @@ import { Elysia } from "elysia";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 
-import { completions } from "~/modules/completions";
-import { embeddings } from "~/modules/embeddings";
-import { models } from "~/modules/models";
-
 import { oaiErrors } from "./middleware/oai-errors";
+import { completions } from "./modules/completions";
+import { embeddings } from "./modules/embeddings";
+import { models } from "./modules/models";
 
 const PORT = Number(process.env.GATEWAY_PORT) || 3002;
 

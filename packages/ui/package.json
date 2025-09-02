@@ -5,7 +5,11 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./*": "./src/*"
+    "./_mintlify/code/*": "./src/_mintlify/code/*.tsx",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./_shadcn/ui/*": "./src/_shadcn/ui/*.tsx"
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",

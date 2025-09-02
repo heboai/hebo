@@ -2,7 +2,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { Elysia } from "elysia";
 import { createVoyage } from "voyage-ai-provider";
 
-import supportedModels from "@hebo/shared-data/supported-models.json";
+import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import type { LanguageModel, EmbeddingModel } from "ai";
 

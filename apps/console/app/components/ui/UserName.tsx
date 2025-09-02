@@ -1,6 +1,6 @@
 import { useSnapshot } from "valtio";
 
-import { authStore } from "~/state/auth";
+import { authStore } from "~console/state/auth";
 
 export function UserName() {
   const { user } = useSnapshot(authStore);

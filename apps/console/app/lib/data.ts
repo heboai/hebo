@@ -1,8 +1,8 @@
 import { treaty } from "@elysiajs/eden";
 
-import type { Api } from "@hebo/api";
+import { isDevLocal } from "~console/lib/env";
 
-import { isDevLocal } from "~/lib/env";
+import type { Api } from "~api";
 
 const url = isDevLocal
   ? "http://localhost:5173/api"

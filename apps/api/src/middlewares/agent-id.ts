@@ -5,7 +5,7 @@ import { agents } from "@hebo/db/schema/agents";
 import { withAudit } from "@hebo/db/utils/with-audit";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
-import { getDb } from "~/utils/request-db";
+import { getDb } from "~api/utils/request-db";
 
 export const agentId = new Elysia({ name: "agent-id" })
   .use(authService)

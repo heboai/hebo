@@ -1,7 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
 import slugify from "slugify";
 
-import { db } from "~/mocks/db";
+import { db } from "~console/mocks/db";
 
 export const agentHandlers = [
   http.post("/api/v1/agents", async ({ request }) => {

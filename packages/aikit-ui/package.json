@@ -4,6 +4,12 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    "./_shadcn/ui/*": "./src/_shadcn/ui/*.tsx",
+    "./blocks/*": "./src/blocks/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts"
+  },
   "scripts": {
     "lint": "bunx eslint .",
     "clean": "rimraf .turbo node_modules"

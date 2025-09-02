@@ -1,4 +1,4 @@
-import { authStore } from "~/state/auth";
+import { authStore } from "~console/state/auth";
 
 import type { AuthService } from "./types";
 

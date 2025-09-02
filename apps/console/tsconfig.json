@@ -3,19 +3,18 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"],
-      "@hebo/ui/*": ["../../packages/ui/src/*"],
-      "@hebo/aikit-ui/*": ["../../packages/aikit-ui/src/*"]
+      "~console/*": ["./app/*"],
+      "~api": ["../api/src/index.ts"],
+      "~api/*": ["../api/src/*"]
     },
     "rootDirs": [".", "./.react-router/types"],
-    "types": ["node", "vite/client"],
+    "types": ["vite/client", "mdx"],
     "verbatimModuleSyntax": true
   },
   "include": [
     "**/*",
     "**/.server/**/*",
     "**/.client/**/*",
-    ".react-router/types/**/*",
-    "../../packages/*/src/**/*"
+    ".react-router/types/**/*"
   ]
 }

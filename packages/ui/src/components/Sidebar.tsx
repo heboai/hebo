@@ -2,10 +2,11 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { PanelLeftIcon } from "lucide-react";
 import React from "react";
 
-import { useSidebar, SidebarContext } from "@hebo/ui/_shadcn/ui/sidebar";
 import { Button } from "@hebo/ui/components/Button";
 import { useIsMobile } from "@hebo/ui/hooks/use-mobile";
 import { cn } from "@hebo/ui/lib/utils";
+
+import { useSidebar, SidebarContext } from "../_shadcn/ui/sidebar";
 
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_WIDTH = "16rem";

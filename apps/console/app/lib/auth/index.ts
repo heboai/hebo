@@ -1,4 +1,4 @@
-import { isStackAuthEnabled } from "~/lib/env";
+import { isStackAuthEnabled } from "~console/lib/env";
 
 // FUTURE: use dynamic imports to enable tree shaking
 import * as dummy from "./dummy-auth";

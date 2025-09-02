@@ -1,18 +1,11 @@
 "use client";
 
 import { clsx } from "clsx";
-import React, {
-  ComponentPropsWithoutRef,
-  ForwardedRef,
-  forwardRef,
-  ReactElement,
-  ReactNode,
-  useState,
-} from "react";
+import * as React from "react"
 
-import { CopyToClipboardResult } from "../utils/copyToClipboard";
+import { type CopyToClipboardResult } from "../utils/copyToClipboard";
 import { getNodeText } from "../utils/getNodeText";
-import { CodeBlockProps } from "./CodeBlock";
+import { type CodeBlockProps } from "./CodeBlock";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
 
 import * as Tabs from "@radix-ui/react-tabs";
@@ -22,11 +15,11 @@ export type CodeGroupPropsBase = {
    * The callback function when a user clicks on the copied to clipboard button
    */
   onCopied?: (result: CopyToClipboardResult, textToCopy?: string) => void;
-  children?: ReactElement<CodeBlockProps>[] | ReactElement<CodeBlockProps>;
+  children?: React.ReactElement<CodeBlockProps>[] | React.ReactElement<CodeBlockProps>;
 };
 
 export type CodeGroupProps = CodeGroupPropsBase &
-  Omit<ComponentPropsWithoutRef<"div">, keyof CodeGroupPropsBase>;
+  Omit<React.ComponentPropsWithoutRef<"div">, keyof CodeGroupPropsBase>;
 
 /**
  * Group multiple code blocks into a tabbed UI.
@@ -35,11 +28,11 @@ export type CodeGroupProps = CodeGroupPropsBase &
  *
  * @param {CodeBlock[]} - children
  */
-export const CodeGroup = forwardRef(function CodeGroup(
+export const CodeGroup = React.forwardRef(function CodeGroup(
   { onCopied, children, className }: CodeGroupProps,
-  ref: ForwardedRef<HTMLDivElement> | undefined,
+  ref: React.ForwardedRef<HTMLDivElement> | undefined,
 ) {
-  const [activeTab, setActiveTab] = useState("0");
+  const [activeTab, setActiveTab] = React.useState("0");
 
   if (children == null) {
     // Hide the frame when no children were passed
@@ -93,7 +86,7 @@ export const CodeGroup = forwardRef(function CodeGroup(
 });
 
 interface TabItemProps {
-  children: ReactNode;
+  children: React.ReactNode;
   value: string;
 }
 

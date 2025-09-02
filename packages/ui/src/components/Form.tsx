@@ -7,4 +7,4 @@ export {
   FormDescription,
   FormMessage,
   FormField,
-} from "@hebo/ui/_shadcn/ui/form";
+} from "../_shadcn/ui/form";

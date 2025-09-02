@@ -1,7 +1,7 @@
 import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
-import { provider } from "~/middleware/provider";
+import { provider } from "~gateway/middleware/provider";
 
 export const completions = new Elysia({
   name: "completions",

@@ -1,7 +1,7 @@
 import { StackClientApp } from "@stackframe/react";
 import { useNavigate } from "react-router";
 
-import { authStore } from "~/state/auth";
+import { authStore } from "~console/state/auth";
 
 import type { AuthService } from "./types";
 
