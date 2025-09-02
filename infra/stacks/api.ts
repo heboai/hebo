@@ -2,17 +2,16 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
-import appRunnerEcrAccessRole from "./iam";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
+import appRunnerEcrAccessRole from "./iam";
 
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
 
-const resourceName =
-  $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
+const resourceName = $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
 
 const heboApiRepo = new aws.ecr.Repository(resourceName, {
   forceDelete: true,
@@ -29,9 +28,9 @@ const heboApiImage = new docker.Image("hebo-api-image", {
   },
   imageName: $interpolate`${heboApiRepo.repositoryUrl}:${dockerTag}`,
   registry: {
-    server: heboApiRepo.repositoryUrl.apply((url) => {
-      const parts = url.split("/");
-      return parts.slice(0, -1).join("/");
+    server: heboApiRepo.repositoryUrl.apply(url => {
+      const parts = url.split('/');
+      return parts.slice(0, -1).join('/');
     }),
     username: ecrAuth.userName,
     password: ecrAuth.password,
