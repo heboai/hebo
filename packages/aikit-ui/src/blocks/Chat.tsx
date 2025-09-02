@@ -3,7 +3,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
 import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 import {
   Conversation,
@@ -51,9 +51,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // Accessibility refs
-  const promptInputTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Get current model config - only return a model if we have a valid alias and it exists
   const currentModel = currentModelAlias
@@ -183,7 +180,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
         aria-label="Chat input form"
       >
         <PromptInputTextarea
-          ref={promptInputTextareaRef}
           id="chat-input"
           onChange={(e) => setInput(e.target.value)}
           value={input}
