@@ -1,16 +1,11 @@
 import { Loader2Icon } from "lucide-react";
 
-import { Button as ShadCNButton, buttonVariants } from "../_shadcn/ui/button";
+import { Button as ShadCNButton } from "../_shadcn/ui/button";
 import { cn } from "../lib/utils";
 
-// export { ShadCNButton as Button }
-
-import type { VariantProps } from "class-variance-authority";
-
-type ExtendedButtonProps = React.ComponentProps<typeof ShadCNButton> &
-  VariantProps<typeof buttonVariants> & {
-    isLoading?: boolean;
-  };
+type ExtendedButtonProps = React.ComponentProps<typeof ShadCNButton> & {
+  isLoading?: boolean;
+};
 
 export function Button({
   variant = "default",

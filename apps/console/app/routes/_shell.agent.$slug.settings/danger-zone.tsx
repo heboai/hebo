@@ -55,7 +55,7 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
   const navigation = useNavigation();
 
   return (
-    <span className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <h2>Danger Zone</h2>
 
       <Card className="border-destructive border-dashed">
@@ -85,7 +85,7 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
 
                   <FormField field={fields.slug} className="hidden">
                     <FormControl>
-                      <input />  
+                      <input type="hidden" />  
                     </FormControl>
                   </FormField>
 
@@ -111,7 +111,7 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
                     <DialogClose asChild>
                       <Button variant="outline" type="button">Cancel</Button>
                     </DialogClose>
-                    <Button isLoading={Boolean(navigation.formAction)} type="submit">
+                    <Button isLoading={navigation.state !== "idle"} type="submit">
                       Delete Agent
                     </Button>
                   </DialogFooter>
@@ -122,6 +122,6 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
           </CardAction>
         </CardHeader>
       </Card>
-    </span>
+    </div>
   );
 }

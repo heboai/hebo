@@ -14,7 +14,7 @@ export function GenerateApiKey() {
   const [key, setKey] = useState("Generate API Key ...");
   const [error, setError] = useState("");
 
-  async function handleGenerateAPIKey() {
+  const handleGenerateAPIKey = async() => {
     setLoading("loading");
 
     setError("");
@@ -48,10 +48,8 @@ export function GenerateApiKey() {
       <Button
         disabled={loading !== "idle"}
         isLoading={loading === "loading"}
-        aria-busy={loading === "loading"}
-        onClick={() => {
-          handleGenerateAPIKey();
-        }}
+        type="button"
+        onClick={handleGenerateAPIKey}
         aria-label="Generate new API key"
       >
         Generate

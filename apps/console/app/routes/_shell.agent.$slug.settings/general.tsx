@@ -12,7 +12,7 @@ type ActiveAgent = {
 export function GeneralSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
 
   return (
-    <span className="flex flex-row gap-4 items-center">
+    <div className="flex flex-row gap-4 items-center">
       <div>
         <AgentLogo size={96} />
       </div>
@@ -22,6 +22,6 @@ export function GeneralSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
         <label htmlFor="slug">Slug</label>
         <Input id="slug" readOnly defaultValue={activeAgent.slug} />
       </div>
-    </span>
+    </div>
   );
 }

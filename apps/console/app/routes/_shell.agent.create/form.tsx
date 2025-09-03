@@ -106,8 +106,7 @@ export function AgentForm({ error }: { error?: string }) {
           {/* Submit Button */}
           <Button
             type="submit"
-            isLoading={Boolean(navigation.formAction)}
-            aria-label="Create Agent"
+            isLoading={navigation.state !== "idle"}
           >
             Create
           </Button>
