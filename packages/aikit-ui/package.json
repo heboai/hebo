@@ -5,8 +5,7 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./blocks/*": "./src/blocks/*.tsx",
-    "./_shadcn/*": "./src/_shadcn/*.tsx"
+    "./blocks/*": "./src/blocks/*.tsx"
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",
