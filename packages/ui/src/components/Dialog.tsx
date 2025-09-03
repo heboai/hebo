@@ -1,8 +1,7 @@
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-
 import { DialogTitle as ShadCnDialogTitle } from "../_shadcn/ui/dialog";
 import { cn } from "../lib/utils";
 
+import type * as DialogPrimitive from "@radix-ui/react-dialog";
 
 export function DialogTitle({
   className,

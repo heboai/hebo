@@ -1,7 +1,7 @@
 "use client";
 
 import { Form, useNavigation } from "react-router";
-import { object, string, pipe } from "valibot";
+import { message, nonEmpty, object, string, pipe, trim } from "valibot";
 import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 
@@ -28,9 +28,7 @@ import {
 
 
 const FormSchema = object({
-  agentName: pipe(
-    string("Please enter an agent name")
-  ),
+  agentName: message(pipe(string(), trim(), nonEmpty()), "Please enter an agent name"),
   defaultModel: string(),
 });
 
@@ -104,17 +102,15 @@ export function AgentForm({ error }: { error?: string }) {
           )}
         </CardContent>
 
-        <CardFooter>
-          <div className="ml-auto">        
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              isLoading={Boolean(navigation.formAction)}
-              aria-label="Create Agent"
-            >
-              Create
-            </Button>
-          </div>
+        <CardFooter className="flex justify-end">
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            isLoading={Boolean(navigation.formAction)}
+            aria-label="Create Agent"
+          >
+            Create
+          </Button>
         </CardFooter>
 
       </Card>

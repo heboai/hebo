@@ -34,10 +34,12 @@ function Select({
 
   return (
     <>
-      <input name={name} ref={control.register} hidden />
+      <input name={name} ref={control.register} type="hidden" />
       <ShadcnSelect
         value={control.value}
-        onValueChange={(value) => control.change(value)}
+        onValueChange={(value) => {
+          control.change(value);
+        }}
         onOpenChange={(open) => {
           if (!open) {
             control.blur();

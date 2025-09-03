@@ -67,6 +67,8 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { errorId, errors } = useField();
 
+  if (!errors) return;
+
   return (
     <p
       data-slot="form-message"

@@ -183,7 +183,7 @@
   }
 
   .mdx p,
-  pre {
+  .mdx pre {
     @apply text-sm;
   }
 }

@@ -109,7 +109,7 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
 
                   <DialogFooter>
                     <DialogClose asChild>
-                      <Button variant="outline">Cancel</Button>
+                      <Button variant="outline" type="button">Cancel</Button>
                     </DialogClose>
                     <Button isLoading={Boolean(navigation.formAction)} type="submit">
                       Delete Agent
