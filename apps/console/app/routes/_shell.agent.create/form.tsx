@@ -1,8 +1,8 @@
 "use client";
 
 import { Form, useNavigation } from "react-router";
-import { object, string, pipe, minLength } from "valibot";
-import { useForm } from "@conform-to/react";
+import { undefinedable, object, string, pipe, minLength } from "valibot";
+import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
@@ -28,8 +28,7 @@ import {
 
 const FormSchema = object({
   agentName: pipe(
-    string(),
-    minLength(1, "Please enter an agent name")
+    string("Please enter an agent name")
   ),
   defaultModel: string(),
 });
@@ -37,7 +36,6 @@ const FormSchema = object({
 export function AgentForm({ error }: { error?: string }) {
   const [form, fields] = useForm({
     defaultValue: {
-      agentName: "",
       defaultModel: supportedModels[0].name,
     },
     onValidate({ formData }) {
@@ -58,7 +56,7 @@ export function AgentForm({ error }: { error?: string }) {
       </CardHeader>
 
       <CardContent>
-        <Form method="post" id={form.id} onSubmit={form.onSubmit}>
+        <Form method="post" {...getFormProps(form)}>
           {/* Agent Name Field */}
           <FormField field={fields.agentName} className="sm:grid sm:grid-cols-[auto_1fr]">
             <FormLabel className="sm:w-32">Agent Name</FormLabel>

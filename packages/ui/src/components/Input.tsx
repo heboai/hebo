@@ -12,8 +12,7 @@ interface InputProps extends React.ComponentProps<"input"> {
 export function Input({
   icon: Icon,
   copy,
-  value,
-  onChange,
+  defaultValue,
   className,
   ...props
 }: InputProps) {
@@ -29,13 +28,12 @@ export function Input({
       )}
       {copy && (
         <CopyToClipboardButton
-          textToCopy={value?.toString() ?? ""}
+          textToCopy={defaultValue?.toString() ?? ""}
           className="absolute top-1/2 right-2 -translate-y-1/2"
         />
       )}
       <ShadCNInput
-        value={value}
-        onChange={onChange}
+        defaultValue={defaultValue}
         className={cn(
           "bg-background text-sm",
           Icon && "pl-9",

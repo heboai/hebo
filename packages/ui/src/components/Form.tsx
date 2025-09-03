@@ -6,7 +6,9 @@ import * as React from "react";
 import { Label } from "../_shadcn/ui/label";
 import { cn } from "../lib/utils";
 
-const FieldCtx = React.createContext<FieldMetadata<any> | undefined>(undefined);
+const FieldCtx = React.createContext<FieldMetadata<string> | undefined>(
+  undefined,
+);
 const useField = () => {
   const f = React.useContext(FieldCtx);
   if (!f)
@@ -21,7 +23,7 @@ function FormField({
   children,
   className,
 }: {
-  field: FieldMetadata<any>;
+  field: FieldMetadata<string>;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -78,14 +80,14 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 }
 
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
-  const { id, name, defaultValue, valid, descriptionId, errorId } = useField();
+  const { descriptionId, errorId, id, initialValue, name, valid } = useField();
 
   return (
     <Slot
       data-slot="form-control"
       id={id}
       {...({ name: name } as Record<string, unknown>)}
-      defaultValue={defaultValue}
+      defaultValue={initialValue}
       aria-describedby={valid ? `${descriptionId}` : `${errorId}`}
       aria-invalid={!valid}
       {...props}

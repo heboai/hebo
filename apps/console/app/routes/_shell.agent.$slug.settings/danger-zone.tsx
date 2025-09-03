@@ -1,6 +1,6 @@
 import { Form, useNavigation } from "react-router";
 import { object, string, literal } from "valibot";
-import { useForm } from "@conform-to/react";
+import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { Alert, AlertTitle } from "@hebo/ui/components/Alert";
@@ -72,7 +72,7 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
               </DialogTrigger>
               <DialogContent className="bg-sidebar sm:max-w-md">
                 {/* FUTURE: improve spacing in dialog */}
-                <Form method="post" id={form.id} onSubmit={form.onSubmit}>
+                <Form method="post"  {...getFormProps(form)}>
                   <DialogHeader>
                     <DialogTitle>Delete Agent</DialogTitle>
                   </DialogHeader>
@@ -90,15 +90,15 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
                   </FormField>
 
                   <FormField field={fields.agentName}>
-                      <FormLabel>
-                        To confirm, type{" "}
-                        <strong>{activeAgent.name}</strong> in
-                        the box below:
-                      </FormLabel>
-                      <FormControl>
-                        <Input />
-                      </FormControl>
-                      <FormMessage />
+                    <FormLabel>
+                      To confirm, type{" "}
+                      <strong>{activeAgent.name}</strong> in
+                      the box below:
+                    </FormLabel>
+                    <FormControl>
+                      <Input />
+                    </FormControl>
+                    <FormMessage />
                   </FormField>
 
                   {error && (
