@@ -1,6 +1,6 @@
 import ky, { HTTPError, TimeoutError, type KyInstance } from "ky";
 
-import { RespondIoApiFailedError, RespondIoApiNetworkError } from "./errors";
+import { RespondIoApiFailureError, RespondIoApiNetworkError } from "./errors";
 import {
   ContactIdentifier,
   RespondIoApiClientConfig,
@@ -49,7 +49,7 @@ export class RespondIoApiClient {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         const errorBody = await error.response.json();
-        throw new RespondIoApiFailedError(
+        throw new RespondIoApiFailureError(
           error.response.status,
           { json: errorBody },
           `Respond.io API Error: ${error.response.status} - ${error.message}`,

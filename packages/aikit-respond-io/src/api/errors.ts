@@ -12,7 +12,7 @@ export class RespondIoApiError extends Error {
 /**
  * Represents an error returned by the Respond.io API (e.g., 4xx or 5xx status codes).
  */
-export class RespondIoApiFailedError extends RespondIoApiError {
+export class RespondIoApiFailureError extends RespondIoApiError {
   public statusCode: number;
   public apiResponse: any; // The raw error response from the API
 
@@ -22,10 +22,10 @@ export class RespondIoApiFailedError extends RespondIoApiError {
     message: string = "Respond.io API Error",
   ) {
     super(message);
-    this.name = "RespondIoApiFailedError";
+    this.name = "RespondIoApiFailureError";
     this.statusCode = statusCode;
     this.apiResponse = apiResponse;
-    Object.setPrototypeOf(this, RespondIoApiFailedError.prototype);
+    Object.setPrototypeOf(this, RespondIoApiFailureError.prototype);
   }
 }
 
@@ -36,6 +36,6 @@ export class RespondIoApiNetworkError extends RespondIoApiError {
   constructor(message: string = "Respond.io Network Error") {
     super(message);
     this.name = "RespondIoNetworkError";
-    Object.setPrototypeOf(this, RespondIoNetworkError.prototype);
+    Object.setPrototypeOf(this, RespondIoApiNetworkError.prototype);
   }
 }

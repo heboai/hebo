@@ -42,9 +42,6 @@ export type EventHandler<T extends WebhookPayload = WebhookPayload> = (
 export type ErrorHandler = (error: Error) => void | Promise<void>;
 
 // HandlerConfig no longer needs to store the signing key.
-export interface HandlerConfig {
-  callback: EventHandler;
-}
 
 // --- Common Base Interfaces ---
 

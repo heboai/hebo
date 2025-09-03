@@ -3,7 +3,6 @@ import {
   RespondIoEvents,
   EventHandler,
   ErrorHandler,
-  HandlerConfig,
   WebhookPayload,
   RespondIoWebhookConfig,
   EventPayloadMap,
@@ -14,8 +13,7 @@ import { verifySignature } from "./utils";
 /**
  * A builder and handler for respond.io webhooks.
  */
-export class RespondIoWebhook {
-  private readonly eventHandlers = new Map<string, HandlerConfig>();
+export class RespondIoWebhook extends EventTarget {
   private readonly eventConfigs: Partial<
     Record<RespondIoEvents, WebhookEventConfig>
   >;
@@ -28,6 +26,7 @@ export class RespondIoWebhook {
    * @param config The configuration object containing the event configurations.
    */
   constructor(config: RespondIoWebhookConfig) {
+    super(); // Call the EventTarget constructor
     if (!config || !config.events || typeof config.events !== "object") {
       throw new RespondIoWebhookError(
         "Webhook config with 'events' map must be provided.",
@@ -52,8 +51,13 @@ export class RespondIoWebhook {
       );
     }
 
-    const handler: HandlerConfig = { callback };
-    this.eventHandlers.set(eventType, handler);
+    // Use addEventListener internally
+    this.addEventListener(eventType, (event: Event) => {
+      const customEvent = event as CustomEvent<
+        EventPayloadMap[typeof eventType]
+      >;
+      callback(customEvent.detail);
+    });
     return this;
   }
 
@@ -69,14 +73,17 @@ export class RespondIoWebhook {
   /**
    * Processes an incoming webhook request.
    * Verifies the signature and executes the appropriate handler.
-   * @param body The raw request body string.
-   * @param headers The request headers (case-insensitive).
+   * @param request The incoming Request object (e.g., from a Fetch API compatible environment).
    */
-  public async process(
-    body: string,
-    headers: Record<string, any>,
-  ): Promise<void> {
+  public async process(request: Request): Promise<void> {
     try {
+      const clonedRequest = request.clone();
+      const body = await clonedRequest.text();
+      const headers: Record<string, string> = {};
+      for (const [key, value] of clonedRequest.headers.entries()) {
+        headers[key.toLowerCase()] = value;
+      }
+
       let payload: WebhookPayload;
       try {
         payload = JSON.parse(body);
@@ -103,29 +110,13 @@ export class RespondIoWebhook {
       }
       const signingKey = eventConfig.signingKey;
 
-      const handler = this.eventHandlers.get(eventType);
-
-      if (!handler) {
-        throw new RespondIoWebhookError(
-          `No handler registered for event type: ${eventType}`,
-        );
-      }
-
-      // Verify signature for the handler *before* executing
-      const normalizedHeaders = Object.fromEntries(
-        Object.entries(headers).map(([k, v]) => [
-          k.toLowerCase(),
-          Array.isArray(v) ? v[0] : v,
-        ]),
-      );
-      const signature = normalizedHeaders["x-webhook-signature"] as
-        | string
-        | undefined;
+      const signature = headers["x-webhook-signature"] as string | undefined;
 
       verifySignature(body, signature, signingKey); // Use the looked-up key
+      console.log(`Received event: ${eventType}`);
 
-      // Execute the handler
-      await handler.callback(payload);
+      // Dispatch the event using EventTarget's dispatchEvent
+      this.dispatchEvent(new CustomEvent(eventType, { detail: payload }));
     } catch (error) {
       await this.errorHandler(error as Error);
       throw error;

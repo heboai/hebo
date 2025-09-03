@@ -1,6 +1,7 @@
 import { RespondIoApiClient, RespondIoApiClientConfig } from "../api";
 import { RespondIoWebhook, RespondIoWebhookConfig } from "../webhook";
 import { RespondIoEvents, MessageReceivedPayload } from "../webhook/types";
+
 import type { ContactIdentifier, SendMessageResponse } from "../api/types";
 
 /**
@@ -38,15 +39,11 @@ export class RespondIoAgent {
    * This method should be called from your server's route handler.
    * It verifies the request signature and dispatches the event to the appropriate listener.
    *
-   * @param body The raw request body (as a string).
-   * @param headers The request headers, including 'x-respond-io-signature'.
+   * @param request The incoming Request object (e.g., from a Fetch API compatible environment).
    * @throws {RespondIoWebhookError} If the signature is invalid or the event is unhandled.
    */
-  public async processWebhook(
-    body: string,
-    headers: Record<string, any>,
-  ): Promise<void> {
-    await this.webhook.process(body, headers);
+  public async processWebhook(request: Request): Promise<void> {
+    await this.webhook.process(request);
   }
 
   /**
