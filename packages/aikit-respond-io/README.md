@@ -22,7 +22,8 @@ The `RespondIoAgent` is the easiest way to get started. It combines the webhook 
 
 ```ts
 import { Hono } from "hono";
-import { RespondIoAgent, RespondIoEvents } from "@hebo/aikit-respond-io";
+import { RespondIoAgent } from "@hebo/aikit-respond-io";
+import { RespondIoEvents } from "@hebo/aikit-respond-io/webhook";
 
 const app = new Hono();
 
@@ -44,7 +45,7 @@ const agent = new RespondIoAgent({
 
 // 2. Register a handler for incoming messages.
 agent.onMessageReceived(async (payload) => {
-  const contactId = payload.contact.id;
+  const contactId = String(payload.contact.id);
   const message = payload.message.message.text;
 
   console.log(`Received message "${message}" from contact ${contactId}`);

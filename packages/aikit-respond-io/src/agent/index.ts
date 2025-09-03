@@ -54,8 +54,9 @@ export class RespondIoAgent {
    */
   public async sendTextMessage(
     text: string,
-    contactId: string | ContactIdentifier,
+    contactId: number | string | ContactIdentifier,
   ): Promise<SendMessageResponse> {
+    contactId = String(contactId);
     const identifier: ContactIdentifier = contactId.includes(":")
       ? (contactId as ContactIdentifier)
       : `id:${contactId}`;

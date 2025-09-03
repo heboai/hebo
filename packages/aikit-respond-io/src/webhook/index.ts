@@ -1,7 +1,6 @@
 import { RespondIoWebhookError } from "./errors";
 import {
   RespondIoEvents,
-  EventHandler,
   ErrorHandler,
   WebhookPayload,
   RespondIoWebhookConfig,
@@ -36,26 +35,18 @@ export class RespondIoWebhook extends EventTarget {
   }
 
   /**
-   * Registers a handler for a specific event type. This will overwrite any existing handler for the same event type.
+   * Registers a handler for a specific event type.
+   * Note: Multiple handlers per event are supported (no implicit overwrite).
    * @param eventType The event type to handle.
    * @param callback The function to execute when this event is received.
    */
   public on<E extends RespondIoEvents>(
     eventType: E,
     callback: (payload: EventPayloadMap[E]) => void | Promise<void>,
-  ): this;
-  public on(eventType: RespondIoEvents, callback: EventHandler): this {
-    if (typeof callback !== "function") {
-      throw new RespondIoWebhookError(
-        `Invalid callback function provided for event "${eventType}".`,
-      );
-    }
-
-    // Use addEventListener internally
+  ): this {
     this.addEventListener(eventType, (event: Event) => {
-      const customEvent = event as CustomEvent<
-        EventPayloadMap[typeof eventType]
-      >;
+      const customEvent = event as CustomEvent<EventPayloadMap[E]>;
+      // @ts-expect-error detail exists via CustomEvent or fallback
       callback(customEvent.detail);
     });
     return this;
@@ -78,18 +69,8 @@ export class RespondIoWebhook extends EventTarget {
   public async process(request: Request): Promise<void> {
     try {
       const clonedRequest = request.clone();
-      const body = await clonedRequest.text();
-      const headers: Record<string, string> = {};
-      for (const [key, value] of clonedRequest.headers.entries()) {
-        headers[key.toLowerCase()] = value;
-      }
-
-      let payload: WebhookPayload;
-      try {
-        payload = JSON.parse(body);
-      } catch {
-        throw new Error("Failed to parse request body as JSON.");
-      }
+      const payload: WebhookPayload = await clonedRequest.json();
+      const signature = clonedRequest.headers.get("x-webhook-signature");
 
       const eventType = payload.event_type as RespondIoEvents;
       if (
@@ -109,10 +90,7 @@ export class RespondIoWebhook extends EventTarget {
         );
       }
       const signingKey = eventConfig.signingKey;
-
-      const signature = headers["x-webhook-signature"] as string | undefined;
-
-      verifySignature(body, signature, signingKey); // Use the looked-up key
+      verifySignature(body, signature, signingKey);
       console.log(`Received event: ${eventType}`);
 
       // Dispatch the event using EventTarget's dispatchEvent

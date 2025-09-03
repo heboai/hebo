@@ -35,7 +35,7 @@ export class RespondIoApiFailureError extends RespondIoApiError {
 export class RespondIoApiNetworkError extends RespondIoApiError {
   constructor(message: string = "Respond.io Network Error") {
     super(message);
-    this.name = "RespondIoNetworkError";
+    this.name = "RespondIoApiNetworkError";
     Object.setPrototypeOf(this, RespondIoApiNetworkError.prototype);
   }
 }
