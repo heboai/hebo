@@ -44,7 +44,11 @@ function Select({
           }
         }}
       >
-        <SelectTrigger {...props} ref={selectRef}>
+        <SelectTrigger
+          className="bg-background w-full min-w-0 truncate"
+          ref={selectRef}
+          {...props}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

@@ -55,24 +55,24 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
   const navigation = useNavigation();
 
   return (
-    <>
+    <span className="flex flex-col gap-2">
       <h2>Danger Zone</h2>
 
-      {/* FUTURE: generalize px / py for Cards */}
-      <Card className="border-destructive border-dashed py-5">
-        <CardHeader className="px-5">
+      <Card className="border-destructive border-dashed">
+        <CardHeader>
           <CardTitle>Delete this agent</CardTitle>
           <CardDescription>
             Once you delete an agent, there is no going back. Be certain.
           </CardDescription>
           <CardAction className="self-center">
+
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="destructive">Delete Agent</Button>
               </DialogTrigger>
-              <DialogContent className="bg-sidebar sm:max-w-md">
-                {/* FUTURE: improve spacing in dialog */}
-                <Form method="post"  {...getFormProps(form)}>
+
+              <DialogContent className="sm:max-w-md bg-sidebar">
+                <Form method="post" {...getFormProps(form)} className="contents">
                   <DialogHeader>
                     <DialogTitle>Delete Agent</DialogTitle>
                   </DialogHeader>
@@ -118,9 +118,10 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
                 </Form>
               </DialogContent>
             </Dialog>
+
           </CardAction>
         </CardHeader>
       </Card>
-    </>
+    </span>
   );
 }

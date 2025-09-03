@@ -5,7 +5,7 @@ import * as React from "react"
 
 import { type CopyToClipboardResult } from "../utils/copyToClipboard";
 import { getNodeText } from "../utils/getNodeText";
-import { type CodeBlockProps } from "./CodeBlock";
+import { styles, type CodeBlockProps } from "./CodeBlock";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
 
 import * as Tabs from "@radix-ui/react-tabs";
@@ -56,9 +56,9 @@ export const CodeGroup = React.forwardRef(function CodeGroup(
       ref={ref}
       value={activeTab}
       onValueChange={setActiveTab}
-      className={clsx("not-prose gray-frame", className)}
+      className={clsx("not-prose", styles.frame, className)}
     >
-      <Tabs.List className="flex codeblock-header space-x-4">
+      <Tabs.List className={styles.header}>
         {childArr.map((child, tabIndex: number) => (
           <TabItem key={tabIndex.toString()} value={tabIndex.toString()}>
             {(child.props.children as React.ReactElement<{ title?: string }>)?.props?.title ?? "Title Missing"}
@@ -76,7 +76,7 @@ export const CodeGroup = React.forwardRef(function CodeGroup(
       </Tabs.List>
       {childArr.map((child, tabIndex: number) => (
         <Tabs.Content key={tabIndex.toString()} value={tabIndex.toString()}>
-          <pre className="code-in-gray-frame">
+          <pre className={styles.code}>
               {(child.props.children as React.ReactElement<{ children?: React.ReactNode }>).props.children}
           </pre>
         </Tabs.Content>
@@ -93,7 +93,7 @@ interface TabItemProps {
 function TabItem({ children, value }: TabItemProps) {
   return (
     <Tabs.Trigger
-      className="flex flex-none items-center border-b-2"
+      className="flex flex-none items-center border-b-2 data-[state=active]:border-slate-500"
       value={value}
     >
       <span className="z-10">{children}</span>

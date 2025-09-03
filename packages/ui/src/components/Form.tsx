@@ -44,7 +44,7 @@ function FormLabel({
     <Label
       data-slot="form-label"
       data-error={!valid}
-      className={cn("data-[error=true]:text-destructive", className)}
+      className={cn("data-[error=true]:text-destructive py-1.5", className)}
       htmlFor={id}
       {...props}
     />

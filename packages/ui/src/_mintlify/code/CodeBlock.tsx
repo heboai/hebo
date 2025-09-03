@@ -7,6 +7,12 @@ import { type CopyToClipboardResult } from "../utils/copyToClipboard";
 import { getNodeText } from "../utils/getNodeText";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
 
+export const styles = {
+  frame: "rounded-md overflow-hidden bg-background border shadow-xs",
+  code: "pl-3 py-2 overflow-x-auto",
+  header: "bg-slate-200 pl-3 flex space-x-4"
+}
+
 export interface CodeBlockPropsBase {
   title: string;
   /**
@@ -35,7 +41,7 @@ export const CodeBlock = React.forwardRef(function CodeBlock(
 
   return (
     <div
-      className={clsx("relative not-prose gray-frame", className)}
+      className={clsx("relative not-prose", styles.frame, className)}
       role="region"
       aria-label={`Code block: ${title}`}
       ref={ref}
@@ -48,7 +54,7 @@ export const CodeBlock = React.forwardRef(function CodeBlock(
       ) : (
         <Button className="absolute top-0 right-0 p-2" />
       )}
-      <pre className="code-in-gray-frame">{children}</pre>
+      <pre className={styles.code}>{children}</pre>
     </div>
   );
 });
@@ -65,7 +71,7 @@ function CodeTitleBar({
   children?: React.ReactElement;
 }) {
   return (
-    <div className="flex codeblock-header space-x-3">
+    <div className={styles.header}>
       <div className="flex-none flex items-center">{title}</div>
       {children && (
         <div className="flex-auto flex items-center justify-end">

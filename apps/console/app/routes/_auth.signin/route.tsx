@@ -78,8 +78,6 @@ export default function SignIn() {
                   <span className="text-sm whitespace-nowrap">or</span>
                   <div className="h-[1px] flex-1 bg-gray-300" />
                 </div>
-                {/* FUTURE make the sign-in button use primary color (yellow)*/}
-                {/* TODO fix spacings and documentation button */}
                 <MagicLinkSignIn />
               </div>
 
