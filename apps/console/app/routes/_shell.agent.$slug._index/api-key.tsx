@@ -1,4 +1,4 @@
-import { KeyRound, Loader2Icon } from "lucide-react";
+import { KeyRound } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@hebo/ui/components/Button";
@@ -47,15 +47,13 @@ export function GenerateApiKey() {
       />
       <Button
         disabled={loading !== "idle"}
+        isLoading={loading === "loading"}
         aria-busy={loading === "loading"}
         onClick={() => {
           handleGenerateAPIKey();
         }}
         aria-label="Generate new API key"
       >
-        {loading === "loading" && (
-          <Loader2Icon className="animate-spin" aria-hidden="true" />
-        )}
         Generate
       </Button>
     </div>

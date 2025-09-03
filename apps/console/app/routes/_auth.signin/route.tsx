@@ -18,7 +18,7 @@ export default function SignIn() {
         <Button
           asChild
           variant="ghost"
-          className="text-foreground absolute top-5 left-6 bg-blue-200 no-underline hover:bg-blue-300"
+          className="absolute top-5 left-6 bg-blue-200 hover:bg-blue-300"
         >
           <a
             href="https://docs.hebo.ai"
