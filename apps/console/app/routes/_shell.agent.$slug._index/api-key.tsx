@@ -42,7 +42,7 @@ export function GenerateApiKey() {
         readOnly
         icon={KeyRound}
         copy={true}
-        defaultValue={key}
+        value={key}
         aria-label="Generated API key"
       />
       <Button
