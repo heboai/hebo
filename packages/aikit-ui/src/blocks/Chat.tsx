@@ -71,14 +71,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Skip if already in an input
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement ||
-        (e.target as HTMLElement)?.isContentEditable
-      )
-        return;
-
       // Ctrl+i or Cmd+i to focus chat input
       if ((e.ctrlKey || e.metaKey) && e.key === "i") {
         e.preventDefault();
