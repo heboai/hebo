@@ -7,7 +7,7 @@ import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "../../hooks/use-mobile"
 import { cn } from "../../lib/utils"
-import { Button } from "@hebo/aikit-ui/_shadcn/ui/button"
+import { Button } from "./button"
 import { Input } from "./input"
 import { Separator } from "./separator"
 import {
