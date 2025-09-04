@@ -16,7 +16,7 @@
     background-color: var(--color-secondary) !important;
   }
 
-  /* Login: Gitub Icon */
+  /* Login: GitHub Icon */
   svg[viewBox="0 0 496 512"] path {
     fill: var(--color-foreground) !important;
   }
