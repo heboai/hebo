@@ -1,10 +1,9 @@
 "use client";
 
-import { ajvResolver } from "@hookform/resolvers/ajv";
-import { type Static, Type } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
-import { useNavigation, useSubmit } from "react-router";
-import { useForm } from "react-hook-form";
+import { Form, useNavigation } from "react-router";
+import { message, nonEmpty, object, string, pipe, trim } from "valibot";
+import { useForm, getFormProps } from "@conform-to/react";
+import { parseWithValibot } from "@conform-to/valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Button } from "@hebo/ui/components/Button";
@@ -12,143 +11,108 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@hebo/ui/components/Card";
 import {
-  Form,
   FormControl,
   FormField,
-  FormItem,
   FormLabel,
   FormMessage,
 } from "@hebo/ui/components/Form";
 import { Input } from "@hebo/ui/components/Input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select
 } from "@hebo/ui/components/Select";
 
 
-import type { JSONSchemaType } from "ajv";
-
-
-const FormSchema = Type.Object({
-  agentName: Type.String({
-    minLength: 1,
-    default: "",
-    errorMessage: "Please enter an agent name",
-  }),
-  defaultModel: Type.String({
-    default: supportedModels[0].name,
-  }),
+const FormSchema = object({
+  agentName: message(pipe(string(), trim(), nonEmpty()), "Please enter an agent name"),
+  defaultModel: string(),
 });
 
-type FormData = Static<typeof FormSchema>;
-
 export function AgentForm({ error }: { error?: string }) {
-
-  const form = useForm<FormData>({
-    resolver: ajvResolver(FormSchema as unknown as JSONSchemaType<FormData>),
-    defaultValues: Value.Create(FormSchema) as FormData,
+  const [form, fields] = useForm({
+    defaultValue: {
+      defaultModel: supportedModels[0].name,
+    },
+    onValidate({ formData }) {
+      return parseWithValibot(formData, { schema: FormSchema });
+    },
   });
 
-  const submit = useSubmit();
   const navigation = useNavigation();
 
   return (
-    <Card className="max-w-lg border-none bg-transparent shadow-none">
-      <CardHeader>
-        <CardTitle>Create a new agent</CardTitle>
-        <CardDescription>
-          Each agent has its own model configuration and API keys. Learn more
-          about which model to choose based on Use Case.
-        </CardDescription>
-      </CardHeader>
+    <Form method="post" {...getFormProps(form)} className="contents">
+      <Card className="sm:max-w-lg min-w-0 w-full border-none bg-transparent shadow-none">
 
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => submit(data, { method: "post" }))}  aria-busy={Boolean(navigation.formAction)}>
+        <CardHeader>
+          <CardTitle><h2>Create a new agent</h2></CardTitle>
+          <CardDescription>
+            Each agent has its own model configuration and API keys. Learn more
+            about which model to choose based on Use Case.
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent>
+          <div className="sm:grid sm:grid-cols-[auto_1fr] sm:gap-y-2">
             {/* Agent Name Field */}
-            <FormField
-              control={form.control}
-              name="agentName"
-              render={({ field }) => (
-                <FormItem className="sm:grid sm:grid-cols-[auto_1fr]">
-                  <FormLabel className="sm:w-32">Agent Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Set an agent name" {...field} />
-                  </FormControl>
-                  <FormMessage className="sm:col-start-2" />
-                </FormItem>
-              )}
-            />
+            <FormField field={fields.agentName} className="contents">
+              <FormLabel className="sm:w-32">Agent Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Set an agent name" />
+              </FormControl>
+              <FormMessage className="sm:col-start-2" />
+            </FormField>
 
             {/* Default Model Field */}
-            <FormField
-              control={form.control}
-              name="defaultModel"
-              render={({ field }) => (
-                <FormItem className="sm:grid sm:grid-cols-[auto_1fr]">
-                  <FormLabel className="sm:w-32">Default Model</FormLabel>
-                  <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue
-                          placeholder="Select a model"
-                          className="truncate"
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {supportedModels.map((model) => (
-                          <SelectItem
-                            key={model.name}
-                            value={model.name}
-                            className="truncate"
-                          >
-                            {model.displayName}
-                            <span className="text-xs">
-                              (
-                              {new Intl.NumberFormat("en", {
-                                notation: "compact",
-                                compactDisplay: "short",
-                                maximumFractionDigits: 1,
-                              }).format(model.rateLimit)}{" "}
-                              free tokens / month)
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage className="sm:col-start-2" />
-                </FormItem>
-              )}
-            />
+            <FormField field={fields.defaultModel} className="contents">
+              <FormLabel className="sm:w-32">Default Model</FormLabel>
+              <FormControl>
+                <Select
+                  items={supportedModels.map((m) => ({
+                    value: m.name,
+                    name: (
+                        <>
+                          {m.displayName}{" "}
+                          <span className="text-xs">
+                            ({new Intl.NumberFormat("en", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                              maximumFractionDigits: 1,
+                            }).format(m.rateLimit)}{" "}
+                            free tokens / month)
+                          </span>
+                        </>
+                      ),
+                  }))}
+                />
+              </FormControl>
+              <FormMessage className="sm:col-start-2" />
+            </FormField>
+          </div>
 
-            {/* Mutation Error Display */}
-            {error && (
-              <div className="text-destructive text-right" role="alert">
-                {error}
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                isLoading={Boolean(navigation.formAction)}
-                aria-label="Create Agent"
-              >
-                Create
-              </Button>
+          {/* Mutation Error Display */}
+          {error && (
+            <div className="text-destructive text-right" role="alert">
+              {error}
             </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+          )}
+        </CardContent>
+
+        <CardFooter className="flex justify-end">
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            isLoading={navigation.state !== "idle"}
+          >
+            Create
+          </Button>
+        </CardFooter>
+
+      </Card>
+    </Form>
   );
 }

@@ -17,8 +17,8 @@ export async function copyToClipboard(
   try {
     await navigator.clipboard.writeText(text);
     return "success";
-  } catch (err) {
-    console.error("Failed to copy: ", err);
+  } catch (error) {
+    console.error("Failed to copy:", error);
     return "error";
   }
 }
