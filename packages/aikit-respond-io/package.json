@@ -21,10 +21,10 @@
     }
   },
   "scripts": {
-    "build": "bunx tsc",
+    "build": "tsc",
     "clean": "git clean -fdX -e \".env*\" .",
-    "lint": "bunx eslint .",
-    "dev": "bunx tsc -w"
+    "lint": "eslint .",
+    "dev": "tsc -w"
   },
   "type": "module",
   "dependencies": {

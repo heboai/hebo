@@ -12,7 +12,7 @@
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",
-    "lint": "bunx eslint ."
+    "lint": "eslint ."
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

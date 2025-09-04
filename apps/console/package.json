@@ -10,7 +10,7 @@
     "build": "react-router build",
     "clean": "git clean -fdX -e \".env*\" .",
     "dev": "react-router dev",
-    "lint": "bunx eslint .",
+    "lint": "eslint .",
     "start": "vite preview",
     "typecheck": "react-router typegen && tsc"
   },

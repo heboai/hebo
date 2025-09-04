@@ -9,7 +9,7 @@
   },
   "scripts": {
     "clean": "git clean -fdX -e \".env*\" .",
-    "lint": "bunx eslint .",
+    "lint": "eslint .",
     "migrate": "drizzle-kit migrate",
     "generate": "drizzle-kit generate",
     "studio": "drizzle-kit studio",

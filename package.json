@@ -14,15 +14,15 @@
     "db:migrate": "bun run --filter @hebo/db migrate",
     "db:studio": "bun run --filter @hebo/db studio",
     "db:check": "bun run --filter @hebo/db check",
-    "deploy": "sst deploy",
     "dev": "turbo run dev --parallel",
     "format": "prettier --write .",
     "format:staged": "prettier --write",
     "lint": "turbo run lint",
     "lint:deps": "check-dependency-version-consistency .",
-    "lint:staged": "bunx eslint --cache --fix",
+    "lint:staged": "bun eslint --cache --fix",
     "postinstall": "lefthook install",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "sst": "sst"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

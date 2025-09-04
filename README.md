@@ -125,25 +125,24 @@ The repository uses GitHub Actions for CI/CD:
 #### Manual deployments:
 
 For deployments, we utilize the SST framework (https://sst.dev/).
-You can either install the SST CLI locally or use `bunx` to execute deployment commands manually.
 
 ```bash
 # Install providers
-sst install
+bun sst install
 
 # Set secrets
 
-sst secret set HeboDbUsername <username> --stage <stage>
-sst secret set HeboDbPassword <password> --stage <stage>
+bun sst secret set HeboDbUsername <username> --stage <stage>
+bun sst secret set HeboDbPassword <password> --stage <stage>
 
 # The same for StackProjectId, StackPublishableClientKey, StackSecretServerKey, PosthogKey, PosthogHost
 
 # Deploy a preview link
-sst deploy --stage PR-XX
+bun sst deploy --stage PR-XX
 
 # Remove a preview link
-sst remove --stage PR-XX
+bun sst remove --stage PR-XX
 
 # Deploy to production
-sst deploy --stage production
+bun sst deploy --stage production
 ```
