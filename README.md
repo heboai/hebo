@@ -132,8 +132,8 @@ bun run sst:synth
 
 # Set secrets
 
-bun run sst secret set DbUsername <username> --stage <stage>
-bun run sst secret set DbPassword <password> --stage <stage>
+bun run sst secret set DbUsername '<username>' --stage <stage>
+bun run sst secret set DbPassword '<password>' --stage <stage>
 ...
 
 # Deploy a preview link
