@@ -85,14 +85,14 @@ bun run -F @hebo/db clean
 | --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
 | 1   | **Frontend-only** (offline) | `bun run -F @hebo/console dev` | —                              | none – UI relies on local state manager |
 | 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | http://localhost:3001                   |
-| 3   | **Remote full-stack**       | `bun run deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
+| 3   | **Remote full-stack**       | `bun run sst deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
 
 > **How the UI knows if the API is present**
 >
 > The web app reads `VITE_API_URL` at runtime:
 >
 > - If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
-> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun dev`, or the real API Gateway URL by `bun run deploy`).
+> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun dev`, or the real API Gateway URL by `bun run sst deploy`).
 >
 > Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `...` [TBD].
 
@@ -143,5 +143,5 @@ bun run sst deploy --stage PR-XX
 bun run sst remove --stage PR-XX
 
 # Deploy to production
-bun run deploy --stage production
+bun run sst deploy --stage production
 ```

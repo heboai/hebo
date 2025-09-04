@@ -14,7 +14,6 @@
     "db:migrate": "bun run --filter @hebo/db migrate",
     "db:studio": "bun run --filter @hebo/db studio",
     "db:check": "bun run --filter @hebo/db check",
-    "deploy": "sst deploy",
     "dev": "turbo run dev --parallel",
     "format": "prettier --write .",
     "format:staged": "prettier --write",
