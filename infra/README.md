@@ -65,8 +65,9 @@ Containerized Gateway deployed on AWS App Runner:
 
 ### Prerequisites
 
-1. **AWS CLI configured**
-2. **Docker installed and running**
+1. **Bun installed** (>= 1.2.x)
+2. **AWS CLI configured**
+3. **Docker installed and running**
 
 ### Install SST providers
 
