@@ -1,3 +1,19 @@
+This folder includes code from:
+
+  Mintlify Components
+  https://github.com/mintlify/components
+
+Licensed under the MIT License (see below).
+
+Modifications from the original project were made, including but not limited to:
+- Use Radix UI instead of Headless UI
+- Style according to Hebo design system
+- Adapt to modern tooling standards
+
+The original license notice is included below.
+
+---
+
 MIT License
 
 Copyright (c) 2022 Mintlify, Inc.
