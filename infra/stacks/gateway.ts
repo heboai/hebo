@@ -4,8 +4,7 @@
 import heboDatabase from "./db";
 import { appRunnerEcrAccessRole, ecrAuth, heboGatewayRepo } from "./ecr";
 import * as secrets from "./secrets";
-import heboSecurityGroup from "./security-group";
-import heboVpc from "./vpc";
+import { heboVpcConnector } from "./vpc";
 
 const resourceName =
   $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
@@ -27,18 +26,6 @@ const heboGatewayImage = new docker.Image("hebo-gateway-image", {
     password: ecrAuth.password,
   },
 });
-
-const heboGatewayConnector = new aws.apprunner.VpcConnector(
-  "HeboGatewayConnector",
-  {
-    subnets: heboVpc.privateSubnets,
-    securityGroups: [heboSecurityGroup.id],
-    vpcConnectorName:
-      $app.stage === "production"
-        ? "hebo-gateway"
-        : `${$app.stage}-hebo-gateway`,
-  },
-);
 
 const heboGateway = new aws.apprunner.Service("HeboGateway", {
   serviceName: resourceName,
@@ -69,7 +56,7 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
   networkConfiguration: {
     egressConfiguration: {
       egressType: "VPC",
-      vpcConnectorArn: heboGatewayConnector.arn,
+      vpcConnectorArn: heboVpcConnector.arn,
     },
   },
 });
