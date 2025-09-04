@@ -170,9 +170,10 @@ app.post("/webhook/respond-io", (c) => {
 export default app;
 ```
 
-### API Client Example with AWS Lambda
+### API Client Example with Hono
 
 ```ts
+import { Hono } from "hono";
 import {
   RespondIoApiClient,
   SendMessagePayload,
@@ -181,18 +182,20 @@ import {
   SendMessageResponse,
 } from "@hebo/aikit-respond-io/api";
 
+const app = new Hono();
+
 // Initialize the RespondIo client with your API key.
 // It's recommended to use environment variables for sensitive information.
 const respondIoApiClient = new RespondIoApiClient({
   apiKey: process.env.RESPOND_IO_API_KEY!,
 });
 
-export const handler = async (event: {
-  contactIdentifier: ContactIdentifier; // e.g., "id:123", "phone:+1234567890"
-  messageText: string;
-}) => {
+app.post("/send-message", async (c) => {
   try {
-    const { contactIdentifier, messageText } = event;
+    const { contactIdentifier, messageText } = await c.req.json<{
+      contactIdentifier: ContactIdentifier; // e.g., "id:123", "phone:+1234567890"
+      messageText: string;
+    }>();
 
     const message: TextMessage = {
       type: "text",
@@ -210,22 +213,34 @@ export const handler = async (event: {
 
     console.log("Message sent successfully:", response);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
+    return c.json(
+      {
         message: "Message sent successfully",
         messageId: response.messageId,
-      }),
-    };
+      },
+      200,
+    );
   } catch (error) {
     console.error("Error sending message:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
+    return c.json(
+      {
         message: "Failed to send message",
         error: (error as Error).message,
-      }),
-    };
+      },
+      500,
+    );
   }
-};
+});
+
+// For local development with Node.js, you might use:
+// import { serve } from "@hono/node-server";
+// serve({
+//   fetch: app.fetch,
+//   port: 3000,
+// }, () => {
+//   console.log("Server listening on port 3000");
+// });
+
+// For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
+export default app;
 ```
