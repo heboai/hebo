@@ -11,7 +11,6 @@ import { completions } from "./modules/completions";
 import { embeddings } from "./modules/embeddings";
 import { models } from "./modules/models";
 
-
 const PORT = Number(process.env.GATEWAY_PORT) || 3002;
 
 export const createApp = () =>

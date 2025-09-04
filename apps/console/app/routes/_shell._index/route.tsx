@@ -6,9 +6,10 @@ async function defaultAgentMiddleware() {
   const { data: agents } = await api.agents.get();
 
   // FUTURE fade-in the next page
-  // FUTURE remember last agent in sessions storage
+  // FUTURE remember last agent and branch in session storage
+  
   if (agents!.length > 0) {
-    throw redirect(`/agent/${agents![0]?.slug}`);
+    throw redirect(`/agent/${agents![0]?.slug}/branch/${agents![0]?.branches![0]?.slug}`);
   }
   throw redirect("/agent/create");
 }
