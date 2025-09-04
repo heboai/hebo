@@ -80,10 +80,10 @@ bun sst:synth
 
 ```bash
 # From project root
-bun sst deploy
+bun deploy
 
 # Or specific stage
-bun sst deploy --stage production
+bun deploy --stage production
 ```
 
 ## Security
