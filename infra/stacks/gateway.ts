@@ -2,16 +2,17 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
+import appRunnerEcrAccessRole from "./iam";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
-import appRunnerEcrAccessRole from "./iam";
 
 const stackProjectId = new sst.Secret("StackProjectId");
 const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 const groqApiKey = new sst.Secret("GroqApiKey");
 const voyagerApiKey = new sst.Secret("VoyagerApiKey");
 
-const resourceName = $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
+const resourceName =
+  $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
 
 const heboGatewayRepo = new aws.ecr.Repository(resourceName, {
@@ -29,9 +30,9 @@ const heboGatewayImage = new docker.Image("hebo-gateway-image", {
   },
   imageName: $interpolate`${heboGatewayRepo.repositoryUrl}:${dockerTag}`,
   registry: {
-    server: heboGatewayRepo.repositoryUrl.apply(url => {
-      const parts = url.split('/');
-      return parts.slice(0, -1).join('/');
+    server: heboGatewayRepo.repositoryUrl.apply((url) => {
+      const parts = url.split("/");
+      return parts.slice(0, -1).join("/");
     }),
     username: ecrAuth.userName,
     password: ecrAuth.password,
@@ -51,8 +52,7 @@ const heboGatewayConnector = new aws.apprunner.VpcConnector(
 );
 
 const heboGateway = new aws.apprunner.Service("HeboGateway", {
-  serviceName:
-    resourceName,
+  serviceName: resourceName,
   sourceConfiguration: {
     authenticationConfiguration: {
       accessRoleArn: appRunnerEcrAccessRole.arn,

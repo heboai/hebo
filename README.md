@@ -128,7 +128,7 @@ For deployments, we utilize the SST framework (https://sst.dev/).
 
 ```bash
 # Install providers
-bun sst install
+bun sst:synth
 
 # Set secrets
 

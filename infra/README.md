@@ -69,16 +69,21 @@ Next.js application with edge deployment:
 
 1. **AWS CLI configured**
 2. **Docker installed and running**
-3. **SST CLI installed**
+
+### Install SST providers
+
+```bash
+bun sst:synth
+```
 
 ### Deploy Infrastructure
 
 ```bash
 # From project root
-bun run deploy
+bun sst deploy
 
 # Or specific stage
-bun run deploy --stage production
+bun sst deploy --stage production
 ```
 
 ## Security

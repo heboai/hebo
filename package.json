@@ -22,7 +22,8 @@
     "lint:staged": "bun eslint --cache --fix",
     "postinstall": "lefthook install",
     "test": "turbo run test",
-    "sst": "sst"
+    "sst": "sst",
+    "sst:synth": "sst install"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
