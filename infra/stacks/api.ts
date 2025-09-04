@@ -12,7 +12,7 @@ const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
 const resourceName =
   $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
 
-const heboApiRepo = new aws.ecr.Repository(resourceName, {
+const heboApiRepo = new aws.ecr.Repository("hebo-api", {
   forceDelete: true,
   imageScanningConfiguration: { scanOnPush: true },
 });

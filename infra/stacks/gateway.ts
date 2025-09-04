@@ -11,7 +11,7 @@ const resourceName =
   $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
 
-const heboGatewayRepo = new aws.ecr.Repository(resourceName, {
+const heboGatewayRepo = new aws.ecr.Repository("hebo-gateway", {
   forceDelete: true,
   imageScanningConfiguration: { scanOnPush: true },
 });
