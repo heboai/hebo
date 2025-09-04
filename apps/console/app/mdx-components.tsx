@@ -1,5 +1,5 @@
-import { CodeBlock } from "@hebo/ui/_mintlify/code/CodeBlock";
-import { CodeGroup } from "@hebo/ui/_mintlify/code/CodeGroup";
+import { CodeBlock } from "@hebo/ui/components/code/CodeBlock";
+import { CodeGroup } from "@hebo/ui/components/code/CodeGroup";
 
 import type { MDXComponents } from "mdx/types";
 

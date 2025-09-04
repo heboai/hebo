@@ -20,7 +20,7 @@
     "tailwind-merge": "^3.3.1"
   },
   "peerDependencies": {
-    "@hookform/resolvers": "^5.2.1",
+    "@conform-to/react": "^1.8.2",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -32,11 +32,10 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "lucide-react": "^0.539.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-hook-form": "^7.62.0"
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
-    "@hookform/resolvers": "^5.2.1",
+    "@conform-to/react": "^1.8.2",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
@@ -49,7 +48,6 @@
     "@types/react": "^19.1.1",
     "@types/react-dom": "^19.1.1",
     "lucide-react": "^0.539.0",
-    "react-dom": "^19.1.1",
-    "react-hook-form": "^7.62.0"
+    "react-dom": "^19.1.1"
   }
 }

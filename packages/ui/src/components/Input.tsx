@@ -1,4 +1,4 @@
-import { CopyToClipboardButton } from "../_mintlify/code/CopyToClipboardButton";
+import { CopyToClipboardButton } from "./code/CopyToClipboardButton";
 import { Input as ShadCNInput } from "../_shadcn/ui/input";
 import { cn } from "../lib/utils";
 
@@ -13,7 +13,6 @@ export function Input({
   icon: Icon,
   copy,
   value,
-  onChange,
   className,
   ...props
 }: InputProps) {
@@ -35,7 +34,6 @@ export function Input({
       )}
       <ShadCNInput
         value={value}
-        onChange={onChange}
         className={cn(
           "bg-background text-sm",
           Icon && "pl-9",
