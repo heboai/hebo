@@ -1,6 +1,6 @@
 // Export low-level tools for users who need direct access
 export * as webhook from "./webhook";
-export * as api from "./api";
+export * as client from "./client";
 
 // Export the new high-level agent framework
-export { RespondIoAgent } from "./agent";
+export { Agent } from "./agent";

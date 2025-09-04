@@ -11,12 +11,12 @@ export interface AttachmentMessage {
 }
 
 /**
- * Represents the content of a message to be sent via Respond.io.
+ * Represents the content of a message to be sent.
  */
 export type MessageContent = TextMessage | AttachmentMessage;
 
 /**
- * Represents the payload for sending a message to a contact via Respond.io.
+ * Represents the payload for sending a message to a contact.
  */
 export interface SendMessagePayload {
   channelId?: number; // Optional: The ID of the channel to send the message on.
@@ -29,24 +29,24 @@ export interface SendMessagePayload {
 }
 
 /**
- * Represents the successful response from sending a message via Respond.io.
+ * Represents the successful response from sending a message.
  */
 export interface SendMessageResponse {
   messageId: string;
-  // Respond.io documentation mentions a 200 status with messageId.
+  // Documentation mentions a 200 status with messageId.
   // Add other properties if the API returns more details on success.
 }
 
 /**
- * Configuration for the Respond.io API client.
+ * Configuration for the API client.
  */
-export interface RespondIoApiClientConfig {
+export interface ClientConfig {
   apiKey: string;
-  baseUrl?: string; // Optional: Defaults to Respond.io's official API URL
+  baseUrl?: string; // Optional: Defaults to the official API URL
 }
 
 /**
- * Represents a type-safe contact identifier for Respond.io.
+ * Represents a type-safe contact identifier.
  * Can be in the format 'id:<string>', 'email:<string>', or 'phone:<string>'.
  */
 export type ContactIdentifier =

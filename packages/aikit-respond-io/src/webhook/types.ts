@@ -1,5 +1,5 @@
 // packages/aikit-respond-io/src/webhook/types.ts
-export enum RespondIoEvents {
+export enum WebhookEvents {
   MessageReceived = "message.received",
   MessageSent = "message.sent",
   ContactAssigneeUpdated = "contact.assignee.updated",
@@ -14,19 +14,19 @@ export interface WebhookEventConfig {
 }
 
 // Updated: Main config now uses WebhookEventConfig for extensibility.
-export interface RespondIoWebhookConfig {
+export interface WebhookConfig {
   /**
    * A map of event types to their corresponding configurations.
    */
-  events: Partial<Record<RespondIoEvents, WebhookEventConfig>>;
+  events: Partial<Record<WebhookEvents, WebhookEventConfig>>;
 }
 
 // A map from event type to its payload interface.
 export type EventPayloadMap = {
-  [RespondIoEvents.MessageReceived]: MessageReceivedPayload;
-  [RespondIoEvents.MessageSent]: MessageSentPayload;
-  [RespondIoEvents.ContactAssigneeUpdated]: ContactAssigneeUpdatedPayload;
-  [RespondIoEvents.ConversationClosed]: ConversationClosedPayload;
+  [WebhookEvents.MessageReceived]: MessageReceivedPayload;
+  [WebhookEvents.MessageSent]: MessageSentPayload;
+  [WebhookEvents.ContactAssigneeUpdated]: ContactAssigneeUpdatedPayload;
+  [WebhookEvents.ConversationClosed]: ConversationClosedPayload;
 };
 
 export type WebhookPayload =

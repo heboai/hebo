@@ -1,20 +1,20 @@
-import { RespondIoWebhookError } from "./errors";
+import { WebhookError } from "./errors";
 import {
-  RespondIoEvents,
+  WebhookEvents,
   ErrorHandler,
   WebhookPayload,
-  RespondIoWebhookConfig,
+  WebhookConfig,
   EventPayloadMap,
   WebhookEventConfig,
 } from "./types";
 import { verifySignature } from "./utils";
 
 /**
- * A builder and handler for respond.io webhooks.
+ * A builder and handler for webhooks.
  */
-export class RespondIoWebhook extends EventTarget {
+export class Webhook extends EventTarget {
   private readonly eventConfigs: Partial<
-    Record<RespondIoEvents, WebhookEventConfig>
+    Record<WebhookEvents, WebhookEventConfig>
   >;
   private errorHandler: ErrorHandler = (err) => {
     throw err;
@@ -23,13 +23,13 @@ export class RespondIoWebhook extends EventTarget {
   public readonly fetch: (request: Request) => Promise<Response>;
 
   /**
-   * Creates a new instance of the RespondIoWebhook handler.
+   * Creates a new instance of the Webhook handler.
    * @param config The configuration object containing the event configurations.
    */
-  constructor(config: RespondIoWebhookConfig) {
+  constructor(config: WebhookConfig) {
     super(); // Call the EventTarget constructor
     if (!config || !config.events || typeof config.events !== "object") {
-      throw new RespondIoWebhookError(
+      throw new WebhookError(
         "Webhook config with 'events' map must be provided.",
       );
     }
@@ -40,7 +40,7 @@ export class RespondIoWebhook extends EventTarget {
         await this.process(request);
         return new Response("OK", { status: 200 });
       } catch (error) {
-        if (error instanceof RespondIoWebhookError) {
+        if (error instanceof WebhookError) {
           return new Response(error.message, { status: 400 });
         }
         console.error("Webhook processing failed:", error);
@@ -55,7 +55,7 @@ export class RespondIoWebhook extends EventTarget {
    * @param eventType The event type to handle.
    * @param callback The function to execute when this event is received.
    */
-  public on<E extends RespondIoEvents>(
+  public on<E extends WebhookEvents>(
     eventType: E,
     callback: (payload: EventPayloadMap[E]) => void | Promise<void>,
   ): this {
@@ -86,27 +86,24 @@ export class RespondIoWebhook extends EventTarget {
       const payload: WebhookPayload = JSON.parse(body);
       const signature = request.headers.get("x-webhook-signature");
 
-      const eventType = payload.event_type as RespondIoEvents;
+      const eventType = payload.event_type as WebhookEvents;
       if (
-        (Object.values(RespondIoEvents) as string[]).includes(eventType) ===
-        false
+        (Object.values(WebhookEvents) as string[]).includes(eventType) === false
       ) {
-        throw new RespondIoWebhookError(
+        throw new WebhookError(
           "Could not determine event type from request body.",
         );
       }
 
       if (signature === null) {
-        throw new RespondIoWebhookError(
-          "No signature found in request headers.",
-        );
+        throw new WebhookError("No signature found in request headers.");
       }
 
       // Look up the event config object from the constructor config
       const eventConfig = this.eventConfigs[eventType];
       if (!eventConfig || !eventConfig.signingKey) {
-        throw new RespondIoWebhookError(
-          `No configuration or signingKey found for event type: ${eventType}. Please provide it in the RespondIoWebhook constructor.`,
+        throw new WebhookError(
+          `No configuration or signingKey found for event type: ${eventType}. Please provide it in the Webhook constructor.`,
         );
       }
       const signingKey = eventConfig.signingKey;
@@ -122,14 +119,12 @@ export class RespondIoWebhook extends EventTarget {
 }
 
 /**
- * Creates a new instance of the RespondIoWebhook handler.
+ * Creates a new instance of the Webhook handler.
  * This is a factory function that provides a function-like interface.
  * @param config The configuration object containing the event configurations.
  */
-export function respondIoWebhook(
-  config: RespondIoWebhookConfig,
-): RespondIoWebhook {
-  return new RespondIoWebhook(config);
+export function webhookHandler(config: WebhookConfig): Webhook {
+  return new Webhook(config);
 }
 
 export * from "./types";

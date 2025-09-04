@@ -1,26 +1,26 @@
-import { RespondIoApiClient, RespondIoApiClientConfig } from "../api";
-import { RespondIoWebhook, RespondIoWebhookConfig } from "../webhook";
-import { RespondIoEvents, MessageReceivedPayload } from "../webhook/types";
+import { Client, ClientConfig } from "../client";
+import { Webhook, WebhookConfig } from "../webhook";
+import { WebhookEvents, MessageReceivedPayload } from "../webhook/types";
 
-import type { ContactIdentifier, SendMessageResponse } from "../api/types";
+import type { ContactIdentifier, SendMessageResponse } from "../client/types";
 
 /**
- * A simplified agent for interacting with the Respond.io API.
+ * A simplified agent for interacting with the API.
  */
-export class RespondIoAgent {
-  private readonly webhook: RespondIoWebhook;
-  private readonly apiClient: RespondIoApiClient;
+export class Agent {
+  private readonly webhook: Webhook;
+  private readonly client: Client;
 
   /**
-   * Creates a new Respond.io agent instance.
+   * Creates a new agent instance.
    * @param config Configuration for the webhook handler and API client.
    */
   constructor(config: {
-    webhookConfig: RespondIoWebhookConfig;
-    apiConfig: RespondIoApiClientConfig;
+    webhookConfig: WebhookConfig;
+    clientConfig: ClientConfig;
   }) {
-    this.webhook = new RespondIoWebhook(config.webhookConfig);
-    this.apiClient = new RespondIoApiClient(config.apiConfig);
+    this.webhook = new Webhook(config.webhookConfig);
+    this.client = new Client(config.clientConfig);
   }
 
   /**
@@ -30,17 +30,17 @@ export class RespondIoAgent {
   public onMessageReceived(
     callback: (payload: MessageReceivedPayload) => void | Promise<void>,
   ) {
-    this.webhook.on(RespondIoEvents.MessageReceived, callback);
+    this.webhook.on(WebhookEvents.MessageReceived, callback);
   }
 
   /**
-   * Processes an incoming webhook request from Respond.io.
+   * Processes an incoming webhook request.
    *
    * This method should be called from your server's route handler.
    * It verifies the request signature and dispatches the event to the appropriate listener.
    *
    * @param request The incoming Request object (e.g., from a Fetch API compatible environment).
-   * @throws {RespondIoWebhookError} If the signature is invalid or the event is unhandled.
+   * @throws {WebhookError} If the signature is invalid or the event is unhandled.
    */
   public async processWebhook(request: Request): Promise<void> {
     await this.webhook.process(request);
@@ -61,7 +61,7 @@ export class RespondIoAgent {
       ? (contactId as ContactIdentifier)
       : `id:${contactId}`;
 
-    return this.apiClient.sendMessage(identifier, {
+    return this.client.sendMessage(identifier, {
       message: { type: "text", text: text },
     });
   }
