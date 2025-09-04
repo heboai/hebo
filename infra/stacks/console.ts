@@ -4,7 +4,7 @@
 import { heboApiUrl } from "./api";
 import * as secrets from "./secrets";
 
-const heboApp = new sst.aws.StaticSite("HeboApp", {
+const heboConsole = new sst.aws.StaticSite("HeboConsole", {
   path: "apps/console",
   build: {
     command: "bun run build",
@@ -21,4 +21,4 @@ const heboApp = new sst.aws.StaticSite("HeboApp", {
   },
 });
 
-export default heboApp;
+export default heboConsole;
