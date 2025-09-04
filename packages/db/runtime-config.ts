@@ -102,7 +102,8 @@ export function getConnectionConfig(): DbCredentials | string {
     return path.resolve(pkgDir, "hebo.db");
   }
 
-  // "Remote" – PostgreSQL.  Pull from SST first, then ENV.
+  // TODO: double check safeRead is used here. Db is not linked since it is a Pulumi resource.
+  // If so, and db related variables can just be read from env we can completely decouple this from SST.
   return {
     host:
       safeRead(() => (heboDb as any).host) ??
