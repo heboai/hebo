@@ -42,14 +42,39 @@ new aws.iam.RolePolicyAttachment("HeboAppRunnerEcrPolicyAttachment", {
   policyArn: ecrAccessPolicy.arn,
 });
 
-export const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
+const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
 
-export const heboApiRepo = new aws.ecr.Repository("hebo-api", {
-  forceDelete: true,
-  imageScanningConfiguration: { scanOnPush: true },
-});
+const defineServiceRepository = (serviceName: ServiceName) =>
+  new aws.ecr.Repository(`hebo-${serviceName}`, {
+    forceDelete: true,
+    imageScanningConfiguration: { scanOnPush: true },
+  });
 
-export const heboGatewayRepo = new aws.ecr.Repository("hebo-gateway", {
-  forceDelete: true,
-  imageScanningConfiguration: { scanOnPush: true },
-});
+type ServiceName = "api" | "gateway";
+
+const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
+
+export const defineServiceImage = (serviceName: ServiceName) => {
+  const repo = defineServiceRepository(serviceName);
+  const dockerfilePath =
+    serviceName === "api"
+      ? "../../infra/stacks/docker/Dockerfile.api"
+      : "../../infra/stacks/docker/Dockerfile.gateway";
+
+  return new docker.Image(`hebo-${serviceName}-image`, {
+    build: {
+      context: "../../",
+      dockerfile: dockerfilePath,
+      platform: "linux/amd64",
+    },
+    imageName: $interpolate`${repo.repositoryUrl}:${dockerTag}`,
+    registry: {
+      server: repo.repositoryUrl.apply((url) => {
+        const parts = url.split("/");
+        return parts.slice(0, -1).join("/");
+      }),
+      username: ecrAuth.userName,
+      password: ecrAuth.password,
+    },
+  });
+};

@@ -2,30 +2,14 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
-import { appRunnerEcrAccessRole, ecrAuth, heboGatewayRepo } from "./ecr";
+import { appRunnerEcrAccessRole, defineServiceImage } from "./ecr";
 import * as secrets from "./secrets";
 import { heboVpcConnector } from "./vpc";
 
 const resourceName =
   $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
-const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
 
-const heboGatewayImage = new docker.Image("hebo-gateway-image", {
-  build: {
-    context: "../../",
-    dockerfile: "../../infra/stacks/docker/Dockerfile.gateway",
-    platform: "linux/amd64",
-  },
-  imageName: $interpolate`${heboGatewayRepo.repositoryUrl}:${dockerTag}`,
-  registry: {
-    server: heboGatewayRepo.repositoryUrl.apply((url) => {
-      const parts = url.split("/");
-      return parts.slice(0, -1).join("/");
-    }),
-    username: ecrAuth.userName,
-    password: ecrAuth.password,
-  },
-});
+const heboGatewayImage = defineServiceImage("gateway");
 
 const heboGateway = new aws.apprunner.Service("HeboGateway", {
   serviceName: resourceName,
