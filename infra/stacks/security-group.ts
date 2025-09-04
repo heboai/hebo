@@ -5,7 +5,7 @@ import heboVpc from "./vpc";
 
 const heboSecurityGroup = new aws.ec2.SecurityGroup("HeboSecurityGroup", {
   vpcId: heboVpc.id,
-  description: "Security group for App Runner VPC Connector",
+  description: "Security group for VPC Connector",
   egress: [
     {
       protocol: "-1",
