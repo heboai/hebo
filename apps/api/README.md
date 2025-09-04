@@ -6,7 +6,7 @@ A modern Elysia-based API server designed for the Hebo platform, powered by Bun 
 
 ```bash
 # Install dependencies
-bun i
+bun install
 
 # Run in development mode
 bun run dev

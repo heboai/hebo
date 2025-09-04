@@ -44,7 +44,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ```bash
 # Install dependencies
-bun i
+bun install
 ```
 
 ```bash
