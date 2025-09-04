@@ -10,7 +10,7 @@ The infrastructure consists of several key components:
 - **Database**: Aurora PostgreSQL with global clustering
 - **API**: Containerized API deployed on AWS App Runner
 - **Gateway**: Containerized Gateway deployed on AWS App Runner
-- **Frontend**: React Router StaticSite
+- **Console**: Static site (React Router) via SST StaticSite (S3 + CloudFront)
 
 ## Infrastructure Components
 
