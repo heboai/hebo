@@ -4,15 +4,9 @@ import { SignatureVerificationError } from "./errors";
 
 export function verifySignature(
   body: string,
-  signature: string | null | undefined,
+  signature: string,
   signingKey: string,
 ): void {
-  if (!signature) {
-    throw new SignatureVerificationError(
-      "Missing signature header (x-webhook-signature).",
-    );
-  }
-
   const expectedSignature = crypto
     .createHmac("sha256", signingKey)
     .update(body)

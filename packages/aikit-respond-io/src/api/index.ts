@@ -1,18 +1,18 @@
 import ky, { HTTPError, TimeoutError, type KyInstance } from "ky";
 
-import { RespondIoApiFailedError, RespondIoNetworkError } from "./errors";
+import { RespondIoApiFailureError, RespondIoApiNetworkError } from "./errors";
 import {
   ContactIdentifier,
-  RespondIoClientConfig,
+  RespondIoApiClientConfig,
   SendMessagePayload,
   SendMessageResponse,
 } from "./types";
 
-export class RespondIoClient {
+export class RespondIoApiClient {
   private kyInstance: KyInstance;
   private readonly DEFAULT_BASE_URL = "https://api.respond.io/v2";
 
-  constructor(config: RespondIoClientConfig) {
+  constructor(config: RespondIoApiClientConfig) {
     if (!config.apiKey) {
       throw new Error("Respond.io API Key is required.");
     }
@@ -49,20 +49,20 @@ export class RespondIoClient {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         const errorBody = await error.response.json();
-        throw new RespondIoApiFailedError(
+        throw new RespondIoApiFailureError(
           error.response.status,
           { json: errorBody },
           `Respond.io API Error: ${error.response.status} - ${error.message}`,
         );
       } else if (error instanceof TimeoutError) {
         // The request was made but no response was received
-        throw new RespondIoNetworkError(
+        throw new RespondIoApiNetworkError(
           `Respond.io Network Error: Request timed out - ${error.message}`,
         );
       } else if (error instanceof Error) {
         // This can happen for various network reasons (e.g., DNS, connection refused)
         if (error.name === "TypeError") {
-          throw new RespondIoNetworkError(
+          throw new RespondIoApiNetworkError(
             `Respond.io Network Error: No response received - ${error.message}`,
           );
         }

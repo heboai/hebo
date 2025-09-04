@@ -1,46 +1,54 @@
 import { RespondIoWebhookError } from "./errors";
 import {
   RespondIoEvents,
-  EventHandler,
   ErrorHandler,
-  HandlerConfig,
   WebhookPayload,
+  RespondIoWebhookConfig,
+  EventPayloadMap,
+  WebhookEventConfig,
 } from "./types";
 import { verifySignature } from "./utils";
 
 /**
  * A builder and handler for respond.io webhooks.
  */
-export class RespondIoWebhook {
-  private readonly eventHandlers = new Map<string, HandlerConfig>();
+export class RespondIoWebhook extends EventTarget {
+  private readonly eventConfigs: Partial<
+    Record<RespondIoEvents, WebhookEventConfig>
+  >;
   private errorHandler: ErrorHandler = (err) => {
     throw err;
   };
 
   /**
-   * Registers a handler for a specific event type. This will overwrite any existing handler for the same event type.
-   * @param eventType The event type string.
-   * @param signingKey The signing key for this event.
+   * Creates a new instance of the RespondIoWebhook handler.
+   * @param config The configuration object containing the event configurations.
+   */
+  constructor(config: RespondIoWebhookConfig) {
+    super(); // Call the EventTarget constructor
+    if (!config || !config.events || typeof config.events !== "object") {
+      throw new RespondIoWebhookError(
+        "Webhook config with 'events' map must be provided.",
+      );
+    }
+    this.eventConfigs = config.events;
+  }
+
+  /**
+   * Registers a handler for a specific event type.
+   * Note: Multiple handlers per event are supported (no implicit overwrite).
+   * @param eventType The event type to handle.
    * @param callback The function to execute when this event is received.
    */
-  public on(
-    eventType: RespondIoEvents,
-    signingKey: string,
-    callback: EventHandler,
+  public on<E extends RespondIoEvents>(
+    eventType: E,
+    callback: (payload: EventPayloadMap[E]) => void | Promise<void>,
   ): this {
-    if (typeof signingKey !== "string") {
-      throw new RespondIoWebhookError(
-        `Invalid signing key provided for event "${eventType}".`,
-      );
-    }
-    if (typeof callback !== "function") {
-      throw new RespondIoWebhookError(
-        `Invalid callback function provided for event "${eventType}".`,
-      );
-    }
-
-    const handler: HandlerConfig = { signingKey, callback };
-    this.eventHandlers.set(eventType, handler);
+    this.addEventListener(eventType, (event: Event) => {
+      const customEvent = event as CustomEvent<EventPayloadMap[E]>;
+      // @ts-expect-error detail exists via CustomEvent or fallback
+      callback(customEvent.detail);
+    });
     return this;
   }
 
@@ -56,22 +64,15 @@ export class RespondIoWebhook {
   /**
    * Processes an incoming webhook request.
    * Verifies the signature and executes the appropriate handler.
-   * @param body The raw request body string.
-   * @param headers The request headers (case-insensitive).
+   * @param request The incoming Request object (e.g., from a Fetch API compatible environment).
    */
-  public async process(
-    body: string,
-    headers: Record<string, any>,
-  ): Promise<void> {
+  public async process(request: Request): Promise<void> {
     try {
-      let payload: WebhookPayload;
-      try {
-        payload = JSON.parse(body);
-      } catch {
-        throw new Error("Failed to parse request body as JSON.");
-      }
+      const clonedRequest = request.clone();
+      const payload: WebhookPayload = await clonedRequest.json();
+      const signature = clonedRequest.headers.get("x-webhook-signature");
 
-      const eventType: string = payload.event_type;
+      const eventType = payload.event_type as RespondIoEvents;
       if (
         (Object.values(RespondIoEvents) as string[]).includes(eventType) ===
         false
@@ -81,28 +82,19 @@ export class RespondIoWebhook {
         );
       }
 
-      const handler = this.eventHandlers.get(eventType);
-
-      if (!handler) {
+      // Look up the event config object from the constructor config
+      const eventConfig = this.eventConfigs[eventType];
+      if (!eventConfig || !eventConfig.signingKey) {
         throw new RespondIoWebhookError(
-          `No handler registered for event type: ${eventType}`,
+          `No configuration or signingKey found for event type: ${eventType}. Please provide it in the RespondIoWebhook constructor.`,
         );
       }
+      const signingKey = eventConfig.signingKey;
+      verifySignature(body, signature, signingKey);
+      console.log(`Received event: ${eventType}`);
 
-      // Verify signature for the handler *before* executing
-      const normalizedHeaders = Object.fromEntries(
-        Object.entries(headers).map(([k, v]) => [
-          k.toLowerCase(),
-          Array.isArray(v) ? v[0] : v,
-        ]),
-      );
-      const signature = normalizedHeaders["x-webhook-signature"] as
-        | string
-        | undefined;
-      verifySignature(body, signature, handler.signingKey);
-
-      // Execute the handler
-      await handler.callback(payload);
+      // Dispatch the event using EventTarget's dispatchEvent
+      this.dispatchEvent(new CustomEvent(eventType, { detail: payload }));
     } catch (error) {
       await this.errorHandler(error as Error);
       throw error;
