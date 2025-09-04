@@ -85,14 +85,14 @@ bun run -F @hebo/db clean
 | --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
 | 1   | **Frontend-only** (offline) | `bun run -F @hebo/console dev` | —                              | none – UI relies on local state manager |
 | 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | http://localhost:3001                   |
-| 3   | **Remote full-stack**       | `bun deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
+| 3   | **Remote full-stack**       | `bun run deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
 
 > **How the UI knows if the API is present**
 >
 > The web app reads `VITE_API_URL` at runtime:
 >
 > - If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
-> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun dev`, or the real API Gateway URL by `bun deploy`).
+> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun dev`, or the real API Gateway URL by `bun run deploy`).
 >
 > Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `...` [TBD].
 
@@ -128,21 +128,20 @@ For deployments, we utilize the SST framework (https://sst.dev/).
 
 ```bash
 # Install providers
-bun sst:synth
+bun run sst:synth
 
 # Set secrets
 
-bun sst secret set HeboDbUsername <username> --stage <stage>
-bun sst secret set HeboDbPassword <password> --stage <stage>
-
-# The same for StackProjectId, StackPublishableClientKey, StackSecretServerKey, PosthogKey, PosthogHost
+bun run sst secret set DbUsername <username> --stage <stage>
+bun run sst secret set DbPassword <password> --stage <stage>
+...
 
 # Deploy a preview link
-bun sst deploy --stage PR-XX
+bun run sst deploy --stage PR-XX
 
 # Remove a preview link
-bun sst remove --stage PR-XX
+bun run sst remove --stage PR-XX
 
 # Deploy to production
-bun sst deploy --stage production
+bun run deploy --stage production
 ```

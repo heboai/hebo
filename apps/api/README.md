@@ -2,30 +2,17 @@
 
 A modern Elysia-based API server designed for the Hebo platform, powered by Bun runtime.
 
-## Quick Start
-
-```bash
-# Install dependencies
-bun install
-
-# Run in development mode
-bun run dev
-
-# Build the application
-bun run build
-```
-
 ## Development
 
 ```bash
 # Install dependencies
-bun install
+bun i
 
 # Run in development mode
-bun run dev
+bun dev
 
 # Build for production
-bun run build
+bun build
 ```
 
 ## Architecture

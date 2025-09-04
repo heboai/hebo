@@ -73,17 +73,17 @@ Next.js application with edge deployment:
 ### Install SST providers
 
 ```bash
-bun sst:synth
+bun run sst:synth
 ```
 
 ### Deploy Infrastructure
 
 ```bash
 # From project root
-bun deploy
+bun run deploy
 
 # Or specific stage
-bun deploy --stage production
+bun run deploy --stage production
 ```
 
 ## Security
