@@ -1,13 +1,13 @@
 "use client";
 
 import { clsx } from "clsx";
-import { type ComponentPropsWithoutRef, useState } from "react";
 import { Copy, Check } from "lucide-react";
+import { type ComponentPropsWithoutRef, useState } from "react";
 
 import {
   copyToClipboard,
   type CopyToClipboardResult,
-} from "../utils/copyToClipboard";
+} from "./utils/copyToClipboard";
 
 export function CopyToClipboardButton({
   textToCopy,

@@ -1,17 +1,17 @@
 "use client";
 
 import { clsx } from "clsx";
-import * as React from "react"
+import * as React from "react";
 
-import { type CopyToClipboardResult } from "../utils/copyToClipboard";
-import { getNodeText } from "../utils/getNodeText";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
+import { type CopyToClipboardResult } from "./utils/copyToClipboard";
+import { getNodeText } from "./utils/getNodeText";
 
 export const styles = {
   frame: "rounded-md overflow-hidden bg-background border shadow-xs",
   code: "pl-3 py-2 overflow-x-auto",
-  header: "flex pl-3 space-x-4 bg-slate-200 "
-}
+  header: "flex pl-3 space-x-4 bg-slate-200 ",
+};
 
 export interface CodeBlockPropsBase {
   title: string;
@@ -28,19 +28,23 @@ export const CodeBlock = React.forwardRef(function CodeBlock(
   { title, onCopied, children, className, ...props }: CodeBlockProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const Button = (
-    props: Partial<React.ComponentPropsWithoutRef<typeof CopyToClipboardButton>>,
-  ) => (
-    <CopyToClipboardButton
-      textToCopy={getNodeText(children)}
-      onCopied={onCopied}
-      {...props}
-    />
-  );
+  function Button(
+    props: Partial<
+      React.ComponentPropsWithoutRef<typeof CopyToClipboardButton>
+    >,
+  ) {
+    return (
+      <CopyToClipboardButton
+        textToCopy={getNodeText(children)}
+        onCopied={onCopied}
+        {...props}
+      />
+    );
+  }
 
   return (
     <div
-      className={clsx("relative not-prose", styles.frame, className)}
+      className={clsx("not-prose relative", styles.frame, className)}
       role="region"
       aria-label={`Code block: ${title}`}
       ref={ref}
@@ -71,9 +75,9 @@ function CodeTitleBar({
 }) {
   return (
     <div className={styles.header}>
-      <div className="flex-none flex items-center">{title}</div>
+      <div className="flex flex-none items-center">{title}</div>
       {children && (
-        <div className="flex-auto flex items-center justify-end">
+        <div className="flex flex-auto items-center justify-end">
           {children}
         </div>
       )}
