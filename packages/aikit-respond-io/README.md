@@ -89,12 +89,12 @@ export default app;
 
 ### Webhook Example with Hono
 
-**Important**: You must use a middleware that provides the raw request body for signature verification. Do not use a middleware that parses the JSON body beforehand.
+The `RespondIoWebhook` handler now includes a `fetch` method to simplify integration, which can be used directly with Hono's `app.mount`.
 
 ```ts
 import { Hono } from "hono";
 import {
-  RespondIoWebhook,
+  respondIoWebhook,
   RespondIoEvents,
   MessageReceivedPayload,
   ConversationClosedPayload,
@@ -102,9 +102,8 @@ import {
 
 const app = new Hono();
 
-// 1. Create and configure the webhook handler instance.
-//    Each event type you wish to handle must be explicitly configured with its signing key.
-const webhook = new RespondIoWebhook({
+// 1. Create and configure the webhook handler instance using the factory function.
+const webhook = respondIoWebhook({
   events: {
     [RespondIoEvents.MessageReceived]: {
       signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
@@ -135,27 +134,13 @@ webhook.on(
 
 // 3. (Optional) Register a global error handler.
 webhook.onError((error) => {
+  // This handler will be called by the `fetch` method for internal errors.
   console.error("[Respond.io Webhook Error]", error.message);
 });
 
-// Middleware to process the webhook
-app.use("/webhook/respond-io", async (c, next) => {
-  try {
-    await webhook.process(c.req.raw);
-    await next(); // Proceed to the next handler if successful
-  } catch (error) {
-    // Errors from the webhook handler are caught here if not handled by `onError`
-    // or if `onError` re-throws them.
-    console.error("[Respond.io Webhook Error]", (error as Error).message);
-    return c.text((error as Error).message, 400);
-  }
-});
-
-// 4. Create the route handler.
-app.post("/webhook/respond-io", (c) => {
-  // If we reach here, the webhook was successfully processed by the middleware
-  return c.text("OK", 200);
-});
+// 4. Mount the webhook handler.
+// Hono will forward all requests under this path to the webhook's fetch handler.
+app.mount("/webhook/respond-io", webhook.fetch);
 
 // For local development with Node.js, you might use:
 // import { serve } from "@hono/node-server";

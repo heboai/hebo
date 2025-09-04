@@ -20,6 +20,8 @@ export class RespondIoWebhook extends EventTarget {
     throw err;
   };
 
+  public readonly fetch: (request: Request) => Promise<Response>;
+
   /**
    * Creates a new instance of the RespondIoWebhook handler.
    * @param config The configuration object containing the event configurations.
@@ -32,6 +34,19 @@ export class RespondIoWebhook extends EventTarget {
       );
     }
     this.eventConfigs = config.events;
+
+    this.fetch = async (request: Request): Promise<Response> => {
+      try {
+        await this.process(request);
+        return new Response("OK", { status: 200 });
+      } catch (error) {
+        if (error instanceof RespondIoWebhookError) {
+          return new Response(error.message, { status: 400 });
+        }
+        console.error("Webhook processing failed:", error);
+        return new Response("Internal Server Error", { status: 500 });
+      }
+    };
   }
 
   /**
@@ -67,9 +82,9 @@ export class RespondIoWebhook extends EventTarget {
    */
   public async process(request: Request): Promise<void> {
     try {
-      const clonedRequest = request.clone();
-      const payload: WebhookPayload = await clonedRequest.json();
-      const signature = clonedRequest.headers.get("x-webhook-signature");
+      const body = await request.text();
+      const payload: WebhookPayload = JSON.parse(body);
+      const signature = request.headers.get("x-webhook-signature");
 
       const eventType = payload.event_type as RespondIoEvents;
       if (
@@ -95,7 +110,7 @@ export class RespondIoWebhook extends EventTarget {
         );
       }
       const signingKey = eventConfig.signingKey;
-      verifySignature(JSON.stringify(payload), signature, signingKey);
+      verifySignature(body, signature, signingKey);
 
       // Dispatch the event using EventTarget's dispatchEvent
       this.dispatchEvent(new CustomEvent(eventType, { detail: payload }));
@@ -105,5 +120,17 @@ export class RespondIoWebhook extends EventTarget {
     }
   }
 }
+
+/**
+ * Creates a new instance of the RespondIoWebhook handler.
+ * This is a factory function that provides a function-like interface.
+ * @param config The configuration object containing the event configurations.
+ */
+export function respondIoWebhook(
+  config: RespondIoWebhookConfig,
+): RespondIoWebhook {
+  return new RespondIoWebhook(config);
+}
+
 export * from "./types";
 export * from "./errors";
