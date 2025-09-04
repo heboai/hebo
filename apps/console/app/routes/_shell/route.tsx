@@ -64,7 +64,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
   const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
 
   return (
-    <div className="flex min-h-screen gap-4">
+    <div className="flex min-h-dvh gap-4">
       {/* LEFT SIDEBAR */}
       <SidebarProvider
         defaultOpen={leftSidebarDefaultOpen}
@@ -81,7 +81,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
         <Sidebar collapsible="icon">
           <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
             <SidebarHeader>
-                <AgentSelect activeAgent={loaderData.activeAgent} agents={loaderData.agents!} />
+                <AgentSelect activeAgent={loaderData?.activeAgent} agents={loaderData?.agents!} />
             </SidebarHeader>
             <SidebarContent />
             <SidebarFooter>

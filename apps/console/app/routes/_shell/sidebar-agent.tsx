@@ -18,7 +18,6 @@ import {
 } from "@hebo/ui/components/Sidebar";
 
 import { AgentLogo } from "~console/components/ui/AgentLogo";
-import { Logo } from "~console/components/ui/Logo";
 
 type Agent = {
   name: string,
@@ -37,7 +36,7 @@ export function AgentSelect({
   // Dropdown open or closed
   const [open, setOpen] = useState(false);
 
-  return agents.length > 0 ? (
+  return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -52,7 +51,7 @@ export function AgentSelect({
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate text-lg font-medium">
-                  {activeAgent?.name ?? "Select an agent"}
+                  {activeAgent?.name ?? "hebo.ai"}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" aria-hidden="true" />
@@ -71,7 +70,7 @@ export function AgentSelect({
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate text-base font-medium">
-                    {activeAgent?.name ?? "Select an agent"}
+                    {activeAgent?.name ?? "hebo.ai"}
                   </span>
                 </div>
                 {activeAgent && (
@@ -96,16 +95,22 @@ export function AgentSelect({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {agents.map((agent) => (
-              <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
-                <Link to={`/agent/${agent.slug}/branch/${agent.branches![0]!.slug}`} viewTransition>
-                  {agent.name}
-                  {agent.slug === activeAgent?.slug && (
-                    <Check size={12} className="ml-auto" aria-hidden="true" />
-                  )}
-                </Link>
+            {agents.length > 0 ? (
+              agents.map((agent) => (
+                <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
+                  <Link to={`/agent/${agent.slug}/branch/main`} viewTransition>
+                    {agent.name}
+                    {agent.slug === activeAgent?.slug && (
+                      <Check size={12} className="ml-auto" aria-hidden="true" />
+                    )}
+                  </Link>
+                </DropdownMenuItem>
+              ))
+            ) : (
+              <DropdownMenuItem disabled className="gap-2 p-2 text-muted-foreground">
+                No agents
               </DropdownMenuItem>
-            ))}
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="gap-2 p-2">
               <Link to="/agent/create" aria-label="Create agent" viewTransition>
@@ -119,11 +124,5 @@ export function AgentSelect({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  ) : (
-    <div className="p-2 transition-[padding] group-data-[state=collapsed]:p-0">
-      <Link to="/" aria-label="Home" viewTransition>
-        <Logo />
-      </Link>
-    </div>
-  );
+  )
 }
