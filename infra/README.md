@@ -58,7 +58,7 @@ Containerized Gateway deployed on AWS App Runner:
 - **Framework**: React Router
 - **Domain**:
   - Production: `console.hebo.ai`
-  - Preview: `{stage}.cloud.hebo.ai`
+  - Preview: `{stage}.console.hebo.ai`
 - **Environment**: Connected to API and external services
 
 ## Deployment

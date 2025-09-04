@@ -36,7 +36,7 @@ import { generateText } from 'ai';
 
 const provider = createOpenAICompatible({
     apiKey: 'YOUR_API_KEY',
-    baseURL: 'https://cloud.hebo.ai/api',
+    baseURL: 'https://gateway.hebo.ai/',
 });
 
 const { text } = await generateText({
@@ -56,7 +56,7 @@ portkey_headers = createHeaders(
 )
 
 llm = ChatOpenAI(
-    base_url="https://cloud.hebo.ai/api",
+    base_url="https://gateway.hebo.ai/",
     model="YOUR_MODEL_ALIAS"
 )
 
