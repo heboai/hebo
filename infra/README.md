@@ -97,7 +97,7 @@ bun run sst deploy --stage production
 - **Database**: Aurora Serverless v2 with automatic scaling
 - **API**: App Runner with automatic scaling based on load
 - **Gateway**: App Runner with automatic scaling based on load
-- **Console**: StaticFile deployment for global performance
+- **Console**: CDN-cached static site (CloudFront) for global performance
 
 ### Logs and Debugging
 
