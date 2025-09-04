@@ -9,10 +9,10 @@ A modern Elysia-based API server designed for the Hebo platform, powered by Bun 
 bun i
 
 # Run in development mode
-bun dev
+bun run dev
 
 # Build for production
-bun build
+bun run build
 ```
 
 ## Architecture
