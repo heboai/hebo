@@ -92,7 +92,7 @@ bun run -F @hebo/db clean
 > The web app reads `VITE_API_URL` at runtime:
 >
 > - If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
-> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun dev`, or the real API Gateway URL by `bun run sst deploy`).
+> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun run dev`, or the real API Gateway URL by `bun run sst deploy`).
 >
 > Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `...` [TBD].
 
