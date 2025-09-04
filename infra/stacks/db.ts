@@ -2,7 +2,7 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import * as secrets from "./secrets";
-import heboVpc from "./vpc";
+import { heboVpc } from "./vpc";
 
 // Prod / preview — Aurora Serverless v2 + Global Cluster
 const global = new aws.rds.GlobalCluster("HeboDbGlobal", {
