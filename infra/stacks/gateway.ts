@@ -3,13 +3,9 @@
 
 import heboDatabase from "./db";
 import appRunnerEcrAccessRole from "./iam";
+import * as secrets from "./secrets";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
-
-const stackProjectId = new sst.Secret("StackProjectId");
-const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
-const groqApiKey = new sst.Secret("GroqApiKey");
-const voyagerApiKey = new sst.Secret("VoyagerApiKey");
 
 const resourceName =
   $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
@@ -64,12 +60,12 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
           PG_HOST: heboDatabase.host,
           PG_PORT: heboDatabase.port.apply((port) => port.toString()),
           PG_USER: heboDatabase.username,
-          PG_PASSWORD: new sst.Secret("HeboDbPassword").value,
+          PG_PASSWORD: secrets.dbPassword.value,
           PG_DATABASE: heboDatabase.database,
-          VITE_STACK_PROJECT_ID: stackProjectId.value,
-          STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
-          GROQ_API_KEY: groqApiKey.value,
-          VOYAGER_API_KEY: voyagerApiKey.value,
+          VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
+          STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
+          GROQ_API_KEY: secrets.groqApiKey.value,
+          VOYAGER_API_KEY: secrets.voyagerApiKey.value,
         },
       },
       imageIdentifier: heboGatewayImage.imageName,

@@ -2,16 +2,15 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
+import appRunnerEcrAccessRole from "./iam";
+import * as secrets from "./secrets";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
-import appRunnerEcrAccessRole from "./iam";
-
-const stackProjectId = new sst.Secret("StackProjectId");
-const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
 
-const resourceName = $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
+const resourceName =
+  $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
 
 const heboApiRepo = new aws.ecr.Repository(resourceName, {
   forceDelete: true,
@@ -28,9 +27,9 @@ const heboApiImage = new docker.Image("hebo-api-image", {
   },
   imageName: $interpolate`${heboApiRepo.repositoryUrl}:${dockerTag}`,
   registry: {
-    server: heboApiRepo.repositoryUrl.apply(url => {
-      const parts = url.split('/');
-      return parts.slice(0, -1).join('/');
+    server: heboApiRepo.repositoryUrl.apply((url) => {
+      const parts = url.split("/");
+      return parts.slice(0, -1).join("/");
     }),
     username: ecrAuth.userName,
     password: ecrAuth.password,
@@ -57,10 +56,10 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
           PG_HOST: heboDatabase.host,
           PG_PORT: heboDatabase.port.apply((port) => port.toString()),
           PG_USER: heboDatabase.username,
-          PG_PASSWORD: new sst.Secret("HeboDbPassword").value,
+          PG_PASSWORD: secrets.dbPassword.value,
           PG_DATABASE: heboDatabase.database,
-          VITE_STACK_PROJECT_ID: stackProjectId.value,
-          STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
+          VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
+          STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
         },
       },
       imageIdentifier: heboApiImage.imageName,
