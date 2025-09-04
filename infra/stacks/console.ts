@@ -2,6 +2,7 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import { heboApiUrl } from "./api";
+import { heboGatewayUrl } from "./gateway";
 import * as secrets from "./secrets";
 
 const heboConsole = new sst.aws.StaticSite("HeboConsole", {
@@ -16,6 +17,7 @@ const heboConsole = new sst.aws.StaticSite("HeboConsole", {
       : `${$app.stage}.console.hebo.ai`,
   environment: {
     VITE_API_URL: heboApiUrl,
+    VITE_GATEWAY_URL: heboGatewayUrl,
     VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
     VITE_STACK_PUBLISHABLE_CLIENT_KEY: secrets.stackPublishableClientKey.value,
   },
