@@ -2,7 +2,7 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
-import appRunnerEcrAccessRole from "./iam";
+import { appRunnerEcrAccessRole, ecrAuth, heboGatewayRepo } from "./ecr";
 import * as secrets from "./secrets";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
@@ -10,13 +10,6 @@ import heboVpc from "./vpc";
 const resourceName =
   $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
-
-const heboGatewayRepo = new aws.ecr.Repository("hebo-gateway", {
-  forceDelete: true,
-  imageScanningConfiguration: { scanOnPush: true },
-});
-
-const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
 
 const heboGatewayImage = new docker.Image("hebo-gateway-image", {
   build: {

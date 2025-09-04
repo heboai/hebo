@@ -2,22 +2,14 @@
 /// <reference path="../../.sst/platform/config.d.ts" />
 
 import heboDatabase from "./db";
-import appRunnerEcrAccessRole from "./iam";
+import { appRunnerEcrAccessRole, ecrAuth, heboApiRepo } from "./ecr";
 import * as secrets from "./secrets";
 import heboSecurityGroup from "./security-group";
 import heboVpc from "./vpc";
 
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
-
 const resourceName =
   $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
-
-const heboApiRepo = new aws.ecr.Repository("hebo-api", {
-  forceDelete: true,
-  imageScanningConfiguration: { scanOnPush: true },
-});
-
-const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
 
 const heboApiImage = new docker.Image("hebo-api-image", {
   build: {
