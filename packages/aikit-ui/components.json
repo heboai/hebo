@@ -11,11 +11,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@hebo/aikit-ui/_shadcn",
-    "utils": "@hebo/aikit-ui/lib/utils",
-    "ui": "@hebo/aikit-ui/_shadcn/ui",
-    "lib": "@hebo/aikit-ui/lib",
-    "hooks": "@hebo/aikit-ui/hooks"
+    "components": "./src/_shadcn",
+    "utils": "./src/lib/utils",
+    "ui": "./src/_shadcn/ui",
+    "lib": "./src/lib",
+    "hooks": "./src/hooks"
   },
   "iconLibrary": "lucide"
 }
