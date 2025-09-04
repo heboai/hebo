@@ -1,4 +1,4 @@
-import { Outlet, type ShouldRevalidateFunctionArgs } from "react-router";
+import { isRouteErrorResponse, Outlet, useRouteLoaderData, type ShouldRevalidateFunctionArgs } from "react-router";
 import { useSnapshot } from "valtio";
 
 import {
@@ -22,6 +22,7 @@ import type { Route } from "./+types/route";
 import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
+import { ErrorView } from "~console/components/ui/ErrorView";
 
 
 async function authMiddleware() {
@@ -37,25 +38,29 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const activeAgent = params.slug ? agents!.find((a) => a.slug === params.slug) : undefined;
 
   if (params.slug && !activeAgent)
-    throw new Response("Agent Not Found", { status: 404 });
+    throw new Response(`Agent '${params.slug}' does not exist.`, { status: 404, statusText: "Not Found" });
 
   return { agents, activeAgent };
 }
 
 export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
-  // Only reload data if the slug exists and changed
-  return nextParams.slug !== undefined && currentParams.slug !== nextParams.slug;
+  // Reload data when navigating betweens agents
+  return currentParams.slug !== nextParams.slug;
 }
 
-
-export default function ShellLayout({loaderData}: Route.ComponentProps) {
-  const { user } = useSnapshot(authStore);
+function Layout({
+  children,
+  loaderData,
+}: {
+  children: React.ReactNode;
+  loaderData?: Awaited<ReturnType<typeof clientLoader>>; 
+}) {  const { user } = useSnapshot(authStore);
 
   // FUTURE replace with session storage
   const defaultOpen = getCookie("sidebar_state") === "true";
 
   return (
-    <div className="flex min-h-screen flex-col gap-4">
+    <div className="flex min-h-dvh flex-col gap-4">
       <SidebarProvider
         defaultOpen={defaultOpen}
         style={
@@ -69,7 +74,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
         <Sidebar collapsible="icon">
           <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
             <SidebarHeader>
-                <AgentSelect activeAgent={loaderData.activeAgent} agents={loaderData.agents!} />
+                <AgentSelect activeAgent={loaderData?.activeAgent} agents={loaderData?.agents!} />
             </SidebarHeader>
             <SidebarContent />
             <SidebarFooter>
@@ -85,10 +90,29 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
           <SidebarTrigger className="fixed -m-1.5" />
 
           <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
-            <Outlet />
+            {children}
           </div>
         </main>
       </SidebarProvider>
     </div>
+  );
+}
+
+export default function ShellLayout({ loaderData }: Route.ComponentProps) {
+  return (
+    <Layout loaderData={loaderData}>
+      <Outlet />
+    </Layout>
+  );
+}
+
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  const loaderData = useRouteLoaderData<typeof clientLoader>("_shell/route");
+
+  return (
+    <Layout loaderData={loaderData}>
+      <ErrorView error={error} />
+    </Layout>
   );
 }
