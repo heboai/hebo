@@ -10,9 +10,8 @@ COPY . .
 # FUTURE: move to the SST/Pulumi script
 RUN turbo prune @hebo/api --docker
 
-########################  builder stage  ########################
+########################  installer + builder stage  ########################
 FROM oven/bun:1.2.21 AS builder
-
 WORKDIR /repo
 
 COPY --from=pruner /repo/out/json/ ./
@@ -27,7 +26,7 @@ RUN bun run build
 FROM gcr.io/distroless/base
 WORKDIR /app
 
-COPY --from=builder /repo/apps/api/server .
+COPY --from=builder /repo/apps/api/dist/server .
 
 EXPOSE 3001
 USER 65532:65532
