@@ -46,7 +46,6 @@ export class RespondIoWebhook extends EventTarget {
   ): this {
     this.addEventListener(eventType, (event: Event) => {
       const customEvent = event as CustomEvent<EventPayloadMap[E]>;
-      // @ts-expect-error detail exists via CustomEvent or fallback
       callback(customEvent.detail);
     });
     return this;
@@ -82,6 +81,12 @@ export class RespondIoWebhook extends EventTarget {
         );
       }
 
+      if (signature === null) {
+        throw new RespondIoWebhookError(
+          "No signature found in request headers.",
+        );
+      }
+
       // Look up the event config object from the constructor config
       const eventConfig = this.eventConfigs[eventType];
       if (!eventConfig || !eventConfig.signingKey) {
@@ -90,8 +95,7 @@ export class RespondIoWebhook extends EventTarget {
         );
       }
       const signingKey = eventConfig.signingKey;
-      verifySignature(body, signature, signingKey);
-      console.log(`Received event: ${eventType}`);
+      verifySignature(JSON.stringify(payload), signature, signingKey);
 
       // Dispatch the event using EventTarget's dispatchEvent
       this.dispatchEvent(new CustomEvent(eventType, { detail: payload }));
