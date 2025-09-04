@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../.sst/platform/config.d.ts" />
 
-export const heboVpc = new sst.aws.Vpc(
-  "HeboVpc",
-  $app.stage === "production" ? {} : { bastion: true, nat: "ec2" },
-);
+export const heboVpc = new sst.aws.Vpc("HeboVpc", {
+  nat: "ec2",
+  bastion: $app.stage !== "production",
+});
 
 const heboSecurityGroup = new aws.ec2.SecurityGroup("HeboSecurityGroup", {
   vpcId: heboVpc.id,

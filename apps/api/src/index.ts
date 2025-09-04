@@ -9,7 +9,7 @@ import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
 
-const PORT = Number(process.env.API_PORT) || 3001;
+const PORT = Number(process.env.PORT ?? 3001);
 
 const createApi = () =>
   new Elysia()
@@ -28,6 +28,7 @@ const createApi = () =>
     )
     .use(authService)
     .get("/", () => "🐵 Hebo API says hello!")
+    .get("/health", () => "🐵 Hebo API is healthy!")
     .group(
       "/v1",
       {

@@ -43,6 +43,14 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
       vpcConnectorArn: heboVpcConnector.arn,
     },
   },
+  healthCheckConfiguration: {
+    protocol: "HTTP",
+    path: "/health",
+    interval: 10,
+    timeout: 5,
+    healthyThreshold: 1,
+    unhealthyThreshold: 3,
+  },
 });
 
 export const heboGatewayUrl = heboGateway.serviceUrl;
