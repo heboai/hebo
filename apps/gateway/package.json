@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile=dist/server",
-    "clean": "git clean -fdX -e \".env*\" .",
+    "clean": "git clean -fdx -e '.env*' .",
     "dev": "bun run --watch src/index.ts | pino-pretty",
     "lint": "bunx eslint .",
     "type-check": "bunx tsc --noEmit",

@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "bunx tsc",
-    "clean": "git clean -fdX -e \".env*\" .",
+    "clean": "git clean -fdx -e '.env*' .",
     "lint": "bunx eslint .",
     "dev": "bunx tsc -w"
   },

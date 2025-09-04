@@ -8,7 +8,7 @@
     "./utils/*": "./utils/*.ts"
   },
   "scripts": {
-    "clean": "git clean -fdX -e \".env*\" .",
+    "clean": "git clean -fdx -e '.env*' .",
     "lint": "bunx eslint .",
     "migrate": "drizzle-kit migrate",
     "generate": "drizzle-kit generate",
