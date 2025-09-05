@@ -44,6 +44,26 @@ export const agentHandlers = [
     return HttpResponse.json(agents);
   }),
 
+  http.get<{ agentSlug: string }>(
+    "/api/v1/agents/:agentSlug",
+    async ({ params }) => {
+      let agent;
+      try {
+        agent = db.agent.findFirst({
+          where: { slug: { equals: params.agentSlug } },
+          strict: true,
+        });
+      } catch {
+        return new HttpResponse("Agent with the slug not found", {
+          status: 404,
+        });
+      }
+
+      await delay(500);
+      return HttpResponse.json(agent);
+    },
+  ),
+
   http.delete<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug",
     async ({ params }) => {

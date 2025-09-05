@@ -1,13 +1,14 @@
-import { useRouteLoaderData, redirect } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/data";
+import { withErrorToast } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
 
 import { DangerSettings, createAgentDeleteSchema } from "./danger-zone";
 import { GeneralSettings } from "./general";
-import { withErrorToast } from "~console/lib/errors";
+
 
 export async function clientAction({ request }: Route.ClientActionArgs ) {
   const formData = await request.formData();
@@ -28,19 +29,20 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
   return redirect("/");
 }
 
-function Settings() {
-  const { activeAgent } = useRouteLoaderData("routes/_shell");
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  return { agent: (await api.agents({ agentSlug: params.slug }).get()).data };
+}
 
+function Settings() {
+  const { agent } = useLoaderData<typeof clientLoader>();
   return (
     <>
       <h1>Agent Settings</h1>
-
-      <GeneralSettings activeAgent={activeAgent} />
-
-      <DangerSettings activeAgent={activeAgent} />
+      <GeneralSettings activeAgent={agent!} />
+      <DangerSettings activeAgent={agent!} />
     </>
   );
 }
 export default Settings;
 
-export const ErrorBoundary = withErrorToast(Settings);
+export const ErrorBoundary = withErrorToast(Settings, true);

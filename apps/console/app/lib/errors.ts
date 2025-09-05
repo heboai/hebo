@@ -8,7 +8,7 @@ import {
   type ComponentType,
   type ReactElement,
 } from "react";
-import { isRouteErrorResponse, useRouteError } from "react-router";
+import { isRouteErrorResponse, useMatches, useRouteError } from "react-router";
 import { toast } from "sonner";
 
 export function parseError(error: unknown) {
@@ -54,10 +54,21 @@ export function useErrorToast() {
 
 export function withErrorToast<
   C extends ComponentType<Record<string, unknown>>,
->(Component: C) {
+>(Component: C, hasLoader = false) {
   function Wrapper(props: ComponentProps<C>): ReactElement | null {
+    // Throw loader errors to the parent boundary
+    const matches = useMatches();
+    const self = matches.at(-1);
+    const hasData = !!self && "data" in self && self.data !== undefined;
+    const err = useRouteError();
+
+    if (hasLoader && !hasData && err) {
+      throw err;
+    }
+
+    // Use toasts for errors from actions
     useErrorToast();
-    return createElement(Component, props as ComponentProps<C>);
+    return createElement(Component, props);
   }
   return Wrapper;
 }
