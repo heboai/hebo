@@ -26,7 +26,7 @@ export const heboVpcConnector = new aws.apprunner.VpcConnector(
     securityGroups: [heboSecurityGroup.id],
     vpcConnectorName:
       $app.stage === "production"
-        ? "hebo-vpc-connector-sg"
-        : `${$app.stage}-hebo-vpc-connector-sg`,
+        ? "hebo-vpc-connector"
+        : `${$app.stage}-hebo-vpc-connector`,
   },
 );
