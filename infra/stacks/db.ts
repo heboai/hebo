@@ -30,7 +30,33 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
       a.globalClusterIdentifier = global.id;
     },
   },
-  proxy: true,
 });
+
+const migrator = new sst.aws.Function("DatabaseMigrator", {
+  handler: "packages/db/src/migrator.handler",
+  link: [heboDatabase],
+  vpc: heboVpc,
+  copyFiles: [
+    {
+      from: "packages/db/migrations",
+      to: "./migrations",
+    },
+  ],
+  environment: {
+    PG_HOST: heboDatabase.host,
+    PG_PASSWORD: secrets.dbPassword.value,
+    PG_PORT: heboDatabase.port.apply((port) => port.toString()),
+    PG_USER: heboDatabase.username,
+    PG_DATABASE: heboDatabase.database,
+  },
+});
+
+if (!$dev) {
+  // eslint-disable-next-line sonarjs/constructor-for-side-effects
+  new aws.lambda.Invocation("DatabaseMigratorInvocation", {
+    input: Date.now().toString(),
+    functionName: migrator.name,
+  });
+}
 
 export default heboDatabase;

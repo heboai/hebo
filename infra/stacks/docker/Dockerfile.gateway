@@ -23,7 +23,7 @@ WORKDIR /repo/apps/gateway
 RUN bun run build
 
 ########################  runner stage  ########################
-FROM gcr.io/distroless/base
+FROM gcr.io/distroless/base-debian12
 WORKDIR /app
 
 COPY --from=builder /repo/apps/gateway/dist/server .
