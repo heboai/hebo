@@ -16,7 +16,7 @@
     background-color: var(--color-secondary) !important;
   }
 
-  /* Login: Github Icon */
+  /* Login: GitHub Icon */
   svg[viewBox="0 0 496 512"] path {
     fill: var(--color-foreground) !important;
   }
@@ -25,5 +25,11 @@
   #email,
   [data-input-otp-container="true"] div div {
     background-color: var(--color-background) !important;
+  }
+
+  /* Login: E-Mail submit field */
+  button.stack-scope[type="submit"] {
+    background-color: var(--color-primary) !important;
+    color: var(--color-foreground) !important;
   }
 }
