@@ -1,15 +1,8 @@
-"use client";
-
 import { Input } from "@hebo/ui/components/Input";
 
 import { AgentLogo } from "~console/components/ui/AgentLogo";
 
-type ActiveAgent = {
-  slug: string;
-  name: string;
-}
-
-export function GeneralSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
+export function GeneralSettings({ activeAgent }: { activeAgent: {slug: string, name: string} }) {
 
   return (
     <div className="flex flex-row gap-4 items-center">

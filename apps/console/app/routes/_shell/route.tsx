@@ -1,4 +1,4 @@
-import { isRouteErrorResponse, Outlet, useRouteLoaderData, type ShouldRevalidateFunctionArgs } from "react-router";
+import { Outlet, useRouteLoaderData, type ShouldRevalidateFunctionArgs } from "react-router";
 import { useSnapshot } from "valtio";
 
 import {
@@ -33,12 +33,12 @@ export const unstable_clientMiddleware = [authMiddleware];
 
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const { data: agents } = await api.agents.get();
+  const { data: agents = [] } = await api.agents.get();
 
   const activeAgent = params.slug ? agents!.find((a) => a.slug === params.slug) : undefined;
 
   if (params.slug && !activeAgent)
-    throw new Response(`Agent '${params.slug}' does not exist.`, { status: 404, statusText: "Not Found" });
+    throw new Response(`Agent '${params.slug}' does not exist`, { status: 404, statusText: "Not Found" });
 
   return { agents, activeAgent };
 }
