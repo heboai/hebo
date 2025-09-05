@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../.sst/platform/config.d.ts" />
 
-const ecrAccessPolicy = new aws.iam.Policy("HeboAppRunnerEcrAccessPolicy", {
+const ecrAccessPolicy = new aws.iam.Policy("HeboEcrAccessPolicy", {
   policy: {
     Version: "2012-10-17",
     Statement: [
