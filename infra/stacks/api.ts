@@ -54,6 +54,13 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
   },
 });
 
+// eslint-disable-next-line sonarjs/constructor-for-side-effects
+new aws.apprunner.CustomDomainAssociation("HeboApiDomain", {
+  domainName:
+    $app.stage === "production" ? "api.hebo.ai" : `${$app.stage}.api.hebo.ai`,
+  serviceArn: heboApi.arn,
+});
+
 export const heboApiUrl = heboApi.serviceUrl;
 
 export default heboApi;
