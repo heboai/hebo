@@ -1,7 +1,9 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const isLocal: boolean = !process.env.PG_HOST;
+export const isLocal: boolean = !(
+  process.env.PG_HOST && process.env.PG_HOST.trim().length > 0
+);
 
 export type DbCredentials = {
   host: string;
@@ -60,10 +62,10 @@ export function getConnectionConfig(): DbCredentials | string {
   }
 
   return {
-    host: process.env.PG_HOST ?? "localhost",
-    port: Number(process.env.PG_PORT ?? 5432),
-    user: process.env.PG_USER ?? "postgres",
-    password: process.env.PG_PASSWORD ?? "",
-    database: process.env.PG_DATABASE ?? "hebo",
+    host: process.env.PG_HOST!,
+    port: Number(process.env.PG_PORT!),
+    user: process.env.PG_USER!,
+    password: process.env.PG_PASSWORD!,
+    database: process.env.PG_DATABASE!,
   };
 }
