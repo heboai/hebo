@@ -21,13 +21,14 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
       imageConfiguration: {
         port: "3001",
         runtimeEnvironmentVariables: {
+          PG_DATABASE: heboDatabase.database,
           PG_HOST: heboDatabase.host,
+          PG_PASSWORD: secrets.dbPassword.value,
           PG_PORT: heboDatabase.port.apply((port) => port.toString()),
           PG_USER: heboDatabase.username,
-          PG_PASSWORD: secrets.dbPassword.value,
-          PG_DATABASE: heboDatabase.database,
-          VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
+          PORT: "3001",
           STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
+          VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
         },
       },
       imageIdentifier: heboApiImage.imageName,
