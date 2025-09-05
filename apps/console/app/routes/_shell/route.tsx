@@ -52,7 +52,15 @@ export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidate
   return nextParams.agentSlug !== undefined && currentParams.agentSlug !== nextParams.agentSlug;
 }
 
-export default function ShellLayout({loaderData}: Route.ComponentProps) {
+
+function Layout({
+  children,
+  loaderData,
+}: {
+  children: React.ReactNode;
+  loaderData?: Awaited<ReturnType<typeof clientLoader>>; 
+}) {  
+  
   const { user } = useSnapshot(authStore);
 
   // FUTURE replace with session storage
