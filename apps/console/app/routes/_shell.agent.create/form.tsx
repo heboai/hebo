@@ -37,6 +37,7 @@ export function AgentCreateForm() {
     lastResult,
     constraint: getValibotConstraint(AgentCreateSchema),
     defaultValue: {
+      agentName: "",
       defaultModel: supportedModels[0].name,
     }
   });
