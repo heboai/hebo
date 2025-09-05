@@ -1,4 +1,4 @@
-import { Outlet, useRouteLoaderData, type ShouldRevalidateFunctionArgs } from "react-router";
+import { Outlet, useLoaderData, type ShouldRevalidateFunctionArgs } from "react-router";
 import { useSnapshot } from "valtio";
 
 import {
@@ -116,7 +116,7 @@ export default function ShellLayout({ loaderData }: Route.ComponentProps) {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  const loaderData = useRouteLoaderData<typeof clientLoader>("_shell/route");
+  const loaderData = useLoaderData<typeof clientLoader>();
 
   return (
     <Layout loaderData={loaderData}>
