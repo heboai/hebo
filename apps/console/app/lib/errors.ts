@@ -4,18 +4,6 @@ import { useEffect, useRef } from "react";
 import { isRouteErrorResponse, useRouteError } from "react-router";
 import { toast } from "sonner";
 
-export function useErrorToast() {
-  const error = useRouteError();
-  const hasToastRef = useRef(false);
-
-  useEffect(() => {
-    if (error && !hasToastRef.current) {
-      toast.error(parseError(error).message);
-      hasToastRef.current = true;
-    }
-  }, [error]);
-}
-
 export function parseError(error: unknown) {
   let message: string | undefined;
   let status: number | undefined;
@@ -44,4 +32,16 @@ export function parseError(error: unknown) {
   if (!retryable && isNetworkError(error)) retryable = true;
 
   return { message, status, stack, retryable };
+}
+
+export function useErrorToast() {
+  const error = useRouteError();
+  const hasToastRef = useRef(false);
+
+  useEffect(() => {
+    if (error && !hasToastRef.current) {
+      toast.error(parseError(error).message);
+      hasToastRef.current = true;
+    }
+  }, [error]);
 }
