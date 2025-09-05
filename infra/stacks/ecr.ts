@@ -47,6 +47,7 @@ const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
 const repo = new aws.ecr.Repository("HeboRepository", {
   name: "hebo",
   imageScanningConfiguration: { scanOnPush: true },
+  forceDelete: true,
 });
 
 export const createDockerImage = (
