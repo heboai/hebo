@@ -30,7 +30,7 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
           PORT: "3002",
           STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
           VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
-          VOYAGER_API_KEY: secrets.voyagerApiKey.value,
+          VOYAGE_API_KEY: secrets.voyageApiKey.value,
         },
       },
       imageIdentifier: heboGatewayImage.imageName,

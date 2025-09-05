@@ -11,4 +11,4 @@ export const dbPassword = new sst.Secret("DbPassword");
 
 // LLMs
 export const groqApiKey = new sst.Secret("GroqApiKey");
-export const voyagerApiKey = new sst.Secret("VoyagerApiKey");
+export const voyageApiKey = new sst.Secret("VoyageApiKey");
