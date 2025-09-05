@@ -7,35 +7,30 @@ import type { Route } from "./+types/route";
 
 import { DangerSettings, createAgentDeleteSchema } from "./danger-zone";
 import { GeneralSettings } from "./general";
+import { useErrorToast } from "~console/lib/errors";
 
 export async function clientAction({ request }: Route.ClientActionArgs ) {
-    const formData = await request.formData();
+  const formData = await request.formData();
 
-    const submission = parseWithValibot(
-      formData,
-      { schema: createAgentDeleteSchema(String(formData.get('slugValidate'))) }
-    );
-    
-    if (submission.status !== 'success')
-      return submission.reply();
+  const submission = parseWithValibot(
+    formData,
+    { schema: createAgentDeleteSchema(String(formData.get('slugValidate'))) }
+  );
+  
+  if (submission.status !== 'success')
+    return submission.reply();
 
-    // FUTURE simplify error handling
-    try {
-      const result = await api.agents({ agentSlug: submission.value.slugValidate }).delete();
+  const result = await api.agents({ agentSlug: submission.value.slugValidate }).delete();
 
-      if (result.error)
-        // FUTURE: helper for error parsing
-        return submission.reply({ formErrors: [String(result.error.value)] });
+  if (result.error)
+    return submission.reply({ formErrors: [String(result.error.value)] });
 
-      return redirect("/");
-
-    } catch (e: unknown) {
-      // FUTURE: helper for error parsing
-      return submission.reply({ formErrors: [ (e as Error).message] });
-    }
+  return redirect("/");
 }
 
-export default function Settings() {
+function Settings() {
+  useErrorToast();
+
   const { activeAgent } = useRouteLoaderData("routes/_shell");
 
   return (
@@ -48,3 +43,6 @@ export default function Settings() {
     </>
   );
 }
+export default Settings;
+
+export const ErrorBoundary = Settings;
