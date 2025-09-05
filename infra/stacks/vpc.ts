@@ -8,7 +8,7 @@ export const heboVpc = new sst.aws.Vpc("HeboVpc", {
 
 const heboSecurityGroup = new aws.ec2.SecurityGroup("HeboSecurityGroup", {
   vpcId: heboVpc.id,
-  description: "Security group for App Runner VPC Connector",
+  description: "Hebo VPC Connector Security Group",
   egress: [
     {
       protocol: "-1",
@@ -26,7 +26,7 @@ export const heboVpcConnector = new aws.apprunner.VpcConnector(
     securityGroups: [heboSecurityGroup.id],
     vpcConnectorName:
       $app.stage === "production"
-        ? "hebo-vpc-connector"
-        : `${$app.stage}-hebo-vpc-connector`,
+        ? "hebo-vpc-connector-sg"
+        : `${$app.stage}-hebo-vpc-connector-sg`,
   },
 );
