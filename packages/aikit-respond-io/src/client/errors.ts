@@ -1,18 +1,18 @@
 /**
  * Base error class for all client related errors.
  */
-export class ClientError extends Error {
+export class RespondIoClientError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "ClientError";
-    Object.setPrototypeOf(this, ClientError.prototype);
+    this.name = "RespondIoClientError";
+    Object.setPrototypeOf(this, RespondIoClientError.prototype);
   }
 }
 
 /**
  * Represents an error returned by the API (e.g., 4xx or 5xx status codes).
  */
-export class ClientFailureError extends ClientError {
+export class RespondIoClientFailureError extends RespondIoClientError {
   public statusCode: number;
   public apiResponse: any; // The raw error response from the API
 
@@ -22,20 +22,20 @@ export class ClientFailureError extends ClientError {
     message: string = "API Error",
   ) {
     super(message);
-    this.name = "ClientFailureError";
+    this.name = "RespondIoClientFailureError";
     this.statusCode = statusCode;
     this.apiResponse = apiResponse;
-    Object.setPrototypeOf(this, ClientFailureError.prototype);
+    Object.setPrototypeOf(this, RespondIoClientFailureError.prototype);
   }
 }
 
 /**
  * Represents a network-related error when communicating with the API (e.g., no internet connection, timeout).
  */
-export class ClientNetworkError extends ClientError {
+export class RespondIoClientNetworkError extends RespondIoClientError {
   constructor(message: string = "Network Error") {
     super(message);
-    this.name = "ClientNetworkError";
-    Object.setPrototypeOf(this, ClientNetworkError.prototype);
+    this.name = "RespondIoClientNetworkError";
+    Object.setPrototypeOf(this, RespondIoClientNetworkError.prototype);
   }
 }

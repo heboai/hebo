@@ -1,4 +1,4 @@
-# aikit-respond-io
+# @hebo/aikit-respond-io
 
 A library to help setup webhook for respond.io integration using a clean, event-based API.
 
@@ -13,8 +13,8 @@ bun add @hebo/aikit-respond-io
 This library provides three ways to interact with Respond.io:
 
 - `Agent`: A high-level agent that simplifies common workflows like receiving and sending messages.
-- `Webhook`: A low-level webhook handler for processing events from Respond.io.
-- `Client`: A low-level client for making requests to the Respond.io API.
+- `createWebhookHandler`: A factory function to create a low-level webhook handler for processing events from Respond.io.
+- `createRespondIoClient`: A factory function to create a low-level client for making requests to the Respond.io API.
 
 ### Agent Example with Hono
 
@@ -94,7 +94,7 @@ The `Webhook` handler now includes a `fetch` method to simplify integration, whi
 ```ts
 import { Hono } from "hono";
 import {
-  webhookHandler,
+  createWebhookHandler,
   WebhookEvents,
   MessageReceivedPayload,
   ConversationClosedPayload,
@@ -103,7 +103,7 @@ import {
 const app = new Hono();
 
 // 1. Create and configure the webhook handler instance using the factory function.
-const webhook = webhookHandler({
+const webhook = createWebhookHandler({
   events: {
     [WebhookEvents.MessageReceived]: {
       signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
@@ -152,12 +152,12 @@ app.mount("/webhook/respond-io", webhook.fetch);
 export default app;
 ```
 
-### API Client Example with Hono
+### API RespondIoClient Example with Hono
 
 ```ts
 import { Hono } from "hono";
 import {
-  Client,
+  createRespondIoClient,
   SendMessagePayload,
   ContactIdentifier,
   TextMessage,
@@ -168,7 +168,7 @@ const app = new Hono();
 
 // Initialize the client with your API key.
 // It's recommended to use environment variables for sensitive information.
-const client = new Client({
+const client = createRespondIoClient({
   apiKey: process.env.RESPOND_IO_API_KEY!,
 });
 

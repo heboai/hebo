@@ -1,4 +1,8 @@
-import { Client, ClientConfig } from "../client";
+import {
+  createRespondIoClient,
+  RespondIoClient,
+  RespondIoClientConfig,
+} from "../client";
 import { Webhook, WebhookConfig } from "../webhook";
 import { WebhookEvents, MessageReceivedPayload } from "../webhook/types";
 
@@ -9,7 +13,7 @@ import type { ContactIdentifier, SendMessageResponse } from "../client/types";
  */
 export class Agent {
   private readonly webhook: Webhook;
-  private readonly client: Client;
+  private readonly client: RespondIoClient;
 
   /**
    * Creates a new agent instance.
@@ -17,10 +21,10 @@ export class Agent {
    */
   constructor(config: {
     webhookConfig: WebhookConfig;
-    clientConfig: ClientConfig;
+    clientConfig: RespondIoClientConfig;
   }) {
     this.webhook = new Webhook(config.webhookConfig);
-    this.client = new Client(config.clientConfig);
+    this.client = createRespondIoClient(config.clientConfig);
   }
 
   /**

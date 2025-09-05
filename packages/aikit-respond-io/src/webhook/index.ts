@@ -123,7 +123,7 @@ export class Webhook extends EventTarget {
  * This is a factory function that provides a function-like interface.
  * @param config The configuration object containing the event configurations.
  */
-export function webhookHandler(config: WebhookConfig): Webhook {
+export function createWebhookHandler(config: WebhookConfig): Webhook {
   return new Webhook(config);
 }
 

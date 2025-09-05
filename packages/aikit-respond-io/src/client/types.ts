@@ -40,7 +40,7 @@ export interface SendMessageResponse {
 /**
  * Configuration for the API client.
  */
-export interface ClientConfig {
+export interface RespondIoClientConfig {
   apiKey: string;
   baseUrl?: string; // Optional: Defaults to the official API URL
 }
