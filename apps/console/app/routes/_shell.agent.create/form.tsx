@@ -38,10 +38,7 @@ export function AgentCreateForm() {
     constraint: getValibotConstraint(AgentCreateSchema),
     defaultValue: {
       defaultModel: supportedModels[0].name,
-    },
-    onValidate({ formData }) {
-      return parseWithValibot(formData, { schema: AgentCreateSchema });
-    },
+    }
   });
 
   const navigation = useNavigation();

@@ -23,6 +23,8 @@ import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
 import { ErrorView } from "~console/components/ui/ErrorView";
+import { Toaster } from "sonner";
+import { XCircle } from "lucide-react";
 
 
 async function authMiddleware() {
@@ -88,6 +90,10 @@ function Layout({
 
         <main className="relative flex w-full flex-1 flex-col gap-4 p-4">
           <SidebarTrigger className="fixed -m-1.5" />
+          <Toaster
+            position="top-right"
+            icons={{error: <XCircle className="size-4" />}}
+          />
 
           <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
             {children}
