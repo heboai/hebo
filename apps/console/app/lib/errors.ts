@@ -43,13 +43,12 @@ export function parseError(error: unknown) {
 
 export function useErrorToast() {
   const error = useRouteError();
-  const hasToastRef = useRef(false);
+  const seen = useRef<unknown>(null);
 
   useEffect(() => {
-    if (error && !hasToastRef.current) {
-      toast.error(parseError(error).message);
-      hasToastRef.current = true;
-    }
+    if (!error || seen.current === error) return;
+    seen.current = error;
+    toast.error(parseError(error).message);
   }, [error]);
 }
 
