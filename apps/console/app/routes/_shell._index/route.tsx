@@ -3,7 +3,7 @@ import { redirect } from "react-router";
 import { api } from "~console/lib/data";
 
 async function defaultAgentMiddleware() {
-  const { data: agents } = await api.agents.get();
+  const { data: agents = [] } = await api.agents.get();
 
   // FUTURE fade-in the next page
   // FUTURE remember last agent and branch in session storage

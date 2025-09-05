@@ -1,5 +1,7 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
+import { ErrorView } from "./components/ui/ErrorView";
+
 import type { Route } from "./+types/root";
 
 import "./init";
@@ -7,7 +9,6 @@ import "./init";
 import "./styles/tailwind.css";
 import "./styles/global.css";
 import "./styles/stack.css";
-import { ErrorView } from "./components/ui/ErrorView";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

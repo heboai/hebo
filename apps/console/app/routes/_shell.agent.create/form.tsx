@@ -1,9 +1,7 @@
-"use client";
-
-import { Form, useNavigation } from "react-router";
+import { Form, useActionData, useNavigation } from "react-router";
 import { message, nonEmpty, object, string, pipe, trim } from "valibot";
 import { useForm, getFormProps } from "@conform-to/react";
-import { parseWithValibot } from "@conform-to/valibot";
+import { getValibotConstraint, parseWithValibot } from "@conform-to/valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Button } from "@hebo/ui/components/Button";
@@ -27,18 +25,22 @@ import {
 } from "@hebo/ui/components/Select";
 
 
-const FormSchema = object({
+export const AgentCreateSchema = object({
   agentName: message(pipe(string(), trim(), nonEmpty()), "Please enter an agent name"),
   defaultModel: string(),
 });
 
-export function AgentForm({ error }: { error?: string }) {
+export function AgentCreateForm() {
+  const lastResult = useActionData();
+  
   const [form, fields] = useForm({
+    lastResult,
+    constraint: getValibotConstraint(AgentCreateSchema),
     defaultValue: {
       defaultModel: supportedModels[0].name,
     },
     onValidate({ formData }) {
-      return parseWithValibot(formData, { schema: FormSchema });
+      return parseWithValibot(formData, { schema: AgentCreateSchema });
     },
   });
 
@@ -95,9 +97,9 @@ export function AgentForm({ error }: { error?: string }) {
           </div>
 
           {/* Mutation Error Display */}
-          {error && (
+          {form.errors && (
             <div className="text-destructive text-right" role="alert">
-              {error}
+              {form.errors}
             </div>
           )}
         </CardContent>

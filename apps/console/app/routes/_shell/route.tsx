@@ -32,15 +32,7 @@ async function authMiddleware() {
 export const unstable_clientMiddleware = [authMiddleware];
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const { data: agents } = await api.agents.get();
-  
-  // Change from params.slug to params.agentSlug
-  const activeAgent = params.agentSlug ? agents!.find((a) => a.slug === params.agentSlug) : undefined;
-  
-  // Add branch slug identification
-  const activeBranch = params.branchSlug && activeAgent 
-    ? activeAgent.branches?.find((b) => b.slug === params.branchSlug)
-    : undefined;
+  const { data: agents = [] } = await api.agents.get();
 
   if (params.agentSlug && !activeAgent)
     throw new Response("Agent Not Found", { status: 404 });
@@ -48,7 +40,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   if (params.branchSlug && !activeBranch)
     throw new Response("Branch Not Found", { status: 404 });
 
-  return { agents, activeAgent, activeBranch };
+  return { agents };
 }
 
 export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
