@@ -1,6 +1,13 @@
 import isNetworkError from "is-network-error";
 import { HTTPError, TimeoutError } from "ky";
-import { useEffect, useRef } from "react";
+import {
+  createElement,
+  useEffect,
+  useRef,
+  type ComponentProps,
+  type ComponentType,
+  type ReactElement,
+} from "react";
 import { isRouteErrorResponse, useRouteError } from "react-router";
 import { toast } from "sonner";
 
@@ -44,4 +51,14 @@ export function useErrorToast() {
       hasToastRef.current = true;
     }
   }, [error]);
+}
+
+export function withErrorToast<
+  C extends ComponentType<Record<string, unknown>>,
+>(Component: C) {
+  function Wrapper(props: ComponentProps<C>): ReactElement | null {
+    useErrorToast();
+    return createElement(Component, props as ComponentProps<C>);
+  }
+  return Wrapper;
 }

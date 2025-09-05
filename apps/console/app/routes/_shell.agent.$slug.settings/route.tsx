@@ -7,7 +7,7 @@ import type { Route } from "./+types/route";
 
 import { DangerSettings, createAgentDeleteSchema } from "./danger-zone";
 import { GeneralSettings } from "./general";
-import { useErrorToast } from "~console/lib/errors";
+import { withErrorToast } from "~console/lib/errors";
 
 export async function clientAction({ request }: Route.ClientActionArgs ) {
   const formData = await request.formData();
@@ -29,8 +29,6 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
 }
 
 function Settings() {
-  useErrorToast();
-
   const { activeAgent } = useRouteLoaderData("routes/_shell");
 
   return (
@@ -45,4 +43,4 @@ function Settings() {
 }
 export default Settings;
 
-export const ErrorBoundary = Settings;
+export const ErrorBoundary = withErrorToast(Settings);

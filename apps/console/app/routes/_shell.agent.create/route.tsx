@@ -4,7 +4,7 @@ import { parseWithValibot } from "@conform-to/valibot";
 import { api } from "~console/lib/data";
 import type { Route } from "./+types/route";
 import { AgentCreateForm, AgentCreateSchema } from "./form";
-import { useErrorToast } from "~console/lib/errors";
+import { withErrorToast } from "~console/lib/errors";
 
 export async function clientAction({ request }: Route.ClientActionArgs ) {
   const formData = await request.formData();
@@ -26,8 +26,6 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
 }
 
 function AgentCreate() {
-  useErrorToast();
-
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <AgentCreateForm />
@@ -36,4 +34,4 @@ function AgentCreate() {
 }
 export default AgentCreate;
 
-export const ErrorBoundary = AgentCreate;
+export const ErrorBoundary = withErrorToast(AgentCreate);

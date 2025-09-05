@@ -50,13 +50,16 @@ export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidate
   return currentParams.slug !== nextParams.slug;
 }
 
+
 function Layout({
   children,
   loaderData,
 }: {
   children: React.ReactNode;
   loaderData?: Awaited<ReturnType<typeof clientLoader>>; 
-}) {  const { user } = useSnapshot(authStore);
+}) {  
+  
+  const { user } = useSnapshot(authStore);
 
   // FUTURE replace with session storage
   const defaultOpen = getCookie("sidebar_state") === "true";
@@ -111,7 +114,6 @@ export default function ShellLayout({ loaderData }: Route.ComponentProps) {
     </Layout>
   );
 }
-
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   const loaderData = useRouteLoaderData<typeof clientLoader>("_shell/route");
