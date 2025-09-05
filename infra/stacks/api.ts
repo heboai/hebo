@@ -50,11 +50,6 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
   },
   healthCheckConfiguration: {
     protocol: "HTTP",
-    path: "/health",
-    interval: 10,
-    timeout: 5,
-    healthyThreshold: 1,
-    unhealthyThreshold: 3,
   },
 });
 

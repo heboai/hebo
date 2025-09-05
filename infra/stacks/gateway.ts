@@ -52,11 +52,6 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
   },
   healthCheckConfiguration: {
     protocol: "HTTP",
-    path: "/health",
-    interval: 10,
-    timeout: 5,
-    healthyThreshold: 1,
-    unhealthyThreshold: 3,
   },
 });
 
