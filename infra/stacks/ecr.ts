@@ -44,24 +44,16 @@ new aws.iam.RolePolicyAttachment("HeboAppRunnerEcrPolicyAttachment", {
 
 const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
 
-const defineServiceRepository = (serviceName: ServiceName) =>
-  new aws.ecr.Repository(`hebo-${serviceName}`, {
-    forceDelete: true,
-    imageScanningConfiguration: { scanOnPush: true },
-  });
+const repo = new aws.ecr.Repository("HeboRepository", {
+  name: "hebo",
+  imageScanningConfiguration: { scanOnPush: true },
+});
 
-type ServiceName = "api" | "gateway";
-
-const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
-
-export const defineServiceImage = (serviceName: ServiceName) => {
-  const repo = defineServiceRepository(serviceName);
-  const dockerfilePath =
-    serviceName === "api"
-      ? "../../infra/stacks/docker/Dockerfile.api"
-      : "../../infra/stacks/docker/Dockerfile.gateway";
-
-  return new docker.Image(`hebo-${serviceName}-image`, {
+export const createDockerImage = (
+  dockerfilePath: string,
+  dockerTag: string,
+) => {
+  return new docker.Image(`HeboImage-${dockerTag}`, {
     build: {
       context: "../../",
       dockerfile: dockerfilePath,
