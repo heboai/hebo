@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../.sst/platform/config.d.ts" />
 
+import { createCnameRecords } from "./certs";
 import heboDatabase from "./db";
 import { appRunnerEcrAccessRole, createDockerImage } from "./ecr";
 import * as secrets from "./secrets";
@@ -56,14 +57,19 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
   },
 });
 
-// eslint-disable-next-line sonarjs/constructor-for-side-effects
-new aws.apprunner.CustomDomainAssociation("HeboGatewayDomain", {
-  domainName:
-    $app.stage === "production"
-      ? "gateway.hebo.ai"
-      : `${$app.stage}.gateway.hebo.ai`,
-  serviceArn: heboGateway.arn,
-});
+const domainName =
+  $app.stage === "production"
+    ? "gateway.hebo.ai"
+    : `${$app.stage}.gateway.hebo.ai`;
+const heboGatewayAssociation = new aws.apprunner.CustomDomainAssociation(
+  "HeboGatewayAssociation",
+  {
+    domainName,
+    serviceArn: heboGateway.arn,
+  },
+);
+
+createCnameRecords(domainName, heboGatewayAssociation);
 
 export const heboGatewayUrl = heboGateway.serviceUrl;
 
