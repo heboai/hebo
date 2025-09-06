@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData, useParams } from "react-router";
+import { Outlet, useLoaderData, useParams, useRouteLoaderData } from "react-router";
 import { useSnapshot } from "valtio";
 
 import {
@@ -53,13 +53,17 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { agents };
 }
 
+export function useActiveAgent() {
+  const loaderData = useRouteLoaderData<typeof clientLoader>("routes/_shell");
+  return loaderData ? extractActiveAgent(loaderData.agents, useParams().slug) : undefined;
+}
 
-function Layout({ children }: { children: React.ReactNode }) {  
+function ShellLayout({ error = false } : { error?: boolean }) { 
 
   const loaderData = useLoaderData<typeof clientLoader>();
 
   // Rebuild active agent here so it re-renders on route switch without server roundtrip
-  const activeAgent = loaderData ? extractActiveAgent(loaderData.agents, useParams().slug) : undefined;
+  const activeAgent = useActiveAgent();
 
   const { user } = useSnapshot(authStore);
 
@@ -101,7 +105,7 @@ function Layout({ children }: { children: React.ReactNode }) {
           />
 
           <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
-            {children}
+            {error ? <ErrorView /> : <Outlet />}
           </div>
         </main>
       </SidebarProvider>
@@ -109,18 +113,6 @@ function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function ShellLayout() {
-  return (
-    <Layout>
-      <Outlet />
-    </Layout>
-  );
-}
+export default ShellLayout;
 
-export function ErrorBoundary() {
-  return (
-    <Layout>
-      <ErrorView />
-    </Layout>
-  );
-}
+export const ErrorBoundary = () => <ShellLayout error={true} />;
