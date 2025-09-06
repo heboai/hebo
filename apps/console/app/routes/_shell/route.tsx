@@ -53,12 +53,12 @@ export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidate
 }
 
 
-function Layout({ children }: { children: React.ReactNode }) {  
+function ShellLayout({ error = false } : { error?: boolean }) { 
 
   const loaderData = useLoaderData<typeof clientLoader>();
 
   // Rebuild active agent here so it re-renders on route switch without server roundtrip
-  const activeAgent = loaderData ? extractActiveAgent(loaderData.agents, useParams().slug) : undefined;
+  const activeAgent = useActiveAgent();
 
   const { user } = useSnapshot(authStore);
 
