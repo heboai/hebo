@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData, type ShouldRevalidateFunctionArgs } from "react-router";
+import { Outlet, useLoaderData, useParams } from "react-router";
 import { useSnapshot } from "valtio";
 
 import {
@@ -34,31 +34,33 @@ async function authMiddleware() {
 export const unstable_clientMiddleware = [authMiddleware];
 
 
+export function extractActiveAgent<T extends { slug: string }>(
+  agents: readonly T[] | null,
+  slug: string | undefined
+): T | undefined {
+  if (!slug || !agents) return undefined;
+  return agents.find(a => a.slug === slug);
+}
+
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const { data: agents = [] } = await api.agents.get();
 
-  const activeAgent = params.slug ? agents!.find((a) => a.slug === params.slug) : undefined;
+  const activeAgent = extractActiveAgent(agents, params.slug);
 
   if (params.slug && !activeAgent)
     throw new Response(`Agent '${params.slug}' does not exist`, { status: 404, statusText: "Not Found" });
 
-  return { agents, activeAgent };
-}
-
-export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
-  // Reload data when navigating betweens agents
-  return currentParams.slug !== nextParams.slug;
+  return { agents };
 }
 
 
-function Layout({
-  children,
-  loaderData,
-}: {
-  children: React.ReactNode;
-  loaderData?: Awaited<ReturnType<typeof clientLoader>>; 
-}) {  
-  
+function Layout({ children }: { children: React.ReactNode }) {  
+
+  const loaderData = useLoaderData<typeof clientLoader>();
+
+  // Rebuild active agent here so it re-renders on route switch without server roundtrip
+  const activeAgent = loaderData ? extractActiveAgent(loaderData.agents, useParams().slug) : undefined;
+
   const { user } = useSnapshot(authStore);
 
   // FUTURE replace with session storage
@@ -79,7 +81,7 @@ function Layout({
         <Sidebar collapsible="icon">
           <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
             <SidebarHeader>
-                <AgentSelect activeAgent={loaderData?.activeAgent} agents={loaderData?.agents!} />
+              <AgentSelect activeAgent={activeAgent} agents={loaderData?.agents!} />
             </SidebarHeader>
             <SidebarContent />
             <SidebarFooter>
@@ -107,20 +109,18 @@ function Layout({
   );
 }
 
-export default function ShellLayout({ loaderData }: Route.ComponentProps) {
+export default function ShellLayout() {
   return (
-    <Layout loaderData={loaderData}>
+    <Layout>
       <Outlet />
     </Layout>
   );
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  const loaderData = useLoaderData<typeof clientLoader>();
-
+export function ErrorBoundary() {
   return (
-    <Layout loaderData={loaderData}>
-      <ErrorView error={error} />
+    <Layout>
+      <ErrorView />
     </Layout>
   );
 }
