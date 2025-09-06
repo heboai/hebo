@@ -1,48 +1,22 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../.sst/platform/config.d.ts" />
 
+import { createCnameRecords } from "./certs";
 import heboDatabase from "./db";
-import heboSecurityGroup from "./security-group";
-import heboVpc from "./vpc";
-import appRunnerEcrAccessRole from "./iam";
+import { appRunnerEcrAccessRole, createDockerImage } from "./ecr";
+import * as secrets from "./secrets";
+import { heboVpcConnector } from "./vpc";
 
-const stackProjectId = new sst.Secret("StackProjectId");
-const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
+const resourceName =
+  $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
 
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
+const apiTag = `api-${dockerTag}`;
 
-const resourceName = $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`;
-
-const heboApiRepo = new aws.ecr.Repository(resourceName, {
-  forceDelete: true,
-  imageScanningConfiguration: { scanOnPush: true },
-});
-
-const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
-
-const heboApiImage = new docker.Image("hebo-api-image", {
-  build: {
-    context: "../../",
-    dockerfile: "../../infra/stacks/docker/Dockerfile.api",
-    platform: "linux/amd64",
-  },
-  imageName: $interpolate`${heboApiRepo.repositoryUrl}:${dockerTag}`,
-  registry: {
-    server: heboApiRepo.repositoryUrl.apply(url => {
-      const parts = url.split('/');
-      return parts.slice(0, -1).join('/');
-    }),
-    username: ecrAuth.userName,
-    password: ecrAuth.password,
-  },
-});
-
-const heboApiConnector = new aws.apprunner.VpcConnector("HeboApiConnector", {
-  subnets: heboVpc.privateSubnets,
-  securityGroups: [heboSecurityGroup.id],
-  vpcConnectorName:
-    $app.stage === "production" ? "hebo-api" : `${$app.stage}-hebo-api`,
-});
+const heboApiImage = createDockerImage(
+  "../../infra/stacks/docker/Dockerfile.api",
+  apiTag,
+);
 
 const heboApi = new aws.apprunner.Service("HeboApi", {
   serviceName: resourceName,
@@ -54,13 +28,15 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
       imageConfiguration: {
         port: "3001",
         runtimeEnvironmentVariables: {
+          PG_DATABASE: heboDatabase.database,
           PG_HOST: heboDatabase.host,
+          PG_PASSWORD: secrets.dbPassword.value,
           PG_PORT: heboDatabase.port.apply((port) => port.toString()),
           PG_USER: heboDatabase.username,
-          PG_PASSWORD: new sst.Secret("HeboDbPassword").value,
-          PG_DATABASE: heboDatabase.database,
-          VITE_STACK_PROJECT_ID: stackProjectId.value,
-          STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
+          PGSSLMODE: "require",
+          PORT: "3001",
+          STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
+          VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
         },
       },
       imageIdentifier: heboApiImage.imageName,
@@ -71,10 +47,25 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
   networkConfiguration: {
     egressConfiguration: {
       egressType: "VPC",
-      vpcConnectorArn: heboApiConnector.arn,
+      vpcConnectorArn: heboVpcConnector.arn,
     },
   },
+  healthCheckConfiguration: {
+    protocol: "HTTP",
+  },
 });
+
+const domainName =
+  $app.stage === "production" ? "api.hebo.ai" : `${$app.stage}.api.hebo.ai`;
+const heboApiAssociation = new aws.apprunner.CustomDomainAssociation(
+  "HeboApiAssociation",
+  {
+    domainName,
+    serviceArn: heboApi.arn,
+  },
+);
+
+createCnameRecords(domainName, heboApiAssociation);
 
 export const heboApiUrl = heboApi.serviceUrl;
 

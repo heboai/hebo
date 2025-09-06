@@ -9,7 +9,7 @@ import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
 
-const PORT = Number(process.env.API_PORT) || 3001;
+const PORT = Number(process.env.PORT ?? 3001);
 
 const createApi = () =>
   new Elysia()
@@ -27,6 +27,7 @@ const createApi = () =>
       }),
     )
     .use(authService)
+    // FUTURE: Prevent requests to / from being logged
     .get("/", () => "🐵 Hebo API says hello!")
     .group(
       "/v1",

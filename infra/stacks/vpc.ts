@@ -1,6 +1,32 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../.sst/platform/config.d.ts" />
 
-const heboVpc = new sst.aws.Vpc("HeboVpc", $app.stage === "production" ? {} : { bastion: true, nat: "ec2" });
+export const heboVpc = new sst.aws.Vpc("HeboVpc", {
+  nat: "ec2",
+  bastion: $app.stage !== "production",
+});
 
-export default heboVpc;
+const heboSecurityGroup = new aws.ec2.SecurityGroup("HeboSecurityGroup", {
+  vpcId: heboVpc.id,
+  description: "Hebo VPC Connector Security Group",
+  egress: [
+    {
+      protocol: "-1",
+      fromPort: 0,
+      toPort: 0,
+      cidrBlocks: ["0.0.0.0/0"],
+    },
+  ],
+});
+
+export const heboVpcConnector = new aws.apprunner.VpcConnector(
+  "HeboVpcConnector",
+  {
+    subnets: heboVpc.privateSubnets,
+    securityGroups: [heboSecurityGroup.id],
+    vpcConnectorName:
+      $app.stage === "production"
+        ? "hebo-vpc-connector"
+        : `${$app.stage}-hebo-vpc-connector`,
+  },
+);

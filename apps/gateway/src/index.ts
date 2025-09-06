@@ -11,7 +11,7 @@ import { completions } from "./modules/completions";
 import { embeddings } from "./modules/embeddings";
 import { models } from "./modules/models";
 
-const PORT = Number(process.env.GATEWAY_PORT) || 3002;
+const PORT = Number(process.env.PORT ?? 3002);
 
 export const createApp = () =>
   new Elysia()
@@ -30,6 +30,7 @@ export const createApp = () =>
     )
     .use(authService)
     .use(oaiErrors)
+    // FUTURE: Prevent requests to / from being logged
     .get("/", () => "🐵 Hebo AI Gateway says hello!")
     .group(
       "/v1",

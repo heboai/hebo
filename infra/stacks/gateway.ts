@@ -1,58 +1,25 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../.sst/platform/config.d.ts" />
 
+import { createCnameRecords } from "./certs";
 import heboDatabase from "./db";
-import heboSecurityGroup from "./security-group";
-import heboVpc from "./vpc";
-import appRunnerEcrAccessRole from "./iam";
+import { appRunnerEcrAccessRole, createDockerImage } from "./ecr";
+import * as secrets from "./secrets";
+import { heboVpcConnector } from "./vpc";
 
-const stackProjectId = new sst.Secret("StackProjectId");
-const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
-const groqApiKey = new sst.Secret("GroqApiKey");
-const voyagerApiKey = new sst.Secret("VoyagerApiKey");
+const resourceName =
+  $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
 
-const resourceName = $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
 const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
+const gatewayTag = `gateway-${dockerTag}`;
 
-const heboGatewayRepo = new aws.ecr.Repository(resourceName, {
-  forceDelete: true,
-  imageScanningConfiguration: { scanOnPush: true },
-});
-
-const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
-
-const heboGatewayImage = new docker.Image("hebo-gateway-image", {
-  build: {
-    context: "../../",
-    dockerfile: "../../infra/stacks/docker/Dockerfile.gateway",
-    platform: "linux/amd64",
-  },
-  imageName: $interpolate`${heboGatewayRepo.repositoryUrl}:${dockerTag}`,
-  registry: {
-    server: heboGatewayRepo.repositoryUrl.apply(url => {
-      const parts = url.split('/');
-      return parts.slice(0, -1).join('/');
-    }),
-    username: ecrAuth.userName,
-    password: ecrAuth.password,
-  },
-});
-
-const heboGatewayConnector = new aws.apprunner.VpcConnector(
-  "HeboGatewayConnector",
-  {
-    subnets: heboVpc.privateSubnets,
-    securityGroups: [heboSecurityGroup.id],
-    vpcConnectorName:
-      $app.stage === "production"
-        ? "hebo-gateway"
-        : `${$app.stage}-hebo-gateway`,
-  },
+const heboGatewayImage = createDockerImage(
+  "../../infra/stacks/docker/Dockerfile.gateway",
+  gatewayTag,
 );
 
 const heboGateway = new aws.apprunner.Service("HeboGateway", {
-  serviceName:
-    resourceName,
+  serviceName: resourceName,
   sourceConfiguration: {
     authenticationConfiguration: {
       accessRoleArn: appRunnerEcrAccessRole.arn,
@@ -61,15 +28,17 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
       imageConfiguration: {
         port: "3002",
         runtimeEnvironmentVariables: {
+          GROQ_API_KEY: secrets.groqApiKey.value,
+          PG_DATABASE: heboDatabase.database,
           PG_HOST: heboDatabase.host,
+          PG_PASSWORD: secrets.dbPassword.value,
           PG_PORT: heboDatabase.port.apply((port) => port.toString()),
           PG_USER: heboDatabase.username,
-          PG_PASSWORD: new sst.Secret("HeboDbPassword").value,
-          PG_DATABASE: heboDatabase.database,
-          VITE_STACK_PROJECT_ID: stackProjectId.value,
-          STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
-          GROQ_API_KEY: groqApiKey.value,
-          VOYAGER_API_KEY: voyagerApiKey.value,
+          PGSSLMODE: "require",
+          PORT: "3002",
+          STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
+          VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
+          VOYAGE_API_KEY: secrets.voyageApiKey.value,
         },
       },
       imageIdentifier: heboGatewayImage.imageName,
@@ -80,10 +49,27 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
   networkConfiguration: {
     egressConfiguration: {
       egressType: "VPC",
-      vpcConnectorArn: heboGatewayConnector.arn,
+      vpcConnectorArn: heboVpcConnector.arn,
     },
   },
+  healthCheckConfiguration: {
+    protocol: "HTTP",
+  },
 });
+
+const domainName =
+  $app.stage === "production"
+    ? "gateway.hebo.ai"
+    : `${$app.stage}.gateway.hebo.ai`;
+const heboGatewayAssociation = new aws.apprunner.CustomDomainAssociation(
+  "HeboGatewayAssociation",
+  {
+    domainName,
+    serviceArn: heboGateway.arn,
+  },
+);
+
+createCnameRecords(domainName, heboGatewayAssociation);
 
 export const heboGatewayUrl = heboGateway.serviceUrl;
 

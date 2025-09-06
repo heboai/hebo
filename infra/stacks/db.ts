@@ -1,10 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../.sst/platform/config.d.ts" />
 
-import heboVpc from "./vpc";
-
-const username = new sst.Secret("HeboDbUsername");
-const password = new sst.Secret("HeboDbPassword");
+import * as secrets from "./secrets";
+import { heboVpc } from "./vpc";
 
 // Prod / preview — Aurora Serverless v2 + Global Cluster
 const global = new aws.rds.GlobalCluster("HeboDbGlobal", {
@@ -20,14 +18,45 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   version: "17.5",
   vpc: heboVpc,
   replicas: $app.stage === "production" ? 1 : 0,
-  scaling: $app.stage === "production"
-    ? { min: "0.5 ACU" }
-    : { min: "0 ACU", max: "4 ACU", pauseAfter: "20 minutes" },
-  username: username.value,
-  password: password.value,
+  scaling:
+    $app.stage === "production"
+      ? { min: "0.5 ACU" }
+      : { min: "0 ACU", max: "4 ACU", pauseAfter: "20 minutes" },
+  username: secrets.dbUsername.value,
+  password: secrets.dbPassword.value,
   database: "hebo",
-  transform: { cluster: (a) => { a.globalClusterIdentifier = global.id; } },
-  proxy: true,
+  transform: {
+    cluster: (a) => {
+      a.globalClusterIdentifier = global.id;
+    },
+  },
 });
+
+const migrator = new sst.aws.Function("DatabaseMigrator", {
+  handler: "packages/db/src/migrator.handler",
+  link: [heboDatabase],
+  vpc: heboVpc,
+  copyFiles: [
+    {
+      from: "packages/db/migrations",
+      to: "./migrations",
+    },
+  ],
+  environment: {
+    PG_HOST: heboDatabase.host,
+    PG_PASSWORD: secrets.dbPassword.value,
+    PG_PORT: heboDatabase.port.apply((port) => port.toString()),
+    PG_USER: heboDatabase.username,
+    PG_DATABASE: heboDatabase.database,
+  },
+});
+
+if (!$dev) {
+  // eslint-disable-next-line sonarjs/constructor-for-side-effects
+  new aws.lambda.Invocation("DatabaseMigratorInvocation", {
+    input: Date.now().toString(),
+    functionName: migrator.name,
+  });
+}
 
 export default heboDatabase;

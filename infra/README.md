@@ -10,7 +10,7 @@ The infrastructure consists of several key components:
 - **Database**: Aurora PostgreSQL with global clustering
 - **API**: Containerized API deployed on AWS App Runner
 - **Gateway**: Containerized Gateway deployed on AWS App Runner
-- **Frontend**: Next.js application with edge deployment
+- **Console**: Static site (React Router) via SST StaticSite (S3 + CloudFront)
 
 ## Infrastructure Components
 
@@ -53,32 +53,36 @@ Containerized Gateway deployed on AWS App Runner:
 - **VPC Integration**: Connected to database through VPC connector
 - **Auto-deployment**: Disabled for manual control
 
-### App (`stacks/app.ts`)
+### Console (`stacks/console.ts`)
 
-Next.js application with edge deployment:
-
-- **Framework**: Next.js with edge rendering
+- **Framework**: React Router
 - **Domain**:
-  - Production: `cloud.hebo.ai`
-  - Preview: `{stage}.cloud.hebo.ai`
+  - Production: `console.hebo.ai`
+  - Preview: `{stage}.console.hebo.ai`
 - **Environment**: Connected to API and external services
 
 ## Deployment
 
 ### Prerequisites
 
-1. **AWS CLI configured**
-2. **Docker installed and running**
-3. **SST CLI installed**
+1. **Bun installed** (>= 1.2.x)
+2. **AWS CLI configured**
+3. **Docker installed and running**
+
+### Install SST providers
+
+```bash
+bun run sst:synth
+```
 
 ### Deploy Infrastructure
 
 ```bash
 # From project root
-bun run deploy
+bun run sst deploy
 
 # Or specific stage
-bun run deploy --stage production
+bun run sst deploy --stage production
 ```
 
 ## Security
@@ -93,7 +97,7 @@ bun run deploy --stage production
 - **Database**: Aurora Serverless v2 with automatic scaling
 - **API**: App Runner with automatic scaling based on load
 - **Gateway**: App Runner with automatic scaling based on load
-- **App**: Edge deployment for global performance
+- **Console**: CDN-cached static site (CloudFront) for global performance
 
 ### Logs and Debugging
 
