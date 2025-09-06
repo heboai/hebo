@@ -1,10 +1,16 @@
-import { useLocation, useNavigate, useNavigation } from "react-router";
+import {
+  useLocation,
+  useNavigate,
+  useNavigation,
+  useRouteError,
+} from "react-router";
 
 import { Button } from "@hebo/ui/components/Button";
 
 import { parseError } from "~console/lib/errors";
 
-export function ErrorView({ error }: { error: unknown }) {
+export function ErrorView() {
+  const error = useRouteError();
   const { message, stack, retryable } = parseError(error);
 
   const navigate = useNavigate();

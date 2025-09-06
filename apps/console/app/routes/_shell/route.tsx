@@ -53,14 +53,13 @@ export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidate
 }
 
 
-function Layout({
-  children,
-  loaderData,
-}: {
-  children: React.ReactNode;
-  loaderData?: Awaited<ReturnType<typeof clientLoader>>; 
-}) {  
-  
+function Layout({ children }: { children: React.ReactNode }) {  
+
+  const loaderData = useLoaderData<typeof clientLoader>();
+
+  // Rebuild active agent here so it re-renders on route switch without server roundtrip
+  const activeAgent = loaderData ? extractActiveAgent(loaderData.agents, useParams().slug) : undefined;
+
   const { user } = useSnapshot(authStore);
 
   // FUTURE replace with session storage
@@ -85,7 +84,7 @@ function Layout({
         <Sidebar collapsible="icon">
           <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
             <SidebarHeader>
-                <AgentSelect activeAgent={loaderData?.activeAgent} agents={loaderData?.agents!} />
+              <AgentSelect activeAgent={activeAgent} agents={loaderData?.agents!} />
             </SidebarHeader>
             <SidebarContent />
             <SidebarFooter>

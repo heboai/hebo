@@ -29,6 +29,7 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
   return redirect("/");
 }
 
+// FUTURE: replace with outlet context
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { agent: (await api.agents({ agentSlug: params.slug }).get()).data };
 }

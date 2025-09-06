@@ -37,6 +37,7 @@ export function AgentCreateForm() {
     lastResult,
     constraint: getValibotConstraint(AgentCreateSchema),
     defaultValue: {
+      // FUTURE: sometimes this overwrite on error / sometimes not
       agentName: "",
       defaultModel: supportedModels[0].name,
     }
