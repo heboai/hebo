@@ -9,22 +9,31 @@ import { WebhookEvents, MessageReceivedPayload } from "../webhook/types";
 import type { ContactIdentifier, SendMessageResponse } from "../client/types";
 
 /**
+ * Configuration for the agent.
+ */
+export type AgentConfig = {
+  webhookConfig: WebhookConfig;
+  clientConfig: RespondIoClientConfig;
+};
+
+/**
  * A simplified agent for interacting with the API.
  */
 export class Agent {
   private readonly webhook: Webhook;
   private readonly client: RespondIoClient;
+  public readonly fetch: (request: Request) => Promise<Response>;
 
   /**
    * Creates a new agent instance.
    * @param config Configuration for the webhook handler and API client.
    */
-  constructor(config: {
-    webhookConfig: WebhookConfig;
-    clientConfig: RespondIoClientConfig;
-  }) {
+  constructor(config: AgentConfig) {
     this.webhook = new Webhook(config.webhookConfig);
     this.client = createRespondIoClient(config.clientConfig);
+    this.fetch = async (request: Request): Promise<Response> => {
+      return await this.webhook.fetch(request);
+    };
   }
 
   /**
@@ -38,19 +47,6 @@ export class Agent {
   }
 
   /**
-   * Processes an incoming webhook request.
-   *
-   * This method should be called from your server's route handler.
-   * It verifies the request signature and dispatches the event to the appropriate listener.
-   *
-   * @param request The incoming Request object (e.g., from a Fetch API compatible environment).
-   * @throws {WebhookError} If the signature is invalid or the event is unhandled.
-   */
-  public async processWebhook(request: Request): Promise<void> {
-    await this.webhook.process(request);
-  }
-
-  /**
    * Sends a text message to a contact.
    * @param text The message content.
    * @param contactId The identifier of the contact to send the message to. Can be a raw ID string or a typed ContactIdentifier.
@@ -60,13 +56,22 @@ export class Agent {
     text: string,
     contactId: number | string | ContactIdentifier,
   ): Promise<SendMessageResponse> {
-    contactId = String(contactId);
-    const identifier: ContactIdentifier = contactId.includes(":")
-      ? (contactId as ContactIdentifier)
-      : `id:${contactId}`;
+    const identifier: ContactIdentifier =
+      typeof contactId === "string" && contactId.includes(":")
+        ? (contactId as ContactIdentifier)
+        : `id:${contactId}`;
 
     return this.client.sendMessage(identifier, {
       message: { type: "text", text: text },
     });
   }
 }
+
+/**
+ * Creates a new agent instance.
+ * @param config Configuration for the webhook handler and API client.
+ * @returns A new Agent instance.
+ */
+export const createAgent = (config: AgentConfig): Agent => {
+  return new Agent(config);
+};

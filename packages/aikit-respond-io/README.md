@@ -12,24 +12,24 @@ bun add @hebo/aikit-respond-io
 
 This library provides three ways to interact with Respond.io:
 
-- `Agent`: A high-level agent that simplifies common workflows like receiving and sending messages.
+- `createAgent`: A factory function to create a high-level agent that simplifies common workflows like receiving and sending messages.
 - `createWebhookHandler`: A factory function to create a low-level webhook handler for processing events from Respond.io.
 - `createRespondIoClient`: A factory function to create a low-level client for making requests to the Respond.io API.
 
 ### Agent Example with Hono
 
-The `Agent` is the easiest way to get started. It combines the webhook and API client into a single, easy-to-use class.
+The `Agent`, created using the `createAgent` factory, is the easiest way to get started. It combines the webhook and API client into a single, easy-to-use class.
 
 ```ts
 import { Hono } from "hono";
-import { Agent } from "@hebo/aikit-respond-io";
+import { createAgent } from "@hebo/aikit-respond-io";
 import { WebhookEvents } from "@hebo/aikit-respond-io/webhook";
 
 const app = new Hono();
 
 // 1. Create and configure the agent.
 //    It's recommended to use environment variables for sensitive information.
-const agent = new Agent({
+const agent = createAgent({
   webhookConfig: {
     events: {
       [WebhookEvents.MessageReceived]: {
@@ -57,18 +57,11 @@ agent.onMessageReceived(async (payload) => {
   }
 });
 
-// Middleware to process the webhook
-app.use("/webhook/respond-io", async (c, next) => {
-  try {
-    await agent.processWebhook(c.req.raw);
-    await next(); // Proceed to the next handler if successful
-  } catch (error) {
-    console.error("[Agent Error]", (error as Error).message);
-    return c.text((error as Error).message, 400);
-  }
-});
+// 3. Mount the agent's fetch handler under a specific path.
+// Hono will forward all requests under this path to the agent's fetch handler.
+app.mount("/webhook/respond-io", agent.fetch);
 
-// 3. Create the route handler for the webhook.
+// 4. Create the route handler for the webhook.
 app.post("/webhook/respond-io", (c) => {
   // If we reach here, the webhook was successfully processed by the middleware
   return c.text("OK", 200);
