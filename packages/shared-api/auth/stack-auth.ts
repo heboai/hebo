@@ -20,7 +20,7 @@ const verifyJwt = async (token: string): Promise<string | undefined> => {
     const { payload } = await jwtVerify(token, jwks);
     return payload.sub;
   } catch (error) {
-    log.info(error, "JWT verification failed");
+    log.info({ err: error }, "JWT verification failed");
   }
 };
 
@@ -60,7 +60,7 @@ export const authServiceStackAuth = new Elysia({
       );
 
     if (apiKey) return { userId: await checkApiKey(apiKey) } as const;
-    if (jwt) return { userId: await verifyJwt(jwt!) } as const;
+    if (jwt) return { userId: await verifyJwt(jwt) } as const;
 
     log.info("No credentials provided");
     return { userId: undefined } as const;
