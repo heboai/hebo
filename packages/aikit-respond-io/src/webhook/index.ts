@@ -12,7 +12,7 @@ import { verifySignature } from "./utils";
 /**
  * A builder and handler for webhooks.
  */
-export class Webhook extends EventTarget {
+class Webhook extends EventTarget {
   private readonly eventConfigs: Partial<
     Record<WebhookEvents, WebhookEventConfig>
   >;
