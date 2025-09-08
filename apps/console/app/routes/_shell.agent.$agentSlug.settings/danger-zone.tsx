@@ -36,7 +36,6 @@ import { useActionDataErrorToast } from "~console/lib/errors";
 export function createAgentDeleteSchema(agentSlug: string) {
   return object({
     slugConfirm: literal(agentSlug, "You must type your EXACT agent slug"),
-    slugValidate: string(),
   });
 }
 export type AgentDeleteFormValues = InferOutput<ReturnType<typeof createAgentDeleteSchema>>;
@@ -50,9 +49,6 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
   const [form, fields] = useForm<AgentDeleteFormValues>({
     lastResult,
     constraint: getValibotConstraint(createAgentDeleteSchema(agent.slug)),
-    defaultValue: {
-      slugValidate: agent.slug,
-    },
   });
 
   const navigation = useNavigation();
@@ -99,12 +95,6 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
                       <Input autoComplete="off" />
                     </FormControl>
                     <FormMessage />
-                  </FormField>
-
-                  <FormField field={fields.slugValidate} className="hidden">
-                    <FormControl>
-                      <input type="hidden" />  
-                    </FormControl>
                   </FormField>
 
                   <DialogFooter>

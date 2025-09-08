@@ -2,7 +2,7 @@
   "name": "hebo",
   "version": "0.0.1",
   "private": true,
-  "packageManager": "bun@1.2.19",
+  "packageManager": "bun@1.2.21",
   "workspaces": [
     "apps/*",
     "packages/*"

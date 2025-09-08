@@ -6,10 +6,14 @@ import { api } from "~console/lib/data";
 import type { Route } from "./+types/route";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const result = await api.agents({ agentSlug: params.agentSlug }).get({query: { expand: "branches" }});
+  const result = await api
+    .agents({ agentSlug: params.agentSlug })
+    .get({ query: { expand: "branches" } });
 
   if (result.error?.status === 404)
-    throw new Response(`Agent '${params.agentSlug}' does not exist`, { status: 404, statusText: "Not Found" });
+    throw new Response(`Agent '${params.agentSlug}' does not exist`, {
+      status: 404, statusText: "Not Found"
+    });
 
   return { agent: result.data };
 }

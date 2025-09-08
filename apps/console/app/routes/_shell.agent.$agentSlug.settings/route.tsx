@@ -24,7 +24,6 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
   try {
     result = await api.agents({ agentSlug: params.agentSlug }).delete();
   } catch (error) {
-    console.log(error);
     return submission.reply({ formErrors: [ parseError(error).message ] });
   }
 

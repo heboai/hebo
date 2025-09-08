@@ -17,8 +17,7 @@ import {
 import { authService } from "~console/lib/auth";
 import { api } from "~console/lib/data";
 import { dontRevalidateOnFormErrors } from "~console/lib/errors";
-import { getCookie } from "~console/lib/utils";
-import { kbs } from "~console/lib/utils";
+import { getCookie, kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
 
 import { UserMenu } from "./sidebar-user";

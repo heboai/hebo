@@ -15,6 +15,6 @@ async function defaultAgentMiddleware() {
 
 export const unstable_clientMiddleware = [defaultAgentMiddleware];
 
-export default function EmpytRoute() {
+export default function EmptyRoute() {
   return <></>
 }
