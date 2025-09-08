@@ -1,5 +1,5 @@
 export interface AuthService {
-  ensureSignedIn(): void;
+  ensureSignedIn(): Promise<void>;
   generateApiKey(): Promise<string>;
   getAccessToken(): Promise<string | undefined>;
 }

@@ -26,7 +26,7 @@ import { PlaygroundSidebar } from "./sidebar-playground";
 import { SquareChevronRight } from "lucide-react";
 
 async function authMiddleware() {
-  authService.ensureSignedIn();
+  await authService.ensureSignedIn();
 }
 
 export const unstable_clientMiddleware = [authMiddleware];

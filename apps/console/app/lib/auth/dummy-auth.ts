@@ -3,7 +3,7 @@ import { authStore } from "~console/state/auth";
 import type { AuthService } from "./types";
 
 export const authService = {
-  ensureSignedIn() {
+  async ensureSignedIn() {
     if (authStore.user) return;
     authStore.user = {
       name: "Dummy User",
