@@ -79,7 +79,7 @@ export const agentHandlers = [
       }
 
       await delay(500);
-      return new HttpResponse(undefined, { status: 204 });
+      return new HttpResponse(undefined, { status: 200 });
     },
   ),
 ];

@@ -22,7 +22,6 @@ import { AgentLogo } from "~console/components/ui/AgentLogo";
 type Agent = {
   name: string,
   slug: string,
-  branches: { slug: string }[],
 }
 
 export function AgentSelect({

@@ -1,7 +1,7 @@
-import { Outlet, useParams } from "react-router";
-import { useSnapshot } from "valtio";
 import { XCircle, SquareChevronRight } from "lucide-react";
+import { Outlet, useParams } from "react-router";
 import { Toaster } from "sonner";
+import { useSnapshot } from "valtio";
 
 import {
   Sidebar,
@@ -13,6 +13,7 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@hebo/ui/components/Sidebar";
+
 import { authService } from "~console/lib/auth";
 import { api } from "~console/lib/data";
 import { dontRevalidateOnFormErrors } from "~console/lib/errors";
@@ -42,9 +43,9 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
 
   const { user } = useSnapshot(authStore);
-  const { slug } = useParams();
+  const { agentSlug } = useParams();
 
-  const activeAgent = agents.find(a => a.slug === slug);
+  const activeAgent = agents.find(a => a.slug === agentSlug);
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";

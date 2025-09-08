@@ -14,7 +14,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
   const formData = await request.formData();
 
   const submission = parseWithValibot(formData, {
-     schema: createAgentDeleteSchema(params.slug)
+     schema: createAgentDeleteSchema(params.agentSlug)
   });
   
   if (submission.status !== 'success')
@@ -22,13 +22,14 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
 
   let result;
   try {
-    result = await api.agents({ agentSlug: params.slug }).delete();
+    result = await api.agents({ agentSlug: params.agentSlug }).delete();
   } catch (error) {
+    console.log(error);
     return submission.reply({ formErrors: [ parseError(error).message ] });
   }
 
   if (result.error)
-    return submission.reply({ formErrors: [String(result.error.value)] });
+    return submission.reply({ formErrors: [String(result.error?.value)] });
 
   return redirect("/");
 }
@@ -37,7 +38,7 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 
 export default function Settings() {
-  const { agent } = useRouteLoaderData("routes/_shell.agent.$slug");
+  const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug");
  
   return (
     <>
