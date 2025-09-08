@@ -1,11 +1,10 @@
-import { redirect } from "react-router";
+import { redirect, useRouteLoaderData } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/data";
 import { withErrorToast } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
-import { useActiveAgent } from "~console/routes/_shell/route";
 
 import { DangerSettings, createAgentDeleteSchema } from "./danger-zone";
 import { GeneralSettings } from "./general";
@@ -32,13 +31,13 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
 
 
 function Settings() {
-  const agent = useActiveAgent();
+  const { agent } = useRouteLoaderData("routes/_shell.agent.$slug");
  
   return (
     <>
       <h1>Agent Settings</h1>
-      <GeneralSettings activeAgent={agent!} />
-      <DangerSettings activeAgent={agent!} />
+      <GeneralSettings agent={agent} />
+      <DangerSettings agent={agent} />
     </>
   );
 }

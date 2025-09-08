@@ -38,16 +38,16 @@ export function createAgentDeleteSchema(agentSlug: string) {
   });
 }
 
-export function DangerSettings({ activeAgent }: { activeAgent: {slug: string } }) {
+export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
   const lastResult = useActionData();
 
   const [form, fields] = useForm({
     lastResult,
-    constraint: getValibotConstraint(createAgentDeleteSchema(activeAgent.slug)),
+    constraint: getValibotConstraint(createAgentDeleteSchema(agent.slug)),
     defaultValue: {
       slugConfirm: "",
-      slugValidate: activeAgent.slug,
+      slugValidate: agent.slug,
     },
   });
 
@@ -88,7 +88,7 @@ export function DangerSettings({ activeAgent }: { activeAgent: {slug: string } }
                   <FormField field={fields.slugConfirm}>
                     <FormLabel>
                       To confirm, type{" "}
-                      <strong>{activeAgent.slug}</strong> in
+                      <strong>{agent.slug}</strong> in
                       the box below:
                     </FormLabel>
                     <FormControl>

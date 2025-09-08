@@ -1,8 +1,7 @@
-import { Outlet, type ShouldRevalidateFunctionArgs } from "react-router";
+import { Outlet, useParams } from "react-router";
 import { useSnapshot } from "valtio";
-import { XCircle } from "lucide-react";
+import { XCircle, SquareChevronRight } from "lucide-react";
 import { Toaster } from "sonner";
-
 
 import {
   Sidebar,
@@ -20,13 +19,12 @@ import { getCookie } from "~console/lib/utils";
 import { kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
 
-import type { Route } from "./+types/route";
-
 import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
 import { PlaygroundSidebar } from "./sidebar-playground";
-import { SquareChevronRight } from "lucide-react";
+
+import type { Route } from "./+types/route";
 
 
 async function authMiddleware() {
@@ -35,32 +33,16 @@ async function authMiddleware() {
 
 export const unstable_clientMiddleware = [authMiddleware];
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const { data: agents = [] } = await api.agents.get();
-
-  if (params.agentSlug && !activeAgent)
-    throw new Response("Agent Not Found", { status: 404 });
-    
-  if (params.branchSlug && !activeBranch)
-    throw new Response("Branch Not Found", { status: 404 });
-
-  return { agents };
+export async function clientLoader() {
+  return { agents: (await api.agents.get()).data ?? [] };
 }
 
-export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
-  // Only reload data if the slug exists and changed
-  return nextParams.agentSlug !== undefined && currentParams.agentSlug !== nextParams.agentSlug;
-}
-
-
-function ShellLayout({ error = false } : { error?: boolean }) { 
-
-  const loaderData = useLoaderData<typeof clientLoader>();
-
-  // Rebuild active agent here so it re-renders on route switch without server roundtrip
-  const activeAgent = useActiveAgent();
+export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
 
   const { user } = useSnapshot(authStore);
+  const { slug } = useParams();
+
+  const activeAgent = agents.find(a => a.slug === slug);
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
@@ -84,7 +66,7 @@ function ShellLayout({ error = false } : { error?: boolean }) {
         <Sidebar collapsible="icon">
           <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
             <SidebarHeader>
-              <AgentSelect activeAgent={activeAgent} agents={loaderData?.agents!} />
+              <AgentSelect agents={agents} activeAgent={activeAgent} />
             </SidebarHeader>
             <SidebarContent />
             <SidebarFooter>
@@ -136,7 +118,7 @@ function ShellLayout({ error = false } : { error?: boolean }) {
               />
           <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
-              <PlaygroundSidebar activeBranch={loaderData.activeBranch} />
+              <PlaygroundSidebar activeBranch={undefined} />
             </SidebarContent>
             <SidebarRail />
           </Sidebar>

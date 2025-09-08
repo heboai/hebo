@@ -26,11 +26,11 @@ type Agent = {
 }
 
 export function AgentSelect({
-  activeAgent = null,
-  agents = [],
+  activeAgent,
+  agents,
 }: {
-  activeAgent?: Agent | null,
-  agents?: Agent[],
+  activeAgent: Agent | undefined,
+  agents: Agent[],
 }) {
 
   // Dropdown open or closed
