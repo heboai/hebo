@@ -52,6 +52,13 @@ const authService = {
     });
     return apiKey.value;
   },
+
+  async getAccessToken() {
+    const user = await getStackApp().getUser();
+    if (!user) return;
+    const { accessToken } = await user.getAuthJson();
+    return accessToken ?? undefined;
+  },
 } satisfies AuthService;
 
 export { authService, getStackApp };

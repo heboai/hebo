@@ -18,4 +18,8 @@ export const authService = {
 
     throw new Error("API Keys not implemented in Dummy Auth mode");
   },
+
+  async getAccessToken() {
+    return "dummy-access-token";
+  },
 } satisfies AuthService;

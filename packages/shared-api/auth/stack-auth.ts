@@ -48,10 +48,8 @@ export const authServiceStackAuth = new Elysia({
   name: "authenticate-user-stack-auth",
 })
   .use(bearer())
-  .resolve(async ({ bearer: apiKey, cookie }) => {
-    const jwt =
-      cookie["stack-access"]?.value &&
-      JSON.parse(decodeURIComponent(cookie["stack-access"]!.value))[1];
+  .resolve(async ({ bearer: apiKey, headers }) => {
+    const jwt = headers["x-stack-access-token"];
 
     if (apiKey && jwt)
       throw status(
