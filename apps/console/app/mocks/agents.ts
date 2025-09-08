@@ -46,7 +46,10 @@ export const agentHandlers = [
 
   http.get<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug",
-    async ({ params }) => {
+    async ({ params, request }) => {
+      const url = new URL(request.url);
+      const expand = url.searchParams.get("expand");
+
       let agent;
       try {
         agent = db.agent.findFirst({
@@ -60,7 +63,8 @@ export const agentHandlers = [
       }
 
       await delay(500);
-      return HttpResponse.json(agent);
+
+      return expand === "branches" ? HttpResponse.json(agent) : HttpResponse.json({ ...agent, branches: [] });
     },
   ),
 
