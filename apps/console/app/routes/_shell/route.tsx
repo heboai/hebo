@@ -15,6 +15,7 @@ import {
 } from "@hebo/ui/components/Sidebar";
 import { authService } from "~console/lib/auth";
 import { api } from "~console/lib/data";
+import { dontRevalidateOnFormErrors } from "~console/lib/errors";
 import { getCookie } from "~console/lib/utils";
 import { kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
@@ -26,7 +27,6 @@ import { PlaygroundSidebar } from "./sidebar-playground";
 
 import type { Route } from "./+types/route";
 
-
 async function authMiddleware() {
   await authService.ensureSignedIn();
 }
@@ -36,6 +36,8 @@ export const unstable_clientMiddleware = [authMiddleware];
 export async function clientLoader() {
   return { agents: (await api.agents.get()).data ?? [] };
 }
+
+export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
 

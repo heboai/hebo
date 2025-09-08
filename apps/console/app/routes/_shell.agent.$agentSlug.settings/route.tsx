@@ -10,20 +10,19 @@ import { DangerSettings, createAgentDeleteSchema } from "./danger-zone";
 import { GeneralSettings } from "./general";
 
 
-export async function clientAction({ request }: Route.ClientActionArgs ) {
+export async function clientAction({ request, params }: Route.ClientActionArgs ) {
   const formData = await request.formData();
 
-  const submission = parseWithValibot(
-    formData,
-    { schema: createAgentDeleteSchema(String(formData.get('slugValidate'))) }
-  );
+  const submission = parseWithValibot(formData, {
+     schema: createAgentDeleteSchema(params.slug)
+  });
   
   if (submission.status !== 'success')
     return submission.reply();
 
   let result;
   try {
-    result = await api.agents({ agentSlug: submission.value.slugValidate }).delete();
+    result = await api.agents({ agentSlug: params.slug }).delete();
   } catch (error) {
     return submission.reply({ formErrors: [ parseError(error).message ] });
   }

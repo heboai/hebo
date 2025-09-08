@@ -27,7 +27,7 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
     return submission.reply({ formErrors: [ parseError(error).message ] });
   }
   
-  if (result.error && result.error.status == 409) 
+  if (result.error?.status === 409) 
     return submission.reply({ fieldErrors: { agentName: [String(result.error.value)] }});
 
   return redirect(`/agent/${result.data!.slug}`);

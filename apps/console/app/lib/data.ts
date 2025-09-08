@@ -44,6 +44,6 @@ export const kyFetch = ky.extend({
 export const api = treaty<Api>(url, {
   // Automatic retries, timeouts & error throwing
   fetcher: kyFetch,
-  // Pass the JWT tocken to api calls
+  // Pass the JWT token to api calls
   fetch: { credentials: "include" },
 }).v1;

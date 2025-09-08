@@ -67,16 +67,18 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { errorId, errors } = useField();
 
-  if (!errors) return;
+  if (!errors?.length) return;
 
   return (
     <p
       data-slot="form-message"
       id={errorId}
-      className={cn("text-destructive text-sm", className)}
+      role="alert"
+      aria-live="polite"
+      className={cn("text-destructive text-sm whitespace-pre-line", className)}
       {...props}
     >
-      {errors.join("<br />")}
+      {errors.join("\n")}
     </p>
   );
 }

@@ -29,10 +29,10 @@ export default defineConfig(({ mode }) => ({
     reactRouter(),
     ...(mode === "development" ? [devtoolsJson()] : []),
   ],
-  ...(mode === "development" && {
+  // Dummies to emulate network errors during development if MSW is stopped
+  ...(!process.env.VITE_API_URL && {
     server: {
       proxy: {
-        // Dummies to emulate network errors during development if MSW is stopped
         "/api": {
           target: "https://httpbin.org/status/500",
           changeOrigin: true,
