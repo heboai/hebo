@@ -24,6 +24,7 @@ import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
 import { PlaygroundSidebar } from "./sidebar-playground";
 import { SquareChevronRight } from "lucide-react";
+import { SidebarConfig } from "./sidebar-config";
 
 async function authMiddleware() {
   await authService.ensureSignedIn();
@@ -51,9 +52,25 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { agents, activeAgent, activeBranch };
 }
 
-export function shouldRevalidate({ currentParams, nextParams }: ShouldRevalidateFunctionArgs) {
-  // Only reload data if the slug exists and changed
-  return nextParams.agentSlug !== undefined && currentParams.agentSlug !== nextParams.agentSlug;
+export function shouldRevalidate({ 
+  currentParams, 
+  nextParams,
+  actionResult,
+  defaultShouldRevalidate
+}: ShouldRevalidateFunctionArgs) {
+  // Always revalidate on successful actions from child routes (like config updates)
+  if (actionResult && actionResult.success) {
+    return true;
+  }
+  
+  // Also revalidate if the agent or branch slug changed
+  if (currentParams.agentSlug !== nextParams.agentSlug || 
+      currentParams.branchSlug !== nextParams.branchSlug) {
+    return true;
+  }
+  
+  // Use default behavior for other cases
+  return defaultShouldRevalidate;
 }
 
 export default function ShellLayout({loaderData}: Route.ComponentProps) {
@@ -83,7 +100,9 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
             <SidebarHeader>
                 <AgentSelect activeAgent={loaderData.activeAgent} agents={loaderData.agents!} />
             </SidebarHeader>
-            <SidebarContent />
+            <SidebarContent>
+              <SidebarConfig activeAgent={loaderData.activeAgent} activeBranch={loaderData.activeBranch} />
+            </SidebarContent>
             <SidebarFooter>
                 <StaticContent />
                 <SidebarSeparator className="mx-0" />
