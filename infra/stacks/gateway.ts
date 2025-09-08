@@ -58,20 +58,20 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
   },
 });
 
-const domainName =
+const gatewayDomainName =
   $app.stage === "production"
     ? "gateway.hebo.ai"
     : `${$app.stage}.gateway.hebo.ai`;
 const heboGatewayAssociation = new aws.apprunner.CustomDomainAssociation(
   "HeboGatewayAssociation",
   {
-    domainName,
+    domainName: gatewayDomainName,
     serviceArn: heboGateway.arn,
   },
 );
 
-createCnameRecords(domainName, heboGatewayAssociation);
+createCnameRecords(gatewayDomainName, heboGatewayAssociation);
 
-export const heboGatewayUrl = heboGateway.serviceUrl;
+export const heboGatewayUrl = gatewayDomainName;
 
 export default heboGateway;

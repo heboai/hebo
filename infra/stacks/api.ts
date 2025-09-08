@@ -56,18 +56,18 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
   },
 });
 
-const domainName =
+const apiDomainName =
   $app.stage === "production" ? "api.hebo.ai" : `${$app.stage}.api.hebo.ai`;
 const heboApiAssociation = new aws.apprunner.CustomDomainAssociation(
   "HeboApiAssociation",
   {
-    domainName,
+    domainName: apiDomainName,
     serviceArn: heboApi.arn,
   },
 );
 
-createCnameRecords(domainName, heboApiAssociation);
+createCnameRecords(apiDomainName, heboApiAssociation);
 
-export const heboApiUrl = heboApi.serviceUrl;
+export const heboApiUrl = apiDomainName;
 
 export default heboApi;
