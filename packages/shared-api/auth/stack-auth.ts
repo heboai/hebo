@@ -49,12 +49,12 @@ export const authServiceStackAuth = new Elysia({
 })
   .use(bearer())
   .resolve(async ({ bearer: apiKey, headers }) => {
-    const jwt = headers["x-stack-access-token"];
+    const jwt = headers["x-stack-access-token"] as string | undefined;
 
     if (apiKey && jwt)
       throw status(
         400,
-        "Provide exactly one credential: Bearer API Key or JWT Cookie",
+        "Provide exactly one credential: Bearer API Key or JWT Header",
       );
 
     if (apiKey) return { userId: await checkApiKey(apiKey) } as const;
