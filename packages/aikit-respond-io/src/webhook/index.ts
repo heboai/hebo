@@ -61,7 +61,14 @@ export class Webhook extends EventTarget {
   ): this {
     this.addEventListener(eventType, (event: Event) => {
       const customEvent = event as CustomEvent<EventPayloadMap[E]>;
-      callback(customEvent.detail);
+      const ret = callback(customEvent.detail);
+      // If callback returns a promise, handle rejection via errorHandler
+      if (ret && typeof (ret as any).catch === "function") {
+        (ret as Promise<void>).catch((error) => {
+          // best-effort: do not throw here (would be swallowed); delegate
+          this.errorHandler(error);
+        });
+      }
     });
     return this;
   }
