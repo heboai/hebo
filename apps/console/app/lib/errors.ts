@@ -1,14 +1,11 @@
 import isNetworkError from "is-network-error";
 import { HTTPError, TimeoutError } from "ky";
+import { useEffect } from "react";
 import {
-  createElement,
-  useEffect,
-  useRef,
-  type ComponentProps,
-  type ComponentType,
-  type ReactElement,
-} from "react";
-import { isRouteErrorResponse, useMatches, useRouteError } from "react-router";
+  isRouteErrorResponse,
+  useActionData,
+  type ShouldRevalidateFunction,
+} from "react-router";
 import { toast } from "sonner";
 
 export function parseError(error: unknown) {
@@ -29,6 +26,8 @@ export function parseError(error: unknown) {
     status = error.response.status;
   } else if (error instanceof Error) {
     message = `${error.message}`;
+  } else {
+    message = "Unknown Error";
   }
 
   const stack = error instanceof Error && error.stack ? error.stack : undefined;
@@ -41,34 +40,34 @@ export function parseError(error: unknown) {
   return { message, status, stack, retryable };
 }
 
-export function useErrorToast() {
-  const error = useRouteError();
-  const seen = useRef<unknown>(null);
+export function useActionDataErrorToast() {
+  const lastResult = useActionData();
 
   useEffect(() => {
-    if (!error || seen.current === error) return;
-    seen.current = error;
-    toast.error(parseError(error).message);
-  }, [error]);
-}
+    const formErrors =
+      lastResult?.error && Array.isArray(lastResult.error[""])
+        ? lastResult.error[""]
+        : [];
 
-export function withErrorToast<
-  C extends ComponentType<Record<string, unknown>>,
->(Component: C, hasLoader = false) {
-  function Wrapper(props: ComponentProps<C>): ReactElement | null {
-    // Throw loader errors to the parent boundary
-    const matches = useMatches();
-    const self = matches.at(-1);
-    const hasData = !!self && "data" in self && self.data !== undefined;
-    const err = useRouteError();
-
-    if (hasLoader && !hasData && err) {
-      throw err;
+    if (formErrors.length > 0) {
+      for (const msg of formErrors) {
+        toast.error(msg);
+      }
     }
-
-    // Use toasts for errors from actions
-    useErrorToast();
-    return createElement(Component, props);
-  }
-  return Wrapper;
+  }, [lastResult]);
 }
+
+export const dontRevalidateOnFormErrors: ShouldRevalidateFunction = ({
+  actionResult,
+  defaultShouldRevalidate,
+}) => {
+  if (
+    actionResult &&
+    typeof actionResult === "object" &&
+    "status" in actionResult &&
+    (actionResult as { status?: string }).status === "error"
+  ) {
+    return false;
+  }
+  return defaultShouldRevalidate;
+};

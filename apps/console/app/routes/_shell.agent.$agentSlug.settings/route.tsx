@@ -2,7 +2,7 @@ import { redirect, useRouteLoaderData } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/data";
-import { withErrorToast } from "~console/lib/errors";
+import { dontRevalidateOnFormErrors, parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
 
@@ -21,7 +21,12 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
   if (submission.status !== 'success')
     return submission.reply();
 
-  const result = await api.agents({ agentSlug: submission.value.slugValidate }).delete();
+  let result;
+  try {
+    result = await api.agents({ agentSlug: submission.value.slugValidate }).delete();
+  } catch (error) {
+    return submission.reply({ formErrors: [ parseError(error).message ] });
+  }
 
   if (result.error)
     return submission.reply({ formErrors: [String(result.error.value)] });
@@ -29,8 +34,10 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
   return redirect("/");
 }
 
+export { dontRevalidateOnFormErrors as shouldRevalidate }
 
-function Settings() {
+
+export default function Settings() {
   const { agent } = useRouteLoaderData("routes/_shell.agent.$slug");
  
   return (
@@ -41,6 +48,3 @@ function Settings() {
     </>
   );
 }
-export default Settings;
-
-export const ErrorBoundary = withErrorToast(Settings, true);

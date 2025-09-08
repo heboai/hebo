@@ -76,7 +76,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
       className={cn("text-destructive text-sm", className)}
       {...props}
     >
-      {errors}
+      {errors.join("<br />")}
     </p>
   );
 }

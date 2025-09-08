@@ -23,6 +23,7 @@ import { Input } from "@hebo/ui/components/Input";
 import {
   Select
 } from "@hebo/ui/components/Select";
+import { useActionDataErrorToast } from "~console/lib/errors";
 
 
 export const AgentCreateSchema = object({
@@ -33,6 +34,8 @@ export type AgentCreateFormValues = InferOutput<typeof AgentCreateSchema>;
 
 export function AgentCreateForm() {
   const lastResult = useActionData();
+  
+  useActionDataErrorToast();
   
   const [form, fields] = useForm<AgentCreateFormValues>({
     lastResult,
@@ -58,7 +61,7 @@ export function AgentCreateForm() {
         
         <CardContent>
           <div className="sm:grid sm:grid-cols-[auto_1fr] sm:gap-y-2">
-            {/* Agent Name Field */}
+
             <FormField field={fields.agentName} className="contents">
               <FormLabel className="sm:w-32">Agent Name</FormLabel>
               <FormControl>
@@ -67,7 +70,6 @@ export function AgentCreateForm() {
               <FormMessage className="sm:col-start-2" />
             </FormField>
 
-            {/* Default Model Field */}
             <FormField field={fields.defaultModel} className="contents">
               <FormLabel className="sm:w-32">Default Model</FormLabel>
               <FormControl>
@@ -94,16 +96,9 @@ export function AgentCreateForm() {
             </FormField>
           </div>
 
-          {/* Mutation Error Display */}
-          {form.errors && (
-            <div className="text-destructive text-right" role="alert">
-              {form.errors}
-            </div>
-          )}
         </CardContent>
 
         <CardFooter className="flex justify-end">
-          {/* Submit Button */}
           <Button
             type="submit"
             isLoading={navigation.state !== "idle"}

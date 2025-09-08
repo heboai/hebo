@@ -29,6 +29,7 @@ import {
   FormMessage,
 } from "@hebo/ui/components/Form";
 import { Input } from "@hebo/ui/components/Input";
+import { useActionDataErrorToast } from "~console/lib/errors";
 
 
 export function createAgentDeleteSchema(agentSlug: string) {
@@ -42,6 +43,8 @@ export type AgentDeleteFormValues = InferOutput<ReturnType<typeof createAgentDel
 export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
   const lastResult = useActionData();
+
+  useActionDataErrorToast();
 
   const [form, fields] = useForm<AgentDeleteFormValues>({
     lastResult,
@@ -102,12 +105,6 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
                       <input type="hidden" />  
                     </FormControl>
                   </FormField>
-
-                  {form.errors && (
-                    <div className="text-destructive text-right" role="alert">
-                      {form.errors}
-                    </div>
-                  )}
 
                   <DialogFooter>
                     <DialogClose asChild>
