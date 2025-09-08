@@ -28,6 +28,7 @@ const heboApi = new aws.apprunner.Service("HeboApi", {
       imageConfiguration: {
         port: "3001",
         runtimeEnvironmentVariables: {
+          LOG_LEVEL: $app.stage === "production" ? "info" : "debug",
           PG_DATABASE: heboDatabase.database,
           PG_HOST: heboDatabase.host,
           PG_PASSWORD: secrets.dbPassword.value,

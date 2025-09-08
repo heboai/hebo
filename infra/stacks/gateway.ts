@@ -28,6 +28,7 @@ const heboGateway = new aws.apprunner.Service("HeboGateway", {
       imageConfiguration: {
         port: "3002",
         runtimeEnvironmentVariables: {
+          LOG_LEVEL: $app.stage === "production" ? "info" : "debug",
           GROQ_API_KEY: secrets.groqApiKey.value,
           PG_DATABASE: heboDatabase.database,
           PG_HOST: heboDatabase.host,

@@ -9,11 +9,12 @@ import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
 
+const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
 const PORT = Number(process.env.PORT ?? 3001);
 
 const createApi = () =>
   new Elysia()
-    .use(logger())
+    .use(logger({ level: LOG_LEVEL }))
     .use(cors(corsConfig))
     .use(
       swagger({

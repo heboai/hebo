@@ -11,11 +11,12 @@ import { completions } from "./modules/completions";
 import { embeddings } from "./modules/embeddings";
 import { models } from "./modules/models";
 
+const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
 const PORT = Number(process.env.PORT ?? 3002);
 
 export const createApp = () =>
   new Elysia()
-    .use(logger())
+    .use(logger({ level: LOG_LEVEL }))
     .use(cors(corsConfig))
     .use(
       swagger({
