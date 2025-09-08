@@ -2,7 +2,7 @@ import { redirect } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/data";
-import { parseError, dontRevalidateOnFormErrors } from "~console/lib/errors";
+import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
 
@@ -32,8 +32,6 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
 
   return redirect(`/agent/${result.data!.slug}/branch/main`);
 }
-
-export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 
 export default function AgentCreate() {

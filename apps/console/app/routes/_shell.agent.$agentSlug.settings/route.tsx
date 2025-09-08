@@ -2,7 +2,7 @@ import { redirect, useRouteLoaderData } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/data";
-import { dontRevalidateOnFormErrors, parseError } from "~console/lib/errors";
+import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
 
@@ -32,8 +32,6 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
 
   return redirect("/");
 }
-
-export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 
 export default function Settings() {
