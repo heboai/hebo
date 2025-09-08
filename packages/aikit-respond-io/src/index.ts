@@ -3,4 +3,4 @@ export * as webhook from "./webhook";
 export * as client from "./client";
 
 // Export the new high-level agent framework
-export { Agent } from "./agent";
+export { createAgent } from "./agent";
