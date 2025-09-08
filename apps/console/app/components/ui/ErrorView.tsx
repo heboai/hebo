@@ -23,9 +23,8 @@ export function ErrorView() {
       <h1>Something went wrong</h1>
       {message && <p className="text-muted-foreground">{message}</p>}
 
-      {/* FUTURE Move stack trace into details dialog */}
       {import.meta.env.DEV && stack && (
-        <pre className="w-full overflow-x-auto py-4 text-xs">
+        <pre className="w-full py-4 text-xs break-words whitespace-pre-wrap">
           <code>{stack}</code>
         </pre>
       )}
