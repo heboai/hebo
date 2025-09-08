@@ -27,6 +27,7 @@ import { PlaygroundSidebar } from "./sidebar-playground";
 
 import type { Route } from "./+types/route";
 
+
 async function authMiddleware() {
   await authService.ensureSignedIn();
 }
@@ -39,10 +40,10 @@ export async function clientLoader() {
 
 export { dontRevalidateOnFormErrors as shouldRevalidate }
 
+
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
 
   const { user } = useSnapshot(authStore);
-
   const { agent: activeAgent = null } = useRouteLoaderData("routes/_shell.agent.$agentSlug") ?? {};
 
   // FUTURE replace with session storage
