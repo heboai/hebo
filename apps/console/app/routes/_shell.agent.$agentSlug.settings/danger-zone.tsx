@@ -1,5 +1,5 @@
 import { Form, useActionData, useNavigation } from "react-router";
-import { object, string, literal } from "valibot";
+import { object, string, literal, type InferOutput } from "valibot";
 import { useForm, getFormProps } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
 
@@ -37,16 +37,16 @@ export function createAgentDeleteSchema(agentSlug: string) {
     slugValidate: string(),
   });
 }
+export type AgentDeleteFormValues = InferOutput<ReturnType<typeof createAgentDeleteSchema>>;
 
 export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
   const lastResult = useActionData();
 
-  const [form, fields] = useForm({
+  const [form, fields] = useForm<AgentDeleteFormValues>({
     lastResult,
     constraint: getValibotConstraint(createAgentDeleteSchema(agent.slug)),
     defaultValue: {
-      slugConfirm: "",
       slugValidate: agent.slug,
     },
   });

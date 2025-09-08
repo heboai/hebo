@@ -1,5 +1,5 @@
 import { Form, useActionData, useNavigation } from "react-router";
-import { message, nonEmpty, object, string, pipe, trim } from "valibot";
+import { message, nonEmpty, object, string, pipe, trim, type InferOutput } from "valibot";
 import { useForm, getFormProps } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
 
@@ -29,16 +29,15 @@ export const AgentCreateSchema = object({
   agentName: message(pipe(string(), trim(), nonEmpty()), "Please enter an agent name"),
   defaultModel: string(),
 });
+export type AgentCreateFormValues = InferOutput<typeof AgentCreateSchema>;
 
 export function AgentCreateForm() {
   const lastResult = useActionData();
   
-  const [form, fields] = useForm({
+  const [form, fields] = useForm<AgentCreateFormValues>({
     lastResult,
     constraint: getValibotConstraint(AgentCreateSchema),
     defaultValue: {
-      // FUTURE: sometimes this overwrite on error / sometimes not
-      agentName: "",
       defaultModel: supportedModels[0].name,
     }
   });
