@@ -11,7 +11,7 @@ import {
   SendMessageResponse,
 } from "./types";
 
-class RespondIoClient {
+export class RespondIoClient {
   private kyInstance: KyInstance;
   private readonly DEFAULT_BASE_URL = "https://api.respond.io/v2";
 
