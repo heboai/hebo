@@ -14,7 +14,7 @@ export const kyFetch = ky.extend({
   hooks: {
     afterResponse: [
       async (_req, _opts, res) => {
-        // Successfull response, all good
+        // Successful response, all good
         if (res.ok) return res;
 
         // Don't throw on application-level errors

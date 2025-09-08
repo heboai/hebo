@@ -65,7 +65,7 @@ export function AgentCreateForm() {
             <FormField field={fields.agentName} className="contents">
               <FormLabel className="sm:w-32">Agent Name</FormLabel>
               <FormControl>
-                <Input placeholder="Set an agent name" />
+                <Input placeholder="Set an agent name" autoComplete="off" />
               </FormControl>
               <FormMessage className="sm:col-start-2" />
             </FormField>

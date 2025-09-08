@@ -18,7 +18,11 @@ export function ErrorView() {
   const { pathname, search, hash } = useLocation();
 
   return (
-    <div className="absolute right-0 left-0 mx-auto flex w-full max-w-2xl flex-col gap-1 p-4 pt-12">
+    <div
+      className="absolute right-0 left-0 mx-auto flex w-full max-w-2xl flex-col gap-1 p-4 pt-12"
+      role="alert"
+      aria-live="assertive"
+    >
       <div className="text-5xl">🙉</div>
       <h1>Something went wrong</h1>
       {message && <p className="text-muted-foreground">{message}</p>}

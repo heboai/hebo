@@ -84,7 +84,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           <SidebarTrigger className="fixed -m-1.5" />
           <Toaster
             position="top-right"
-            icons={{error: <XCircle className="size-4" />}}
+            icons={{error: <XCircle className="size-4" aria-hidden="true" />}}
           />
 
           <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">

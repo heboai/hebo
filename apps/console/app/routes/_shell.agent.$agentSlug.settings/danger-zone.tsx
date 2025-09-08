@@ -95,7 +95,7 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
                       the box below:
                     </FormLabel>
                     <FormControl>
-                      <Input />
+                      <Input autoComplete="off" />
                     </FormControl>
                     <FormMessage />
                   </FormField>
