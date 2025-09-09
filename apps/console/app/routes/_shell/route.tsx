@@ -8,10 +8,10 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
+  SidebarInset,
   SidebarProvider,
   SidebarSeparator,
   SidebarTrigger,
-  SidebarInset,
 } from "@hebo/shared-ui/components/Sidebar";
 
 import { authService } from "~console/lib/auth";
