@@ -61,15 +61,6 @@ agent.onMessageReceived(async (payload) => {
 // Hono will forward all requests under this path to the agent's fetch handler.
 app.mount("/webhook/respond-io", agent.fetch);
 
-// For local development with Node.js, you might use:
-// import { serve } from "@hono/node-server";
-// serve({
-//   fetch: app.fetch,
-//   port: 3000,
-// }, () => {
-//   console.log("Server listening on port 3000");
-// });
-
 // For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
 export default app;
 ```
@@ -126,71 +117,8 @@ webhook.onError((error) => {
 // Hono will forward all requests under this path to the webhook's fetch handler.
 app.mount("/webhook/respond-io", webhook.fetch);
 
-// For local development with Node.js, you might use:
-// import { serve } from "@hono/node-server";
-// serve({
-//   fetch: app.fetch,
-//   port: 3000,
-// }, () => {
-//   console.log("Server listening on port 3000");
-// });
-
 // For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
 export default app;
-```
-
-### Webhook Example with AWS Lambda Function URL
-
-For a direct, serverless deployment without API Gateway, you can use an [AWS Lambda Function URL](https://docs.aws.amazon.com/lambda/latest/dg/lambda-urls.html). This gives you a dedicated HTTPS endpoint for your function.
-
-The function validates the request, and for longer-running tasks, it can pass the verified payload to an SQS queue for asynchronous processing.
-
-```ts
-import {
-  createWebhookHandler,
-  WebhookEvents,
-} from "@hebo/aikit-respond-io/webhook";
-// Note the specific event/result types for Function URLs
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
-
-// This is the main Lambda handler, compatible with a Function URL trigger
-export const handler = async (
-  event: APIGatewayProxyEventV2,
-): Promise<APIGatewayProxyResultV2> => {
-  const webhook = createWebhookHandler({
-    events: {
-      [WebhookEvents.MessageReceived]: {
-        signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
-      },
-    },
-  });
-
-  // Example: Log the message after it's been verified
-  webhook.on(WebhookEvents.MessageReceived, async (payload) => {
-    console.log(`Verified message from ${payload.contact.id}.`);
-    // Here you could add it to an SQS queue for async processing
-  });
-
-  // The domain/path are part of the V2 event structure
-  const url = `https://${event.requestContext.domainName}${event.rawPath}`;
-
-  // Create a standard Request object from the Function URL event
-  const request = new Request(url, {
-    method: event.requestContext.http.method,
-    headers: event.headers as HeadersInit,
-    body: event.body,
-  });
-
-  // The fetch handler validates the signature and triggers any .on() handlers
-  const response = await webhook.fetch(request);
-
-  // Convert the standard Response back to the format Lambda expects
-  return {
-    statusCode: response.status,
-    headers: Object.fromEntries(response.headers.entries()),
-    body: await response.text(),
-  };
-};
 ```
 
 ### Webhook Example with AWS Lambda Function URL
@@ -308,15 +236,6 @@ app.post("/send-message", async (c) => {
     );
   }
 });
-
-// For local development with Node.js, you might use:
-// import { serve } from "@hono/node-server";
-// serve({
-//   fetch: app.fetch,
-//   port: 3000,
-// }, () => {
-//   console.log("Server listening on port 3000");
-// });
 
 // For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
 export default app;
