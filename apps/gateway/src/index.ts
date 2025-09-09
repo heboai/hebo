@@ -29,10 +29,10 @@ export const createApp = () =>
         },
       }),
     )
-    .use(authService)
     .use(oaiErrors)
     // FUTURE: Prevent requests to / from being logged
     .get("/", () => "🐵 Hebo AI Gateway says hello!")
+    .use(authService)
     .group(
       "/v1",
       {

@@ -27,9 +27,9 @@ const createApi = () =>
         },
       }),
     )
-    .use(authService)
     // FUTURE: Prevent requests to / from being logged
     .get("/", () => "🐵 Hebo API says hello!")
+    .use(authService)
     .group(
       "/v1",
       {
