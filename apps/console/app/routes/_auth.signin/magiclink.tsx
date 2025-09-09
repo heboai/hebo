@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { Link } from "react-router";
 
-import { Button } from "@hebo/ui/components/Button";
+import { Button } from "@hebo/shared-ui/components/Button";
 
 import { isStackAuthEnabled } from "~console/lib/env";
 

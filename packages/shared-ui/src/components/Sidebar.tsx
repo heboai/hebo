@@ -2,9 +2,9 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { PanelLeftIcon } from "lucide-react";
 import React from "react";
 
-import { Button } from "@hebo/ui/components/Button";
-import { useIsMobile } from "@hebo/ui/hooks/use-mobile";
-import { cn } from "@hebo/ui/lib/utils";
+import { Button } from "@hebo/shared-ui/components/Button";
+import { useIsMobile } from "@hebo/shared-ui/hooks/use-mobile";
+import { cn } from "@hebo/shared-ui/lib/utils";
 
 import { useSidebar, SidebarContext } from "../_shadcn/ui/sidebar";
 

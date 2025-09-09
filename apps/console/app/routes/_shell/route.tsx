@@ -12,7 +12,7 @@ import {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-} from "@hebo/ui/components/Sidebar";
+} from "@hebo/shared-ui/components/Sidebar";
 
 import { authService } from "~console/lib/auth";
 import { api } from "~console/lib/data";

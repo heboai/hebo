@@ -5,7 +5,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@hebo/ui/components/Avatar";
+} from "@hebo/shared-ui/components/Avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,12 +14,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@hebo/ui/components/DropdownMenu";
+} from "@hebo/shared-ui/components/DropdownMenu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@hebo/ui/components/Sidebar";
+} from "@hebo/shared-ui/components/Sidebar";
 
 
 type User = {

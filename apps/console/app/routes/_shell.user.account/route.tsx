@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 
 import { isStackAuthEnabled } from "~console/lib/env";
 
-import { Skeleton } from "@hebo/ui/components/Skeleton";
+import { Skeleton } from "@hebo/shared-ui/components/Skeleton";
 
 import { AuthProvider } from "~console/components/AuthProvider";
 

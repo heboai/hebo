@@ -1,9 +1,9 @@
 import { KeyRound } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@hebo/ui/components/Button";
-import { Input } from "@hebo/ui/components/Input";
-import { cn } from "@hebo/ui/lib/utils";
+import { Button } from "@hebo/shared-ui/components/Button";
+import { Input } from "@hebo/shared-ui/components/Input";
+import { cn } from "@hebo/shared-ui/lib/utils";
 
 import { authService } from "~console/lib/auth";
 
