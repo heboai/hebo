@@ -7,10 +7,10 @@ import { parseWithValibot } from "@conform-to/valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
-import { Button } from "@hebo/ui/components/Button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/ui/components/Collapsible";
-import { Card, CardContent } from "@hebo/ui/components/Card";
-import { Badge } from "@hebo/ui/components/Badge";
+import { Button } from "@hebo/shared-ui/components/Button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/shared-ui/components/Collapsible";
+import { Card, CardContent } from "@hebo/shared-ui/components/Card";
+import { Badge } from "@hebo/shared-ui/components/Badge";
 import { BranchModelForm } from "./form";
 import { api } from "~console/lib/data";
 import { RailSymbol } from "lucide-react";

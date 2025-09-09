@@ -1,4 +1,4 @@
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@hebo/ui/components/Sidebar";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@hebo/shared-ui/components/Sidebar";
 import { BrainCog } from "lucide-react";
 import { Link } from "react-router";
 

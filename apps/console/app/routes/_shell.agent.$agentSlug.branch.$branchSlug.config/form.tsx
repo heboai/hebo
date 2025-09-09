@@ -5,11 +5,11 @@ import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 import { object, string, nonEmpty, pipe, trim, message } from "valibot";
 
-import { Button } from "@hebo/ui/components/Button";
-import { CardContent, CardFooter } from "@hebo/ui/components/Card";
-import { Input } from "@hebo/ui/components/Input";
-import { Select } from "@hebo/ui/components/Select";
-import { FormField, FormLabel, FormControl, FormMessage } from "@hebo/ui/components/Form";
+import { Button } from "@hebo/shared-ui/components/Button";
+import { CardContent, CardFooter } from "@hebo/shared-ui/components/Card";
+import { Input } from "@hebo/shared-ui/components/Input";
+import { Select } from "@hebo/shared-ui/components/Select";
+import { FormField, FormLabel, FormControl, FormMessage } from "@hebo/shared-ui/components/Form";
 
 type SupportedModel = { name: string; displayName?: string };
 
