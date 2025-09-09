@@ -21,10 +21,7 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
   },
   environment: {
     LOG_LEVEL: $app.stage === "production" ? "info" : "debug",
-    // TODO: understand which one of the 3 is needed
     NO_COLOR: "1",
-    FORCE_COLOR: "0",
-    CLICOLOR: "0",
     PG_DATABASE: heboDatabase.database,
     PG_HOST: heboDatabase.host,
     PG_PASSWORD: secrets.dbPassword.value,
