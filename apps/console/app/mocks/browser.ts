@@ -3,4 +3,10 @@ import { setupWorker } from "msw/browser";
 import { agentHandlers } from "~console/mocks/agents";
 import { branchHandlers } from "~console/mocks/branches";
 
-export const worker = setupWorker(...agentHandlers, ...branchHandlers);
+import { addChaos } from "./chaos";
+
+const handlers = [...agentHandlers, ...branchHandlers];
+
+const CHAOS =
+  import.meta.env.DEV && import.meta.env.VITE_CHAOS_DISABLE !== "true";
+export const worker = setupWorker(...(CHAOS ? addChaos(handlers) : handlers));

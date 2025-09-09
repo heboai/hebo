@@ -1,16 +1,8 @@
-"use client";
-
 import { Input } from "@hebo/ui/components/Input";
 
 import { AgentLogo } from "~console/components/ui/AgentLogo";
 
-type ActiveAgent = {
-  slug: string;
-  name: string;
-}
-
-export function GeneralSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
-
+export function GeneralSettings({ agent }: { agent: { slug: string, name: string }} ) {
   return (
     <div className="flex flex-row gap-4 items-center">
       <div>
@@ -18,9 +10,9 @@ export function GeneralSettings({ activeAgent }: { activeAgent: ActiveAgent }) {
       </div>
       <div className="w-full grid grid-cols-[max-content_1fr] gap-x-3 gap-y-2 items-center">
         <label htmlFor="name">Name</label>
-        <Input id="name" readOnly defaultValue={activeAgent.name} />
+        <Input id="name" readOnly defaultValue={agent.name} />
         <label htmlFor="slug">Slug</label>
-        <Input id="slug" readOnly defaultValue={activeAgent.slug} />
+        <Input id="slug" readOnly defaultValue={agent.slug} />
       </div>
     </div>
   );

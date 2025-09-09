@@ -1,7 +1,7 @@
-import { Form, useNavigation } from "react-router";
-import { object, string, literal } from "valibot";
+import { Form, useActionData, useNavigation } from "react-router";
+import { object, literal, type InferOutput } from "valibot";
 import { useForm, getFormProps } from "@conform-to/react";
-import { parseWithValibot } from "@conform-to/valibot";
+import { getValibotConstraint } from "@conform-to/valibot";
 
 import { Alert, AlertTitle } from "@hebo/ui/components/Alert";
 import { Button } from "@hebo/ui/components/Button";
@@ -16,6 +16,7 @@ import {
   Dialog,
   DialogFooter,
   DialogClose,
+  DialogDescription,
   DialogTrigger,
   DialogContent,
   DialogTitle,
@@ -29,27 +30,25 @@ import {
 } from "@hebo/ui/components/Form";
 import { Input } from "@hebo/ui/components/Input";
 
+import { useActionDataErrorToast } from "~console/lib/errors";
 
-type ActiveAgent = {
-  slug: string;
-  name: string;
-}
 
-export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgent, error?: string  }) {
-
-  const FormSchema = object({
-    agentName: literal(activeAgent.name, "You must type your EXACT agent name"),
-    slug: string(),
+export function createAgentDeleteSchema(agentSlug: string) {
+  return object({
+    slugConfirm: literal(agentSlug, "You must type your EXACT agent slug"),
   });
+}
+export type AgentDeleteFormValues = InferOutput<ReturnType<typeof createAgentDeleteSchema>>;
 
-  const [form, fields] = useForm({
-    defaultValue: {
-      agentName: "",
-      slug: activeAgent.slug,
-    },
-    onValidate({ formData }) {
-      return parseWithValibot(formData, { schema: FormSchema });
-    },
+export function DangerSettings({ agent }: { agent: { slug: string }}) {
+
+  const lastResult = useActionData();
+
+  useActionDataErrorToast();
+
+  const [form, fields] = useForm<AgentDeleteFormValues>({
+    lastResult,
+    constraint: getValibotConstraint(createAgentDeleteSchema(agent.slug)),
   });
 
   const navigation = useNavigation();
@@ -75,6 +74,9 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
                 <Form method="post" {...getFormProps(form)} className="contents">
                   <DialogHeader>
                     <DialogTitle>Delete Agent</DialogTitle>
+                    <DialogDescription>
+                      This will delete your agent irreversibly.
+                    </DialogDescription>
                   </DialogHeader>
                   <Alert variant="destructive">
                     <AlertTitle>
@@ -83,29 +85,17 @@ export function DangerSettings({ activeAgent, error }: { activeAgent: ActiveAgen
                     </AlertTitle>
                   </Alert>
 
-                  <FormField field={fields.slug} className="hidden">
-                    <FormControl>
-                      <input type="hidden" />  
-                    </FormControl>
-                  </FormField>
-
-                  <FormField field={fields.agentName}>
+                  <FormField field={fields.slugConfirm}>
                     <FormLabel>
                       To confirm, type{" "}
-                      <strong>{activeAgent.name}</strong> in
+                      <strong>{agent.slug}</strong> in
                       the box below:
                     </FormLabel>
                     <FormControl>
-                      <Input />
+                      <Input autoComplete="off" />
                     </FormControl>
                     <FormMessage />
                   </FormField>
-
-                  {error && (
-                    <div className="text-destructive text-right" role="alert">
-                      {error}
-                    </div>
-                  )}
 
                   <DialogFooter>
                     <DialogClose asChild>
