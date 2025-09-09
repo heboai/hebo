@@ -127,6 +127,7 @@
     @apply border-border outline-ring/50;
   }
 
+  body,
   main {
     background: var(--color-background-gradient);
     @apply text-foreground;
