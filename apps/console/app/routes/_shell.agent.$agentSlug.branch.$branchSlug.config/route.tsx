@@ -33,7 +33,7 @@ const BranchConfigSchema = object({
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  const action = String(formData.get("_action"));
+  const action = String(formData.get("intent") || formData.get("_action") || "");
 
   let alias = "";
   let modelType = "";
@@ -116,15 +116,10 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 export default function AgentBranchConfig({ loaderData, actionData }: Route.ComponentProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const shellData = useRouteLoaderData("routes/_shell") as {
-    agents: any[];
-    activeAgent: any;
-    activeBranch: any;
-  };
-
+  const { agent } = (useRouteLoaderData("routes/_shell.agent.$agentSlug") as { agent: any }) ?? { agent: null };
   const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
-
-  const defaultModel = shellData?.activeBranch?.models?.find((m: any) => m.alias === "default");
+  const activeBranch = agent?.branches?.find((b: any) => b.slug === branchSlug) ?? agent?.branches?.[0];
+  const defaultModel = activeBranch?.models?.find((m: any) => m.alias === "default");
 
   if (supportedModels.length === 0) {
     return (
@@ -155,19 +150,17 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
         <Card className="sm:max-w-lg min-w-0 w-full border-none p-3">
           <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <div className="flex items-center justify-between gap-4 mb-2">
-              <div className="flex items-center gap-3">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm">
                   {agentSlug}/{branchSlug}/{defaultModel?.alias}
                 </p>
                 {defaultModel && (
                   <p className="text-sm">{getModelDisplayName(defaultModel.type)}</p>
                 )}
                 <Badge variant="secondary">Custom <RailSymbol /> </Badge>
-              </div>
               <CollapsibleTrigger asChild>
-                <Button variant="outline">{isOpen ? "Cancel" : "Edit"}</Button>
+                <Button variant="outline" className={isOpen ? "invisible" : ""}>Edit</Button>
               </CollapsibleTrigger>
-            </div>
+              </div>
 
             <CollapsibleContent>
               <Card className="sm:max-w-lg min-w-0 w-full border-none  bg-transparent shadow-none">

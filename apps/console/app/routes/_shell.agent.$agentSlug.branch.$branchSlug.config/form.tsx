@@ -32,7 +32,7 @@ export function BranchModelForm({ defaultModel, supportedModels, onCancel }: Bra
       alias: defaultModel?.alias || "default",
       modelType: defaultModel?.type || "",
     },
-    onValidate({ formData }) {
+    onValidate({ formData }: { formData: FormData }) {
       return parseWithValibot(formData, { schema: BranchConfigSchema });
     },
     lastResult: fetcher.data?.lastResult,
@@ -86,7 +86,7 @@ export function BranchModelForm({ defaultModel, supportedModels, onCancel }: Bra
       <CardFooter className="flex justify-between">
         <Button
           type="submit"
-          name="_action"
+          name="intent"
           value="remove"
           variant="destructive"
           isLoading={fetcher.state !== "idle"}
@@ -99,7 +99,7 @@ export function BranchModelForm({ defaultModel, supportedModels, onCancel }: Bra
           </Button>
           <Button
             type="submit"
-            name="_action"
+            name="intent"
             value="save"
             isLoading={fetcher.state !== "idle"}
             disabled={!fields.modelType.value}
