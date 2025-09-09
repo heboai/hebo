@@ -3,15 +3,15 @@ import { object, literal, type InferOutput } from "valibot";
 import { useForm, getFormProps } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
 
-import { Alert, AlertTitle } from "@hebo/ui/components/Alert";
-import { Button } from "@hebo/ui/components/Button";
+import { Alert, AlertTitle } from "@hebo/shared-ui/components/Alert";
+import { Button } from "@hebo/shared-ui/components/Button";
 import {
   Card,
   CardAction,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@hebo/ui/components/Card";
+} from "@hebo/shared-ui/components/Card";
 import {
   Dialog,
   DialogFooter,
@@ -21,14 +21,14 @@ import {
   DialogContent,
   DialogTitle,
   DialogHeader,
-} from "@hebo/ui/components/Dialog";
+} from "@hebo/shared-ui/components/Dialog";
 import {
   FormControl,
   FormField,
   FormLabel,
   FormMessage,
-} from "@hebo/ui/components/Form";
-import { Input } from "@hebo/ui/components/Input";
+} from "@hebo/shared-ui/components/Form";
+import { Input } from "@hebo/shared-ui/components/Input";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
 

@@ -1,5 +1,5 @@
-import { CodeBlock } from "@hebo/ui/components/code/CodeBlock";
-import { CodeGroup } from "@hebo/ui/components/code/CodeGroup";
+import { CodeBlock } from "@hebo/shared-ui/components/code/CodeBlock";
+import { CodeGroup } from "@hebo/shared-ui/components/code/CodeGroup";
 
 import type { MDXComponents } from "mdx/types";
 

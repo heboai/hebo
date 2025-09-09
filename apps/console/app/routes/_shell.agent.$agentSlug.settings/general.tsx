@@ -1,4 +1,4 @@
-import { Input } from "@hebo/ui/components/Input";
+import { Input } from "@hebo/shared-ui/components/Input";
 
 import { AgentLogo } from "~console/components/ui/AgentLogo";
 

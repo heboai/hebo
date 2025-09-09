@@ -5,7 +5,7 @@ import {
   useRouteError,
 } from "react-router";
 
-import { Button } from "@hebo/ui/components/Button";
+import { Button } from "@hebo/shared-ui/components/Button";
 
 import { parseError } from "~console/lib/errors";
 

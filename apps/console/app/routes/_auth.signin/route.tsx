@@ -1,9 +1,9 @@
 import { Ban, BookOpen, CreditCard } from "lucide-react";
 import { Suspense } from "react";
 
-import { Badge } from "@hebo/ui/components/Badge";
-import { Button } from "@hebo/ui/components/Button";
-import { Skeleton } from "@hebo/ui/components/Skeleton";
+import { Badge } from "@hebo/shared-ui/components/Badge";
+import { Button } from "@hebo/shared-ui/components/Button";
+import { Skeleton } from "@hebo/shared-ui/components/Skeleton";
 
 import { AuthProvider } from "~console/components/AuthProvider";
 import { MagicLinkSignIn } from "./magiclink";

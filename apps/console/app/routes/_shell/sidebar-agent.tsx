@@ -2,7 +2,7 @@ import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 
-import { Button } from "@hebo/ui/components/Button";
+import { Button } from "@hebo/shared-ui/components/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,12 +10,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@hebo/ui/components/DropdownMenu";
+} from "@hebo/shared-ui/components/DropdownMenu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@hebo/ui/components/Sidebar";
+} from "@hebo/shared-ui/components/Sidebar";
 
 import { AgentLogo } from "~console/components/ui/AgentLogo";
 

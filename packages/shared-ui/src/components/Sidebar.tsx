@@ -2,11 +2,11 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { PanelLeftIcon } from "lucide-react";
 import React from "react";
 
-import { Button } from "@hebo/ui/components/Button";
-import { useIsMobile } from "@hebo/ui/hooks/use-mobile";
-import { cn } from "@hebo/ui/lib/utils";
-
+import { Button } from "./Button";
 import { useSidebar, SidebarContext } from "../_shadcn/ui/sidebar";
+import { useIsMobile } from "../hooks/use-mobile";
+import { cn } from "../lib/utils";
+
 
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_WIDTH = "16rem";
@@ -64,7 +64,7 @@ function SidebarProvider({
 
     globalThis.addEventListener("keydown", handleKeyDown);
     return () => globalThis.removeEventListener("keydown", handleKeyDown);
-  }, [toggleSidebar]);
+  }, [shortcut, toggleSidebar]);
 
   const contextValue = React.useMemo(
     () => ({
