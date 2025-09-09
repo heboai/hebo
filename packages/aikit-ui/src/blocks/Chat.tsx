@@ -48,10 +48,11 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (modelsConfig.models.length > 0) {
-      setCurrentModelAlias(modelsConfig.models[0].alias);
+    const aliases = modelsConfig.models.map((m) => m.alias);
+    if (!currentModelAlias || !aliases.includes(currentModelAlias)) {
+      setCurrentModelAlias(aliases[0] ?? "");
     }
-  }, [modelsConfig]);
+  }, [modelsConfig, currentModelAlias]);
 
   // Get current model config - only return a model if we have a valid alias and it exists
   const currentModel = currentModelAlias
@@ -154,16 +155,10 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
         </Button>
       </div>
 
-      {/* Live region for status updates */}
-      <div aria-live="polite" aria-atomic="true" className="sr-only">
-        {isLoading && "AI is thinking..."}
-      </div>
-
       {/* Conversation area */}
       <Conversation className="top-0">
         <ConversationContent
           className="px-3 py-0"
-          role="log"
           aria-label="Chat conversation"
           tabIndex={-1}
         >
