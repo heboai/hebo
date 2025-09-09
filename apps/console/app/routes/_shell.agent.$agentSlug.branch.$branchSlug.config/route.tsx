@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Form, useNavigation, useRouteLoaderData, useParams } from "react-router";
+import { useFetcher, useRouteLoaderData, useParams } from "react-router";
 import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 import { object, string, nonEmpty, pipe, trim, message } from "valibot";
@@ -117,7 +117,6 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 }
 
 export default function AgentBranchConfig({ loaderData, actionData }: Route.ComponentProps) {
-  const navigation = useNavigation();
   const [isOpen, setIsOpen] = useState(false);
 
   const shellData = useRouteLoaderData("routes/_shell") as {
@@ -130,6 +129,8 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
 
   const defaultModel = shellData?.activeBranch?.models?.find((m: any) => m.alias === "default");
 
+  const fetcher = useFetcher<any>();
+
   const [form, fields] = useForm<{ alias: string; modelType: string }>({
     defaultValue: {
       alias: defaultModel?.alias || "default",
@@ -138,7 +139,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
     onValidate({ formData }) {
       return parseWithValibot(formData, { schema: BranchConfigSchema });
     },
-    lastResult: actionData?.lastResult,
+    lastResult: fetcher.data?.lastResult ?? actionData?.lastResult,
   });
 
   if (supportedModels.length === 0) {
@@ -156,28 +157,6 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
     );
   }
 
-  const handleRemove = () => {
-    // Create a form and submit it with remove action
-    const form = document.createElement('form');
-    form.method = 'post';
-    form.style.display = 'none';
-    
-    const actionInput = document.createElement('input');
-    actionInput.type = 'hidden';
-    actionInput.name = '_action';
-    actionInput.value = 'remove';
-    
-    const aliasInput = document.createElement('input');
-    aliasInput.type = 'hidden';
-    aliasInput.name = 'alias';
-    aliasInput.value = defaultModel?.alias || 'default';
-    
-    form.appendChild(actionInput);
-    form.appendChild(aliasInput);
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-  };
 
   return (
     <div className="absolute flex items-center justify-center flex-col gap-2 max-w-[675px]">
@@ -208,7 +187,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
 
             <CollapsibleContent>
               <Card className="sm:max-w-lg min-w-0 w-full border-none  bg-transparent shadow-none">
-                <Form method="post" {...getFormProps(form)} className="contents">
+                <fetcher.Form method="post" {...getFormProps(form)} className="contents">
                   <CardContent className="space-y-6">
                     {/* Model Alias and Model Type side by side */}
                     <div className="flex gap-4">
@@ -217,7 +196,12 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
                         <div className="flex-1">
                           <FormLabel>Model Alias</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter model alias" />
+                            <Input
+                              placeholder="Enter model alias"
+                              name={fields.alias.name}
+                              defaultValue={fields.alias.initialValue}
+                              id={fields.alias.id}
+                            />
                           </FormControl>
                           <FormMessage />
                         </div>
@@ -247,30 +231,42 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
                     </div>
 
                     {/* Success/Error Messages */}
-                    {actionData?.success && (
+                    {fetcher.data?.success && (
                       <div className="text-green-600 text-sm">
-                        {actionData.message || "Model configuration updated successfully!"}
+                        {fetcher.data?.message || "Model configuration updated successfully!"}
                       </div>
                     )}
-                    {actionData?.error && (
-                      <div className="text-destructive text-sm">{actionData.error}</div>
+                    {fetcher.data?.error && (
+                      <div className="text-destructive text-sm">{fetcher.data?.error}</div>
                     )}
                   </CardContent>
 
                   <CardFooter className="flex justify-between">
-                    <Button type="button" variant="destructive" onClick={handleRemove}>
+                    <Button
+                      type="submit"
+                      name="_action"
+                      value="remove"
+                      variant="destructive"
+                      isLoading={fetcher.state !== "idle"}
+                    >
                       Remove
                     </Button>
                     <div className="flex gap-2">
                       <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
                           Cancel
                       </Button>
-                      <Button type="submit" isLoading={navigation.state !== "idle"} disabled={!fields.modelType.value}>
+                      <Button
+                        type="submit"
+                        name="_action"
+                        value="save"
+                        isLoading={fetcher.state !== "idle"}
+                        disabled={!fields.modelType.value}
+                      >
                           Save
                       </Button>
                     </div>
                   </CardFooter>
-                </Form>
+                </fetcher.Form>
               </Card>
             </CollapsibleContent>
           </Collapsible>
