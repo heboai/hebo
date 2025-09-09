@@ -114,12 +114,14 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 }
 
 export default function AgentBranchConfig({ loaderData, actionData }: Route.ComponentProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
+  const [newFormIds, setNewFormIds] = useState<string[]>([]);
 
   const { agent } = (useRouteLoaderData("routes/_shell.agent.$agentSlug") as { agent: any }) ?? { agent: null };
   const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
   const activeBranch = agent?.branches?.find((b: any) => b.slug === branchSlug) ?? agent?.branches?.[0];
-  const defaultModel = activeBranch?.models?.find((m: any) => m.alias === "default");
+  const models: Array<{ alias: string; type: string }> = activeBranch?.models ?? [];
+  const defaultModel = models.find((m: any) => m.alias === "default");
 
   if (supportedModels.length === 0) {
     return (
@@ -138,8 +140,8 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
 
 
   return (
-    <div className="absolute flex items-center justify-center flex-col gap-2 max-w-[675px]">
-      <div className="flex flex-col w-full">
+    <div className="absolute flex items-center w-full justify-center flex-col gap-2 max-w-185">
+      <div className="flex flex-col">
         <h2>Model Configuration</h2>
         <p className="text-muted-foreground">
           Configure access for agents to different models and their routing behaviour (incl. to your
@@ -147,32 +149,58 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
         </p>
       </div>
 
-        <Card className="sm:max-w-lg min-w-0 w-full border-none p-3">
-          <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <div className="flex items-center justify-between gap-4 mb-2">
-                <p className="text-sm">
-                  {agentSlug}/{branchSlug}/{defaultModel?.alias}
-                </p>
-                {defaultModel && (
-                  <p className="text-sm">{getModelDisplayName(defaultModel.type)}</p>
-                )}
-                <Badge variant="secondary">Custom <RailSymbol /> </Badge>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className={isOpen ? "invisible" : ""}>Edit</Button>
-              </CollapsibleTrigger>
-              </div>
+        {models.map((m) => {
+          const isOpen = !!openMap[m.alias];
+          return (
+            <Card key={m.alias} className="w-full border-none p-3">
+              <Collapsible
+                open={isOpen}
+                onOpenChange={(v) => setOpenMap((prev) => ({ ...prev, [m.alias]: v }))}
+              >
+                <div className="flex items-center justify-between gap-4 mb-2">
+                  <p className="text-sm">
+                    {agentSlug}/{branchSlug}/{m.alias}
+                  </p>
+                  <p className="text-sm">{getModelDisplayName(m.type)}</p>
+                  <Badge variant="secondary">Custom <RailSymbol /> </Badge>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="outline" className={isOpen ? "invisible" : ""}>Edit</Button>
+                  </CollapsibleTrigger>
+                </div>
 
-            <CollapsibleContent>
-              <Card className="sm:max-w-lg min-w-0 w-full border-none  bg-transparent shadow-none">
-                <BranchModelForm
-                  defaultModel={defaultModel}
-                  supportedModels={supportedModels as { name: string; displayName?: string }[]}
-                  onCancel={() => setIsOpen(false)}
-                />
-              </Card>
-            </CollapsibleContent>
-          </Collapsible>
-        </Card>
-      </div>
+                <CollapsibleContent>
+                  <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
+                    <BranchModelForm
+                      defaultModel={m}
+                      supportedModels={supportedModels as { name: string; displayName?: string }[]}
+                      onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))}
+                    />
+                  </Card>
+                </CollapsibleContent>
+              </Collapsible>
+            </Card>
+          );
+        })}
+
+        {newFormIds.map((id) => (
+          <Card key={id} className="w-full border-none p-3">
+            <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
+              <BranchModelForm
+                supportedModels={supportedModels as { name: string; displayName?: string }[]}
+                onCancel={() => setNewFormIds((prev) => prev.filter((nid) => nid !== id))}
+              />
+            </Card>
+          </Card>
+        ))}
+
+        <Button
+          variant="outline"
+          onClick={() =>
+            setNewFormIds((prev) => [...prev, `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`])
+          }
+        >
+          + Add Model
+        </Button>
+    </div>
   );
 }

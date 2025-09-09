@@ -29,8 +29,8 @@ export function BranchModelForm({ defaultModel, supportedModels, onCancel }: Bra
 
   const [form, fields] = useForm<{ alias: string; modelType: string }>({
     defaultValue: {
-      alias: defaultModel?.alias || "default",
-      modelType: defaultModel?.type || "",
+      alias: defaultModel ? defaultModel.alias : "",
+      modelType: defaultModel ? defaultModel.type : "",
     },
     onValidate({ formData }: { formData: FormData }) {
       return parseWithValibot(formData, { schema: BranchConfigSchema });
@@ -62,6 +62,9 @@ export function BranchModelForm({ defaultModel, supportedModels, onCancel }: Bra
               <FormLabel>Model Type</FormLabel>
               <FormControl>
                 <Select
+                  name={fields.modelType.name}
+                  defaultValue={fields.modelType.initialValue}
+                  placeholder="Select a model type"
                   items={[
                     ...supportedModels.map((model) => ({
                       value: model.name,
