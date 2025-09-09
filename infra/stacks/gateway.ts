@@ -23,6 +23,7 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
   },
   environment: {
     LOG_LEVEL: $app.stage === "production" ? "info" : "debug",
+    // TODO: understand which one of the 3 is needed
     NO_COLOR: "1",
     FORCE_COLOR: "0",
     CLICOLOR: "0",
