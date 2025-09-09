@@ -8,16 +8,12 @@ export function SidebarNav({ activeAgent, activeBranch }: { activeAgent: any, ac
         <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Models Config">
               <Link
-                  to={`/agent/${activeAgent?.slug}/branch/${activeBranch?.slug}/config`
-                  }
+                  to={`/agent/${activeAgent?.slug}/branch/${activeBranch?.slug}/config`}
                   aria-label="Models Config"
                   rel="noopener noreferrer"
-                  viewTransition
               >
-                <div className="items-center justify-center mr-2">
-                  <BrainCog />
-                </div>
-                <span>Models</span>
+                <BrainCog />
+                Models
               </Link>
             </SidebarMenuButton>
         </SidebarMenuItem>
