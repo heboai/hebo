@@ -4,7 +4,7 @@
 import * as secrets from "./secrets";
 import { heboVpc } from "./vpc";
 
-const global = new aws.rds.GlobalCluster("HeboDbGlobal", {
+const globalCluster = new aws.rds.GlobalCluster("HeboDbGlobal", {
   globalClusterIdentifier:
     $app.stage === "production" ? "hebo-global" : `${$app.stage}-hebo-global`,
   engine: "aurora-postgresql",
@@ -26,7 +26,7 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   database: "hebo",
   transform: {
     cluster: (a) => {
-      a.globalClusterIdentifier = global.id;
+      a.globalClusterIdentifier = globalCluster.id;
     },
   },
 });
