@@ -27,7 +27,7 @@ export class Webhook extends EventTarget {
    * @param config The configuration object containing the event configurations.
    */
   constructor(config: WebhookConfig) {
-    super(); // Call the EventTarget constructor
+    super();
     if (!config || !config.events || typeof config.events !== "object") {
       throw new WebhookError(
         "Webhook config with 'events' map must be provided.",
@@ -116,7 +116,6 @@ export class Webhook extends EventTarget {
       const signingKey = eventConfig.signingKey;
       verifySignature(body, signature, signingKey);
 
-      // Dispatch the event using EventTarget's dispatchEvent
       this.dispatchEvent(new CustomEvent(eventType, { detail: payload }));
     } catch (error) {
       await this.errorHandler(error as Error);

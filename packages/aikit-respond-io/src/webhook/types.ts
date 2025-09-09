@@ -6,14 +6,10 @@ export enum WebhookEvents {
   ConversationClosed = "conversation.closed",
 }
 
-// New: Configuration for a single event type, allowing for future options.
 export interface WebhookEventConfig {
   signingKey: string;
-  // Future options can be added here, e.g.:
-  // timeout?: number;
 }
 
-// Updated: Main config now uses WebhookEventConfig for extensibility.
 export interface WebhookConfig {
   /**
    * A map of event types to their corresponding configurations.
@@ -21,7 +17,6 @@ export interface WebhookConfig {
   events: Partial<Record<WebhookEvents, WebhookEventConfig>>;
 }
 
-// A map from event type to its payload interface.
 export type EventPayloadMap = {
   [WebhookEvents.MessageReceived]: MessageReceivedPayload;
   [WebhookEvents.MessageSent]: MessageSentPayload;

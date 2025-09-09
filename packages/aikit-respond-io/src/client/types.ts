@@ -33,8 +33,6 @@ export interface SendMessagePayload {
  */
 export interface SendMessageResponse {
   messageId: string;
-  // Documentation mentions a 200 status with messageId.
-  // Add other properties if the API returns more details on success.
 }
 
 /**
