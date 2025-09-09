@@ -1,9 +1,9 @@
 import { Ban, BookOpen, CreditCard } from "lucide-react";
 import { Suspense } from "react";
 
-import { Badge } from "@hebo/ui/components/Badge";
-import { Button } from "@hebo/ui/components/Button";
-import { Skeleton } from "@hebo/ui/components/Skeleton";
+import { Badge } from "@hebo/shared-ui/components/Badge";
+import { Button } from "@hebo/shared-ui/components/Button";
+import { Skeleton } from "@hebo/shared-ui/components/Skeleton";
 
 import { AuthProvider } from "~console/components/AuthProvider";
 import { MagicLinkSignIn } from "./magiclink";
@@ -12,9 +12,9 @@ import { Logo } from "~console/components/ui/Logo";
 
 export default function SignIn() {
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-dvh">
       {/* Marketing Message */}
-      <aside className="fixed min-h-screen w-128 -translate-x-full bg-blue-100 bg-[url(/login-bg.png)] bg-bottom-left bg-no-repeat transition-transform duration-300 ease-in-out lg:translate-x-0">
+      <aside className="fixed min-h-dvh w-128 -translate-x-full bg-blue-100 bg-[url(/login-bg.png)] bg-bottom-left bg-no-repeat transition-transform duration-300 ease-in-out lg:translate-x-0">
         <Button
           asChild
           variant="ghost"
@@ -61,7 +61,7 @@ export default function SignIn() {
       </aside>
 
       {/* Login Components */}
-      <main className="flex min-h-screen flex-1 items-center justify-center transition-all duration-300 lg:ml-128">
+      <main className="flex min-h-dvh flex-1 items-center justify-center transition-all duration-300 lg:ml-128">
         <div className="flex w-xs flex-col items-center gap-4">
           {/* AuthComponents may take a few seconds to load */}
           <Suspense fallback={<Skeleton className="h-10 w-full" count={5} />}>

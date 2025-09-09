@@ -1,4 +1,4 @@
-import { cn } from "@hebo/ui/lib/utils";
+import { cn } from "@hebo/shared-ui/lib/utils";
 
 export function Logo({ className }: { className?: string }) {
   return (

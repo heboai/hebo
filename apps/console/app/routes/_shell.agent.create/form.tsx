@@ -1,12 +1,10 @@
-"use client";
-
-import { Form, useNavigation } from "react-router";
-import { message, nonEmpty, object, string, pipe, trim } from "valibot";
+import { Form, useActionData, useNavigation } from "react-router";
+import { message, nonEmpty, object, string, pipe, trim, type InferOutput } from "valibot";
 import { useForm, getFormProps } from "@conform-to/react";
-import { parseWithValibot } from "@conform-to/valibot";
+import { getValibotConstraint } from "@conform-to/valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
-import { Button } from "@hebo/ui/components/Button";
+import { Button } from "@hebo/shared-ui/components/Button";
 import {
   Card,
   CardContent,
@@ -14,32 +12,38 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@hebo/ui/components/Card";
+} from "@hebo/shared-ui/components/Card";
 import {
   FormControl,
   FormField,
   FormLabel,
   FormMessage,
-} from "@hebo/ui/components/Form";
-import { Input } from "@hebo/ui/components/Input";
+} from "@hebo/shared-ui/components/Form";
+import { Input } from "@hebo/shared-ui/components/Input";
 import {
   Select
-} from "@hebo/ui/components/Select";
+} from "@hebo/shared-ui/components/Select";
+
+import { useActionDataErrorToast } from "~console/lib/errors";
 
 
-const FormSchema = object({
+export const AgentCreateSchema = object({
   agentName: message(pipe(string(), trim(), nonEmpty()), "Please enter an agent name"),
   defaultModel: string(),
 });
+export type AgentCreateFormValues = InferOutput<typeof AgentCreateSchema>;
 
-export function AgentForm({ error }: { error?: string }) {
-  const [form, fields] = useForm({
+export function AgentCreateForm() {
+  const lastResult = useActionData();
+  
+  useActionDataErrorToast();
+  
+  const [form, fields] = useForm<AgentCreateFormValues>({
+    lastResult,
+    constraint: getValibotConstraint(AgentCreateSchema),
     defaultValue: {
       defaultModel: supportedModels[0].name,
-    },
-    onValidate({ formData }) {
-      return parseWithValibot(formData, { schema: FormSchema });
-    },
+    }
   });
 
   const navigation = useNavigation();
@@ -58,16 +62,15 @@ export function AgentForm({ error }: { error?: string }) {
         
         <CardContent>
           <div className="sm:grid sm:grid-cols-[auto_1fr] sm:gap-y-2">
-            {/* Agent Name Field */}
+
             <FormField field={fields.agentName} className="contents">
               <FormLabel className="sm:w-32">Agent Name</FormLabel>
               <FormControl>
-                <Input placeholder="Set an agent name" />
+                <Input placeholder="Set an agent name" autoComplete="off" />
               </FormControl>
               <FormMessage className="sm:col-start-2" />
             </FormField>
 
-            {/* Default Model Field */}
             <FormField field={fields.defaultModel} className="contents">
               <FormLabel className="sm:w-32">Default Model</FormLabel>
               <FormControl>
@@ -94,16 +97,9 @@ export function AgentForm({ error }: { error?: string }) {
             </FormField>
           </div>
 
-          {/* Mutation Error Display */}
-          {error && (
-            <div className="text-destructive text-right" role="alert">
-              {error}
-            </div>
-          )}
         </CardContent>
 
         <CardFooter className="flex justify-end">
-          {/* Submit Button */}
           <Button
             type="submit"
             isLoading={navigation.state !== "idle"}

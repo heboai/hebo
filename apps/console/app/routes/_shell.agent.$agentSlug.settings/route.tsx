@@ -1,33 +1,47 @@
-import { useRouteLoaderData, redirect } from "react-router";
+import { redirect, useRouteLoaderData } from "react-router";
+import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/data";
+import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
 
-import { DangerSettings } from "./danger-zone";
+import { DangerSettings, createAgentDeleteSchema } from "./danger-zone";
 import { GeneralSettings } from "./general";
 
 
-export async function clientAction({ request }: Route.ClientActionArgs ) {
-    const formData = await request.formData();
+export async function clientAction({ request, params }: Route.ClientActionArgs ) {
+  const formData = await request.formData();
 
-    const result = await api.agents({ agentSlug: String(formData.get("slug")) }).delete();
+  const submission = parseWithValibot(formData, {
+     schema: createAgentDeleteSchema(params.agentSlug)
+  });
+  
+  if (submission.status !== 'success')
+    return submission.reply();
 
-    return result.error
-      ? { error: result.error.value?.toString() }
-      : redirect("/");
+  let result;
+  try {
+    result = await api.agents({ agentSlug: params.agentSlug }).delete();
+  } catch (error) {
+    return submission.reply({ formErrors: [ parseError(error).message ] });
+  }
+
+  if (result.error)
+    return submission.reply({ formErrors: [String(result.error?.value)] });
+
+  return redirect("/");
 }
 
-export default function Settings({ actionData }: Route.ComponentProps) {
-  const { activeAgent } = useRouteLoaderData("routes/_shell");
 
+export default function Settings() {
+  const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug");
+ 
   return (
     <>
       <h1>Agent Settings</h1>
-
-      <GeneralSettings activeAgent={activeAgent} />
-
-      <DangerSettings activeAgent={activeAgent} error={actionData?.error} />
+      <GeneralSettings agent={agent} />
+      <DangerSettings agent={agent} />
     </>
   );
 }

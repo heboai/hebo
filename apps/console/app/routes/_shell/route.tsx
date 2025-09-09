@@ -1,4 +1,6 @@
-import { Outlet, type ShouldRevalidateFunctionArgs } from "react-router";
+import { XCircle, SquareChevronRight } from "lucide-react";
+import { Outlet, useRouteLoaderData } from "react-router";
+import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
 
 import {
@@ -10,21 +12,21 @@ import {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-} from "@hebo/ui/components/Sidebar";
+} from "@hebo/shared-ui/components/Sidebar";
+
 import { authService } from "~console/lib/auth";
 import { api } from "~console/lib/data";
-import { getCookie } from "~console/lib/utils";
-import { kbs } from "~console/lib/utils";
+import { dontRevalidateOnFormErrors } from "~console/lib/errors";
+import { getCookie, kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
-
-import type { Route } from "./+types/route";
 
 import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
 import { PlaygroundSidebar } from "./sidebar-playground";
-import { SquareChevronRight } from "lucide-react";
 import { SidebarNav } from "./sidebar-nav";
+
+import type { Route } from "./+types/route";
 
 async function authMiddleware() {
   await authService.ensureSignedIn();
@@ -32,56 +34,22 @@ async function authMiddleware() {
 
 export const unstable_clientMiddleware = [authMiddleware];
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const { data: agents } = await api.agents.get();
-  
-  // Change from params.slug to params.agentSlug
-  const activeAgent = params.agentSlug ? agents!.find((a) => a.slug === params.agentSlug) : undefined;
-  
-  // Add branch slug identification
-  const activeBranch = params.branchSlug && activeAgent 
-    ? activeAgent.branches?.find((b) => b.slug === params.branchSlug)
-    : undefined;
-
-  if (params.agentSlug && !activeAgent)
-    throw new Response("Agent Not Found", { status: 404 });
-    
-  if (params.branchSlug && !activeBranch)
-    throw new Response("Branch Not Found", { status: 404 });
-
-  return { agents, activeAgent, activeBranch };
+export async function clientLoader() {
+  return { agents: (await api.agents.get()).data ?? [] };
 }
+export { dontRevalidateOnFormErrors as shouldRevalidate }
 
-export function shouldRevalidate({ 
-  currentParams, 
-  nextParams,
-  actionResult,
-  defaultShouldRevalidate
-}: ShouldRevalidateFunctionArgs) {
-  // Always revalidate on successful actions from child routes (like config updates)
-  if (actionResult && actionResult.success) {
-    return true;
-  }
-  
-  // Also revalidate if the agent or branch slug changed
-  if (currentParams.agentSlug !== nextParams.agentSlug || 
-      currentParams.branchSlug !== nextParams.branchSlug) {
-    return true;
-  }
-  
-  // Use default behavior for other cases
-  return defaultShouldRevalidate;
-}
 
-export default function ShellLayout({loaderData}: Route.ComponentProps) {
+export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
   const { user } = useSnapshot(authStore);
+  const { agent: activeAgent = null } = useRouteLoaderData("routes/_shell.agent.$agentSlug") ?? {};
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
   const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
 
   return (
-    <div className="flex min-h-screen gap-4">
+    <div className="flex min-h-dvh gap-4">
       {/* LEFT SIDEBAR */}
       <SidebarProvider
         defaultOpen={leftSidebarDefaultOpen}
@@ -98,7 +66,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
         <Sidebar collapsible="icon">
           <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
             <SidebarHeader>
-                <AgentSelect activeAgent={loaderData.activeAgent} agents={loaderData.agents!} />
+              <AgentSelect agents={agents} activeAgent={activeAgent} />
             </SidebarHeader>
             <SidebarContent>
               <SidebarNav activeAgent={loaderData.activeAgent} activeBranch={loaderData.activeBranch} />
@@ -114,6 +82,10 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
 
         <main className="relative flex w-full flex-1 flex-col gap-4 p-4">
           <SidebarTrigger className="fixed -m-1.5" />
+          <Toaster
+            position="top-right"
+            icons={{error: <XCircle className="size-4" aria-hidden="true" />}}
+          />
 
           <div className="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-2 py-8">
             <Outlet />
@@ -148,7 +120,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
               />
           <Sidebar side="right" collapsible="offcanvas">
             <SidebarContent>
-              <PlaygroundSidebar activeBranch={loaderData.activeBranch} />
+              <PlaygroundSidebar activeBranch={activeAgent?.branches?.[0]} />
             </SidebarContent>
             <SidebarRail />
           </Sidebar>
