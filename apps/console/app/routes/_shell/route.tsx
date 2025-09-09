@@ -24,7 +24,7 @@ import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
 import { PlaygroundSidebar } from "./sidebar-playground";
 import { SquareChevronRight } from "lucide-react";
-import { SidebarConfig } from "./sidebar-config";
+import { SidebarNav } from "./sidebar-nav";
 
 async function authMiddleware() {
   await authService.ensureSignedIn();
@@ -101,7 +101,7 @@ export default function ShellLayout({loaderData}: Route.ComponentProps) {
                 <AgentSelect activeAgent={loaderData.activeAgent} agents={loaderData.agents!} />
             </SidebarHeader>
             <SidebarContent>
-              <SidebarConfig activeAgent={loaderData.activeAgent} activeBranch={loaderData.activeBranch} />
+              <SidebarNav activeAgent={loaderData.activeAgent} activeBranch={loaderData.activeBranch} />
             </SidebarContent>
             <SidebarFooter>
                 <StaticContent />
