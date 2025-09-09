@@ -15,8 +15,8 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
   cluster,
   architecture: "arm64",
   image: {
-    context: "../../",
-    dockerfile: "../../infra/stacks/docker/Dockerfile.api",
+    context: ".",
+    dockerfile: "infra/stacks/docker/Dockerfile.api",
     tags: [apiTag],
   },
   environment: {

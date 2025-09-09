@@ -17,8 +17,8 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
   cluster,
   architecture: "arm64",
   image: {
-    context: "../../",
-    dockerfile: "../../infra/stacks/docker/Dockerfile.gateway",
+    context: ".",
+    dockerfile: "infra/stacks/docker/Dockerfile.gateway",
     tags: [gatewayTag],
   },
   environment: {
