@@ -11,7 +11,7 @@ const gatewayDomainName =
   $app.stage === "production"
     ? "gateway.hebo.ai"
     : `${$app.stage}.gateway.hebo.ai`;
-const cluster = new sst.aws.Cluster("HeboApiCluster", { vpc: heboVpc });
+const cluster = new sst.aws.Cluster("HeboGatewayCluster", { vpc: heboVpc });
 
 const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
   cluster,
