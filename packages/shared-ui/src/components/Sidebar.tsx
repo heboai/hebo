@@ -64,7 +64,7 @@ function SidebarProvider({
 
     globalThis.addEventListener("keydown", handleKeyDown);
     return () => globalThis.removeEventListener("keydown", handleKeyDown);
-  }, [toggleSidebar]);
+  }, [shortcut, toggleSidebar]);
 
   const contextValue = React.useMemo(
     () => ({
