@@ -16,6 +16,9 @@ const PORT = Number(process.env.PORT ?? 3002);
 
 export const createApp = () =>
   new Elysia()
+    // The root route ("/") is intentionally left unauthenticated and does not apply logging or CORS middleware.
+    // This allows for a simple health check or greeting endpoint without requiring authentication or special headers.
+    .get("/", () => "🐵 Hebo AI Gateway says hello!")
     .use(logger({ level: LOG_LEVEL }))
     .use(cors(corsConfig))
     .use(
@@ -29,10 +32,8 @@ export const createApp = () =>
         },
       }),
     )
-    .use(oaiErrors)
-    // FUTURE: Prevent requests to / from being logged
-    .get("/", () => "🐵 Hebo AI Gateway says hello!")
     .use(authService)
+    .use(oaiErrors)
     .group(
       "/v1",
       {
