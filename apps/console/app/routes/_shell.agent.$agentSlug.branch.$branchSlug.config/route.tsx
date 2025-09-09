@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Form, useNavigation, useRouteLoaderData } from "react-router";
+import { Form, useNavigation, useRouteLoaderData, useParams } from "react-router";
 import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 import { object, string, nonEmpty, pipe, trim, message } from "valibot";
@@ -19,9 +19,6 @@ import { RailSymbol } from "lucide-react";
 
 import type { Route } from "./+types/route";
 
-// -------------------------
-// Helper Functions
-// -------------------------
 const getModelDisplayName = (modelName: string): string => {
   if (modelName === "custom") {
     return "Custom Model";
@@ -31,78 +28,91 @@ const getModelDisplayName = (modelName: string): string => {
   return model?.displayName || modelName;
 };
 
-// -------------------------
-// Schema
-// -------------------------
 const BranchConfigSchema = object({
   alias: message(pipe(string(), trim(), nonEmpty()), "Please enter a model alias"),
   modelType: string(),
 });
 
-// -------------------------
-// Loader & Action
-// -------------------------
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  return {
-    agentSlug: params.agentSlug,
-    branchSlug: params.branchSlug,
-  };
-}
-
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  const alias = String(formData.get("alias"));
-  const modelType = String(formData.get("modelType"));
+  const submission = parseWithValibot(formData, { schema: BranchConfigSchema });
+  if (submission.status !== "success") {
+    return { lastResult: submission.reply() };
+  }
+  const alias = String(submission.payload.alias ?? "");
+  const modelType = String(submission.payload.modelType ?? "");
   const action = String(formData.get("_action"));
 
   try {
-    if (action === "remove") {
-      // Remove model configuration
-      const response = await fetch(
-        `/api/v1/agents/${params.agentSlug}/branches/${params.branchSlug}/models/${alias}`,
-        {
-          method: "DELETE",
-        }
-      );
+    // First, fetch the current branch data
+    const getResponse = await fetch(
+      `/api/v1/agents/${params.agentSlug}/branches/${params.branchSlug}`
+    );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        return { error: errorText || "Failed to remove model configuration" };
-      }
-
-      return { success: true, message: "Model configuration removed successfully" };
-    } else {
-      // Update model configuration
-      const response = await fetch(
-        `/api/v1/agents/${params.agentSlug}/branches/${params.branchSlug}/models/default`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            alias,
-            modelType,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        return { error: errorText || "Failed to update model configuration" };
-      }
-
-      return { success: true, message: "Model configuration updated successfully" };
+    if (!getResponse.ok) {
+      const errorText = await getResponse.text();
+      return { error: errorText || "Failed to fetch branch data" };
     }
+
+    const currentBranch = await getResponse.json();
+    const currentModels = currentBranch.models || [];
+
+    let updatedModels;
+
+    if (action === "remove") {
+      // Remove the model from the models array
+      updatedModels = currentModels.filter((m: any) => m.alias !== alias);
+      
+      // Prevent deletion of default model
+      if (alias === "default") {
+        return { error: "Cannot delete default model" };
+      }
+    } else {
+      // Update or add the model in the models array
+      const modelIndex = currentModels.findIndex((m: any) => m.alias === alias);
+      const updatedModel = { alias, type: modelType };
+      
+      if (modelIndex === -1) {
+        // Add new model
+        updatedModels = [...currentModels, updatedModel];
+      } else {
+        // Update existing model
+        updatedModels = currentModels.map((m: any, index: number) => 
+          index === modelIndex ? updatedModel : m
+        );
+      }
+    }
+
+    // Update the entire branch with the new models JSON
+    const response = await fetch(
+      `/api/v1/agents/${params.agentSlug}/branches/${params.branchSlug}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          models: updatedModels,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { error: errorText || "Failed to update model configuration" };
+    }
+
+    const successMessage = action === "remove" 
+      ? "Model configuration removed successfully" 
+      : "Model configuration updated successfully";
+
+    return { success: true, message: successMessage };
   } catch (error) {
     console.error("Error updating model config:", error);
     return { error: "An unexpected error occurred" };
   }
 }
 
-// -------------------------
-// Component
-// -------------------------
 export default function AgentBranchConfig({ loaderData, actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
   const [isOpen, setIsOpen] = useState(false);
@@ -113,9 +123,11 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
     activeBranch: any;
   };
 
+  const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
+
   const defaultModel = shellData?.activeBranch?.models?.find((m: any) => m.alias === "default");
 
-  const [form, fields] = useForm({
+  const [form, fields] = useForm<{ alias: string; modelType: string }>({
     defaultValue: {
       alias: defaultModel?.alias || "default",
       modelType: defaultModel?.type || supportedModels[0].name,
@@ -123,6 +135,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
     onValidate({ formData }) {
       return parseWithValibot(formData, { schema: BranchConfigSchema });
     },
+    lastResult: actionData?.lastResult,
   });
 
   const handleRemove = () => {
@@ -163,7 +176,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
             <div className="flex items-center justify-between gap-4 mb-2">
               <div className="flex items-center gap-3">
                 <p className="text-sm text-muted-foreground">
-                  {loaderData.agentSlug}/{loaderData.branchSlug}/{defaultModel?.alias}
+                  {agentSlug}/{branchSlug}/{defaultModel?.alias}
                 </p>
                 {defaultModel && (
                   <p className="text-sm">{getModelDisplayName(defaultModel.type)}</p>
