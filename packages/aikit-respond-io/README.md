@@ -12,30 +12,30 @@ bun add @hebo/aikit-respond-io
 
 This library provides three ways to interact with Respond.io:
 
-- `createAgent`: A factory function to create a high-level agent that simplifies common workflows like receiving and sending messages.
+- `createAdapter`: A factory function to create a high-level adapter that simplifies common workflows like receiving and sending messages.
 - `createWebhookHandler`: A factory function to create a low-level webhook handler for processing events from Respond.io.
 - `createRespondIoClient`: A factory function to create a low-level client for making requests to the Respond.io API.
 
-### Agent Example with Hono
+### Adapter Example with Hono
 
-The `Agent`, created using the `createAgent` factory, is the easiest way to get started. It combines the webhook and API client into a single, easy-to-use class.
+The `Adapter`, created using the `createAdapter` factory, is the easiest way to get started. It combines the webhook and API client into a single, easy-to-use class.
 
 ```ts
 import { Hono } from "hono";
-import { createAgent } from "@hebo/aikit-respond-io";
+import { createAdapter } from "@hebo/aikit-respond-io";
 import { WebhookEvents } from "@hebo/aikit-respond-io/webhook";
 
 const app = new Hono();
 
-// 1. Create and configure the agent.
+// 1. Create and configure the adapter.
 //    It's recommended to use environment variables for sensitive information.
-const agent = createAgent({
+const adapter = createAdapter({
   webhookConfig: {
     events: {
       [WebhookEvents.MessageReceived]: {
         signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
       },
-      // Add other event types you want the agent to handle and their signing keys
+      // Add other event types you want the adapter to handle and their signing keys
     },
   },
   clientConfig: {
@@ -44,7 +44,7 @@ const agent = createAgent({
 });
 
 // 2. Register a handler for incoming messages.
-agent.onMessageReceived(async (payload) => {
+adapter.onMessageReceived(async (payload) => {
   const contactId = String(payload.contact.id);
   const message = payload.message.message.text;
 
@@ -52,14 +52,14 @@ agent.onMessageReceived(async (payload) => {
 
   // Example: Echo the message back to the user.
   if (message) {
-    await agent.sendTextMessage(`You said: ${message}`, contactId);
+    await adapter.sendTextMessage(`You said: ${message}`, contactId);
     console.log(`Replied to contact ${contactId}`);
   }
 });
 
-// 3. Mount the agent's fetch handler under a specific path.
-// Hono will forward all requests under this path to the agent's fetch handler.
-app.mount("/webhook/respond-io", agent.fetch);
+// 3. Mount the adapter's fetch handler under a specific path.
+// Hono will forward all requests under this path to the adapter's fetch handler.
+app.mount("/webhook/respond-io", adapter.fetch);
 
 // For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
 export default app;

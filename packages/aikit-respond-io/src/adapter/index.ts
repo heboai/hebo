@@ -9,26 +9,26 @@ import { WebhookEvents, MessageReceivedPayload } from "../webhook/types";
 import type { ContactIdentifier, SendMessageResponse } from "../client/types";
 
 /**
- * Configuration for the agent.
+ * Configuration for the adapter.
  */
-export type AgentConfig = {
+export type AdapterConfig = {
   webhookConfig: WebhookConfig;
   clientConfig: RespondIoClientConfig;
 };
 
 /**
- * A simplified agent for interacting with the API.
+ * A simplified adapter for interacting with the API.
  */
-export class Agent {
+export class Adapter {
   private readonly webhook: Webhook;
   private readonly client: RespondIoClient;
   public readonly fetch: (request: Request) => Promise<Response>;
 
   /**
-   * Creates a new agent instance.
+   * Creates a new adapter instance.
    * @param config Configuration for the webhook handler and API client.
    */
-  constructor(config: AgentConfig) {
+  constructor(config: AdapterConfig) {
     this.webhook = new Webhook(config.webhookConfig);
     this.client = createRespondIoClient(config.clientConfig);
     this.fetch = async (request: Request): Promise<Response> => {
@@ -68,10 +68,10 @@ export class Agent {
 }
 
 /**
- * Creates a new agent instance.
+ * Creates a new adapter instance.
  * @param config Configuration for the webhook handler and API client.
- * @returns A new Agent instance.
+ * @returns A new Adapter instance.
  */
-export const createAgent = (config: AgentConfig): Agent => {
-  return new Agent(config);
+export const createAdapter = (config: AdapterConfig): Adapter => {
+  return new Adapter(config);
 };
