@@ -4,7 +4,6 @@
 import * as secrets from "./secrets";
 import { heboVpc } from "./vpc";
 
-// Prod / preview — Aurora Serverless v2 + Global Cluster
 const global = new aws.rds.GlobalCluster("HeboDbGlobal", {
   globalClusterIdentifier:
     $app.stage === "production" ? "hebo-global" : `${$app.stage}-hebo-global`,
