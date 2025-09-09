@@ -5,12 +5,12 @@ import heboDatabase from "./db";
 import * as secrets from "./secrets";
 import { heboVpc } from "./vpc";
 
-const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
+const isProduction = $app.stage === "production";
+const dockerTag = isProduction ? "latest" : `${$app.stage}`;
 const gatewayTag = `gateway-${dockerTag}`;
-const gatewayDomainName =
-  $app.stage === "production"
-    ? "gateway.hebo.ai"
-    : `${$app.stage}.gateway.hebo.ai`;
+const gatewayDomainName = isProduction
+  ? "gateway.hebo.ai"
+  : `${$app.stage}.gateway.hebo.ai`;
 const cluster = new sst.aws.Cluster("HeboGatewayCluster", { vpc: heboVpc });
 
 const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
@@ -22,7 +22,7 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
     tags: [gatewayTag],
   },
   environment: {
-    LOG_LEVEL: $app.stage === "production" ? "info" : "debug",
+    LOG_LEVEL: isProduction ? "info" : "debug",
     NO_COLOR: "1",
     PG_DATABASE: heboDatabase.database,
     PG_HOST: heboDatabase.host,
@@ -42,11 +42,11 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
     ],
   },
   scaling: {
-    min: $app.stage === "production" ? 4 : 1,
-    max: $app.stage === "production" ? 16 : 1,
+    min: isProduction ? 4 : 1,
+    max: isProduction ? 16 : 1,
   },
-  capacity: $app.stage === "production" ? undefined : "spot",
-  wait: $app.stage === "production" ? true : false,
+  capacity: isProduction ? undefined : "spot",
+  wait: isProduction,
 });
 
 export default heboGatewayService;
