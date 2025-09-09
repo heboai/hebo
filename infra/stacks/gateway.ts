@@ -32,7 +32,7 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
     PG_USER: heboDatabase.username,
     PGSSLMODE: "require",
-    PORT: "8080",
+    PORT: "3002",
     STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
     VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
   },
@@ -40,7 +40,7 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
     domain: gatewayDomainName,
     rules: [
       { listen: "80/http", redirect: "443/https" },
-      { listen: "443/https", forward: "8080/http" },
+      { listen: "443/https", forward: "3002/http" },
     ],
   },
   scaling: {
