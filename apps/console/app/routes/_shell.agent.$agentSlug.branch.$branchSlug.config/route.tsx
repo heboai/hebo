@@ -1,22 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useFetcher, useRouteLoaderData, useParams } from "react-router";
-import { useForm, getFormProps } from "@conform-to/react";
-import { parseWithValibot } from "@conform-to/valibot";
+import { useRouteLoaderData, useParams } from "react-router";
 import { object, string, nonEmpty, pipe, trim, message } from "valibot";
+import { parseWithValibot } from "@conform-to/valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { Button } from "@hebo/ui/components/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/ui/components/Collapsible";
-import { Card, CardContent, CardFooter } from "@hebo/ui/components/Card";
+import { Card, CardContent } from "@hebo/ui/components/Card";
 import { Badge } from "@hebo/ui/components/Badge";
-import { Input } from "@hebo/ui/components/Input";
-import { Select } from "@hebo/ui/components/Select";
-import { FormField, FormLabel, FormControl, FormMessage } from "@hebo/ui/components/Form";
-import { RailSymbol } from "lucide-react";
+import { BranchModelForm } from "./form";
 import { api } from "~console/lib/data";
+import { RailSymbol } from "lucide-react";
 
 import type { Route } from "./+types/route";
 
@@ -129,19 +126,6 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
 
   const defaultModel = shellData?.activeBranch?.models?.find((m: any) => m.alias === "default");
 
-  const fetcher = useFetcher<any>();
-
-  const [form, fields] = useForm<{ alias: string; modelType: string }>({
-    defaultValue: {
-      alias: defaultModel?.alias || "default",
-      modelType: defaultModel?.type || "",
-    },
-    onValidate({ formData }) {
-      return parseWithValibot(formData, { schema: BranchConfigSchema });
-    },
-    lastResult: fetcher.data?.lastResult ?? actionData?.lastResult,
-  });
-
   if (supportedModels.length === 0) {
     return (
       <div className="absolute flex items-center justify-center flex-col gap-2 max-w-[675px]">
@@ -187,86 +171,11 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
 
             <CollapsibleContent>
               <Card className="sm:max-w-lg min-w-0 w-full border-none  bg-transparent shadow-none">
-                <fetcher.Form method="post" {...getFormProps(form)} className="contents">
-                  <CardContent className="space-y-6">
-                    {/* Model Alias and Model Type side by side */}
-                    <div className="flex gap-4">
-                      {/* Alias */}
-                      <FormField field={fields.alias} className="contents">
-                        <div className="flex-1">
-                          <FormLabel>Model Alias</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter model alias"
-                              name={fields.alias.name}
-                              defaultValue={fields.alias.initialValue}
-                              id={fields.alias.id}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormField>
-
-                      {/* Model Type */}
-                      <FormField field={fields.modelType} className="contents">
-                        <div className="flex-1">
-                          <FormLabel>Model Type</FormLabel>
-                          <FormControl>
-                            <Select
-                              items={[
-                                ...supportedModels.map((model) => ({
-                                  value: model.name,
-                                  name: (
-                                    <div className="flex items-center justify-between w-full">
-                                      <span>{model.name}</span>
-                                    </div>
-                                  ),
-                                })),
-                              ]}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormField>
-                    </div>
-
-                    {/* Success/Error Messages */}
-                    {fetcher.data?.success && (
-                      <div className="text-green-600 text-sm">
-                        {fetcher.data?.message || "Model configuration updated successfully!"}
-                      </div>
-                    )}
-                    {fetcher.data?.error && (
-                      <div className="text-destructive text-sm">{fetcher.data?.error}</div>
-                    )}
-                  </CardContent>
-
-                  <CardFooter className="flex justify-between">
-                    <Button
-                      type="submit"
-                      name="_action"
-                      value="remove"
-                      variant="destructive"
-                      isLoading={fetcher.state !== "idle"}
-                    >
-                      Remove
-                    </Button>
-                    <div className="flex gap-2">
-                      <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-                          Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        name="_action"
-                        value="save"
-                        isLoading={fetcher.state !== "idle"}
-                        disabled={!fields.modelType.value}
-                      >
-                          Save
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </fetcher.Form>
+                <BranchModelForm
+                  defaultModel={defaultModel}
+                  supportedModels={supportedModels as { name: string; displayName?: string }[]}
+                  onCancel={() => setIsOpen(false)}
+                />
               </Card>
             </CollapsibleContent>
           </Collapsible>
