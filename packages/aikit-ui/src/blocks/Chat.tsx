@@ -194,7 +194,6 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
         onSubmit={handleSubmit}
         className="relative mt-4 border-x-0"
         role="form"
-        aria-label="Chat input form"
       >
         <PromptInputTextarea
           id="chat-input"
