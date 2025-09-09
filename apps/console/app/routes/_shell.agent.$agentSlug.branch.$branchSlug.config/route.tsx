@@ -16,6 +16,7 @@ import { Input } from "@hebo/ui/components/Input";
 import { Select } from "@hebo/ui/components/Select";
 import { FormField, FormLabel, FormControl, FormMessage } from "@hebo/ui/components/Form";
 import { RailSymbol } from "lucide-react";
+import { api } from "~console/lib/data";
 
 import type { Route } from "./+types/route";
 
@@ -30,31 +31,43 @@ const getModelDisplayName = (modelName: string): string => {
 
 const BranchConfigSchema = object({
   alias: message(pipe(string(), trim(), nonEmpty()), "Please enter a model alias"),
-  modelType: string(),
+  modelType: message(pipe(string(), trim(), nonEmpty()), "Please select a model type"),
 });
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  const submission = parseWithValibot(formData, { schema: BranchConfigSchema });
-  if (submission.status !== "success") {
-    return { lastResult: submission.reply() };
-  }
-  const alias = String(submission.payload.alias ?? "");
-  const modelType = String(submission.payload.modelType ?? "");
   const action = String(formData.get("_action"));
 
-  try {
-    // First, fetch the current branch data
-    const getResponse = await fetch(
-      `/api/v1/agents/${params.agentSlug}/branches/${params.branchSlug}`
-    );
+  let alias = "";
+  let modelType = "";
 
-    if (!getResponse.ok) {
-      const errorText = await getResponse.text();
-      return { error: errorText || "Failed to fetch branch data" };
+  if (action === "remove") {
+    alias = String(formData.get("alias") ?? "");
+    if (!alias.trim()) {
+      return { error: "Alias is required to remove a model" };
     }
+  } else {
+    const submission = parseWithValibot(formData, { schema: BranchConfigSchema });
+    if (submission.status !== "success") {
+      return { lastResult: submission.reply() };
+    }
+    alias = String(submission.payload.alias ?? "");
+    modelType = String(submission.payload.modelType ?? "");
 
-    const currentBranch = await getResponse.json();
+    if (!supportedModels.some((m) => m.name === modelType)) {
+      return { error: "Selected model type is not supported in this deployment" };
+    }
+  }
+
+  try {
+    // First, fetch the current branch data using Eden treaty client
+    const { data: currentBranch, error: getError } = await api.agents({ agentSlug: params.agentSlug! })
+      .branches({ branchSlug: params.branchSlug! })
+      .get();
+    
+    if (getError) {
+      return { error: getError.value?.toString() || "Failed to fetch branch data" };
+    }
     const currentModels = currentBranch.models || [];
 
     let updatedModels;
@@ -83,23 +96,13 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       }
     }
 
-    // Update the entire branch with the new models JSON
-    const response = await fetch(
-      `/api/v1/agents/${params.agentSlug}/branches/${params.branchSlug}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          models: updatedModels,
-        }),
-      }
-    );
+    // Update the entire branch with the new models JSON via Eden treaty
+    const { error: putError } = await api.agents({ agentSlug: params.agentSlug! })
+      .branches({ branchSlug: params.branchSlug! })
+      .put({ models: updatedModels });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return { error: errorText || "Failed to update model configuration" };
+    if (putError) {
+      return { error: putError.value?.toString() || "Failed to update model configuration" };
     }
 
     const successMessage = action === "remove" 
@@ -130,13 +133,28 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
   const [form, fields] = useForm<{ alias: string; modelType: string }>({
     defaultValue: {
       alias: defaultModel?.alias || "default",
-      modelType: defaultModel?.type || supportedModels[0].name,
+      modelType: defaultModel?.type || "",
     },
     onValidate({ formData }) {
       return parseWithValibot(formData, { schema: BranchConfigSchema });
     },
     lastResult: actionData?.lastResult,
   });
+
+  if (supportedModels.length === 0) {
+    return (
+      <div className="absolute flex items-center justify-center flex-col gap-2 max-w-[675px]">
+        <Card className="sm:max-w-lg min-w-0 w-full border-destructive p-3">
+          <CardContent>
+            <div className="text-destructive text-sm">
+              No supported models are configured. This is a deployment error; please configure
+              `packages/shared-data/json/supported-models.json`.
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const handleRemove = () => {
     // Create a form and submit it with remove action
@@ -247,7 +265,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
                       <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
                           Cancel
                       </Button>
-                      <Button type="submit" isLoading={navigation.state !== "idle"}>
+                      <Button type="submit" isLoading={navigation.state !== "idle"} disabled={!fields.modelType.value}>
                           Save
                       </Button>
                     </div>
