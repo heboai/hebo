@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, isValidElement } from "react";
+import { type ReactElement, type ReactNode, isValidElement } from "react";
 
 // Gets the text from a component as if you selected it with a mouse and copied it.
 export const getNodeText = (node: ReactNode): string => {

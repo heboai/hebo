@@ -44,6 +44,32 @@ export const agentHandlers = [
     return HttpResponse.json(agents);
   }),
 
+  http.get<{ agentSlug: string }>(
+    "/api/v1/agents/:agentSlug",
+    async ({ params, request }) => {
+      const url = new URL(request.url);
+      const expand = url.searchParams.get("expand");
+
+      let agent;
+      try {
+        agent = db.agent.findFirst({
+          where: { slug: { equals: params.agentSlug } },
+          strict: true,
+        });
+      } catch {
+        return new HttpResponse("Agent with the slug not found", {
+          status: 404,
+        });
+      }
+
+      await delay(500);
+
+      return expand === "branches"
+        ? HttpResponse.json(agent)
+        : HttpResponse.json({ ...agent, branches: [] });
+    },
+  ),
+
   http.delete<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug",
     async ({ params }) => {
@@ -59,7 +85,7 @@ export const agentHandlers = [
       }
 
       await delay(500);
-      return new HttpResponse(undefined, { status: 204 });
+      return new HttpResponse(undefined, { status: 200 });
     },
   ),
 ];

@@ -5,7 +5,7 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@hebo/ui/components/Sidebar";
+} from "@hebo/shared-ui/components/Sidebar";
 
 
 export function StaticContent() {
