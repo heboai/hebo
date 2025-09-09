@@ -34,7 +34,6 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
 
 const migrator = new sst.aws.Function("DatabaseMigrator", {
   handler: "packages/db/src/migrator.handler",
-  link: [heboDatabase],
   vpc: heboVpc,
   copyFiles: [
     {

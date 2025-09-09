@@ -28,6 +28,6 @@ WORKDIR /app
 
 COPY --from=builder /repo/apps/gateway/dist/server .
 
-EXPOSE 3002
+EXPOSE 80
 USER 65532:65532
 ENTRYPOINT ["/app/server"]
