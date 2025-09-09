@@ -8,9 +8,9 @@ import { type CopyToClipboardResult } from "./utils/copyToClipboard";
 import { getNodeText } from "./utils/getNodeText";
 
 export const styles = {
-  frame: "rounded-md overflow-hidden bg-background border shadow-xs",
+  frame: "overflow-hidden bg-background border rounded-md shadow-xs not-prose",
   code: "pl-3 py-2 overflow-x-auto",
-  header: "flex pl-3 space-x-4 bg-slate-200 ",
+  header: "flex pl-3 space-x-4 bg-slate-200",
 };
 
 export interface CodeBlockPropsBase {
@@ -44,7 +44,7 @@ export const CodeBlock = React.forwardRef(function CodeBlock(
 
   return (
     <div
-      className={clsx("not-prose relative", styles.frame, className)}
+      className={clsx("relative", styles.frame, className)}
       role="region"
       aria-label={`Code block: ${title}`}
       ref={ref}

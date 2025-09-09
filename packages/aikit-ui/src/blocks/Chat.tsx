@@ -42,12 +42,16 @@ type ModelsConfig = {
 };
 
 export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
-  const [currentModelAlias, setCurrentModelAlias] = useState(
-    modelsConfig.models.length > 0 ? modelsConfig.models[0].alias : "",
-  );
+  const [currentModelAlias, setCurrentModelAlias] = useState("");
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (modelsConfig.models.length > 0) {
+      setCurrentModelAlias(modelsConfig.models[0].alias);
+    }
+  }, [modelsConfig]);
 
   // Get current model config - only return a model if we have a valid alias and it exists
   const currentModel = currentModelAlias
@@ -136,9 +140,9 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col pt-12">
       {/* Header Controls */}
-      <div className="absolute top-4 left-4 z-10 flex items-center">
+      <div className="absolute top-1.5 left-1.5 z-10 flex items-center">
         <Button
           variant="ghost"
           size="icon"
@@ -146,7 +150,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
           aria-label="Clear conversation"
           title="Clear conversation"
         >
-          <IterationCcw size={20} />
+          <IterationCcw size={16} />
         </Button>
       </div>
 
@@ -156,8 +160,9 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       </div>
 
       {/* Conversation area */}
-      <Conversation>
+      <Conversation className="top-0">
         <ConversationContent
+          className="px-3 py-0"
           role="log"
           aria-label="Chat conversation"
           tabIndex={-1}
@@ -169,8 +174,9 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
               tabIndex={-1}
               role="article"
               aria-label={`Message from ${message.role}`}
+              className="p-1"
             >
-              <MessageContent>
+              <MessageContent className="px-3 py-2">
                 <div>{renderMessagePart(message.parts[0])}</div>
               </MessageContent>
             </Message>
@@ -191,7 +197,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       {/* Input area */}
       <PromptInput
         onSubmit={handleSubmit}
-        className="relative mt-4"
+        className="relative mt-4 border-x-0"
         role="form"
         aria-label="Chat input form"
       >
