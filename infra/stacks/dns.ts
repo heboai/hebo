@@ -1,7 +1,10 @@
 const ZONE_NAME = "hebo.ai";
 
 const createZoneIfNotExists = async (zoneName: string) => {
-  (await aws.route53.getZone({ name: zoneName })) ||
+  try {
+    await aws.route53.getZone({ name: zoneName });
+  } catch {
+    // eslint-disable-next-line sonarjs/constructor-for-side-effects
     new aws.route53.Zone(
       "HeboZone",
       {
@@ -11,6 +14,7 @@ const createZoneIfNotExists = async (zoneName: string) => {
         retainOnDelete: true,
       },
     );
+  }
   return zoneName;
 };
 
