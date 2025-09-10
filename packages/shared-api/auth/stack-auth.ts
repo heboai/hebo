@@ -1,10 +1,7 @@
-import { createPinoLogger } from "@bogeychan/elysia-logger";
+import { type Logger } from "@bogeychan/elysia-logger/types";
 import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-
-const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
-const log = createPinoLogger({ level: LOG_LEVEL });
 
 export const projectId = process.env.VITE_STACK_PROJECT_ID ?? "";
 export const secretServerKey = process.env.STACK_SECRET_SERVER_KEY ?? "";
@@ -15,7 +12,10 @@ const jwks = createRemoteJWKSet(
   ),
 );
 
-const verifyJwt = async (token: string): Promise<string | undefined> => {
+const verifyJwt = async (
+  token: string,
+  log: Logger,
+): Promise<string | undefined> => {
   try {
     const { payload } = await jwtVerify(token, jwks);
     return payload.sub;
@@ -24,7 +24,10 @@ const verifyJwt = async (token: string): Promise<string | undefined> => {
   }
 };
 
-const checkApiKey = async (key: string): Promise<string | undefined> => {
+const checkApiKey = async (
+  key: string,
+  log: Logger,
+): Promise<string | undefined> => {
   const res = await fetch(
     "https://api.stack-auth.com/api/v1/user-api-keys/check",
     {
@@ -48,8 +51,10 @@ export const authServiceStackAuth = new Elysia({
   name: "authenticate-user-stack-auth",
 })
   .use(bearer())
-  .resolve(async ({ bearer: apiKey, headers }) => {
-    const jwt = headers["x-stack-access-token"] as string | undefined;
+  .resolve(async (ctx) => {
+    const jwt = ctx.headers["x-stack-access-token"] as string | undefined;
+    const apiKey = ctx.bearer;
+    const log = ctx.log;
 
     if (apiKey && jwt)
       throw status(
@@ -57,8 +62,8 @@ export const authServiceStackAuth = new Elysia({
         "Provide exactly one credential: Bearer API Key or JWT Header",
       );
 
-    if (apiKey) return { userId: await checkApiKey(apiKey) } as const;
-    if (jwt) return { userId: await verifyJwt(jwt) } as const;
+    if (apiKey) return { userId: await checkApiKey(apiKey, log) } as const;
+    if (jwt) return { userId: await verifyJwt(jwt, log) } as const;
 
     log.info("No credentials provided");
     return { userId: undefined } as const;
