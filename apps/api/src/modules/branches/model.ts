@@ -2,19 +2,19 @@ import { t } from "elysia";
 
 import { branches } from "@hebo/db/schema/branches";
 
-import * as AgentsModel from "~api/modules/agents/model";
+import { AgentPathParam } from "~api/modules/common/model";
 import {
   createSchemaFactory,
   AUDIT_FIELDS,
   ID_FIELDS,
 } from "~api/utils/schema-factory";
 
-const { createInsertSchema, createUpdateSchema, createSelectSchema } =
-  createSchemaFactory({ typeboxInstance: t });
+const { createInsertSchema, createUpdateSchema } = createSchemaFactory({
+  typeboxInstance: t,
+});
 
 const _createBranch = createInsertSchema(branches);
 const _updateBranch = createUpdateSchema(branches);
-const _selectBranch = createSelectSchema(branches);
 
 const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS, "agentId"] as const;
 
@@ -25,12 +25,10 @@ export type CreateBody = typeof CreateBody.static;
 export const UpdateBody = t.Omit(_updateBranch, [...OMIT_FIELDS, "slug"]);
 export type UpdateBody = typeof UpdateBody.static;
 
-export const Branch = t.Omit(_selectBranch, [...OMIT_FIELDS]);
-
-export const BranchList = t.Array(Branch);
+export { Branch, BranchList } from "~api/modules/common/model";
 
 export const PathParams = t.Object({
-  ...AgentsModel.PathParam.properties,
+  ...AgentPathParam.properties,
   branchSlug: _createBranch.properties.slug,
 });
 

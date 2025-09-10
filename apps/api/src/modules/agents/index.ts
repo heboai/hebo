@@ -26,7 +26,6 @@ export const agentsModule = new Elysia({
       },
     },
   )
-  // FUTURE: include the 'expand' option
   .get(
     "/",
     async ({ set, userId }) => {
@@ -39,17 +38,22 @@ export const agentsModule = new Elysia({
   // FUTURE: include the 'expand' option
   .get(
     "/:agentSlug",
-    async ({ params, set, userId }) => {
+    async ({ query, params, set, userId }) => {
       const agent = await AgentService.getAgentBySlug(
         params.agentSlug,
         userId!,
+        query.expand,
       );
       set.status = 200;
       return agent;
     },
     {
+      query: AgentsModel.QueryParam,
       params: AgentsModel.PathParam,
-      response: { 200: AgentsModel.Agent, 404: AgentsModel.NotFound },
+      response: {
+        200: AgentsModel.AgentWithBranches,
+        404: AgentsModel.NotFound,
+      },
     },
   )
   .put(

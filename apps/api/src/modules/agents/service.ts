@@ -43,7 +43,7 @@ export const AgentService = {
     return agentList;
   },
 
-  async getAgentBySlug(agentSlug: string, userId: string) {
+  async getAgentBySlug(agentSlug: string, userId: string, expand?: "branches") {
     const agentsRepo = withAudit(agents, { userId });
     const [agent] = await agentsRepo.select(
       getDb(),
@@ -52,6 +52,13 @@ export const AgentService = {
 
     if (!agent) {
       throw status(404, AgentsModel.NotFound.const);
+    }
+
+    if (expand === "branches") {
+      return {
+        ...agent,
+        branches: await BranchService.listBranches(agent.id, userId),
+      };
     }
     return agent;
   },

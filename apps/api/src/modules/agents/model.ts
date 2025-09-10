@@ -3,6 +3,7 @@ import { t } from "elysia";
 import { agents } from "@hebo/db/schema/agents";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
+import { BranchList } from "~api/modules/common/model";
 import {
   createSchemaFactory,
   AUDIT_FIELDS,
@@ -37,12 +38,23 @@ export type UpdateBody = typeof UpdateBody.static;
 
 export const Agent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
 
+export const AgentWithBranches = t.Intersect([
+  Agent,
+  t.Object({
+    branches: t.Optional(BranchList),
+  }),
+]);
+
 export const AgentList = t.Array(Agent);
 
 export const NoContent = t.Void();
 
 export const PathParam = t.Object({
   agentSlug: _createAgent.properties.slug,
+});
+
+export const QueryParam = t.Object({
+  expand: t.Optional(t.Literal("branches")),
 });
 
 // Error DTOs

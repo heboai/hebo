@@ -25,6 +25,8 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
     PORT: "3002",
     STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
     VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
+    GROQ_API_KEY: secrets.groqApiKey.value,
+    VOYAGE_API_KEY: secrets.voyageApiKey.value,
   },
   loadBalancer: {
     domain: gatewayDomain,
