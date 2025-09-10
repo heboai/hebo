@@ -1,4 +1,5 @@
 import { Chat } from "@hebo/aikit-ui/blocks/Chat";
+import { fetchConfig } from "~console/lib/fetch-config";
 
 type Branch = {
   models?: Array<{
@@ -25,5 +26,5 @@ export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
     })),
   };
 
-  return <Chat modelsConfig={modelsConfig} />;
+  return <Chat modelsConfig={modelsConfig} fetchConfig={fetchConfig} />;
 }

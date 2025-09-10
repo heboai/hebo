@@ -41,7 +41,17 @@ type ModelsConfig = {
   }>;
 };
 
-export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
+export type FetchHeadersConfig = {
+  headers?: (path: string, options: RequestInit) => HeadersInit | void;
+};
+
+export function Chat({
+  modelsConfig,
+  fetchConfig,
+}: {
+  modelsConfig: ModelsConfig;
+  fetchConfig?: FetchHeadersConfig;
+}) {
   const [currentModelAlias, setCurrentModelAlias] = useState(
     modelsConfig.models.length > 0 ? modelsConfig.models[0].alias : "",
   );
@@ -61,11 +71,19 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
         baseURL: currentModel.endpoint?.baseUrl || "",
         fetch:
           currentModel.endpoint?.fetch ||
-          ((input: RequestInfo | URL, init?: RequestInit) =>
-            fetch(input, {
+          ((input: RequestInfo | URL, init?: RequestInit) => {
+            const extraHeaders = fetchConfig?.headers?.(
+              typeof input === "string" ? input : String(input),
+              init ?? {},
+            );
+            const headers = new Headers(init?.headers ?? {});
+            if (extraHeaders)
+              for (const [k, v] of new Headers(extraHeaders).entries()) headers.set(k, v);
+            return fetch(input, {
               ...init,
-              credentials: "include",
-            })),
+              headers,
+            });
+          }),
       })
     : undefined;
 

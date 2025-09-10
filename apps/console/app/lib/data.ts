@@ -1,8 +1,8 @@
 import { treaty } from "@elysiajs/eden";
 import ky, { HTTPError } from "ky";
 
-import { authService } from "~console/lib/auth";
 import { isDevLocal } from "~console/lib/env";
+import { fetchConfig } from "~console/lib/fetch-config";
 
 import type { Api } from "~api";
 
@@ -43,14 +43,7 @@ export const kyFetch = ky.extend({
 });
 
 export const api = treaty<Api>(url, {
-  async fetcher(requestUrl, init) {
-    const token = await authService.getAccessToken();
-    const headers = new Headers(init?.headers ?? {});
-    if (token) headers.set("x-stack-access-token", token);
-    return fetch(requestUrl, { ...init, headers });
-  },
+  headers: fetchConfig.headers,
   // Automatic retries, timeouts & error throwing
   fetcher: kyFetch,
-  // Pass the JWT token to api calls
-  fetch: { credentials: "include" },
 }).v1;

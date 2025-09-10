@@ -1,7 +1,7 @@
 export interface AuthService {
   ensureSignedIn(): Promise<void>;
   generateApiKey(): Promise<string>;
-  getAccessToken(): Promise<string | undefined>;
+  getAccessToken(): string | undefined;
 }
 
 export type User = {
