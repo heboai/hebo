@@ -1,14 +1,13 @@
+import heboCluster from "./cluster";
 import heboDatabase from "./db";
 import { getDomain } from "./dns";
 import * as secrets from "./secrets";
-import { heboVpc } from "./vpc";
 
 const isProd = $app.stage === "production";
 const apiDomain = await getDomain("api");
-const cluster = new sst.aws.Cluster("HeboApiCluster", { vpc: heboVpc });
 
 const heboApiService = new sst.aws.Service("HeboApiService", {
-  cluster,
+  cluster: heboCluster,
   architecture: "arm64",
   image: {
     context: ".",
