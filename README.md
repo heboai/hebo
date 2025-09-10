@@ -94,7 +94,7 @@ bun run -F @hebo/db clean
 > - If `VITE_API_URL` is **empty or undefined** (mode #1), the UI runs offline and mocks network via dev proxy.
 > - For modes #2 and #3, the values are filled automatically (`http://localhost:3001` by `bun run dev`, or the real service URLs by `bun run sst deploy`).
 >
-> Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `...` [TBD].
+> Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `apps/console/app/lib/env.ts`.
 
 ### Building
 
