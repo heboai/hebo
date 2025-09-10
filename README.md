@@ -85,14 +85,14 @@ bun run -F @hebo/db clean
 | --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
 | 1   | **Frontend-only** (offline) | `bun run -F @hebo/console dev` | —                              | none – UI relies on local state manager |
 | 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | http://localhost:3001                   |
-| 3   | **Remote full-stack**       | `bun run sst deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
+| 3   | **Remote full-stack**       | `bun run sst deploy`               | Aurora PostgreSQL              | HTTPS URLs injected by SST              |
 
-> **How the UI knows if the API is present**
+> **How the UI knows if the API/Gateway are present**
 >
-> The web app reads `VITE_API_URL` at runtime:
+> The web app reads `VITE_API_URL` and `VITE_GATEWAY_URL` at runtime:
 >
-> - If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
-> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun run dev`, or the real API Gateway URL by `bun run sst deploy`).
+> - If `VITE_API_URL` is **empty or undefined** (mode #1), the UI runs offline and mocks network via dev proxy.
+> - For modes #2 and #3, the values are filled automatically (`http://localhost:3001` by `bun run dev`, or the real service URLs by `bun run sst deploy`).
 >
 > Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `...` [TBD].
 
@@ -130,11 +130,20 @@ For deployments, we utilize the SST framework (https://sst.dev/).
 # Install providers
 bun run sst:synth
 
-# Set secrets
+# Set secrets (required)
 
+# Auth
+bun run sst secret set StackProjectId '<project-id>' --stage <stage>
+bun run sst secret set StackSecretServerKey '<server-key>' --stage <stage>
+bun run sst secret set StackPublishableClientKey '<publishable-key>' --stage <stage>
+
+# Database
 bun run sst secret set DbUsername '<username>' --stage <stage>
 bun run sst secret set DbPassword '<password>' --stage <stage>
-...
+
+# LLMs (optional)
+bun run sst secret set GroqApiKey '<key>' --stage <stage>
+bun run sst secret set VoyageApiKey '<key>' --stage <stage>
 
 # Deploy a preview link
 bun run sst deploy --stage PR-XX
@@ -145,3 +154,9 @@ bun run sst remove --stage PR-XX
 # Deploy to production
 bun run sst deploy --stage production
 ```
+
+#### Service URLs
+
+- API: `https://api.hebo.ai` (prod) or `https://<stage>.dev.api.hebo.ai` (preview)
+- Gateway: `https://gateway.hebo.ai` (prod) or `https://<stage>.dev.gateway.hebo.ai` (preview)
+- Console: `https://console.hebo.ai` (prod) or `https://<stage>.dev.console.hebo.ai` (preview)

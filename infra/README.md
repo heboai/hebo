@@ -8,8 +8,8 @@ The infrastructure consists of several key components:
 
 - **VPC**: Network isolation and security
 - **Database**: Aurora PostgreSQL with global clustering
-- **API**: Containerized API deployed on AWS App Runner
-- **Gateway**: Containerized Gateway deployed on AWS App Runner
+- **API**: ECS service (sst.aws.Service) on shared Cluster behind ALB
+- **Gateway**: ECS service (sst.aws.Service) on shared Cluster behind ALB
 - **Console**: Static site (React Router) via SST StaticSite (S3 + CloudFront)
 
 ## Infrastructure Components
@@ -18,48 +18,62 @@ The infrastructure consists of several key components:
 
 The Virtual Private Cloud provides network isolation and security for all resources:
 
-- **Production**: Standard VPC configuration
-- **Preview**: Includes bastion host and NAT gateway for troubleshooting access from local
+- **NAT**: EC2-managed NAT gateways
+- **Bastion**: Enabled for non-production stages for troubleshooting access
 
 ### Database (`stacks/db.ts`)
 
 Aurora PostgreSQL database with advanced features:
 
-- **Engine**: PostgreSQL 17.x
+- **Engine**: PostgreSQL 17.X
 - **Global Clustering**: Multi-region replication for production
 - **Scaling**:
   - Production: Aurora Serverless v2 with 1 replica
   - Preview: Auto-scaling with pause after 20 minutes of inactivity
 - **Security**: Encrypted storage and proxy connection
 - **Credentials**: Managed through SST secrets
+- **Migrator**: Lambda function runs migrations automatically on deploy (non-dev)
 
 ### API (`stacks/api.ts`)
 
-Containerized API deployed on AWS App Runner:
+ECS service (sst.aws.Service) running on a shared Cluster behind an ALB:
 
-- **Container**: Docker image from ECR
-- **Runtime**: Bun 1.x with ElysiaJS 1.x framework
-- **Port**: 3001 (configurable)
-- **VPC Integration**: Connected to database through VPC connector
-- **Auto-deployment**: Disabled for manual control
+- **Runtime**: Bun 1.x + ElysiaJS 1.x
+- **Domain**: `api.hebo.ai` in production; `{stage}.dev.api.hebo.ai` in previews
 
 ### Gateway (`stacks/gateway.ts`)
 
-Containerized Gateway deployed on AWS App Runner:
+ECS service (sst.aws.Service) running on the same Cluster behind an ALB:
 
-- **Container**: Docker image from ECR
-- **Runtime**: Bun 1.x with ElysiaJS 1.x framework
-- **Port**: 3002 (configurable)
-- **VPC Integration**: Connected to database through VPC connector
-- **Auto-deployment**: Disabled for manual control
+- **Runtime**: Bun 1.x + ElysiaJS 1.x
+- **Port**: 3002
+- **Domain**: `gateway.hebo.ai` in production; `{stage}.dev.gateway.hebo.ai` in previews
 
 ### Console (`stacks/console.ts`)
 
 - **Framework**: React Router
 - **Domain**:
   - Production: `console.hebo.ai`
-  - Preview: `{stage}.console.hebo.ai`
-- **Environment**: Connected to API and external services
+  - Preview: `{stage}.dev.console.hebo.ai`
+
+### DNS (`stacks/dns.ts`)
+
+- **Hosted Zone**: Ensures Route53 zone `hebo.ai` exists (creates if missing)
+- **Domain pattern**:
+  - Production: `{app}.hebo.ai`
+  - Preview: `{stage}.dev.{app}.hebo.ai`
+
+### Secrets (`stacks/secrets.ts`)
+
+Required SST secrets:
+
+- `StackProjectId`
+- `StackSecretServerKey`
+- `StackPublishableClientKey`
+- `DbUsername`
+- `DbPassword`
+- `GroqApiKey`
+- `VoyageApiKey`
 
 ## Deployment
 
@@ -95,22 +109,13 @@ bun run sst deploy --stage production
 ## Monitoring and Scaling
 
 - **Database**: Aurora Serverless v2 with automatic scaling
-- **API**: App Runner with automatic scaling based on load
-- **Gateway**: App Runner with automatic scaling based on load
+- **API/Gateway**: ECS services behind ALB with desired count scaling
 - **Console**: CDN-cached static site (CloudFront) for global performance
 
 ### Logs and Debugging
 
-```bash
-# View App Runner logs
-aws apprunner describe-service --service-arn <service-arn>
-
-# List operations and recent deployments
-aws apprunner list-operations --service-arn <service-arn>
-
-# Check database status
-aws rds describe-db-clusters --db-cluster-identifier <cluster-id>
-```
+- **API/Gateway**: View service logs in CloudWatch Logs for `HeboApiService` and `HeboGatewayService`. Monitor ALB metrics (4xx/5xx) in CloudWatch.
+- **Database**: Check RDS/Aurora cluster status and logs in the AWS Console or via `aws rds` CLI.
 
 ## Cost Optimization
 
