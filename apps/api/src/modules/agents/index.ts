@@ -35,7 +35,6 @@ export const agentsModule = new Elysia({
     },
     { response: AgentsModel.AgentList },
   )
-  // FUTURE: include the 'expand' option
   .get(
     "/:agentSlug",
     async ({ query, params, set, userId }) => {
