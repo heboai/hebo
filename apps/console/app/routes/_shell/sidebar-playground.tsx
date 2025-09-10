@@ -21,7 +21,7 @@ export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
     models: (activeBranch?.models ?? []).map((model) => ({
       ...model,
       endpoint: {
-        baseUrl: `${gatewayBaseUrl}/v1`,
+        baseUrl: new URL("v1", gatewayBaseUrl).toString(),
       },
     })),
   };
