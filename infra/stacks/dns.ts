@@ -14,9 +14,9 @@ const createZoneIfNotExists = async (zoneName: string) => {
   return zoneName;
 };
 
-export const getDomain = async (service: string) => {
+export const getDomain = async (appName: string) => {
   const zoneName = await createZoneIfNotExists(ZONE_NAME);
   return $app.stage === "production"
-    ? `${service}.${zoneName}`
-    : `${$app.stage}.dev.${service}.${zoneName}`;
+    ? `${appName}.${zoneName}`
+    : `${$app.stage}.dev.${appName}.${zoneName}`;
 };
