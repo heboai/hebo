@@ -1,14 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../../.sst/platform/config.d.ts" />
-
 import heboDatabase from "./db";
+import { getDomain } from "./dns";
 import * as secrets from "./secrets";
 import { heboVpc } from "./vpc";
 
 const isProd = $app.stage === "production";
-const dockerTag = isProd ? "latest" : `${$app.stage}`;
-const apiTag = `api-${dockerTag}`;
-const apiDomainName = isProd ? "api.hebo.ai" : `${$app.stage}.api.hebo.ai`;
+const apiDomain = await getDomain("api");
 const cluster = new sst.aws.Cluster("HeboApiCluster", { vpc: heboVpc });
 
 const heboApiService = new sst.aws.Service("HeboApiService", {
@@ -17,7 +13,7 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
   image: {
     context: ".",
     dockerfile: "infra/stacks/docker/Dockerfile.api",
-    tags: [apiTag],
+    tags: [apiDomain],
   },
   environment: {
     LOG_LEVEL: isProd ? "info" : "debug",
@@ -33,7 +29,7 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
     VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
   },
   loadBalancer: {
-    domain: apiDomainName,
+    domain: apiDomain,
     rules: [
       { listen: "80/http", redirect: "443/https" },
       { listen: "443/https", forward: "3001/http" },

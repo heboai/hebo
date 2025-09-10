@@ -1,16 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../../.sst/platform/config.d.ts" />
-
 import heboDatabase from "./db";
+import { getDomain } from "./dns";
 import * as secrets from "./secrets";
 import { heboVpc } from "./vpc";
 
 const isProd = $app.stage === "production";
-const dockerTag = isProd ? "latest" : `${$app.stage}`;
-const gatewayTag = `gateway-${dockerTag}`;
-const gatewayDomainName = isProd
-  ? "gateway.hebo.ai"
-  : `${$app.stage}.gateway.hebo.ai`;
+const gatewayDomain = await getDomain("gateway");
 const cluster = new sst.aws.Cluster("HeboGatewayCluster", { vpc: heboVpc });
 
 const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
@@ -19,7 +13,7 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
   image: {
     context: ".",
     dockerfile: "infra/stacks/docker/Dockerfile.gateway",
-    tags: [gatewayTag],
+    tags: [gatewayDomain],
   },
   environment: {
     LOG_LEVEL: isProd ? "info" : "debug",
@@ -35,7 +29,7 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
     VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
   },
   loadBalancer: {
-    domain: gatewayDomainName,
+    domain: gatewayDomain,
     rules: [
       { listen: "80/http", redirect: "443/https" },
       { listen: "443/https", forward: "3002/http" },
