@@ -2,9 +2,15 @@ const ZONE_NAME = "hebo.ai";
 
 const createZoneIfNotExists = async (zoneName: string) => {
   (await aws.route53.getZone({ name: zoneName })) ||
-    new aws.route53.Zone("HeboZone", {
-      name: zoneName,
-    });
+    new aws.route53.Zone(
+      "HeboZone",
+      {
+        name: zoneName,
+      },
+      {
+        retainOnDelete: true,
+      },
+    );
   return zoneName;
 };
 
