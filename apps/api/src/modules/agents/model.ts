@@ -56,6 +56,7 @@ export const PathParam = t.Object({
 export const QueryParam = t.Object({
   expand: t.Optional(t.Literal("branches")),
 });
+export type AgentExpand = (typeof QueryParam.static)["expand"];
 
 // Error DTOs
 export const InvalidModel = t.Literal("Invalid model name");

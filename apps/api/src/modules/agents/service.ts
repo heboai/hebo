@@ -43,7 +43,11 @@ export const AgentService = {
     return agentList;
   },
 
-  async getAgentBySlug(agentSlug: string, userId: string, expand?: "branches") {
+  async getAgentBySlug(
+    agentSlug: string,
+    userId: string,
+    expand?: AgentsModel.AgentExpand,
+  ) {
     const agentsRepo = withAudit(agents, { userId });
     const [agent] = await agentsRepo.select(
       getDb(),
