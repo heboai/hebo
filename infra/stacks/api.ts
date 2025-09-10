@@ -5,6 +5,7 @@ import * as secrets from "./secrets";
 
 const isProd = $app.stage === "production";
 const apiDomain = await getDomain("api");
+const apiPort = "3001";
 
 const heboApiService = new sst.aws.Service("HeboApiService", {
   cluster: heboCluster,
@@ -22,7 +23,7 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
     PG_PASSWORD: secrets.dbPassword.value,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
     PG_USER: heboDatabase.username,
-    PORT: "3001",
+    PORT: apiPort,
     STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
     VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
   },
@@ -30,7 +31,7 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
     domain: apiDomain,
     rules: [
       { listen: "80/http", redirect: "443/https" },
-      { listen: "443/https", forward: "3001/http" },
+      { listen: "443/https", forward: `${apiPort}/http` },
     ],
   },
   scaling: {
