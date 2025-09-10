@@ -141,7 +141,7 @@ bun run sst secret set StackPublishableClientKey '<publishable-key>' --stage <st
 bun run sst secret set DbUsername '<username>' --stage <stage>
 bun run sst secret set DbPassword '<password>' --stage <stage>
 
-# LLMs (optional)
+# LLMs
 bun run sst secret set GroqApiKey '<key>' --stage <stage>
 bun run sst secret set VoyageApiKey '<key>' --stage <stage>
 
