@@ -42,7 +42,7 @@ type ModelsConfig = {
 };
 
 export type FetchHeadersConfig = {
-  headers?: (path: string, options: RequestInit) => HeadersInit | void;
+  headers?: (path: string, options?: RequestInit) => HeadersInit | void;
 };
 
 export function Chat({
@@ -78,7 +78,8 @@ export function Chat({
             );
             const headers = new Headers(init?.headers ?? {});
             if (extraHeaders)
-              for (const [k, v] of new Headers(extraHeaders).entries()) headers.set(k, v);
+              for (const [k, v] of new Headers(extraHeaders).entries())
+                headers.set(k, v);
             return fetch(input, {
               ...init,
               headers,
