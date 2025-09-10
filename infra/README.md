@@ -27,11 +27,6 @@ Aurora PostgreSQL database with advanced features:
 
 - **Engine**: PostgreSQL 17.X
 - **Global Clustering**: Multi-region replication for production
-- **Scaling**:
-  - Production: Aurora Serverless v2 with 1 replica
-  - Preview: Auto-scaling with pause after 20 minutes of inactivity
-- **Security**: Encrypted storage and proxy connection
-- **Credentials**: Managed through SST secrets
 - **Migrator**: Lambda function runs migrations automatically on deploy (non-dev)
 
 ### API (`stacks/api.ts`)
@@ -46,15 +41,11 @@ ECS service (sst.aws.Service) running on a shared Cluster behind an ALB:
 ECS service (sst.aws.Service) running on the same Cluster behind an ALB:
 
 - **Runtime**: Bun 1.x + ElysiaJS 1.x
-- **Port**: 3002
 - **Domain**: `gateway.hebo.ai` in production; `{stage}.dev.gateway.hebo.ai` in previews
 
 ### Console (`stacks/console.ts`)
 
 - **Framework**: React Router
-- **Domain**:
-  - Production: `console.hebo.ai`
-  - Preview: `{stage}.dev.console.hebo.ai`
 
 ### DNS (`stacks/dns.ts`)
 
