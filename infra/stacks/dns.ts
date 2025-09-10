@@ -1,4 +1,5 @@
 const ZONE_NAME = "hebo.ai";
+const DEV = "dev";
 
 const createZoneIfNotExists = async (zoneName: string) => {
   try {
@@ -22,5 +23,5 @@ export const getDomain = async (appName: string) => {
   const zoneName = await createZoneIfNotExists(ZONE_NAME);
   return $app.stage === "production"
     ? `${appName}.${zoneName}`
-    : `${$app.stage}.dev.${appName}.${zoneName}`;
+    : `${$app.stage}.${DEV}.${appName}.${zoneName}`;
 };
