@@ -22,7 +22,6 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
     PG_PASSWORD: secrets.dbPassword.value,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
     PG_USER: heboDatabase.username,
-    PGSSLMODE: "require",
     PORT: "3001",
     STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
     VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
