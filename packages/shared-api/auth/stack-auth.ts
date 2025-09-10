@@ -54,7 +54,7 @@ export const authServiceStackAuth = new Elysia({
   .resolve(async (ctx) => {
     const jwt = ctx.headers["x-stack-access-token"] as string | undefined;
     const apiKey = ctx.bearer;
-    const log = ctx.log;
+    const log = (ctx as unknown as { log: Logger }).log;
 
     if (apiKey && jwt)
       throw status(
