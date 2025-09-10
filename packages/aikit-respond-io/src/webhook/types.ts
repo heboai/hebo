@@ -1,10 +1,28 @@
 // packages/aikit-respond-io/src/webhook/types.ts
-export enum RespondIoEvents {
+export enum WebhookEvents {
   MessageReceived = "message.received",
   MessageSent = "message.sent",
   ContactAssigneeUpdated = "contact.assignee.updated",
   ConversationClosed = "conversation.closed",
 }
+
+export interface WebhookEventConfig {
+  signingKey: string;
+}
+
+export interface WebhookConfig {
+  /**
+   * A map of event types to their corresponding configurations.
+   */
+  events: Partial<Record<WebhookEvents, WebhookEventConfig>>;
+}
+
+export type EventPayloadMap = {
+  [WebhookEvents.MessageReceived]: MessageReceivedPayload;
+  [WebhookEvents.MessageSent]: MessageSentPayload;
+  [WebhookEvents.ContactAssigneeUpdated]: ContactAssigneeUpdatedPayload;
+  [WebhookEvents.ConversationClosed]: ConversationClosedPayload;
+};
 
 export type WebhookPayload =
   | MessageReceivedPayload
@@ -12,13 +30,11 @@ export type WebhookPayload =
   | ContactAssigneeUpdatedPayload
   | ConversationClosedPayload;
 
-export type EventHandler = (payload: WebhookPayload) => void | Promise<void>;
-export type ErrorHandler = (error: Error) => void | Promise<void>;
+export type EventHandler<T extends WebhookPayload = WebhookPayload> = (
+  payload: T,
+) => void | Promise<void>;
 
-export interface HandlerConfig {
-  signingKey: string;
-  callback: EventHandler;
-}
+export type ErrorHandler = (error: Error) => void | Promise<void>;
 
 // --- Common Base Interfaces ---
 
