@@ -35,44 +35,61 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   const formData = await request.formData();
   const action = String(formData.get("intent") || formData.get("_action") || "");
 
-  let alias = "";
-  let modelType = "";
-
   if (action === "remove") {
-    alias = String(formData.get("alias") ?? "");
+    const alias = String(formData.get("alias"));
     if (!alias.trim()) {
       return { error: "Alias is required to remove a model" };
     }
+
+    // Prevent deletion of default model
+    if (alias === "default") {
+      return { error: "Cannot delete default model" };
+    }
+
+    try {
+      // Get the current branch data from the loader
+      const { agent } = (await import("react-router").then(m => m.useRouteLoaderData("routes/_shell.agent.$agentSlug"))) as { agent: any };
+      const activeBranch = agent?.branches?.find((b: any) => b.slug === params.branchSlug);
+      const currentModels = activeBranch?.models;
+
+      // Remove the model from the models array
+      const updatedModels = currentModels.filter((m: any) => m.alias !== alias);
+
+      // Update the entire branch with the new models JSON via Eden treaty
+      const { error: putError } = await api.agents({ agentSlug: params.agentSlug! })
+        .branches({ branchSlug: params.branchSlug! })
+        .put({ models: updatedModels });
+
+      if (putError) {
+        return { error: String(putError.value) };
+      }
+
+      return { success: true, message: "Model configuration removed successfully" };
+    } catch (error) {
+      console.error("Error removing model config:", error);
+      return { error: "An unexpected error occurred while removing model" };
+    }
   } else {
+    // Handle add/update actions with proper submissions API
     const submission = parseWithValibot(formData, { schema: BranchConfigSchema });
+    
     if (submission.status !== "success") {
       return submission.reply();
     }
-    alias = String(submission.value.alias);
-    modelType = String(submission.value.modelType);
-  }
 
-  try {
-    // Get the current branch data from the loader
-    const { agent } = (await import("react-router").then(m => m.useRouteLoaderData("routes/_shell.agent.$agentSlug"))) as { agent: any };
-    const activeBranch = agent?.branches?.find((b: any) => b.slug === params.branchSlug);
-    const currentModels = activeBranch?.models;
+    const { alias, modelType } = submission.value;
 
-    let updatedModels;
+    try {
+      // Get the current branch data from the loader
+      const { agent } = (await import("react-router").then(m => m.useRouteLoaderData("routes/_shell.agent.$agentSlug"))) as { agent: any };
+      const activeBranch = agent?.branches?.find((b: any) => b.slug === params.branchSlug);
+      const currentModels = activeBranch?.models;
 
-    if (action === "remove") {
-      // Remove the model from the models array
-      updatedModels = currentModels.filter((m: any) => m.alias !== alias);
-      
-      // Prevent deletion of default model
-      if (alias === "default") {
-        return { error: "Cannot delete default model" };
-      }
-    } else {
       // Update or add the model in the models array
       const modelIndex = currentModels.findIndex((m: any) => m.alias === alias);
       const updatedModel = { alias, type: modelType };
       
+      let updatedModels;
       if (modelIndex === -1) {
         // Add new model
         updatedModels = [...currentModels, updatedModel];
@@ -82,25 +99,25 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
           index === modelIndex ? updatedModel : m
         );
       }
+
+      // Update the entire branch with the new models JSON via Eden treaty
+      const { error: putError } = await api.agents({ agentSlug: params.agentSlug! })
+        .branches({ branchSlug: params.branchSlug! })
+        .put({ models: updatedModels });
+
+      if (putError) {
+        return submission.reply({ 
+          formErrors: [String(putError.value)] 
+        });
+      }
+
+      return { success: true, message: "Model configuration updated successfully" };
+    } catch (error) {
+      console.error("Error updating model config:", error);
+      return submission.reply({ 
+        formErrors: ["An unexpected error occurred while updating model configuration"] 
+      });
     }
-
-    // Update the entire branch with the new models JSON via Eden treaty
-    const { error: putError } = await api.agents({ agentSlug: params.agentSlug! })
-      .branches({ branchSlug: params.branchSlug! })
-      .put({ models: updatedModels });
-
-    if (putError) {
-      return { error: putError.value?.toString() || "Failed to update model configuration" };
-    }
-
-    const successMessage = action === "remove" 
-      ? "Model configuration removed successfully" 
-      : "Model configuration updated successfully";
-
-    return { success: true, message: successMessage };
-  } catch (error) {
-    console.error("Error updating model config:", error);
-    return { error: "An unexpected error occurred" };
   }
 }
 
