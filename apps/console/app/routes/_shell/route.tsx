@@ -1,5 +1,5 @@
 import { XCircle, SquareChevronRight } from "lucide-react";
-import { Outlet, useRouteLoaderData, useParams } from "react-router";
+import { Outlet, useRouteLoaderData } from "react-router";
 import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
 
@@ -43,8 +43,8 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
   const { user } = useSnapshot(authStore);
   const { agent: activeAgent = null } = useRouteLoaderData("routes/_shell.agent.$agentSlug") ?? {};
-  const { branchSlug } = useParams<{ branchSlug?: string }>();
-  const activeBranch = activeAgent?.branches?.find((b: any) => b.slug === branchSlug) ?? activeAgent?.branches?.[0];
+  // Branch selection: until multi-branch is supported, always use first ("main")
+  const activeBranch = activeAgent?.branches?.[0];
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
