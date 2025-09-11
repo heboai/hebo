@@ -13,7 +13,7 @@ import { BranchModelForm, clientAction } from "./form";
 import { RailSymbol } from "lucide-react";
 
 import type { Route } from "./+types/route";
-import type { Agent } from "./+types/agent";
+
 
 const getModelDisplayName = (modelName: string): string => {
   if (modelName === "custom") {
@@ -30,7 +30,13 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
   const [newFormIds, setNewFormIds] = useState<string[]>([]);
 
-  const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug") as { agent: Agent };
+  const { agent } = useRouteLoaderData<{
+    agent: {
+      branches: Array<{
+        models: Array<{ alias: string; type: string }>;
+      }>;
+    };
+  }>("routes/_shell.agent.$agentSlug")!;
   const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
   const activeBranch = agent.branches[0];
   const models: Array<{ alias: string; type: string }> = activeBranch.models;
@@ -69,6 +75,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
                   <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
                     <BranchModelForm
                       defaultModel={m}
+                      currentModels={models}
                       supportedModels={supportedModels as { name: string; displayName?: string }[]}
                       onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))}
                     />
@@ -83,6 +90,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
           <Card key={id} className="w-full border-none p-3">
             <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
               <BranchModelForm
+                currentModels={models}
                 supportedModels={supportedModels as { name: string; displayName?: string }[]}
                 onCancel={() => setNewFormIds((prev) => prev.filter((nid) => nid !== id))}
               />
