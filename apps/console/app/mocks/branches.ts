@@ -6,7 +6,7 @@ import { db } from "~console/mocks/db";
 export const branchHandlers = [
   http.post<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
-    async ({ request }) => {
+    async ({ request, params }) => {
       const body = (await request.json()) as ReturnType<
         typeof db.branch.create
       >;
@@ -15,6 +15,7 @@ export const branchHandlers = [
         name: body.name,
         slug: slugify(body.name, { lower: true, strict: true }),
         models: body.models,
+        agentSlug: params.agentSlug, // Add agentSlug to the branch
       };
 
       try {
@@ -32,8 +33,10 @@ export const branchHandlers = [
 
   http.get<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
-    async () => {
-      const branches = db.branch.getAll();
+    async ({ params }) => {
+      const branches = db.branch.findMany({
+        where: { agentSlug: { equals: params.agentSlug } },
+      });
 
       await delay(1000);
       return HttpResponse.json(branches);
@@ -43,14 +46,14 @@ export const branchHandlers = [
   http.get<{ agentSlug: string; branchSlug: string }>(
     "/api/v1/agents/:agentSlug/branches/:branchSlug",
     async ({ params }) => {
-      const agent = db.agent.findFirst({
-        where: { slug: { equals: params.agentSlug } },
+      // Now we can query the branch directly using both agentSlug and branchSlug
+      const branch = db.branch.findFirst({
+        where: {
+          agentSlug: { equals: params.agentSlug },
+          slug: { equals: params.branchSlug },
+        },
       });
-      if (!agent) return new HttpResponse("Agent not found", { status: 404 });
 
-      const branch = agent.branches?.find(
-        (b: any) => b.slug === params.branchSlug,
-      );
       if (!branch) return new HttpResponse("Branch not found", { status: 404 });
 
       await delay(500);
@@ -67,15 +70,14 @@ export const branchHandlers = [
         models?: Array<{ alias: string; type: string; endpoint?: any }>;
       };
 
-      // Find agent and branch
-      const agent = db.agent.findFirst({
-        where: { slug: { equals: params.agentSlug } },
+      // Find branch directly using both agentSlug and branchSlug
+      const branch = db.branch.findFirst({
+        where: {
+          agentSlug: { equals: params.agentSlug },
+          slug: { equals: params.branchSlug },
+        },
       });
-      if (!agent) return new HttpResponse("Agent not found", { status: 404 });
 
-      const branch = agent.branches?.find(
-        (b: any) => b.slug === params.branchSlug,
-      );
       if (!branch) return new HttpResponse("Branch not found", { status: 404 });
 
       // Update branch properties
