@@ -91,7 +91,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           position="top-right"
           icons={{error: <XCircle className="size-4" aria-hidden="true" />}}
         />
-        <div id="main-div" tabIndex={-1} className="min-w-0 flex flex-1 flex-col focus:outline-none gap-4 px-4 sm:px-10 py-12">
+        <div id="main-div" tabIndex={-1} className="min-w-0 flex flex-1 flex-col focus:outline-none gap-4 px-4 sm:px-10 py-10">
           <div className="mx-auto max-w-4xl min-w-0 w-full">
             <Outlet />
           </div>

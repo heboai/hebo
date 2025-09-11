@@ -163,7 +163,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       {/* Conversation area */}
       <Conversation>
         <ConversationContent
-          className="px-0 py-0"
+          className="px-0 pt-0"
           aria-label="Chat conversation"
           tabIndex={-1}
         >
