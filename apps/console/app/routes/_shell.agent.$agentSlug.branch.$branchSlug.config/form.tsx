@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Form, useActionData, useNavigation, useParams, useRouteLoaderData } from "react-router";
+import { Form, useActionData, useNavigation, useParams, useRouteLoaderData, useSearchParams } from "react-router";
 import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 import { object, string, nonEmpty, pipe, trim, message, type InferOutput } from "valibot";
@@ -106,19 +106,34 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 }
 
 export type BranchModelFormProps = {
-  defaultModel?: { alias: string; type: string } | undefined;
   onCancel: () => void;
 };
 
-export function BranchModelForm({ defaultModel, onCancel }: BranchModelFormProps) {
+export function BranchModelForm({ onCancel }: BranchModelFormProps) {
   const actionData = useActionData<any>();
   const navigation = useNavigation();
+  const [searchParams] = useSearchParams();
   useActionDataErrorToast();
 
   const { agent } = useRouteLoaderData<{
     agent: { branches: Array<{ models: Model[] }> };
   }>("routes/_shell.agent.$agentSlug")!;
   const currentModels = agent.branches[0]?.models ?? [];
+
+  // Determine default model internally
+  const getDefaultModel = (): { alias: string; type: string } | undefined => {
+    // Check URL search params for editing context
+    const editAlias = searchParams.get('edit');
+    if (editAlias) {
+      return currentModels.find(model => model.alias === editAlias);
+    }
+    
+    // No default model (creating new)
+    return undefined;
+  };
+
+  const defaultModel = getDefaultModel();
+  const isEditMode = !!defaultModel;
 
   const currentIntent = String(navigation.formData?.get("intent") || "");
   const isSubmitting = navigation.state === "submitting";
@@ -171,15 +186,31 @@ export function BranchModelForm({ defaultModel, onCancel }: BranchModelFormProps
       </CardContent>
 
       <CardFooter className="flex justify-between">
-        <Button type="submit" name="intent" value="remove" variant="destructive" isLoading={isRemoving}>
-          Remove
-        </Button>
+        {isEditMode && (
+          <Button type="submit" name="intent" value="remove" variant="destructive" isLoading={isRemoving}>
+            Remove
+          </Button>
+        )}
+        {!isEditMode && <div />} {/* Spacer for consistent layout */}
         <div className="flex gap-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => {
+              // Clear the edit URL param when canceling
+              const newSearchParams = new URLSearchParams(window.location.search);
+              newSearchParams.delete('edit');
+              const newUrl = newSearchParams.toString() 
+                ? `${window.location.pathname}?${newSearchParams}` 
+                : window.location.pathname;
+              window.history.replaceState({}, '', newUrl);
+              onCancel();
+            }}
+          >
             Cancel
           </Button>
           <Button type="submit" name="intent" value="save" isLoading={isSaving} disabled={!fields.modelType.value}>
-            Save
+            {isEditMode ? 'Update' : 'Save'}
           </Button>
         </div>
       </CardFooter>
@@ -242,7 +273,9 @@ export default function ModelConfigurationForm() {
 
               <CollapsibleContent>
                 <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
-                  <BranchModelForm defaultModel={m} onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))} />
+                  <BranchModelForm 
+                    onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))} 
+                  />
                 </Card>
               </CollapsibleContent>
             </Collapsible>
@@ -268,5 +301,3 @@ export default function ModelConfigurationForm() {
     </div>
   );
 }
-
-
