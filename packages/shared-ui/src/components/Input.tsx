@@ -14,6 +14,7 @@ export function Input({
   copy,
   value,
   className,
+  tabIndex,
   ...props
 }: InputProps) {
   return (
@@ -26,14 +27,9 @@ export function Input({
           focusable="false"
         />
       )}
-      {copy && (
-        <CopyToClipboardButton
-          textToCopy={value?.toString() ?? ""}
-          className="absolute top-1/2 right-2 -translate-y-1/2"
-        />
-      )}
       <ShadCNInput
         value={value}
+        tabIndex={tabIndex}
         className={cn(
           "bg-background text-sm",
           Icon && "pl-9",
@@ -42,6 +38,13 @@ export function Input({
         )}
         {...props}
       />
+      {copy && (
+        <CopyToClipboardButton
+          tabIndex={tabIndex}
+          textToCopy={value?.toString() ?? ""}
+          className="absolute top-1/2 right-2 -translate-y-1/2"
+        />
+      )}
     </div>
   );
 }

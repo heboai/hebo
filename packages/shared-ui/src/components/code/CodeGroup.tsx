@@ -77,7 +77,11 @@ export const CodeGroup = React.forwardRef(function CodeGroup(
         </div>
       </Tabs.List>
       {childArr.map((child, tabIndex: number) => (
-        <Tabs.Content key={tabIndex.toString()} value={tabIndex.toString()}>
+        <Tabs.Content
+          key={tabIndex.toString()}
+          value={tabIndex.toString()}
+          tabIndex={-1}
+        >
           <pre className={styles.code}>
             {
               (

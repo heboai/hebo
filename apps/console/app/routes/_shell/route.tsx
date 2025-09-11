@@ -1,5 +1,5 @@
 import { XCircle, SquareChevronRight } from "lucide-react";
-import { Outlet, useRouteLoaderData } from "react-router";
+import { Outlet, useLocation, useRouteLoaderData } from "react-router";
 import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
 
@@ -26,6 +26,7 @@ import { StaticContent } from "./sidebar-static";
 import { PlaygroundSidebar } from "./sidebar-playground";
 
 import type { Route } from "./+types/route";
+import { useEffect } from "react";
 
 
 async function authMiddleware() {
@@ -49,6 +50,12 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
   const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
+
+  // Focus main element on route change for keyboard nav
+  const location = useLocation();
+  useEffect(() => {
+    document.getElementById("main-div")?.focus();
+  }, [location]);
 
   return (
     <SidebarProvider
@@ -84,7 +91,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           position="top-right"
           icons={{error: <XCircle className="size-4" aria-hidden="true" />}}
         />
-        <div className="min-w-0 flex flex-1 flex-col gap-4 px-4 py-10">
+        <div id="main-div" tabIndex={-1} className="min-w-0 flex flex-1 flex-col focus:outline-none gap-4 px-4 py-10">
           <div className="mx-auto max-w-4xl min-w-0 w-full">
             <Outlet />
           </div>
@@ -110,11 +117,11 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
               <SquareChevronRight size={16} />
               <span>Playground</span>
               <span className="text-muted-foreground">
-                {kbs("P")}
+                {kbs("cmd+P")}
               </span>
             </div>} 
           />
-        <Sidebar side="right" collapsible="offcanvas">
+        <Sidebar side="right" collapsible="offcanvas" className="data-[state=collapsed]:[inert]">
           <SidebarContent>
             <PlaygroundSidebar activeBranch={activeAgent?.branches?.[0]} />
           </SidebarContent>

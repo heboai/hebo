@@ -1,14 +1,14 @@
 import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
 
-import { Button } from "@hebo/shared-ui/components/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@hebo/shared-ui/components/DropdownMenu";
 import {
@@ -18,6 +18,7 @@ import {
 } from "@hebo/shared-ui/components/Sidebar";
 
 import { AgentLogo } from "~console/components/ui/AgentLogo";
+import { kbs } from "~console/lib/utils";
 
 type Agent = {
   name: string,
@@ -32,8 +33,23 @@ export function AgentSelect({
   agents: Agent[],
 }) {
 
-  // Dropdown open or closed
+  // Dropdown open / closed
   const [open, setOpen] = useState(false);
+
+  // Keyboard shortcuts
+  // FUTURE: generalize to useKeyboardShortcut
+  const navigate = useNavigate();
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "o") {
+        e.preventDefault();
+        navigate("/agent/create", { viewTransition: true });
+      }
+    };
+
+    document.addEventListener("keydown", handleGlobalKeyDown);
+    return () => document.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
   return (
     <SidebarMenu>
@@ -62,37 +78,35 @@ export function AgentSelect({
             side="bottom"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 py-1 pl-2 text-sm">
-                <div className="text-sidebar-primary-foreground flex aspect-square size-6 items-center justify-center rounded-lg">
-                  <AgentLogo size={24} />
+            <div className="flex items-center justify-between gap-2 py-1">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex items-center gap-2">
+                  <div className="aspect-square size-6 rounded-lg">
+                    <AgentLogo size={24} />
+                  </div>
+                  <div className="grid flex-1 text-left leading-tight">
+                    <span className="truncate text-base font-medium">
+                      {activeAgent?.name ?? "hebo.ai"}
+                    </span>
+                  </div>
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate text-base font-medium">
-                    {activeAgent?.name ?? "hebo.ai"}
-                  </span>
-                </div>
-                {activeAgent && (
-                  <Button
-                    variant="ghost"
-                    asChild
-                    onClick={() => setOpen(false)}
+              </DropdownMenuLabel>
+              {activeAgent && (
+                <DropdownMenuItem asChild className="p-2 ml-2">
+                  <Link
+                    to={`/agent/${activeAgent.slug}/settings`}
+                    viewTransition
                     aria-label="Agent Settings"
                   >
-                    <Link
-                      to={`/agent/${activeAgent.slug}/settings`}
-                      viewTransition
-                    >
-                      <Settings
-                        size={16}
-                        className="ml-auto "
-                        aria-hidden="true"
-                      />
-                    </Link>
-                  </Button>
-                )}
-              </div>
-            </DropdownMenuLabel>
+                    <Settings
+                      size={16}
+                      className="ml-auto "
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </DropdownMenuItem>
+              )}
+            </div>
             <DropdownMenuSeparator />
             {agents.length > 0 ? (
               agents.map((agent) => (
@@ -107,7 +121,7 @@ export function AgentSelect({
               ))
             ) : (
               <DropdownMenuItem disabled className="gap-2 p-2 text-muted-foreground">
-                No agents
+                No Agents
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
@@ -115,8 +129,11 @@ export function AgentSelect({
               <Link to="/agent/create" aria-label="Create agent" viewTransition>
                 <Plus className="size-4" aria-hidden="true" />
                 <div className="text-muted-foreground font-medium">
-                  Create agent
+                  Create Agent
                 </div>
+                <DropdownMenuShortcut>
+                  {kbs("cmd+shift+O")}
+                </DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
