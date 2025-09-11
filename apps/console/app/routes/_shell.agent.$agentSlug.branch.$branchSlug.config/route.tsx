@@ -75,8 +75,6 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
                   <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
                     <BranchModelForm
                       defaultModel={m}
-                      currentModels={models}
-                      supportedModels={supportedModels as { name: string; displayName?: string }[]}
                       onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))}
                     />
                   </Card>
@@ -90,8 +88,6 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
           <Card key={id} className="w-full border-none p-3">
             <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
               <BranchModelForm
-                currentModels={models}
-                supportedModels={supportedModels as { name: string; displayName?: string }[]}
                 onCancel={() => setNewFormIds((prev) => prev.filter((nid) => nid !== id))}
               />
             </Card>

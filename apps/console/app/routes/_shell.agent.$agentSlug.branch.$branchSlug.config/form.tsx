@@ -1,5 +1,5 @@
 "use client";
-import { Form, useActionData, useNavigation } from "react-router";
+import { Form, useActionData, useNavigation, useRouteLoaderData } from "react-router";
 import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 import { object, string, nonEmpty, pipe, trim, message, type InferOutput } from "valibot";
@@ -10,6 +10,7 @@ import { Select } from "@hebo/shared-ui/components/Select";
 import { FormField, FormLabel, FormControl, FormMessage } from "@hebo/shared-ui/components/Form";
 import { api } from "~console/lib/data";
 import { useActionDataErrorToast } from "~console/lib/errors";
+import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Route } from "./+types/route";
 
 type Model = { alias: string; type: string };
@@ -111,15 +112,19 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 
 export type BranchModelFormProps = {
   defaultModel?: { alias: string; type: string } | undefined;
-  supportedModels: SupportedModel[];
-  currentModels: Model[];
   onCancel: () => void;
 };
 
-export function BranchModelForm({ defaultModel, supportedModels, currentModels, onCancel }: BranchModelFormProps) {
+export function BranchModelForm({ defaultModel, onCancel }: BranchModelFormProps) {
   const actionData = useActionData<any>();
   const navigation = useNavigation();
   useActionDataErrorToast();
+
+  // Derive current models from route data
+  const { agent } = useRouteLoaderData<{
+    agent: { branches: Array<{ models: Model[] }> };
+  }>("routes/_shell.agent.$agentSlug")!;
+  const currentModels = agent.branches[0]?.models ?? [];
 
   const currentIntent = String(navigation.formData?.get("intent") || "");
   const isSubmitting = navigation.state === "submitting";
@@ -160,7 +165,7 @@ export function BranchModelForm({ defaultModel, supportedModels, currentModels, 
               <FormControl>
                 <Select
                   placeholder="Select a model type"
-                  items={supportedModels.map((model) => ({
+                  items={supportedModels.map((model: { name: string; displayName?: string }) => ({
                     value: model.name,
                     name: model.displayName,
                   }))}
