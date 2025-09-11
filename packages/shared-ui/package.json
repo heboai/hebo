@@ -15,7 +15,6 @@
     "lint": "bunx eslint ."
   },
   "dependencies": {
-    "@radix-ui/react-collapsible": "^1.1.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.3.1"
@@ -23,6 +22,7 @@
   "peerDependencies": {
     "@conform-to/react": "^1.9.0",
     "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.7",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@conform-to/react": "^1.9.0",
     "@radix-ui/react-avatar": "^1.1.10",
+    "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.7",
