@@ -3,10 +3,13 @@ import { PanelLeftIcon } from "lucide-react";
 import React from "react";
 
 import { Button } from "./Button";
-import { useSidebar, SidebarContext } from "../_shadcn/ui/sidebar";
+import {
+  useSidebar,
+  Sidebar as ShadCNSidebar,
+  SidebarContext,
+} from "../_shadcn/ui/sidebar";
 import { useIsMobile } from "../hooks/use-mobile";
 import { cn } from "../lib/utils";
-
 
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_WIDTH = "16rem";
@@ -138,11 +141,38 @@ function SidebarTrigger({
   );
 }
 
-export { SidebarProvider, SidebarTrigger };
+function Sidebar({
+  side = "left",
+  variant = "sidebar",
+  collapsible = "offcanvas",
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  side?: "left" | "right";
+  variant?: "sidebar" | "floating" | "inset";
+  collapsible?: "offcanvas" | "icon" | "none";
+}) {
+  const { open } = useSidebar();
+
+  return (
+    <ShadCNSidebar
+      side={side}
+      variant={variant}
+      collapsible={collapsible}
+      className={className}
+      inert={collapsible === "offcanvas" && !open ? true : undefined}
+      {...props}
+    >
+      {children}
+    </ShadCNSidebar>
+  );
+}
+
+export { SidebarProvider, Sidebar, SidebarTrigger };
 
 export {
   useSidebar,
-  Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
