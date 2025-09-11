@@ -1,10 +1,22 @@
 import { treaty } from "@elysiajs/eden";
 import ky, { HTTPError } from "ky";
 
+import { authService } from "~console/lib/auth";
 import { isDevLocal } from "~console/lib/env";
-import { fetchConfig } from "~console/lib/fetch-config";
 
 import type { Api } from "~api";
+
+export const fetchConfig = {
+  headers: (_path: string, options?: RequestInit) => {
+    const token = authService.getAccessToken();
+    if (!token) return;
+    const headers = new Headers(options?.headers ?? {});
+    headers.set("x-stack-access-token", token);
+    return headers;
+  },
+};
+
+export type FetchConfig = typeof fetchConfig;
 
 const url = isDevLocal
   ? "http://localhost:5173/api"

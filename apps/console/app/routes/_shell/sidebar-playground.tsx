@@ -1,5 +1,5 @@
 import { Chat } from "@hebo/aikit-ui/blocks/Chat";
-import { fetchConfig } from "~console/lib/fetch-config";
+import { fetchConfig } from "~console/lib/service";
 
 const VITE_GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL?.trim();
 

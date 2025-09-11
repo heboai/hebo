@@ -1,7 +1,7 @@
 import { redirect, useRouteLoaderData } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
-import { api } from "~console/lib/data";
+import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
