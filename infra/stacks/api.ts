@@ -35,7 +35,7 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
     ],
   },
   scaling: {
-    min: isProd ? 4 : 1,
+    min: isProd ? 2 : 1,
     max: isProd ? 16 : 1,
   },
   capacity: isProd ? undefined : "spot",
