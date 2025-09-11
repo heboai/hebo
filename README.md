@@ -119,7 +119,7 @@ For deployments, we utilize the SST framework (https://sst.dev/).
 
 ```bash
 # Install providers
-bun run sst:synth
+bun run sst install
 
 # Set secrets
 bun run sst secret set <secret-name> <secret-value> --stage <stage>

@@ -77,7 +77,7 @@ Required SST secrets:
 ### Install SST providers
 
 ```bash
-bun run sst:synth
+bun run sst install
 ```
 
 ### Deploy Infrastructure
