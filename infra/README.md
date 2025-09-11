@@ -34,14 +34,12 @@ Aurora PostgreSQL database with advanced features:
 ECS service (sst.aws.Service) running on a shared Cluster behind an ALB:
 
 - **Runtime**: Bun 1.x + ElysiaJS 1.x
-- **Domain**: `api.hebo.ai` in production; `{stage}.dev.api.hebo.ai` in previews
 
 ### Gateway (`stacks/gateway.ts`)
 
 ECS service (sst.aws.Service) running on the same Cluster behind an ALB:
 
 - **Runtime**: Bun 1.x + ElysiaJS 1.x
-- **Domain**: `gateway.hebo.ai` in production; `{stage}.dev.gateway.hebo.ai` in previews
 
 ### Console (`stacks/console.ts`)
 
@@ -52,7 +50,7 @@ ECS service (sst.aws.Service) running on the same Cluster behind an ALB:
 - **Hosted Zone**: Ensures Route53 zone `hebo.ai` exists (creates if missing)
 - **Domain pattern**:
   - Production: `{app}.hebo.ai`
-  - Preview: `{stage}.dev.{app}.hebo.ai`
+  - Preview: `{app}.{stage}.hebo.ai`
 
 ### Secrets (`stacks/secrets.ts`)
 

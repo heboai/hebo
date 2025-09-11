@@ -136,6 +136,6 @@ bun run sst deploy --stage production
 
 #### Service URLs
 
-- API: `https://api.hebo.ai` (prod) or `https://<stage>.dev.api.hebo.ai` (preview)
-- Gateway: `https://gateway.hebo.ai` (prod) or `https://<stage>.dev.gateway.hebo.ai` (preview)
-- Console: `https://console.hebo.ai` (prod) or `https://<stage>.dev.console.hebo.ai` (preview)
+- API: `https://api.hebo.ai` (prod) or `https://api.<stage>.hebo.ai` (preview)
+- Gateway: `https://gateway.hebo.ai` (prod) or `https://gateway.<stage>.hebo.ai` (preview)
+- Console: `https://console.hebo.ai` (prod) or `https://console.<stage>.hebo.ai` (preview)
