@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
@@ -50,7 +50,7 @@ export const agentsModule = new Elysia({
       query: AgentsModel.QueryParam,
       params: AgentsModel.PathParam,
       response: {
-        200: AgentsModel.AgentWithBranches,
+        200: t.Union([AgentsModel.Agent, AgentsModel.AgentWithBranches]),
         404: AgentsModel.NotFound,
       },
     },
