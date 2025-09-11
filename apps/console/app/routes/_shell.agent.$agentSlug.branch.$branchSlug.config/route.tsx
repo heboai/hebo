@@ -43,7 +43,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
   const defaultModel = models.find((m) => m.alias === "default");
 
   return (
-    <div className="absolute flex items-center w-full justify-center flex-col gap-2 max-w-185">
+    <div className="absolute flex items-center w-full justify-center flex-col gap-2 max-w-lg">
       <div className="flex flex-col">
         <h2>Model Configuration</h2>
         <p className="text-muted-foreground">
