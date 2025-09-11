@@ -66,8 +66,8 @@ export function AgentSelect({
             side="bottom"
             sideOffset={4}
           >
-            <div className="flex items-center justify-between gap-2 py-1">
-              <DropdownMenuLabel className="font-normal">
+            <div className="flex items-center justify-between py-1">
+              <DropdownMenuLabel className="font-normal pr-0">
                 <div className="flex items-center gap-2">
                   <div className="aspect-square size-6 rounded-lg">
                     <AgentLogo size={24} />
@@ -80,7 +80,7 @@ export function AgentSelect({
                 </div>
               </DropdownMenuLabel>
               {activeAgent && (
-                <DropdownMenuItem asChild className="p-2 ml-2">
+                <DropdownMenuItem asChild className="p-2">
                   <Link
                     to={`/agent/${activeAgent.slug}/settings`}
                     viewTransition
