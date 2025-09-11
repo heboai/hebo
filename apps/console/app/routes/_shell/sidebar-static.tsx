@@ -16,7 +16,6 @@ export function StaticContent() {
               <a
                   href="https://docs.hebo.ai"
                   target="_blank"
-                  aria-label="Documentation (opens in a new tab)"
                   rel="noopener noreferrer"
               >
                   <BookOpen />

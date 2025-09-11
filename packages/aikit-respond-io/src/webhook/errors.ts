@@ -1,11 +1,11 @@
-export class RespondIoWebhookError extends Error {
+export class WebhookError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "RespondIoWebhookError";
+    this.name = "WebhookError";
   }
 }
 
-export class SignatureVerificationError extends RespondIoWebhookError {
+export class SignatureVerificationError extends WebhookError {
   constructor(message: string) {
     super(message);
     this.name = "SignatureVerificationError";

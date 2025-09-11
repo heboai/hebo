@@ -24,7 +24,7 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 
 export default function AgentLayout() {
-  return <div className="max-w-2xl flex flex-col gap-6"><Outlet /></div>;
+  return <div className="mx-auto max-w-2xl min-w-0 w-full flex flex-col gap-6"><Outlet /></div>;
 }
 
 export function ErrorBoundary () {
