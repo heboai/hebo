@@ -15,7 +15,7 @@ export const branchHandlers = [
         name: body.name,
         slug: slugify(body.name, { lower: true, strict: true }),
         models: body.models,
-        agentSlug: params.agentSlug, // Add agentSlug to the branch
+        agentSlug: params.agentSlug,
       };
 
       try {
@@ -34,30 +34,39 @@ export const branchHandlers = [
   http.get<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async ({ params }) => {
-      const branches = db.branch.findMany({
-        where: { agentSlug: { equals: params.agentSlug } },
-      });
+      try {
+        const branches = db.branch.findMany({
+          where: { agentSlug: { equals: params.agentSlug } },
+        });
 
-      await delay(1000);
-      return HttpResponse.json(branches);
+        await delay(1000);
+        return HttpResponse.json(branches);
+      } catch {
+        return new HttpResponse("Failed to fetch branches", { status: 500 });
+      }
     },
   ),
 
   http.get<{ agentSlug: string; branchSlug: string }>(
     "/api/v1/agents/:agentSlug/branches/:branchSlug",
     async ({ params }) => {
-      // Now we can query the branch directly using both agentSlug and branchSlug
-      const branch = db.branch.findFirst({
-        where: {
-          agentSlug: { equals: params.agentSlug },
-          slug: { equals: params.branchSlug },
-        },
-      });
+      try {
+        const branch = db.branch.findFirst({
+          where: {
+            agentSlug: { equals: params.agentSlug },
+            slug: { equals: params.branchSlug },
+          },
+        });
 
-      if (!branch) return new HttpResponse("Branch not found", { status: 404 });
+        if (!branch) {
+          return new HttpResponse("Branch not found", { status: 404 });
+        }
 
-      await delay(500);
-      return HttpResponse.json(branch);
+        await delay(500);
+        return HttpResponse.json(branch);
+      } catch {
+        return new HttpResponse("Failed to fetch branch", { status: 500 });
+      }
     },
   ),
 
@@ -70,29 +79,34 @@ export const branchHandlers = [
         models?: Array<{ alias: string; type: string; endpoint?: any }>;
       };
 
-      // Find branch directly using both agentSlug and branchSlug
-      const branch = db.branch.findFirst({
-        where: {
-          agentSlug: { equals: params.agentSlug },
-          slug: { equals: params.branchSlug },
-        },
-      });
+      try {
+        const branch = db.branch.findFirst({
+          where: {
+            agentSlug: { equals: params.agentSlug },
+            slug: { equals: params.branchSlug },
+          },
+        });
 
-      if (!branch) return new HttpResponse("Branch not found", { status: 404 });
+        if (!branch) {
+          return new HttpResponse("Branch not found", { status: 404 });
+        }
 
-      // Update branch properties
-      if (body.name) {
-        branch.name = body.name;
-        branch.slug = slugify(body.name, { lower: true, strict: true });
+        // Update branch properties
+        if (body.name) {
+          branch.name = body.name;
+          branch.slug = slugify(body.name, { lower: true, strict: true });
+        }
+
+        // Update models JSON object
+        if (body.models) {
+          branch.models = body.models;
+        }
+
+        await delay(500);
+        return HttpResponse.json(branch);
+      } catch {
+        return new HttpResponse("Failed to update branch", { status: 500 });
       }
-
-      // Update models JSON object
-      if (body.models) {
-        branch.models = body.models;
-      }
-
-      await delay(500);
-      return HttpResponse.json(branch);
     },
   ),
 ];
