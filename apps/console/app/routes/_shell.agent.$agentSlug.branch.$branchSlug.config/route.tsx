@@ -46,26 +46,17 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   } else {
     const submission = parseWithValibot(formData, { schema: BranchConfigSchema });
     if (submission.status !== "success") {
-      return { lastResult: submission.reply() };
+      return submission.reply();
     }
-    alias = String(submission.payload.alias ?? "");
-    modelType = String(submission.payload.modelType ?? "");
-
-    if (!supportedModels.some((m) => m.name === modelType)) {
-      return { error: "Selected model type is not supported in this deployment" };
-    }
+    alias = String(submission.value.alias);
+    modelType = String(submission.value.modelType);
   }
 
   try {
-    // First, fetch the current branch data using Eden treaty client
-    const { data: currentBranch, error: getError } = await api.agents({ agentSlug: params.agentSlug! })
-      .branches({ branchSlug: params.branchSlug! })
-      .get();
-    
-    if (getError) {
-      return { error: getError.value?.toString() || "Failed to fetch branch data" };
-    }
-    const currentModels = currentBranch.models || [];
+    // Get the current branch data from the loader
+    const { agent } = (await import("react-router").then(m => m.useRouteLoaderData("routes/_shell.agent.$agentSlug"))) as { agent: any };
+    const activeBranch = agent?.branches?.find((b: any) => b.slug === params.branchSlug);
+    const currentModels = activeBranch?.models;
 
     let updatedModels;
 
