@@ -14,9 +14,9 @@ const PORT = Number(process.env.PORT ?? 3001);
 
 const createApi = () =>
   new Elysia()
+    .use(logger({ level: LOG_LEVEL }))
     // Root route ("/") is unauthenticated and unprotected for health checks.
     .get("/", () => "🐵 Hebo API says hello!")
-    .use(logger({ level: LOG_LEVEL }))
     .use(cors(corsConfig))
     .use(
       swagger({
