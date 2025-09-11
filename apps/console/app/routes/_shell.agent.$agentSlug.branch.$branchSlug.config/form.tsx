@@ -121,6 +121,11 @@ export function BranchModelForm({ defaultModel, supportedModels, currentModels, 
   const navigation = useNavigation();
   useActionDataErrorToast();
 
+  const currentIntent = String(navigation.formData?.get("intent") || "");
+  const isSubmitting = navigation.state === "submitting";
+  const isRemoving = isSubmitting && currentIntent === "remove";
+  const isSaving = isSubmitting && currentIntent === "save";
+
   const [form, fields] = useForm<{ alias: string; modelType: string }>({
     defaultValue: {
       alias: defaultModel?.alias,
@@ -173,7 +178,7 @@ export function BranchModelForm({ defaultModel, supportedModels, currentModels, 
           name="intent"
           value="remove"
           variant="destructive"
-          isLoading={navigation.state !== "idle"}
+          isLoading={isRemoving}
         >
           Remove
         </Button>
@@ -185,7 +190,7 @@ export function BranchModelForm({ defaultModel, supportedModels, currentModels, 
             type="submit"
             name="intent"
             value="save"
-            isLoading={navigation.state !== "idle"}
+            isLoading={isSaving}
             disabled={!fields.modelType.value}
           >
             Save
