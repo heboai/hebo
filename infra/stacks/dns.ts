@@ -20,7 +20,7 @@ const createZoneIfNotExists = async (zoneName: string) => {
 
 export const getDomain = async (appName: string) => {
   const zoneName = await createZoneIfNotExists(ZONE_NAME);
-  return $app.stage === "production"
-    ? `${appName}.${zoneName}`
-    : `${appName}.${$app.stage}.${zoneName}`;
+  if ($app.stage === "production") return `${appName}.${zoneName}`;
+  const stageLabel = $app.stage.replaceAll(/[^a-z0-9-]/gi, "-");
+  return `${appName}.${stageLabel}.${zoneName}`;
 };
