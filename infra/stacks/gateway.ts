@@ -7,7 +7,7 @@ const isProd = $app.stage === "production";
 const gatewayDomain = await getDomain("gateway");
 const gatewayPort = "3002";
 
-const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
+const heboGateway = new sst.aws.Service("HeboGateway", {
   cluster: heboCluster,
   architecture: "arm64",
   image: {
@@ -44,4 +44,4 @@ const heboGatewayService = new sst.aws.Service("HeboGatewayService", {
   wait: isProd,
 });
 
-export default heboGatewayService;
+export default heboGateway;

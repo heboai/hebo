@@ -1,6 +1,6 @@
-import heboApiService from "./api";
+import heboApi from "./api";
 import { getDomain } from "./dns";
-import heboGatewayService from "./gateway";
+import heboGateway from "./gateway";
 import * as secrets from "./secrets";
 
 const heboConsole = new sst.aws.StaticSite("HeboConsole", {
@@ -11,8 +11,8 @@ const heboConsole = new sst.aws.StaticSite("HeboConsole", {
   },
   domain: await getDomain("console"),
   environment: {
-    VITE_API_URL: heboApiService.url,
-    VITE_GATEWAY_URL: heboGatewayService.url,
+    VITE_API_URL: heboApi.url,
+    VITE_GATEWAY_URL: heboGateway.url,
     VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
     VITE_STACK_PUBLISHABLE_CLIENT_KEY: secrets.stackPublishableClientKey.value,
   },

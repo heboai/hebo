@@ -7,7 +7,7 @@ const isProd = $app.stage === "production";
 const apiDomain = await getDomain("api");
 const apiPort = "3001";
 
-const heboApiService = new sst.aws.Service("HeboApiService", {
+const heboApi = new sst.aws.Service("HeboApi", {
   cluster: heboCluster,
   architecture: "arm64",
   image: {
@@ -42,4 +42,4 @@ const heboApiService = new sst.aws.Service("HeboApiService", {
   wait: isProd,
 });
 
-export default heboApiService;
+export default heboApi;
