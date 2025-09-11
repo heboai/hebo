@@ -146,16 +146,17 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   return (
     <div className="flex h-full flex-col p-2 pt-12">
       {/* Header Controls */}
-      <div className="absolute top-1.5 left-1.5 z-10 flex items-center">
+      <div className="absolute top-3 left-2">
         <Button
           disabled={!currentModelAlias}
           variant="ghost"
           size="icon"
+          className="hover:bg-sidebar-accent size-7"
           onClick={() => setMessages([])}
           aria-label="Clear conversation"
           title="Clear conversation"
         >
-          <IterationCcw size={16} />
+          <IterationCcw />
         </Button>
       </div>
 

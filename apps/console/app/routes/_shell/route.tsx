@@ -72,7 +72,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
     >
 
       <Sidebar collapsible="icon">
-        <div className="flex h-full w-full flex-col transition-[padding] group-data-[state=collapsed]:p-2">
+        <div className="h-full flex flex-col transition-[padding] group-data-[state=collapsed]:p-2">
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
           </SidebarHeader>
@@ -91,7 +91,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           position="top-right"
           icons={{error: <XCircle className="size-4" aria-hidden="true" />}}
         />
-        <div id="main-div" tabIndex={-1} className="min-w-0 flex flex-1 flex-col focus:outline-none gap-4 px-4 py-10">
+        <div id="main-div" tabIndex={-1} className="min-w-0 flex flex-1 flex-col focus:outline-none gap-4 px-4 sm:px-10 py-12">
           <div className="mx-auto max-w-4xl min-w-0 w-full">
             <Outlet />
           </div>
@@ -112,7 +112,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
         }
       >
         <SidebarTrigger 
-          className="fixed top-2.5 right-1.5 w-fit" 
+          className="fixed top-3 right-2 w-fit" 
           icon={<div className="flex items-center space-x-1.5">
               <SquareChevronRight size={16} />
               <span>Playground</span>

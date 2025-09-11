@@ -131,7 +131,7 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn("size-7 z-20", className)}
+      className={cn("size-7 z-20 hover:bg-sidebar-accent", className)}
       onClick={handleClick}
       {...props}
     >
