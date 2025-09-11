@@ -76,7 +76,9 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
           </SidebarHeader>
-          <SidebarContent />
+          <SidebarContent>
+            <SidebarNav activeAgent={activeAgent} />
+          </SidebarContent>
           <SidebarFooter>
               <StaticContent />
               <SidebarSeparator className="mx-0" />
