@@ -102,6 +102,12 @@ export const branchHandlers = [
           branch.models = body.models;
         }
 
+        // Persist the changes to the database
+        db.branch.update({
+          where: { id: { equals: branch.id } },
+          data: branch,
+        });
+
         await delay(500);
         return HttpResponse.json(branch);
       } catch {
