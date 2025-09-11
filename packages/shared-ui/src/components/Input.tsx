@@ -40,6 +40,8 @@ export function Input({
       />
       {copy && (
         <CopyToClipboardButton
+          disabled={!value}
+          aria-disabled={!value}
           tabIndex={tabIndex}
           textToCopy={value?.toString() ?? ""}
           className="absolute top-1/2 right-2 -translate-y-1/2"

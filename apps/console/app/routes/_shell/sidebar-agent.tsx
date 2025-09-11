@@ -49,7 +49,7 @@ export function AgentSelect({
 
     document.addEventListener("keydown", handleGlobalKeyDown);
     return () => document.removeEventListener("keydown", handleGlobalKeyDown);
-  }, []);
+  }, [navigate]);
 
   return (
     <SidebarMenu>
