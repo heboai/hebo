@@ -57,7 +57,7 @@ export const CodeGroup = React.forwardRef(function CodeGroup(
       ref={ref}
       value={activeTab}
       onValueChange={setActiveTab}
-      className={clsx("not-prose", styles.frame, className)}
+      className={clsx(styles.frame, className)}
     >
       <Tabs.List className={styles.header}>
         {childArr.map((child, tabIndex: number) => (
@@ -77,7 +77,11 @@ export const CodeGroup = React.forwardRef(function CodeGroup(
         </div>
       </Tabs.List>
       {childArr.map((child, tabIndex: number) => (
-        <Tabs.Content key={tabIndex.toString()} value={tabIndex.toString()}>
+        <Tabs.Content
+          key={tabIndex.toString()}
+          value={tabIndex.toString()}
+          tabIndex={-1}
+        >
           <pre className={styles.code}>
             {
               (
@@ -101,7 +105,7 @@ interface TabItemProps {
 function TabItem({ children, value }: TabItemProps) {
   return (
     <Tabs.Trigger
-      className="flex flex-none items-center border-b-2 data-[state=active]:border-slate-500"
+      className="flex flex-none items-center border-b-2 text-sm data-[state=active]:border-slate-500"
       value={value}
     >
       <span className="z-10">{children}</span>

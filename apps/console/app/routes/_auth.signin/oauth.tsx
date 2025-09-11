@@ -19,7 +19,6 @@ export function OAuthSignIn() {
       <Link
         to="/"
         viewTransition
-        aria-label="Sign in with dummy OAuth provider"
       >
         Dummy OAuth SignIn
       </Link>

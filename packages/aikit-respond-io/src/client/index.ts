@@ -1,6 +1,9 @@
 import ky, { HTTPError, TimeoutError, type KyInstance } from "ky";
 
-import { RespondIoApiFailedError, RespondIoNetworkError } from "./errors";
+import {
+  RespondIoClientFailureError,
+  RespondIoClientNetworkError,
+} from "./errors";
 import {
   ContactIdentifier,
   RespondIoClientConfig,
@@ -14,7 +17,7 @@ export class RespondIoClient {
 
   constructor(config: RespondIoClientConfig) {
     if (!config.apiKey) {
-      throw new Error("Respond.io API Key is required.");
+      throw new Error("API Key is required.");
     }
 
     this.kyInstance = ky.create({
@@ -29,10 +32,10 @@ export class RespondIoClient {
   }
 
   /**
-   * Sends a message to a specific contact via Respond.io.
+   * Sends a message to a specific contact.
    * @param identifier The contact identifier (e.g., 'id:123', 'email:abdc@gmail.com', 'phone:+60121233112').
    * @param payload The message payload.
-   * @returns The response from the Respond.io API.
+   * @returns The response from the API.
    */
   public async sendMessage(
     identifier: ContactIdentifier,
@@ -49,37 +52,41 @@ export class RespondIoClient {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         const errorBody = await error.response.json();
-        throw new RespondIoApiFailedError(
+        throw new RespondIoClientFailureError(
           error.response.status,
           { json: errorBody },
-          `Respond.io API Error: ${error.response.status} - ${error.message}`,
+          `API Error: ${error.response.status} - ${error.message}`,
         );
       } else if (error instanceof TimeoutError) {
         // The request was made but no response was received
-        throw new RespondIoNetworkError(
-          `Respond.io Network Error: Request timed out - ${error.message}`,
+        throw new RespondIoClientNetworkError(
+          `Network Error: Request timed out - ${error.message}`,
         );
       } else if (error instanceof Error) {
         // This can happen for various network reasons (e.g., DNS, connection refused)
         if (error.name === "TypeError") {
-          throw new RespondIoNetworkError(
-            `Respond.io Network Error: No response received - ${error.message}`,
+          throw new RespondIoClientNetworkError(
+            `Network Error: No response received - ${error.message}`,
           );
         }
-        throw new Error(`Respond.io Request Error: ${error.message}`);
+        throw new Error(`Request Error: ${error.message}`);
       } else {
         // Something happened that triggered an error that wasn't an instance of Error
         throw new TypeError(
-          `An unknown error occurred in Respond.io request: ${String(error)}`,
+          `An unknown error occurred in request: ${String(error)}`,
         );
       }
     }
   }
 
-  // FUTURE: Add other Respond.io API methods here as needed
+  // FUTURE: Add other API methods here as needed
   // public async createContact(...) { ... }
   // public async getContact(...) { ... }
 }
 
 export * from "./types";
 export * from "./errors";
+
+export const createRespondIoClient = (config: RespondIoClientConfig) => {
+  return new RespondIoClient(config);
+};

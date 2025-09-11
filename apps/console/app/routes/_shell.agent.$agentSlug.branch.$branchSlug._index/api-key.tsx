@@ -11,13 +11,13 @@ export function GenerateApiKey() {
   const [loading, setLoading] = useState<"idle" | "loading" | "success">(
     "idle",
   );
-  const [key, setKey] = useState("Generate API Key ...");
-  const [error, setError] = useState("");
+  const [key, setKey] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleGenerateAPIKey = async() => {
     setLoading("loading");
 
-    setError("");
+    setError(null);
     setKey("Generating API Key ...");
 
     try {
@@ -42,7 +42,10 @@ export function GenerateApiKey() {
         readOnly
         icon={KeyRound}
         copy={true}
-        value={key}
+        value={key ?? ""}
+        placeholder="Generate API Key …"
+        tabIndex={key ? 0 : -1} 
+        aria-disabled={!key}
         aria-label="Generated API key"
       />
       <Button
