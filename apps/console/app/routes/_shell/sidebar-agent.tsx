@@ -1,5 +1,6 @@
 import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate } from "react-router";
 
 import {
@@ -37,19 +38,10 @@ export function AgentSelect({
   const [open, setOpen] = useState(false);
 
   // Keyboard shortcuts
-  // FUTURE: generalize to useKeyboardShortcut
   const navigate = useNavigate();
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "o") {
-        e.preventDefault();
-        navigate("/agent/create", { viewTransition: true });
-      }
-    };
-
-    document.addEventListener("keydown", handleGlobalKeyDown);
-    return () => document.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [navigate]);
+  useHotkeys("shift+mod+o", () =>
+    navigate("/agent/create", { viewTransition: true })
+  ), [navigate];
 
   return (
     <SidebarMenu>
