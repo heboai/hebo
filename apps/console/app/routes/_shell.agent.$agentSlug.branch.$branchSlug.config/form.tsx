@@ -1,20 +1,30 @@
 "use client";
-import { Form, useActionData, useNavigation, useRouteLoaderData } from "react-router";
+
+import { useState } from "react";
+import { Form, useActionData, useNavigation, useParams, useRouteLoaderData } from "react-router";
 import { useForm, getFormProps } from "@conform-to/react";
 import { parseWithValibot } from "@conform-to/valibot";
 import { object, string, nonEmpty, pipe, trim, message, type InferOutput } from "valibot";
+
+import supportedModels from "@hebo/shared-data/json/supported-models";
+
 import { Button } from "@hebo/shared-ui/components/Button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/shared-ui/components/Collapsible";
+import { Card } from "@hebo/shared-ui/components/Card";
+import { Badge } from "@hebo/shared-ui/components/Badge";
 import { CardContent, CardFooter } from "@hebo/shared-ui/components/Card";
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 import { FormField, FormLabel, FormControl, FormMessage } from "@hebo/shared-ui/components/Form";
+import { RailSymbol } from "lucide-react";
+
 import { api } from "~console/lib/data";
 import { useActionDataErrorToast } from "~console/lib/errors";
-import supportedModels from "@hebo/shared-data/json/supported-models";
+
 import type { Route } from "./+types/route";
 
+
 type Model = { alias: string; type: string };
-type SupportedModel = { name: string; displayName?: string };
 
 export const BranchConfigSchema = object({
   alias: message(pipe(string(), trim(), nonEmpty()), "Please enter a model alias"),
@@ -32,21 +42,17 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       return { status: "error", error: { "": ["Alias is required to remove a model"] } };
     }
 
-    // Prevent deletion of default model
     if (alias === "default") {
       return { status: "error", error: { "": ["Cannot delete default model"] } };
     }
 
     try {
-      // Get current models from hidden form field instead of using hooks
       const currentModelsJson = String(formData.get("currentModels"));
       const currentModels: Model[] = JSON.parse(currentModelsJson);
-      
-      // Remove the model from the models array
       const updatedModels = currentModels.filter((m: Model) => m.alias !== alias);
 
-      // Update the entire branch with the new models JSON via Eden treaty
-      const { error: putError } = await api.agents({ agentSlug: params.agentSlug! })
+      const { error: putError } = await api
+        .agents({ agentSlug: params.agentSlug! })
         .branches({ branchSlug: params.branchSlug! })
         .put({ models: updatedModels });
 
@@ -60,9 +66,8 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       return { status: "error", error: { "": ["An unexpected error occurred while removing model"] } };
     }
   } else {
-    // Handle add/update actions with proper submissions API
     const submission = parseWithValibot(formData, { schema: BranchConfigSchema });
-    
+
     if (submission.status !== "success") {
       return submission.reply();
     }
@@ -70,42 +75,32 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     const { alias, modelType } = submission.value;
 
     try {
-      // Get current models from hidden form field instead of using hooks
       const currentModelsJson = String(formData.get("currentModels"));
       const currentModels: Model[] = JSON.parse(currentModelsJson);
-      
-      // Update or add the model in the models array
+
       const modelIndex = currentModels.findIndex((m: Model) => m.alias === alias);
       const updatedModel = { alias, type: modelType };
-      
+
       let updatedModels;
       if (modelIndex === -1) {
-        // Add new model
         updatedModels = [...currentModels, updatedModel];
       } else {
-        // Update existing model
-        updatedModels = currentModels.map((m: Model, index: number) => 
-          index === modelIndex ? updatedModel : m
-        );
+        updatedModels = currentModels.map((m: Model, index: number) => (index === modelIndex ? updatedModel : m));
       }
 
-      // Update the entire branch with the new models JSON via Eden treaty
-      const { error: putError } = await api.agents({ agentSlug: params.agentSlug! })
+      const { error: putError } = await api
+        .agents({ agentSlug: params.agentSlug! })
         .branches({ branchSlug: params.branchSlug! })
         .put({ models: updatedModels });
 
       if (putError) {
-        return submission.reply({ 
-          formErrors: [String(putError.value)] 
-        });
+        return submission.reply({ formErrors: [String(putError.value)] });
       }
 
       return { success: true, message: "Model configuration updated successfully" };
     } catch (error) {
       console.error("Error updating model config:", error);
-      return submission.reply({ 
-        formErrors: ["An unexpected error occurred while updating model configuration"] 
-      });
+      return submission.reply({ formErrors: ["An unexpected error occurred while updating model configuration"] });
     }
   }
 }
@@ -120,7 +115,6 @@ export function BranchModelForm({ defaultModel, onCancel }: BranchModelFormProps
   const navigation = useNavigation();
   useActionDataErrorToast();
 
-  // Derive current models from route data
   const { agent } = useRouteLoaderData<{
     agent: { branches: Array<{ models: Model[] }> };
   }>("routes/_shell.agent.$agentSlug")!;
@@ -144,9 +138,8 @@ export function BranchModelForm({ defaultModel, onCancel }: BranchModelFormProps
 
   return (
     <Form method="post" {...getFormProps(form)} className="contents">
-      {/* Hidden field to pass current models to the action */}
       <input type="hidden" name="currentModels" value={JSON.stringify(currentModels)} />
-      
+
       <CardContent className="space-y-6">
         <div className="flex gap-4">
           <FormField field={fields.alias} className="contents">
@@ -178,26 +171,14 @@ export function BranchModelForm({ defaultModel, onCancel }: BranchModelFormProps
       </CardContent>
 
       <CardFooter className="flex justify-between">
-        <Button
-          type="submit"
-          name="intent"
-          value="remove"
-          variant="destructive"
-          isLoading={isRemoving}
-        >
+        <Button type="submit" name="intent" value="remove" variant="destructive" isLoading={isRemoving}>
           Remove
         </Button>
         <div className="flex gap-2">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            name="intent"
-            value="save"
-            isLoading={isSaving}
-            disabled={!fields.modelType.value}
-          >
+          <Button type="submit" name="intent" value="save" isLoading={isSaving} disabled={!fields.modelType.value}>
             Save
           </Button>
         </div>
@@ -205,3 +186,87 @@ export function BranchModelForm({ defaultModel, onCancel }: BranchModelFormProps
     </Form>
   );
 }
+
+const getModelDisplayName = (modelName: string): string => {
+  if (modelName === "custom") {
+    return "Custom Model";
+  }
+  const model = supportedModels.find((m) => m.name === modelName);
+  return model?.displayName || modelName;
+};
+
+export default function ModelConfigurationForm() {
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
+  const [newFormIds, setNewFormIds] = useState<string[]>([]);
+
+  const { agent } = useRouteLoaderData<{
+    agent: {
+      branches: Array<{
+        models: Array<{ alias: string; type: string }>;
+      }>;
+    };
+  }>("routes/_shell.agent.$agentSlug")!;
+  const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
+  const activeBranch = agent.branches[0];
+  const models = activeBranch.models;
+
+  return (
+    <div className="absolute flex items-center w-full justify-center flex-col gap-2 max-w-lg">
+      <div className="flex flex-col">
+        <h2>Model Configuration</h2>
+        <p className="text-muted-foreground">
+          Configure access for agents to different models and their routing behaviour (incl. to your
+          existing inference endpoints). Learn more about Model Configuration
+        </p>
+      </div>
+
+      {models.map((m) => {
+        const isOpen = !!openMap[m.alias];
+        return (
+          <Card key={m.alias} className="w-full border-none p-3">
+            <Collapsible open={isOpen} onOpenChange={(v) => setOpenMap((prev) => ({ ...prev, [m.alias]: v }))}>
+              <div className="flex items-center justify-between gap-4 mb-2">
+                <p className="text-sm">
+                  {agentSlug}/{branchSlug}/{m.alias}
+                </p>
+                <p className="text-sm">{getModelDisplayName(m.type)}</p>
+                <Badge variant="secondary">
+                  Custom <RailSymbol />
+                </Badge>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className={isOpen ? "invisible" : ""}>
+                    Edit
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
+
+              <CollapsibleContent>
+                <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
+                  <BranchModelForm defaultModel={m} onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))} />
+                </Card>
+              </CollapsibleContent>
+            </Collapsible>
+          </Card>
+        );
+      })}
+
+      {newFormIds.map((id) => (
+        <Card key={id} className="w-full border-none p-3">
+          <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
+            <BranchModelForm onCancel={() => setNewFormIds((prev) => prev.filter((nid) => nid !== id))} />
+          </Card>
+        </Card>
+      ))}
+
+      <Button
+        variant="outline"
+        className="self-start"
+        onClick={() => setNewFormIds((prev) => [...prev, `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`])}
+      >
+        + Add Model
+      </Button>
+    </div>
+  );
+}
+
+
