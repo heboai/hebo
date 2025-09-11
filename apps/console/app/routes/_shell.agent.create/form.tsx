@@ -53,7 +53,7 @@ export function AgentCreateForm() {
       <Card className="sm:max-w-lg min-w-0 w-full border-none bg-transparent shadow-none">
 
         <CardHeader>
-          <CardTitle><h2>Create a new agent</h2></CardTitle>
+          <CardTitle><h1>Create a new agent</h1></CardTitle>
           <CardDescription>
             Each agent has its own model configuration and API keys. Learn more
             about which model to choose based on Use Case.
