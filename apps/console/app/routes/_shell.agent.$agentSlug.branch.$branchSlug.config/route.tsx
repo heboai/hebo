@@ -7,7 +7,7 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/shared-ui/components/Collapsible";
-import { Card, CardContent } from "@hebo/shared-ui/components/Card";
+import { Card } from "@hebo/shared-ui/components/Card";
 import { Badge } from "@hebo/shared-ui/components/Badge";
 import { BranchModelForm, clientAction } from "./form";
 import { RailSymbol } from "lucide-react";
@@ -39,7 +39,7 @@ export default function AgentBranchConfig({ loaderData, actionData }: Route.Comp
   }>("routes/_shell.agent.$agentSlug")!;
   const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
   const activeBranch = agent.branches[0];
-  const models: Array<{ alias: string; type: string }> = activeBranch.models;
+  const models = activeBranch.models;
   const defaultModel = models.find((m) => m.alias === "default");
 
   return (
