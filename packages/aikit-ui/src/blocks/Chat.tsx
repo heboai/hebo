@@ -26,6 +26,9 @@ import {
 } from "../_ai-elements/prompt-input";
 import { Button } from "../_shadcn/ui/button";
 
+const kbdStyles =
+  "inline-flex w-fit rounded-md border border-gray-300 bg-gray-50 px-2 py-1 text-sm font-mono font-medium text-muted-foreground shadow-sm";
+
 // Types based on models.schema.json
 type ModelsConfig = {
   models: Array<{
@@ -47,19 +50,20 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Set default model alias if non has been selected
   useEffect(() => {
     const aliases = modelsConfig.models.map((m) => m.alias);
     if (!currentModelAlias || !aliases.includes(currentModelAlias)) {
-      setCurrentModelAlias(aliases[0] ?? "");
+      setCurrentModelAlias(aliases[0]);
     }
   }, [modelsConfig, currentModelAlias]);
 
-  // Get current model config - only return a model if we have a valid alias and it exists
+  // Get current model config for the selected alias
   const currentModel = currentModelAlias
     ? modelsConfig.models.find((m) => m.alias === currentModelAlias)
     : undefined;
 
-  // Create OpenAI client based on current model (only if model exists)
+  // Create OpenAI client based on current model
   const openai = currentModel
     ? createOpenAI({
         apiKey: "",
@@ -74,9 +78,9 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       })
     : undefined;
 
+  // Shortcut: Ctrl/Cmd+i to focus chat input field
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Ctrl+i or Cmd+i to focus chat input
       if ((e.ctrlKey || e.metaKey) && e.key === "i") {
         e.preventDefault();
         (document.querySelector("#chat-input") as HTMLTextAreaElement)?.focus();
@@ -122,16 +126,14 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       const assistantMessage: UIMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        parts: [
-          { type: "text", text: text || "Sorry, I encountered an error." },
-        ],
+        parts: [{ type: "text", text: text }],
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch {
       const errorMessage: UIMessage = {
         id: crypto.randomUUID(),
-        role: "assistant",
+        role: "system",
         parts: [{ type: "text", text: "Sorry, I encountered an error." }],
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -145,6 +147,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       {/* Header Controls */}
       <div className="absolute top-1.5 left-1.5 z-10 flex items-center">
         <Button
+          disabled={!currentModelAlias}
           variant="ghost"
           size="icon"
           onClick={() => setMessages([])}
@@ -156,36 +159,48 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       </div>
 
       {/* Conversation area */}
-      <Conversation className="top-0">
-        <ConversationContent
-          className="px-3 py-0"
-          aria-label="Chat conversation"
-          tabIndex={-1}
-        >
-          {messages.map((message) => (
-            <Message
-              from={message.role}
-              key={message.id}
-              tabIndex={-1}
-              role="article"
-              aria-label={`Message from ${message.role}`}
-              className="p-1"
-            >
-              <MessageContent className="px-3 py-2">
-                <div>{renderMessagePart(message.parts[0])}</div>
-              </MessageContent>
-            </Message>
-          ))}
-          {isLoading && (
-            <Message from="assistant" key="loading">
-              <MessageContent>
-                <div aria-live="polite">
-                  <span className="animate-pulse">Thinking...</span>
-                </div>
-              </MessageContent>
-            </Message>
-          )}
-        </ConversationContent>
+      <Conversation className="top-0 flex">
+        {messages.length > 0 ? (
+          <ConversationContent
+            className="px-3 py-0"
+            aria-label="Chat conversation"
+            tabIndex={-1}
+          >
+            {messages.map((message) => (
+              <Message
+                from={message.role}
+                key={message.id}
+                tabIndex={-1}
+                role="article"
+                aria-label={`Message from ${message.role}`}
+                className="p-1"
+              >
+                <MessageContent className="px-3 py-2">
+                  <div>{renderMessagePart(message.parts[0])}</div>
+                </MessageContent>
+              </Message>
+            ))}
+            {isLoading && (
+              <Message from="assistant" key="loading">
+                <MessageContent>
+                  <div aria-live="polite">
+                    <span className="animate-pulse">Thinking...</span>
+                  </div>
+                </MessageContent>
+              </Message>
+            )}
+          </ConversationContent>
+        ) : (
+          <div className="text-muted-foreground m-auto flex flex-col justify-center gap-2 text-center">
+            <div className="text-7xl">🐵</div>
+            Open an agent and start chatting
+            <div className="flex items-center justify-center gap-1 whitespace-nowrap">
+              <kbd className={kbdStyles}>⌘</kbd>/{" "}
+              <kbd className={kbdStyles}>Ctrl</kbd>+{" "}
+              <kbd className={kbdStyles}>I</kbd>
+            </div>
+          </div>
+        )}
         <ConversationScrollButton />
       </Conversation>
 
@@ -197,6 +212,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       >
         <PromptInputTextarea
           id="chat-input"
+          disabled={!currentModelAlias}
           onChange={(e) => setInput(e.target.value)}
           value={input}
           placeholder="Start prompting..."
@@ -216,14 +232,18 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
             <PromptInputModelSelect
               onValueChange={(alias) => setCurrentModelAlias(alias)}
               value={currentModelAlias}
-              disabled={isLoading}
+              disabled={isLoading || modelsConfig.models.length === 0}
               aria-label="Select AI model"
             >
               <PromptInputModelSelectTrigger
                 aria-label={`Current model: ${currentModelAlias}`}
               >
                 <Bot />
-                <PromptInputModelSelectValue />
+                {modelsConfig.models.length > 0 ? (
+                  <PromptInputModelSelectValue />
+                ) : (
+                  "No agent opened"
+                )}
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>
                 {modelsConfig.models.map((model) => (
