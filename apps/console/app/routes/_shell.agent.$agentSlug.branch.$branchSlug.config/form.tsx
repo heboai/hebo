@@ -107,9 +107,10 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 
 export type BranchModelFormProps = {
   onCancel: () => void;
+  editModel?: { alias: string; type: string };
 };
 
-export function BranchModelForm({ onCancel }: BranchModelFormProps) {
+export function BranchModelForm({ onCancel, editModel }: BranchModelFormProps) {
   const actionData = useActionData<any>();
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
@@ -122,7 +123,12 @@ export function BranchModelForm({ onCancel }: BranchModelFormProps) {
 
   // Determine default model internally
   const getDefaultModel = (): { alias: string; type: string } | undefined => {
-    // Check URL search params for editing context
+    // First check if editModel is passed as prop (preferred method)
+    if (editModel) {
+      return editModel;
+    }
+    
+    // Check URL search params for editing context (fallback)
     const editAlias = searchParams.get('edit');
     if (editAlias) {
       return currentModels.find(model => model.alias === editAlias);
@@ -274,7 +280,17 @@ export default function ModelConfigurationForm() {
               <CollapsibleContent>
                 <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
                   <BranchModelForm 
-                    onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))} 
+                    editModel={m}
+                    onCancel={() => {
+                      // Clear the edit URL parameter when canceling
+                      const newSearchParams = new URLSearchParams(window.location.search);
+                      newSearchParams.delete('edit');
+                      const newUrl = newSearchParams.toString() 
+                        ? `${window.location.pathname}?${newSearchParams}` 
+                        : window.location.pathname;
+                      window.history.replaceState({}, '', newUrl);
+                      setOpenMap((prev) => ({ ...prev, [m.alias]: false }));
+                    }} 
                   />
                 </Card>
               </CollapsibleContent>
