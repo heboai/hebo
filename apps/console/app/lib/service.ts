@@ -6,18 +6,6 @@ import { isDevLocal } from "~console/lib/env";
 
 import type { Api } from "~api";
 
-export const fetchConfig = {
-  headers: (_path: string, options?: RequestInit) => {
-    const token = authService.getAccessToken();
-    if (!token) return;
-    const headers = new Headers(options?.headers ?? {});
-    headers.set("x-stack-access-token", token);
-    return headers;
-  },
-};
-
-export type FetchConfig = typeof fetchConfig;
-
 const url = isDevLocal
   ? "http://localhost:5173/api"
   : import.meta.env.VITE_API_URL!;
@@ -54,8 +42,20 @@ export const kyFetch = ky.extend({
   },
 });
 
+export const fetchWithAuth = async (
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Promise<Response> => {
+  const headers = new Headers(init?.headers ?? {});
+  const token = authService.getAccessToken();
+  if (token) headers.set("x-stack-access-token", token);
+
+  return kyFetch(input as any, {
+    ...(init as any),
+    headers,
+  }) as unknown as Promise<Response>;
+};
+
 export const api = treaty<Api>(url, {
-  headers: fetchConfig.headers,
-  // Automatic retries, timeouts & error throwing
-  fetcher: kyFetch,
+  fetcher: fetchWithAuth,
 }).v1;

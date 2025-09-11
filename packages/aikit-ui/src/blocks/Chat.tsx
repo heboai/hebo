@@ -41,16 +41,17 @@ type ModelsConfig = {
   }>;
 };
 
-export type FetchHeadersConfig = {
-  headers?: (path: string, options?: RequestInit) => HeadersInit | void;
-};
+export type ChatFetch = (
+  input: RequestInfo | URL,
+  init?: RequestInit,
+) => Promise<Response>;
 
 export function Chat({
   modelsConfig,
-  fetchConfig,
+  fetch: chatFetch,
 }: {
   modelsConfig: ModelsConfig;
-  fetchConfig?: FetchHeadersConfig;
+  fetch?: ChatFetch;
 }) {
   const [currentModelAlias, setCurrentModelAlias] = useState("");
   const [messages, setMessages] = useState<UIMessage[]>([]);
@@ -74,22 +75,7 @@ export function Chat({
     ? createOpenAI({
         apiKey: "",
         baseURL: currentModel.endpoint?.baseUrl || "",
-        fetch:
-          currentModel.endpoint?.fetch ||
-          ((input: RequestInfo | URL, init?: RequestInit) => {
-            const extraHeaders = fetchConfig?.headers?.(
-              typeof input === "string" ? input : String(input),
-              init ?? {},
-            );
-            const headers = new Headers(init?.headers ?? {});
-            if (extraHeaders)
-              for (const [k, v] of new Headers(extraHeaders).entries())
-                headers.set(k, v);
-            return fetch(input, {
-              ...init,
-              headers,
-            });
-          }),
+        fetch: currentModel.endpoint?.fetch || chatFetch || fetch,
       })
     : undefined;
 

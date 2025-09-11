@@ -1,5 +1,5 @@
 import { Chat } from "@hebo/aikit-ui/blocks/Chat";
-import { fetchConfig } from "~console/lib/service";
+import { fetchWithAuth } from "~console/lib/service";
 
 const VITE_GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL?.trim();
 
@@ -26,5 +26,5 @@ export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
     })),
   };
 
-  return <Chat modelsConfig={modelsConfig} fetchConfig={fetchConfig} />;
+  return <Chat modelsConfig={modelsConfig} fetch={fetchWithAuth} />;
 }
