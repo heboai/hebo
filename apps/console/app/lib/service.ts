@@ -50,10 +50,10 @@ export const fetchWithAuth = async (
   const token = authService.getAccessToken();
   if (token) headers.set("x-stack-access-token", token);
 
-  return kyFetch(input as any, {
-    ...(init as any),
+  return kyFetch(input, {
+    ...init,
     headers,
-  }) as unknown as Promise<Response>;
+  });
 };
 
 export const api = treaty<Api>(url, {
