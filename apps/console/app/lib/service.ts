@@ -13,6 +13,12 @@ const url = isDevLocal
 export const kyFetch = ky.extend({
   throwHttpErrors: false,
   hooks: {
+    beforeRequest: [
+      (request) => {
+        const token = authService.getAccessToken();
+        if (token) request.headers.set("x-stack-access-token", token);
+      },
+    ],
     afterResponse: [
       async (_req, _opts, res) => {
         // Successful response, all good
@@ -42,20 +48,6 @@ export const kyFetch = ky.extend({
   },
 });
 
-export const fetchWithAuth = async (
-  input: RequestInfo | URL,
-  init?: RequestInit,
-): Promise<Response> => {
-  const headers = new Headers(init?.headers ?? {});
-  const token = authService.getAccessToken();
-  if (token) headers.set("x-stack-access-token", token);
-
-  return kyFetch(input, {
-    ...init,
-    headers,
-  });
-};
-
 export const api = treaty<Api>(url, {
-  fetcher: fetchWithAuth,
+  fetcher: kyFetch,
 }).v1;
