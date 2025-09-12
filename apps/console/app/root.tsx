@@ -21,7 +21,7 @@ export const links: Route.LinksFunction = () => [
     rel: "stylesheet",
     href:
       "https://fonts.googleapis.com/css2?" +
-      "family=Inter:wght@100..900" +
+      "family=Inter:wght@100..900&" +
       "display=swap",
   },
   { rel: "icon", href: "/hebo-icon.png" },

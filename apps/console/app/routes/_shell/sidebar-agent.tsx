@@ -41,7 +41,7 @@ export function AgentSelect({
   const navigate = useNavigate();
   useHotkeys("shift+mod+o", () =>
     navigate("/agent/create", { viewTransition: true })
-  ), [navigate];
+  , { preventDefault: true }, [navigate]);
 
   return (
     <SidebarMenu>

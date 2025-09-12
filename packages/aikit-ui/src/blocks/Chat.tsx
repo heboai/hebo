@@ -55,7 +55,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   useEffect(() => {
     const aliases = modelsConfig.models.map((m) => m.alias);
     if (!currentModelAlias || !aliases.includes(currentModelAlias)) {
-      setCurrentModelAlias(aliases[0]);
+      setCurrentModelAlias(aliases[0] ?? "");
     }
   }, [modelsConfig, currentModelAlias]);
 
@@ -144,7 +144,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   };
 
   return (
-    <div className="flex h-full flex-col p-2 pt-12">
+    <div className="relative flex h-full flex-col p-2 pt-12">
       {/* Header Controls */}
       <div className="absolute top-3 left-2">
         <Button

@@ -1,5 +1,6 @@
 import { XCircle, SquareChevronRight } from "lucide-react";
 import { Outlet, useLocation, useRouteLoaderData } from "react-router";
+import { useRef } from "react";
 import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
 
@@ -53,8 +54,9 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
 
   // Focus main element on route change for keyboard nav
   const location = useLocation();
+  const mainRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    document.getElementById("main-div")?.focus();
+    mainRef.current?.focus();
   }, [location]);
 
   return (
@@ -91,7 +93,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           position="top-right"
           icons={{error: <XCircle className="size-4" aria-hidden="true" />}}
         />
-        <div id="main-div" tabIndex={-1} className="min-w-0 flex flex-1 flex-col focus:outline-none gap-4 px-4 sm:px-10 py-10">
+        <div ref={mainRef} tabIndex={-1} className="min-w-0 flex flex-1 flex-col focus:outline-none gap-4 px-4 sm:px-10 py-10">
           <div className="mx-auto max-w-4xl min-w-0 w-full">
             <Outlet />
           </div>
