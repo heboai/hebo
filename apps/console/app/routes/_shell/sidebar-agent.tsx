@@ -1,5 +1,6 @@
 import { Check, ChevronsUpDown, Plus, Settings } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate } from "react-router";
 
 import {
@@ -37,30 +38,17 @@ export function AgentSelect({
   const [open, setOpen] = useState(false);
 
   // Keyboard shortcuts
-  // FUTURE: generalize to useKeyboardShortcut
   const navigate = useNavigate();
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "o") {
-        e.preventDefault();
-        navigate("/agent/create", { viewTransition: true });
-      }
-    };
-
-    document.addEventListener("keydown", handleGlobalKeyDown);
-    return () => document.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [navigate]);
+  useHotkeys("shift+mod+o", () =>
+    navigate("/agent/create", { viewTransition: true })
+  , { preventDefault: true }, [navigate]);
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              aria-label="Select agent"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
+            <SidebarMenuButton size="lg" aria-label="Select agent">
               <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <AgentLogo />
               </div>
@@ -78,8 +66,8 @@ export function AgentSelect({
             side="bottom"
             sideOffset={4}
           >
-            <div className="flex items-center justify-between gap-2 py-1">
-              <DropdownMenuLabel className="font-normal">
+            <div className="flex items-center justify-between py-1">
+              <DropdownMenuLabel className="font-normal pr-0">
                 <div className="flex items-center gap-2">
                   <div className="aspect-square size-6 rounded-lg">
                     <AgentLogo size={24} />
@@ -92,7 +80,7 @@ export function AgentSelect({
                 </div>
               </DropdownMenuLabel>
               {activeAgent && (
-                <DropdownMenuItem asChild className="p-2 ml-2">
+                <DropdownMenuItem asChild className="p-2">
                   <Link
                     to={`/agent/${activeAgent.slug}/settings`}
                     viewTransition
