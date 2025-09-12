@@ -3,20 +3,26 @@ import { BrainCog } from "lucide-react";
 import { Link } from "react-router";
 
 export function SidebarNav({ activeAgent }: { activeAgent?: { slug: string } }) {
-    return (
-        <SidebarMenu>
-        <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Models Config">
-              <Link
-                  to={`/agent/${activeAgent?.slug}/branch/main/config`}
-                  aria-label="Models Config"
-                  rel="noopener noreferrer"
-              >
-                <BrainCog />
-                Models
-              </Link>
-            </SidebarMenuButton>
-        </SidebarMenuItem>
-    </SidebarMenu>
-    )
+  return (
+      <SidebarMenu>
+          <SidebarMenuItem>
+              {activeAgent ? (
+                  <SidebarMenuButton asChild tooltip="Models Config">
+                      <Link
+                          to={`/agent/${activeAgent.slug}/branch/main/config`}
+                          aria-label="Models Config"
+                      >
+                          <BrainCog />
+                          Models
+                      </Link>
+                  </SidebarMenuButton>
+              ) : (
+                  <SidebarMenuButton tooltip="Select an agent" disabled aria-disabled>
+                      <BrainCog />
+                      Models
+                  </SidebarMenuButton>
+              )}
+          </SidebarMenuItem>
+      </SidebarMenu>
+  )
 }

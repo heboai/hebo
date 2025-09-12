@@ -154,7 +154,7 @@ export function BranchModelForm({ onCancel, editModel }: BranchModelFormProps) {
     onValidate({ formData }: { formData: FormData }) {
       return parseWithValibot(formData, { schema: BranchConfigSchema });
     },
-    lastResult: actionData?.lastResult,
+    lastResult: actionData,
   });
 
   return (
