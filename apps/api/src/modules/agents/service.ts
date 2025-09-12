@@ -58,13 +58,19 @@ export const AgentService = {
       throw status(404, AgentsModel.NotFound.const);
     }
 
+    const branches = await BranchService.listBranches(agent.id, userId);
+
     if (expand === "branches") {
       return {
-        ...agent,
-        branches: await BranchService.listBranches(agent.id, userId),
+        agent,
+        branches: branches,
       };
     }
-    return agent;
+
+    return {
+      agent,
+      branches: branches.map((b) => b.slug),
+    };
   },
 
   async updateAgent(
