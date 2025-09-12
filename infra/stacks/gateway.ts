@@ -10,6 +10,7 @@ const gatewayPort = "3002";
 const heboGateway = new sst.aws.Service("HeboGateway", {
   cluster: heboCluster,
   architecture: "arm64",
+  cpu: isProd ? "1 vCPU" : "0.25 vCPU",
   image: {
     context: ".",
     dockerfile: "infra/stacks/docker/Dockerfile.gateway",

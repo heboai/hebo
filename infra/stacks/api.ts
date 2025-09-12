@@ -10,6 +10,7 @@ const apiPort = "3001";
 const heboApi = new sst.aws.Service("HeboApi", {
   cluster: heboCluster,
   architecture: "arm64",
+  cpu: isProd ? "1 vCPU" : "0.25 vCPU",
   image: {
     context: ".",
     dockerfile: "infra/stacks/docker/Dockerfile.api",
