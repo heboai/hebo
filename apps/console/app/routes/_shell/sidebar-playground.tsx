@@ -22,9 +22,10 @@ export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
       ...model,
       endpoint: {
         baseUrl: new URL("v1", VITE_GATEWAY_URL).toString(),
+        fetch: fetchWithAuth,
       },
     })),
   };
 
-  return <Chat modelsConfig={modelsConfig} fetch={fetchWithAuth} />;
+  return <Chat modelsConfig={modelsConfig} />;
 }

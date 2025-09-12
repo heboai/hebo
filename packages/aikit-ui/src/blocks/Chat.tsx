@@ -33,26 +33,12 @@ type ModelsConfig = {
     type: string;
     endpoint?: {
       baseUrl: string;
-      fetch?: (
-        input: RequestInfo | URL,
-        init?: RequestInit,
-      ) => Promise<Response>;
+      fetch?: typeof fetch;
     };
   }>;
 };
 
-export type ChatFetch = (
-  input: RequestInfo | URL,
-  init?: RequestInit,
-) => Promise<Response>;
-
-export function Chat({
-  modelsConfig,
-  fetch: chatFetch,
-}: {
-  modelsConfig: ModelsConfig;
-  fetch?: ChatFetch;
-}) {
+export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   const [currentModelAlias, setCurrentModelAlias] = useState("");
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [input, setInput] = useState("");
@@ -75,7 +61,7 @@ export function Chat({
     ? createOpenAI({
         apiKey: "",
         baseURL: currentModel.endpoint?.baseUrl || "",
-        fetch: currentModel.endpoint?.fetch || chatFetch || fetch,
+        fetch: currentModel.endpoint?.fetch || fetch,
       })
     : undefined;
 
