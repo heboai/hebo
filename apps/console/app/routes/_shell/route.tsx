@@ -24,10 +24,10 @@ import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
 import { StaticContent } from "./sidebar-static";
 import { PlaygroundSidebar } from "./sidebar-playground";
+import { SidebarNav } from "./sidebar-nav";
 
 import type { Route } from "./+types/route";
 import { useEffect } from "react";
-
 
 async function authMiddleware() {
   await authService.ensureSignedIn();
@@ -38,14 +38,14 @@ export const unstable_clientMiddleware = [authMiddleware];
 export async function clientLoader() {
   return { agents: (await api.agents.get()).data ?? [] };
 }
-
 export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
-
   const { user } = useSnapshot(authStore);
   const { agent: activeAgent = null } = useRouteLoaderData("routes/_shell.agent.$agentSlug") ?? {};
+  // Branch selection: until multi-branch is supported, always use first ("main")
+  const activeBranch = activeAgent?.branches?.[0];
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
@@ -76,7 +76,9 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
           </SidebarHeader>
-          <SidebarContent />
+          <SidebarContent>
+            <SidebarNav activeAgent={activeAgent} />
+          </SidebarContent>
           <SidebarFooter>
               <StaticContent />
               <SidebarSeparator className="mx-0" />
@@ -127,7 +129,6 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>
-
     </SidebarProvider>
   );
 }
