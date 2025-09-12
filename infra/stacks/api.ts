@@ -19,6 +19,7 @@ const heboApi = new sst.aws.Service("HeboApi", {
   environment: {
     LOG_LEVEL: isProd ? "info" : "debug",
     NO_COLOR: "1",
+    NODE_EXTRA_CA_CERTS: "/etc/ssl/certs/rds-bundle.pem",
     PG_DATABASE: heboDatabase.database,
     PG_HOST: heboDatabase.host,
     PG_PASSWORD: secrets.dbPassword.value,

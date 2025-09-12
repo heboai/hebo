@@ -50,15 +50,7 @@ const initDb = async (): Promise<UniversalDb> => {
   const { host, port, user, password, database } =
     getConnectionConfig() as DbCredentials;
 
-  const pool = new Pool({
-    host,
-    port,
-    user,
-    password,
-    database,
-    // FUTURE: Enable TLS for Aurora/RDS connections.
-    ssl: { rejectUnauthorized: false },
-  });
+  const pool = new Pool({ host, port, user, password, database, ssl: true });
 
   return drizzlePostgres(pool, { schema: postgresSchema });
 };

@@ -38,6 +38,7 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
     },
   ],
   environment: {
+    NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
     PG_HOST: heboDatabase.host,
     PG_PASSWORD: secrets.dbPassword.value,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
