@@ -15,7 +15,7 @@ import {
 } from "@hebo/shared-ui/components/Sidebar";
 
 import { authService } from "~console/lib/auth";
-import { api } from "~console/lib/data";
+import { api } from "~console/lib/service";
 import { dontRevalidateOnFormErrors } from "~console/lib/errors";
 import { getCookie, kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";

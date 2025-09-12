@@ -8,9 +8,9 @@ The infrastructure consists of several key components:
 
 - **VPC**: Network isolation and security
 - **Database**: Aurora PostgreSQL with global clustering
-- **API**: Containerized API deployed on AWS App Runner
-- **Gateway**: Containerized Gateway deployed on AWS App Runner
-- **Frontend**: Next.js application with edge deployment
+- **API**: ECS service (sst.aws.Service) on shared Cluster behind ALB
+- **Gateway**: ECS service (sst.aws.Service) on shared Cluster behind ALB
+- **Console**: Static site (React Router) via SST StaticSite (S3 + CloudFront)
 
 ## Infrastructure Components
 
@@ -18,67 +18,74 @@ The infrastructure consists of several key components:
 
 The Virtual Private Cloud provides network isolation and security for all resources:
 
-- **Production**: Standard VPC configuration
-- **Preview**: Includes bastion host and NAT gateway for troubleshooting access from local
+- **NAT**: EC2-managed NAT gateways
+- **Bastion**: Enabled for non-production stages for troubleshooting access
 
 ### Database (`stacks/db.ts`)
 
 Aurora PostgreSQL database with advanced features:
 
-- **Engine**: PostgreSQL 17.x
+- **Engine**: PostgreSQL 17.X
 - **Global Clustering**: Multi-region replication for production
-- **Scaling**:
-  - Production: Aurora Serverless v2 with 1 replica
-  - Preview: Auto-scaling with pause after 20 minutes of inactivity
-- **Security**: Encrypted storage and proxy connection
-- **Credentials**: Managed through SST secrets
+- **Migrator**: Lambda function runs migrations automatically on deploy (non-dev)
 
 ### API (`stacks/api.ts`)
 
-Containerized API deployed on AWS App Runner:
+ECS service (sst.aws.Service) running on a shared Cluster behind an ALB:
 
-- **Container**: Docker image from ECR
-- **Runtime**: Bun 1.x with ElysiaJS 1.x framework
-- **Port**: 3001 (configurable)
-- **VPC Integration**: Connected to database through VPC connector
-- **Auto-deployment**: Disabled for manual control
+- **Runtime**: Bun 1.x + ElysiaJS 1.x
 
 ### Gateway (`stacks/gateway.ts`)
 
-Containerized Gateway deployed on AWS App Runner:
+ECS service (sst.aws.Service) running on the same Cluster behind an ALB:
 
-- **Container**: Docker image from ECR
-- **Runtime**: Bun 1.x with ElysiaJS 1.x framework
-- **Port**: 3002 (configurable)
-- **VPC Integration**: Connected to database through VPC connector
-- **Auto-deployment**: Disabled for manual control
+- **Runtime**: Bun 1.x + ElysiaJS 1.x
 
-### App (`stacks/app.ts`)
+### Console (`stacks/console.ts`)
 
-Next.js application with edge deployment:
+- **Framework**: React Router
 
-- **Framework**: Next.js with edge rendering
-- **Domain**:
-  - Production: `cloud.hebo.ai`
-  - Preview: `{stage}.cloud.hebo.ai`
-- **Environment**: Connected to API and external services
+### DNS (`stacks/dns.ts`)
+
+- **Hosted Zone**: Ensures Route53 zone `hebo.ai` exists (creates if missing)
+- **Domain pattern**:
+  - Production: `{app}.hebo.ai`
+  - Preview: `{app}.{stage}.hebo.ai`
+
+### Secrets (`stacks/secrets.ts`)
+
+Required SST secrets:
+
+- `StackProjectId`
+- `StackSecretServerKey`
+- `StackPublishableClientKey`
+- `DbUsername`
+- `DbPassword`
+- `GroqApiKey`
+- `VoyageApiKey`
 
 ## Deployment
 
 ### Prerequisites
 
-1. **AWS CLI configured**
-2. **Docker installed and running**
-3. **SST CLI installed**
+1. **Bun installed** (>= 1.2.x)
+2. **AWS CLI configured**
+3. **Docker installed and running**
+
+### Install SST providers
+
+```bash
+bun run sst install
+```
 
 ### Deploy Infrastructure
 
 ```bash
 # From project root
-bun run deploy
+bun run sst deploy
 
 # Or specific stage
-bun run deploy --stage production
+bun run sst deploy --stage production
 ```
 
 ## Security
@@ -91,22 +98,13 @@ bun run deploy --stage production
 ## Monitoring and Scaling
 
 - **Database**: Aurora Serverless v2 with automatic scaling
-- **API**: App Runner with automatic scaling based on load
-- **Gateway**: App Runner with automatic scaling based on load
-- **App**: Edge deployment for global performance
+- **API/Gateway**: ECS services behind ALB with desired count scaling
+- **Console**: CDN-cached static site (CloudFront) for global performance
 
 ### Logs and Debugging
 
-```bash
-# View App Runner logs
-aws apprunner describe-service --service-arn <service-arn>
-
-# List operations and recent deployments
-aws apprunner list-operations --service-arn <service-arn>
-
-# Check database status
-aws rds describe-db-clusters --db-cluster-identifier <cluster-id>
-```
+- **API/Gateway**: View service logs in CloudWatch Logs for `HeboApiService` and `HeboGatewayService`. Monitor ALB metrics (4xx/5xx) in CloudWatch.
+- **Database**: Check RDS/Aurora cluster status and logs in the AWS Console or via `aws rds` CLI.
 
 ## Cost Optimization
 

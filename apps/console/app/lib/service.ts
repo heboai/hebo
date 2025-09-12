@@ -1,6 +1,7 @@
 import { treaty } from "@elysiajs/eden";
 import ky, { HTTPError } from "ky";
 
+import { authService } from "~console/lib/auth";
 import { isDevLocal } from "~console/lib/env";
 
 import type { Api } from "~api";
@@ -12,6 +13,12 @@ const url = isDevLocal
 export const kyFetch = ky.extend({
   throwHttpErrors: false,
   hooks: {
+    beforeRequest: [
+      (request) => {
+        const token = authService.getAccessToken();
+        if (token) request.headers.set("x-stack-access-token", token);
+      },
+    ],
     afterResponse: [
       async (_req, _opts, res) => {
         // Successful response, all good
@@ -42,8 +49,5 @@ export const kyFetch = ky.extend({
 });
 
 export const api = treaty<Api>(url, {
-  // Automatic retries, timeouts & error throwing
   fetcher: kyFetch,
-  // Pass the JWT token to api calls
-  fetch: { credentials: "include" },
 }).v1;

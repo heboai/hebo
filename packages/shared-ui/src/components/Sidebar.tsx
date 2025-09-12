@@ -7,7 +7,6 @@ import { useSidebar, SidebarContext } from "../_shadcn/ui/sidebar";
 import { useIsMobile } from "../hooks/use-mobile";
 import { cn } from "../lib/utils";
 
-
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

@@ -44,7 +44,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ```bash
 # Install dependencies
-bun i
+bun install
 ```
 
 ```bash
@@ -84,17 +84,8 @@ bun run -F @hebo/db clean
 | #   | Mode                        | Command                    | Database                       | API availability                        |
 | --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
 | 1   | **Frontend-only** (offline) | `bun run -F @hebo/console dev` | —                              | none – UI relies on local state manager |
-| 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | http://localhost:3001                   |
-| 3   | **Remote full-stack**       | `sst deploy`               | Aurora PostgreSQL              | HTTPS URL injected by SST               |
-
-> **How the UI knows if the API is present**
->
-> The web app reads `VITE_API_URL` at runtime:
->
-> - If the variable is **empty or undefined** (mode #1), network hooks skip requests and components use valtio cache only.
-> - For modes #2 and #3, the value is filled automatically (`http://localhost:3001` by `bun dev`, or the real API Gateway URL by `sst deploy`).
->
-> Database-selection logic lives in `packages/db/drizzle.ts` and is **completely separated** from the API availability code in `...` [TBD].
+| 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | Env variables `VITE_API_URL`, `VITE_GATEWAY_URL`                   |
+| 3   | **Remote full-stack**       | `bun run sst deploy`               | Aurora PostgreSQL              | HTTPS URLs injected by SST              |
 
 ### Building
 
@@ -125,25 +116,26 @@ The repository uses GitHub Actions for CI/CD:
 #### Manual deployments:
 
 For deployments, we utilize the SST framework (https://sst.dev/).
-You can either install the SST CLI locally or use `bunx` to execute deployment commands manually.
 
 ```bash
 # Install providers
-sst install
+bun run sst install
 
 # Set secrets
-
-sst secret set HeboDbUsername <username> --stage <stage>
-sst secret set HeboDbPassword <password> --stage <stage>
-
-# The same for StackProjectId, StackPublishableClientKey, StackSecretServerKey, PosthogKey, PosthogHost
+bun run sst secret set <secret-name> <secret-value> --stage <stage>
 
 # Deploy a preview link
-sst deploy --stage PR-XX
+bun run sst deploy --stage PR-XX
 
 # Remove a preview link
-sst remove --stage PR-XX
+bun run sst remove --stage PR-XX
 
 # Deploy to production
-sst deploy --stage production
+bun run sst deploy --stage production
 ```
+
+#### Service URLs
+
+- API: `https://api.hebo.ai` (prod) or `https://api.<stage>.hebo.ai` (preview)
+- Gateway: `https://gateway.hebo.ai` (prod) or `https://gateway.<stage>.hebo.ai` (preview)
+- Console: `https://console.hebo.ai` (prod) or `https://console.<stage>.hebo.ai` (preview)

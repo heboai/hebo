@@ -1,4 +1,5 @@
 import { Chat } from "@hebo/aikit-ui/blocks/Chat";
+import { kyFetch } from "~console/lib/service";
 
 const VITE_GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL?.trim();
 
@@ -20,7 +21,8 @@ export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
     models: (activeBranch?.models ?? []).map((model) => ({
       ...model,
       endpoint: {
-        baseUrl: VITE_GATEWAY_URL,
+        baseUrl: new URL("v1", VITE_GATEWAY_URL).toString(),
+        fetch: kyFetch,
       },
     })),
   };

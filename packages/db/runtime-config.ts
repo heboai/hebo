@@ -1,50 +1,9 @@
-import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const requireModule = createRequire(import.meta.url);
-
-// `sst` might not be installed or the code might be running outside the
-// SST multiplexer.  So we attempt to synchronously require it and gracefully
-// handle any failures.
-let ResourceSafe: any | undefined;
-try {
-  ResourceSafe = requireModule("sst").Resource;
-} catch {
-  // Module not found or other error – treat as non-SST environment.
-  ResourceSafe = undefined;
-}
-
-// Helper to safely access a nested property on the Resource proxy.  If the
-// proxy throws (because the SST resource map hasn't been initialised) we catch
-// the error and return undefined instead – ensuring local development doesn't
-// explode.
-const safeRead = <T>(fn: () => T): T | undefined => {
-  try {
-    return fn();
-  } catch {
-    return undefined;
-  }
-};
-
-// Cached view of the HeboDatabase resource (if present & accessible).
-const heboDb = ResourceSafe
-  ? (safeRead(() => ResourceSafe.HeboDatabase) ?? {})
-  : {};
-
-/**
- * Determines if the current runtime should be considered "local".
- *
- * Logic hierarchy:
- * 1. If PG_HOST environment variable is set, assume remote (not local).
- * 2. If we detect an SST-provided PostgreSQL host, assume remote (not local).
- * 3. Otherwise, treat as local environment.
- */
-export const isLocal: boolean = (() => {
-  if (process.env.PG_HOST) return false;
-  const remoteHost = safeRead(() => (heboDb as any).host);
-  return !remoteHost;
-})();
+export const isLocal: boolean = !(
+  process.env.PG_HOST && process.env.PG_HOST.trim().length > 0
+);
 
 export type DbCredentials = {
   host: string;
@@ -102,24 +61,11 @@ export function getConnectionConfig(): DbCredentials | string {
     return path.resolve(pkgDir, "hebo.db");
   }
 
-  // "Remote" – PostgreSQL.  Pull from SST first, then ENV.
   return {
-    host:
-      safeRead(() => (heboDb as any).host) ??
-      process.env.PG_HOST ??
-      "localhost",
-    port:
-      safeRead(() => (heboDb as any).port) ??
-      Number(process.env.PG_PORT ?? 5432),
-    user:
-      safeRead(() => (heboDb as any).username) ??
-      process.env.PG_USER ??
-      "postgres",
-    password:
-      safeRead(() => (heboDb as any).password) ?? process.env.PG_PASSWORD ?? "",
-    database:
-      safeRead(() => (heboDb as any).database) ??
-      process.env.PG_DATABASE ??
-      "hebo",
+    host: process.env.PG_HOST!,
+    port: Number(process.env.PG_PORT!),
+    user: process.env.PG_USER!,
+    password: process.env.PG_PASSWORD!,
+    database: process.env.PG_DATABASE!,
   };
 }

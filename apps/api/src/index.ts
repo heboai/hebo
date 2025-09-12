@@ -9,11 +9,14 @@ import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
 
-const PORT = Number(process.env.API_PORT) || 3001;
+const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
+const PORT = Number(process.env.PORT ?? 3001);
 
 const createApi = () =>
   new Elysia()
-    .use(logger())
+    .use(logger({ level: LOG_LEVEL }))
+    // Root route ("/") is unauthenticated and unprotected for health checks.
+    .get("/", () => "🐵 Hebo API says hello!")
     .use(cors(corsConfig))
     .use(
       swagger({
@@ -27,7 +30,6 @@ const createApi = () =>
       }),
     )
     .use(authService)
-    .get("/", () => "🐵 Hebo API says hello!")
     .group(
       "/v1",
       {
