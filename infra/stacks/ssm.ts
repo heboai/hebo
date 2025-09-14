@@ -1,10 +1,8 @@
 import * as secrets from "./secrets";
 
-const stage = $app.stage === "production" ? "" : `${$app.stage}-`;
-
 const createParameter = (name: string, secret: sst.Secret) => {
   return new aws.ssm.Parameter(name, {
-    name: `${stage}${name}`,
+    name: `/hebo/${$app.stage}/${name}`,
     type: aws.ssm.ParameterType.SecureString,
     value: secret.value,
     overwrite: true,
