@@ -32,14 +32,14 @@ export const CreateBody = t.Intersect([
 ]);
 export const UpdateBody = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
 export const Agent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
-const AgentWithBranchSlugs = t.Object({
-  agent: Agent,
-  branches: t.Array(t.String()),
-});
-const AgentWithBranchObjects = t.Object({
-  agent: Agent,
-  branches: BranchList,
-});
+const AgentWithBranchSlugs = t.Intersect([
+  Agent,
+  t.Object({ branches: t.Array(t.String()) }),
+]);
+const AgentWithBranchObjects = t.Intersect([
+  Agent,
+  t.Object({ branches: BranchList }),
+]);
 export const AgentWithBranches = t.Union([
   AgentWithBranchSlugs,
   AgentWithBranchObjects,
