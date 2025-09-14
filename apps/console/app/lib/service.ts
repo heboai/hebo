@@ -16,7 +16,7 @@ export const kyFetch = ky.extend({
     beforeRequest: [
       (request) => {
         const token = authService.getAccessToken();
-        if (token) request.headers.set("x-stack-access-token", token);
+        request.headers.set("x-stack-access-token", token!);
       },
     ],
     afterResponse: [
