@@ -1,26 +1,17 @@
 const ZONE_NAME = "hebo.ai";
 
-const createZoneIfNotExists = async (zoneName: string) => {
-  try {
-    await aws.route53.getZone({ name: zoneName });
-  } catch {
-    // eslint-disable-next-line sonarjs/constructor-for-side-effects
-    new aws.route53.Zone(
-      "HeboZone",
-      {
-        name: zoneName,
-      },
-      {
-        retainOnDelete: true,
-      },
-    );
-  }
-  return zoneName;
-};
+export const heboZone = new aws.route53.Zone(
+  "HeboZone",
+  {
+    name: ZONE_NAME,
+  },
+  {
+    retainOnDelete: true,
+    import: "Z04925831LRULWYM06Z5M",
+  },
+);
 
-export const getDomain = async (appName: string) => {
-  const zoneName = await createZoneIfNotExists(ZONE_NAME);
-  return $app.stage === "production"
-    ? `${appName}.${zoneName}`
-    : `${appName}.${$app.stage}.${zoneName}`;
+export const getDomain = (appName: string) => {
+  const stagePrefix = $app.stage === "production" ? "" : $app.stage + ".";
+  return `${appName}.${stagePrefix}${ZONE_NAME}`;
 };
