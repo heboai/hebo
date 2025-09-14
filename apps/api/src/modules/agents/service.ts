@@ -59,11 +59,9 @@ export const AgentService = {
     }
 
     const branches = await BranchService.listBranches(agent.id, userId);
-
     if (expand === "branches") {
       return { ...agent, branches };
     }
-
     return { ...agent, branches: branches.map((b) => b.slug) };
   },
 
