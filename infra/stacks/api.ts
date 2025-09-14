@@ -1,7 +1,8 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
 import { getDomain } from "./dns";
-import * as secrets from "./secrets";
+import * as env from "./env";
+import * as ssm from "./ssm";
 
 const isProd = $app.stage === "production";
 const apiDomain = await getDomain("api");
@@ -22,12 +23,14 @@ const heboApi = new sst.aws.Service("HeboApi", {
     NODE_EXTRA_CA_CERTS: "/etc/ssl/certs/rds-bundle.pem",
     PG_DATABASE: heboDatabase.database,
     PG_HOST: heboDatabase.host,
-    PG_PASSWORD: secrets.dbPassword.value,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
-    PG_USER: heboDatabase.username,
     PORT: apiPort,
-    STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
-    VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
+    VITE_STACK_PROJECT_ID: env.stackProjectId,
+  },
+  ssm: {
+    PG_PASSWORD: ssm.dbPassword.arn,
+    PG_USER: ssm.dbUsername.arn,
+    STACK_SECRET_SERVER_KEY: ssm.stackSecretServerKey.arn,
   },
   loadBalancer: {
     domain: apiDomain,

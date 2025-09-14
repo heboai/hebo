@@ -1,4 +1,4 @@
-import * as secrets from "./secrets";
+import * as ssm from "./ssm";
 import { heboVpc } from "./vpc";
 
 const isProd = $app.stage === "production";
@@ -18,8 +18,8 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   scaling: isProd
     ? { min: "0.5 ACU" }
     : { min: "0 ACU", max: "4 ACU", pauseAfter: "20 minutes" },
-  username: secrets.dbUsername.value,
-  password: secrets.dbPassword.value,
+  username: ssm.dbUsername.value,
+  password: ssm.dbPassword.value,
   database: "hebo",
   transform: {
     cluster: (a) => {
@@ -40,9 +40,9 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
   environment: {
     NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
     PG_HOST: heboDatabase.host,
-    PG_PASSWORD: secrets.dbPassword.value,
+    PG_PASSWORD: ssm.dbPassword.value,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
-    PG_USER: heboDatabase.username,
+    PG_USER: ssm.dbUsername.value,
     PG_DATABASE: heboDatabase.database,
   },
 });

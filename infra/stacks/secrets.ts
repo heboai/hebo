@@ -1,9 +1,5 @@
 // Auth
-export const stackProjectId = new sst.Secret("StackProjectId");
 export const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
-export const stackPublishableClientKey = new sst.Secret(
-  "StackPublishableClientKey",
-);
 
 // Database
 export const dbUsername = new sst.Secret("DbUsername");

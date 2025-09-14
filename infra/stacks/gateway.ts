@@ -1,7 +1,8 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
 import { getDomain } from "./dns";
-import * as secrets from "./secrets";
+import * as env from "./env";
+import * as ssm from "./ssm";
 
 const isProd = $app.stage === "production";
 const gatewayDomain = await getDomain("gateway");
@@ -22,14 +23,16 @@ const heboGateway = new sst.aws.Service("HeboGateway", {
     NODE_EXTRA_CA_CERTS: "/etc/ssl/certs/rds-bundle.pem",
     PG_DATABASE: heboDatabase.database,
     PG_HOST: heboDatabase.host,
-    PG_PASSWORD: secrets.dbPassword.value,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
-    PG_USER: heboDatabase.username,
     PORT: gatewayPort,
-    STACK_SECRET_SERVER_KEY: secrets.stackSecretServerKey.value,
-    VITE_STACK_PROJECT_ID: secrets.stackProjectId.value,
-    GROQ_API_KEY: secrets.groqApiKey.value,
-    VOYAGE_API_KEY: secrets.voyageApiKey.value,
+    VITE_STACK_PROJECT_ID: env.stackProjectId,
+  },
+  ssm: {
+    PG_PASSWORD: ssm.dbPassword.arn,
+    PG_USER: ssm.dbUsername.arn,
+    STACK_SECRET_SERVER_KEY: ssm.stackSecretServerKey.arn,
+    GROQ_API_KEY: ssm.groqApiKey.arn,
+    VOYAGE_API_KEY: ssm.voyageApiKey.arn,
   },
   loadBalancer: {
     domain: gatewayDomain,
