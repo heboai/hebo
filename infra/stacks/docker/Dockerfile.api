@@ -19,19 +19,17 @@ RUN bun install --frozen-lockfile --production --ignore-scripts
 
 COPY --from=pruner /repo/out/full/ ./
 
-WORKDIR /repo/apps/api
-RUN bun run build
-
-########################  certs stage  ########################
-FROM debian:bookworm-slim AS certs
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/*
 RUN curl -fsSL https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem -o /rds-bundle.pem
+
+WORKDIR /repo/apps/api
+RUN bun run build
 
 ########################  runner stage  ########################
 FROM gcr.io/distroless/base
 WORKDIR /app
 
-COPY --from=certs /rds-bundle.pem /etc/ssl/certs/rds-bundle.pem
+COPY --from=builder /rds-bundle.pem /etc/ssl/certs/rds-bundle.pem
 COPY --from=builder /repo/apps/api/dist/server .
 
 EXPOSE 3001
