@@ -1,7 +1,6 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
-import * as env from "./env";
-import { isProd } from "./env";
+import { isProd, stackProjectId } from "./env";
 import * as ssm from "./ssm";
 
 const gatewayDomain = isProd
@@ -26,7 +25,7 @@ const heboGateway = new sst.aws.Service("HeboGateway", {
     PG_HOST: heboDatabase.host,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
     PORT: gatewayPort,
-    VITE_STACK_PROJECT_ID: env.stackProjectId,
+    VITE_STACK_PROJECT_ID: stackProjectId,
   },
   ssm: {
     PG_PASSWORD: ssm.dbPassword.arn,

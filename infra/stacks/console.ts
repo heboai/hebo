@@ -1,6 +1,5 @@
 import heboApi from "./api";
-import * as env from "./env";
-import { isProd } from "./env";
+import { isProd, stackProjectId, stackPublishableClientKey } from "./env";
 import heboGateway from "./gateway";
 
 const heboConsole = new sst.aws.StaticSite("HeboConsole", {
@@ -13,8 +12,8 @@ const heboConsole = new sst.aws.StaticSite("HeboConsole", {
   environment: {
     VITE_API_URL: heboApi.url,
     VITE_GATEWAY_URL: heboGateway.url,
-    VITE_STACK_PROJECT_ID: env.stackProjectId,
-    VITE_STACK_PUBLISHABLE_CLIENT_KEY: env.stackPublishableClientKey,
+    VITE_STACK_PROJECT_ID: stackProjectId,
+    VITE_STACK_PUBLISHABLE_CLIENT_KEY: stackPublishableClientKey,
   },
 });
 
