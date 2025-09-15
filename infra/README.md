@@ -60,7 +60,7 @@ Required SST secrets:
 ### Setup the environment
 
 ```bash
-cp .env.template .env
+cp .env.example .env
 # Fill in your values
 ```
 

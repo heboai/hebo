@@ -119,7 +119,7 @@ For deployments, we utilize the SST framework (https://sst.dev/).
 
 ```bash
 # Setup env variables
-cp .env.template .env
+cp .env.example .env
 # (Fill it with your values)
 
 # Install providers
