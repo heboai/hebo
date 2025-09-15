@@ -6,20 +6,12 @@ This directory contains the infrastructure as code for the Hebo platform, built 
 
 The infrastructure consists of several key components:
 
-- **VPC**: Network isolation and security
 - **Database**: Aurora PostgreSQL with global clustering
 - **API**: ECS service (sst.aws.Service) on shared Cluster behind ALB
 - **Gateway**: ECS service (sst.aws.Service) on shared Cluster behind ALB
 - **Console**: Static site (React Router) via SST StaticSite (S3 + CloudFront)
 
 ## Infrastructure Components
-
-### VPC (`stacks/vpc.ts`)
-
-The Virtual Private Cloud provides network isolation and security for all resources:
-
-- **NAT**: EC2-managed NAT gateways
-- **Bastion**: Enabled for non-production stages for troubleshooting access
 
 ### Database (`stacks/db.ts`)
 
@@ -45,14 +37,7 @@ ECS service (sst.aws.Service) running on the same Cluster behind an ALB:
 
 - **Framework**: React Router
 
-### DNS (`stacks/dns.ts`)
-
-- **Hosted Zone**: Ensures Route53 zone `hebo.ai` exists (creates if missing)
-- **Domain pattern**:
-  - Production: `{app}.hebo.ai`
-  - Preview: `{app}.{stage}.hebo.ai`
-
-### Secrets (`stacks/secrets.ts`)
+## Secrets
 
 Required SST secrets:
 
@@ -71,6 +56,13 @@ Required SST secrets:
 1. **Bun installed** (>= 1.2.x)
 2. **AWS CLI configured**
 3. **Docker installed and running**
+
+### Setup the environment
+
+```bash
+cp .env.template .env
+# Fill in your values
+```
 
 ### Install SST providers
 
@@ -94,6 +86,7 @@ bun run sst deploy --stage production
 - **Encryption**: Database storage encrypted at rest
 - **IAM**: Least privilege access through SST
 - **Container Security**: Non-root user, minimal Distroless base image
+- **SSM**: Secrets and config managed in AWS Parameter Store
 
 ## Monitoring and Scaling
 
@@ -105,10 +98,3 @@ bun run sst deploy --stage production
 
 - **API/Gateway**: View service logs in CloudWatch Logs for `HeboApiService` and `HeboGatewayService`. Monitor ALB metrics (4xx/5xx) in CloudWatch.
 - **Database**: Check RDS/Aurora cluster status and logs in the AWS Console or via `aws rds` CLI.
-
-## Cost Optimization
-
-- **Preview**: Database pauses after 20 minutes of inactivity
-- **Production**: Aurora Serverless v2 with minimum 0.5 ACU
-- **Container**: Multi-stage builds reduce image size
-- **Edge**: Global distribution reduces latency

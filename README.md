@@ -118,6 +118,10 @@ The repository uses GitHub Actions for CI/CD:
 For deployments, we utilize the SST framework (https://sst.dev/).
 
 ```bash
+# Setup env variables
+cp .env.template .env
+# (Fill it with your values)
+
 # Install providers
 bun run sst install
 
