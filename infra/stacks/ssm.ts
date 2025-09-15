@@ -8,6 +8,7 @@ export const _dbPassword = new sst.Secret("DbPassword");
 // LLMs
 export const _groqApiKey = new sst.Secret("GroqApiKey");
 export const _voyageApiKey = new sst.Secret("VoyageApiKey");
+
 const createParameter = (name: string, secret: sst.Secret) => {
   return new aws.ssm.Parameter(name, {
     name: `/hebo/${$app.stage}/${name}`,

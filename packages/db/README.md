@@ -2,7 +2,15 @@
 
 ## TL;DR
 
-Driver selection lives in `drizzle.ts`; consumers just `import { db } from "@hebo/db"`.
+Driver selection lives in `drizzle.ts`; consumers create a client with `createDb()`.
+
+Example (singleton):
+
+```ts
+import { createDb } from "@hebo/db/drizzle";
+
+export const db = await createDb();
+```
 
 | Environment    | Engine we use                | Why                                              |
 | -------------- | ---------------------------- | ------------------------------------------------ |
@@ -13,12 +21,12 @@ Driver selection lives in `drizzle.ts`; consumers just `import { db } from "@heb
 
 ## Design goals
 
-| Goal                                  | How this package meets it                                                                                   |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| _Single entrypoint, no env branching_ | `initDb()` picks the driver at process start; API/service layers receive a ready-made `db`.                 |
-| _Keep IntelliSense_                   | We export an **intersection** type (`PgliteDb & PostgresDb`) exposing the common Drizzle query-builder API. |
-| _Minimal DevOps surface_              | Local needs only a PGLite directory path; remote uses standard PG vars provided by SST.                     |
-| _Easy to add more connections_        | Extra factories live in the same file, re-using credential helpers.                                         |
+| Goal                                  | How this package meets it                                                                                 |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| _Single entrypoint, no env branching_ | `createDb()` picks the driver at process start; you can export a singleton or pass a client where needed. |
+| _Keep IntelliSense_                   | We expose a unified client type covering the common Drizzle query‑builder API across drivers.             |
+| _Minimal DevOps surface_              | Local needs only a PGLite directory path; remote uses standard PG vars provided by SST.                   |
+| _Easy to add more connections_        | Extra factories live in the same file, re-using credential helpers.                                       |
 
 ---
 

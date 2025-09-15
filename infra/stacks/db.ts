@@ -30,6 +30,20 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
 const migrator = new sst.aws.Function("DatabaseMigrator", {
   handler: "packages/db/lambda/migrator.handler",
   vpc: heboVpc,
+  // Required for reading secrets from SSM
+  layers: [
+    "arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:19",
+  ],
+  permissions: [
+    {
+      actions: ["ssm:GetParameter", "ssm:GetParameters"],
+      resources: [ssm.dbUsername.arn, ssm.dbPassword.arn],
+    },
+    {
+      actions: ["kms:Decrypt"],
+      resources: ["*"],
+    },
+  ],
   copyFiles: [
     {
       from: "packages/db/migrations",
@@ -39,9 +53,9 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
   environment: {
     NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
     PG_HOST: heboDatabase.host,
-    PG_PASSWORD: ssm.dbPassword.value,
+    PG_PASSWORD_SSM_NAME: ssm.dbPassword.name,
+    PG_USER_SSM_NAME: ssm.dbUsername.name,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
-    PG_USER: ssm.dbUsername.value,
     PG_DATABASE: heboDatabase.database,
   },
 });

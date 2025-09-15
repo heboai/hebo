@@ -8,36 +8,10 @@ export const isLocal: boolean = !(
 export type DbCredentials = {
   host: string;
   port: number;
-  user: string;
-  password: string;
+  user?: string;
+  password?: string;
   database: string;
 };
-export type LocalConfig = {
-  driver: string;
-  dbCredentials: {
-    url: string;
-  };
-};
-export type RemoteConfig = {
-  dbCredentials: DbCredentials;
-};
-
-export function getDrizzleConfig(): LocalConfig | RemoteConfig {
-  const connectionConfig = getConnectionConfig();
-
-  if (isLocal) {
-    return {
-      driver: "pglite",
-      dbCredentials: { url: connectionConfig as string },
-    } as LocalConfig;
-  }
-
-  return {
-    dbCredentials: {
-      ...(connectionConfig as DbCredentials),
-    },
-  } as RemoteConfig;
-}
 
 export function getConnectionConfig(): DbCredentials | string {
   if (isLocal) {
@@ -64,8 +38,8 @@ export function getConnectionConfig(): DbCredentials | string {
   return {
     host: process.env.PG_HOST!,
     port: Number(process.env.PG_PORT!),
-    user: process.env.PG_USER!,
-    password: process.env.PG_PASSWORD!,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE!,
   };
 }

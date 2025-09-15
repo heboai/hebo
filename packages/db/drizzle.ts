@@ -20,12 +20,22 @@ type PostgresDb = NodePgDatabase<typeof postgresSchema>;
 type PgliteDb = PgliteDatabase<typeof postgresSchema>;
 type UniversalDb = PostgresDb | PgliteDb;
 type TxOf<D> = D extends {
-  transaction: (fn: (tx: infer T, ...args: any[]) => any, ...a: any[]) => any;
+  transaction: (
+    fn: (tx: infer T, ...args: unknown[]) => unknown,
+    ...a: unknown[]
+  ) => unknown;
 }
   ? T
   : never;
 
-const initDb = async (): Promise<UniversalDb> => {
+export type CreateDbOptions = {
+  user?: string;
+  password?: string;
+};
+
+export const createDb = async (
+  opts?: CreateDbOptions,
+): Promise<UniversalDb> => {
   if (isLocal) {
     // Local development – PGLite via pglite client
     const dataDir = getConnectionConfig() as string;
@@ -47,13 +57,19 @@ const initDb = async (): Promise<UniversalDb> => {
   }
 
   // Remote/production – PostgreSQL via pg Pool
-  const { host, port, user, password, database } =
-    getConnectionConfig() as DbCredentials;
+  const {
+    host,
+    port,
+    user: defaultUser,
+    password: defaultPassword,
+    database,
+  } = getConnectionConfig() as DbCredentials;
+  // Use provided credentials if available, otherwise use the default credentials
+  const user = opts?.user ?? defaultUser;
+  const password = opts?.password ?? defaultPassword;
 
   const pool = new Pool({ host, port, user, password, database, ssl: true });
-
   return drizzlePostgres(pool, { schema: postgresSchema });
 };
 
-export const db: UniversalDb = await initDb();
 export type UniversalDbClient = UniversalDb | TxOf<PostgresDb> | TxOf<PgliteDb>;
