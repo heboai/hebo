@@ -87,9 +87,11 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
                   <FormField field={fields.slugConfirm}>
                     <FormLabel>
-                      To confirm, type{" "}
-                      <strong>{agent.slug}</strong> in
-                      the box below:
+                      <div>
+                        To confirm, type{" "}
+                        <strong>{agent.slug}</strong> in
+                        the box below:
+                      </div>
                     </FormLabel>
                     <FormControl>
                       <Input autoComplete="off" />
