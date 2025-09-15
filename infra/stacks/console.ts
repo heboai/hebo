@@ -1,5 +1,4 @@
 import heboApi from "./api";
-import { getDomain } from "./dns";
 import * as env from "./env";
 import heboGateway from "./gateway";
 
@@ -9,7 +8,10 @@ const heboConsole = new sst.aws.StaticSite("HeboConsole", {
     command: "bun run build",
     output: "build/client",
   },
-  domain: await getDomain("console"),
+  domain:
+    $app.stage === "production"
+      ? "console.hebo.ai"
+      : `console.${$app.stage}.hebo.ai`,
   environment: {
     VITE_API_URL: heboApi.url,
     VITE_GATEWAY_URL: heboGateway.url,

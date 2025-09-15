@@ -1,11 +1,12 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
-import { getDomain } from "./dns";
 import * as env from "./env";
 import * as ssm from "./ssm";
 
 const isProd = $app.stage === "production";
-const gatewayDomain = await getDomain("gateway");
+const gatewayDomain = isProd
+  ? "gateway.hebo.ai"
+  : `gateway.${$app.stage}.hebo.ai`;
 const gatewayPort = "3002";
 
 const heboGateway = new sst.aws.Service("HeboGateway", {

@@ -1,11 +1,10 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
-import { getDomain } from "./dns";
 import * as env from "./env";
 import * as ssm from "./ssm";
 
 const isProd = $app.stage === "production";
-const apiDomain = await getDomain("api");
+const apiDomain = isProd ? "api.hebo.ai" : `api.${$app.stage}.hebo.ai`;
 const apiPort = "3001";
 
 const heboApi = new sst.aws.Service("HeboApi", {
