@@ -1,9 +1,9 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
+import { isProd } from "./env";
 import * as env from "./env";
 import * as ssm from "./ssm";
 
-const isProd = $app.stage === "production";
 const apiDomain = isProd ? "api.hebo.ai" : `api.${$app.stage}.hebo.ai`;
 const apiPort = "3001";
 

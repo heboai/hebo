@@ -1,7 +1,6 @@
+import { isProd } from "./env";
 import * as ssm from "./ssm";
 import { heboVpc } from "./vpc";
-
-const isProd = $app.stage === "production";
 
 const globalCluster = new aws.rds.GlobalCluster("HeboDbGlobal", {
   globalClusterIdentifier: isProd ? "hebo-global" : `${$app.stage}-hebo-global`,

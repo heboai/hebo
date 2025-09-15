@@ -1,5 +1,13 @@
-import * as secrets from "./secrets";
+// Auth
+const _stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 
+// Database
+export const _dbUsername = new sst.Secret("DbUsername");
+export const _dbPassword = new sst.Secret("DbPassword");
+
+// LLMs
+export const _groqApiKey = new sst.Secret("GroqApiKey");
+export const _voyageApiKey = new sst.Secret("VoyageApiKey");
 const createParameter = (name: string, secret: sst.Secret) => {
   return new aws.ssm.Parameter(name, {
     name: `/hebo/${$app.stage}/${name}`,
@@ -11,12 +19,9 @@ const createParameter = (name: string, secret: sst.Secret) => {
 
 export const stackSecretServerKey = createParameter(
   "StackSecretServerKey",
-  secrets.stackSecretServerKey,
+  _stackSecretServerKey,
 );
-export const dbUsername = createParameter("DbUsername", secrets.dbUsername);
-export const dbPassword = createParameter("DbPassword", secrets.dbPassword);
-export const groqApiKey = createParameter("GroqApiKey", secrets.groqApiKey);
-export const voyageApiKey = createParameter(
-  "VoyageApiKey",
-  secrets.voyageApiKey,
-);
+export const dbUsername = createParameter("DbUsername", _dbUsername);
+export const dbPassword = createParameter("DbPassword", _dbPassword);
+export const groqApiKey = createParameter("GroqApiKey", _groqApiKey);
+export const voyageApiKey = createParameter("VoyageApiKey", _voyageApiKey);
