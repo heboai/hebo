@@ -2,7 +2,7 @@
 
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
-import { Bot, PaperclipIcon, IterationCcw } from "lucide-react";
+import { Bot, IterationCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -13,7 +13,8 @@ import {
 import { Message as Message, MessageContent } from "../_ai-elements/message";
 import {
   PromptInput,
-  PromptInputButton,
+  PromptInputBody,
+  PromptInputMessage,
   PromptInputModelSelect,
   PromptInputModelSelectContent,
   PromptInputModelSelectItem,
@@ -25,6 +26,9 @@ import {
   PromptInputTools,
 } from "../_ai-elements/prompt-input";
 import { Button } from "../_shadcn/ui/button";
+
+const kbdStyles =
+  "inline-flex w-fit rounded-md border border-gray-300 bg-gray-50 px-2 py-1 text-sm font-mono font-medium text-muted-foreground shadow-sm";
 
 // Types based on models.schema.json
 type ModelsConfig = {
@@ -41,9 +45,10 @@ type ModelsConfig = {
 export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   const [currentModelAlias, setCurrentModelAlias] = useState("");
   const [messages, setMessages] = useState<UIMessage[]>([]);
-  const [input, setInput] = useState("");
+  const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Set default model alias if non has been selected
   useEffect(() => {
     const aliases = modelsConfig.models.map((m) => m.alias);
     if (!currentModelAlias || !aliases.includes(currentModelAlias)) {
@@ -51,12 +56,12 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
     }
   }, [modelsConfig, currentModelAlias]);
 
-  // Get current model config - only return a model if we have a valid alias and it exists
+  // Get current model config for the selected alias
   const currentModel = currentModelAlias
     ? modelsConfig.models.find((m) => m.alias === currentModelAlias)
     : undefined;
 
-  // Create OpenAI client based on current model (only if model exists)
+  // Create OpenAI client based on current model
   const openai = currentModel
     ? createOpenAI({
         apiKey: "",
@@ -65,9 +70,9 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       })
     : undefined;
 
+  // Shortcut: Ctrl/Cmd+i to focus chat input field
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Ctrl+i or Cmd+i to focus chat input
       if ((e.ctrlKey || e.metaKey) && e.key === "i") {
         e.preventDefault();
         (document.querySelector("#chat-input") as HTMLTextAreaElement)?.focus();
@@ -86,20 +91,19 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
     return "";
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading || !currentModel || !openai) return;
+  const handleSubmit = async (message: PromptInputMessage) => {
+    if (!message.text || isLoading || !currentModel || !openai) return;
 
     setIsLoading(true);
 
     const userMessage: UIMessage = {
       id: crypto.randomUUID(),
       role: "user",
-      parts: [{ type: "text", text: input }],
+      parts: [{ type: "text", text: message.text }],
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    setText("");
 
     try {
       const { text } = await generateText({
@@ -113,17 +117,16 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
       const assistantMessage: UIMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
-        parts: [
-          { type: "text", text: text || "Sorry, I encountered an error." },
-        ],
+        parts: [{ type: "text", text: text }],
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch {
       const errorMessage: UIMessage = {
         id: crypto.randomUUID(),
-        role: "assistant",
-        parts: [{ type: "text", text: "Sorry, I encountered an error." }],
+        role: "system",
+        metadata: { error: true },
+        parts: [{ type: "text", text: "⚠️ Sorry, I encountered an error" }],
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -132,74 +135,88 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   };
 
   return (
-    <div className="flex h-full flex-col pt-12">
+    <div className="relative flex h-full flex-col p-2 pt-12">
       {/* Header Controls */}
-      <div className="absolute top-1.5 left-1.5 z-10 flex items-center">
+      <div className="absolute top-3 left-2">
         <Button
+          disabled={!currentModelAlias}
           variant="ghost"
           size="icon"
+          className="hover:bg-sidebar-accent size-7"
           onClick={() => setMessages([])}
           aria-label="Clear conversation"
           title="Clear conversation"
         >
-          <IterationCcw size={16} />
+          <IterationCcw />
         </Button>
       </div>
 
       {/* Conversation area */}
-      <Conversation className="top-0">
+      <Conversation>
         <ConversationContent
-          className="px-3 py-0"
+          className="px-0 pt-0"
           aria-label="Chat conversation"
           tabIndex={-1}
         >
-          {messages.map((message) => (
-            <Message
-              from={message.role}
-              key={message.id}
-              tabIndex={-1}
-              role="article"
-              aria-label={`Message from ${message.role}`}
-              className="p-1"
-            >
-              <MessageContent className="px-3 py-2">
-                <div>{renderMessagePart(message.parts[0])}</div>
-              </MessageContent>
-            </Message>
-          ))}
-          {isLoading && (
-            <Message from="assistant" key="loading">
-              <MessageContent>
-                <div aria-live="polite">
-                  <span className="animate-pulse">Thinking...</span>
-                </div>
-              </MessageContent>
-            </Message>
+          {messages.length === 0 ? (
+            <div className="text-muted-foreground m-auto flex flex-col justify-center gap-2 pt-10 text-center">
+              <div className="text-7xl">🐵</div>
+              Open an agent and start chatting
+              <div className="flex items-center justify-center gap-1 whitespace-nowrap">
+                <kbd className={kbdStyles}>⌘</kbd>/{" "}
+                <kbd className={kbdStyles}>Ctrl</kbd>+{" "}
+                <kbd className={kbdStyles}>I</kbd>
+              </div>
+            </div>
+          ) : (
+            <>
+              {messages.map((message) => (
+                <Message
+                  from={message.role}
+                  key={message.id}
+                  tabIndex={-1}
+                  role="article"
+                  aria-label={`Message from ${message.role}`}
+                  className="p-1"
+                >
+                  <MessageContent className="px-3 py-2">
+                    <div>{renderMessagePart(message.parts[0])}</div>
+                  </MessageContent>
+                </Message>
+              ))}
+              {isLoading && (
+                <Message from="assistant" key="loading" className="p-1">
+                  <MessageContent className="px-3 py-2">
+                    <div aria-live="polite">
+                      <span className="animate-pulse">Thinking...</span>
+                    </div>
+                  </MessageContent>
+                </Message>
+              )}
+            </>
           )}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
 
       {/* Input area */}
-      <PromptInput
-        onSubmit={handleSubmit}
-        className="relative mt-4 border-x-0"
-        role="form"
-      >
-        <PromptInputTextarea
-          id="chat-input"
-          onChange={(e) => setInput(e.target.value)}
-          value={input}
-          placeholder="Start prompting..."
-          aria-label="Chat message input"
-          aria-describedby="input-help"
-          rows={1}
-        />
+      <PromptInput onSubmit={handleSubmit} role="form">
+        <PromptInputBody>
+          <PromptInputTextarea
+            id="chat-input"
+            disabled={!currentModelAlias}
+            onChange={(e) => setText(e.target.value)}
+            value={text}
+            placeholder="Start prompting..."
+            aria-label="Chat message input"
+            aria-describedby="input-help"
+          />
 
-        {/* Hidden help text */}
-        <div id="input-help" className="sr-only">
-          Press Enter to send message, Shift+Enter for new line
-        </div>
+          {/* Hidden help text */}
+          <div id="input-help" className="sr-only">
+            Press Enter to send message, Shift+Enter for new line
+          </div>
+        </PromptInputBody>
 
         <PromptInputToolbar>
           <PromptInputTools>
@@ -207,14 +224,18 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
             <PromptInputModelSelect
               onValueChange={(alias) => setCurrentModelAlias(alias)}
               value={currentModelAlias}
-              disabled={isLoading}
+              disabled={isLoading || modelsConfig.models.length === 0}
               aria-label="Select AI model"
             >
               <PromptInputModelSelectTrigger
                 aria-label={`Current model: ${currentModelAlias}`}
               >
                 <Bot />
-                <PromptInputModelSelectValue />
+                {modelsConfig.models.length > 0 ? (
+                  <PromptInputModelSelectValue />
+                ) : (
+                  "No agent opened"
+                )}
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>
                 {modelsConfig.models.map((model) => (
@@ -229,20 +250,9 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
             </PromptInputModelSelect>
           </PromptInputTools>
 
-          {/* Attachment button */}
-          <PromptInputButton
-            className="absolute right-10 bottom-1"
-            disabled={isLoading || !currentModel}
-            aria-label="Attach file"
-            title="Attach file"
-          >
-            <PaperclipIcon size={16} />
-          </PromptInputButton>
-
           {/* Submit button - disable when no model is selected */}
           <PromptInputSubmit
-            disabled={!input.trim() || isLoading || !currentModel}
-            className="absolute right-1 bottom-1"
+            disabled={!text || isLoading || !currentModel}
             aria-label={
               isLoading ? "Sending message..." : "Send message (Enter)"
             }

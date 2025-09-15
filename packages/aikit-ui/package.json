@@ -14,28 +14,31 @@
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "nanoid": "^5.1.5",
     "tailwind-merge": "^3.3.1",
     "use-stick-to-bottom": "^1.1.1"
   },
   "peerDependencies": {
-    "@ai-sdk/openai": "^2.0.17",
-    "ai": "^5.0.13",
+    "@ai-sdk/openai": "^2.0.29",
     "@radix-ui/react-avatar": "^1.1.10",
-    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
-    "lucide-react": "^0.539.0",
+    "ai": "^5.0.42",
+    "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
-    "@ai-sdk/openai": "^2.0.17",
-    "ai": "^5.0.13",
+    "@ai-sdk/openai": "^2.0.29",
     "@radix-ui/react-avatar": "^1.1.10",
-    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
     "@types/react": "^19.1.1",
     "@types/react-dom": "^19.1.1",
-    "lucide-react": "^0.539.0",
+    "ai": "^5.0.42",
+    "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   }
