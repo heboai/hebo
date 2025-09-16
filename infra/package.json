@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {},
   "devDependencies": {
-    "sst": "^3.17.10"
+    "sst": "^3.17.13"
   }
 }
