@@ -28,13 +28,9 @@ type TxOf<D> = D extends {
   ? T
   : never;
 
-export type CreateDbOptions = {
-  user?: string;
-  password?: string;
-};
-
 export const createDb = async (
-  opts?: CreateDbOptions,
+  dbUser?: string,
+  dbPassword?: string,
 ): Promise<UniversalDb> => {
   if (isLocal) {
     // Local development – PGLite via pglite client
@@ -65,8 +61,8 @@ export const createDb = async (
     database,
   } = getConnectionConfig() as DbCredentials;
   // Use provided credentials if available, otherwise use the default credentials
-  const user = opts?.user ?? defaultUser;
-  const password = opts?.password ?? defaultPassword;
+  const user = dbUser ?? defaultUser;
+  const password = dbPassword ?? defaultPassword;
 
   const pool = new Pool({ host, port, user, password, database, ssl: true });
   return drizzlePostgres(pool, { schema: postgresSchema });

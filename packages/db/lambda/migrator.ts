@@ -26,11 +26,11 @@ async function getParam(name: string) {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handler = async (event: unknown) => {
-  const [user, password] = await Promise.all([
+  const [dbUser, dbPassword] = await Promise.all([
     getParam(process.env.PG_USER_SSM_NAME!),
     getParam(process.env.PG_PASSWORD_SSM_NAME!),
   ]);
-  const db = await createDb({ user, password });
+  const db = await createDb(dbUser, dbPassword);
   await migrate(db as unknown as NodePgDatabase, {
     migrationsFolder: "./migrations",
   });
