@@ -49,5 +49,6 @@ export const kyFetch = ky.extend({
 });
 
 export const api = treaty<Api>(url, {
+  // Automatic auth header, retries, timeouts & error throwing
   fetcher: kyFetch,
 }).v1;
