@@ -39,15 +39,13 @@ ECS service (sst.aws.Service) running on the same Cluster behind an ALB:
 
 ## Secrets
 
-Required SST secrets:
+Use `.secrets.example` as the single source of truth for secret names. Copy it to `.secrets`, fill in values, and load them for your stage:
 
-- `StackProjectId`
-- `StackSecretServerKey`
-- `StackPublishableClientKey`
-- `DbUsername`
-- `DbPassword`
-- `GroqApiKey`
-- `VoyageApiKey`
+```bash
+cp .secrets.example .secrets
+# Edit values in .secrets
+bun run sst secret load .secrets --stage <stage>
+```
 
 ## Deployment
 

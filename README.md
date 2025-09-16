@@ -123,8 +123,10 @@ cp .env.example .env
 # Install providers
 bun run sst install
 
-# Set secrets
-bun run sst secret set <secret-name> <secret-value> --stage <stage>
+# Prepare and load secrets
+cp infra/.secrets.example infra/.secrets
+# Fill in infra/.secrets values, then:
+bun run sst secret load infra/.secrets --stage <stage>
 
 # Deploy a preview link
 bun run sst deploy --stage PR-XX
@@ -135,36 +137,6 @@ bun run sst remove --stage PR-XX
 # Deploy to production
 bun run sst deploy --stage production
 ```
-
-#### Secrets
-Set secrets using
-
-```bash
-bun run sst secret set <secret-name> <secret-value> --stage <stage>
-```
-
-Required secrets are:
-
-**Auth**
-
-* StackSecretServerKey
-* stackPublishableClientKey
-* StackProjectId
-
-Generate yours from [stack-auth](https://stack-auth.com/).
-
-**Database**
-
-* DbUsername
-* DbPassword
-
-User-define.
-
-**LLMs**
-
-* GroqApiKey: create under "API Keys" in [Groq Console](https://console.groq.com/).
-* VoyageApiKey: create in [Voyage AI Dashboard](https://dashboard.voyageai.com/api-keys).
-
 
 ### Service URLs
 
