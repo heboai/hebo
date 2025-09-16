@@ -11,10 +11,16 @@ const _dbPassword = new sst.Secret("DbPassword");
 const _groqApiKey = new sst.Secret("GroqApiKey");
 const _voyageApiKey = new sst.Secret("VoyageApiKey");
 
-const createParameter = (name: string, secret: sst.Secret) => {
+const createParameter = (
+  name: string,
+  secret: sst.Secret,
+  isPublic: boolean = false,
+) => {
   return new aws.ssm.Parameter(name, {
     name: `/hebo/${$app.stage}/${name}`,
-    type: aws.ssm.ParameterType.SecureString,
+    type: isPublic
+      ? aws.ssm.ParameterType.String
+      : aws.ssm.ParameterType.SecureString,
     value: secret.value,
     overwrite: true,
   });
@@ -28,12 +34,14 @@ export const stackSecretServerKey = createParameter(
 export const stackPublishableClientKey = createParameter(
   "StackPublishableClientKey",
   _stackPublishableClientKey,
+  true,
 );
 export const stackProjectId = createParameter(
   "StackProjectId",
   _stackProjectId,
+  true,
 );
-export const dbUsername = createParameter("DbUsername", _dbUsername);
+export const dbUsername = createParameter("DbUsername", _dbUsername, true);
 export const dbPassword = createParameter("DbPassword", _dbPassword);
 export const groqApiKey = createParameter("GroqApiKey", _groqApiKey);
 export const voyageApiKey = createParameter("VoyageApiKey", _voyageApiKey);
