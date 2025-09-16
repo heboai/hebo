@@ -33,14 +33,12 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 └── turbo.json                      # Turborepo configuration
 ```
 
-## Getting Started
-
-### Prerequisites
+## Prerequisites
 
 - Bun >= 1.2.19
 - AWS CLI (only required for deployment)
 
-### Installation
+## Installation
 
 ```bash
 # Install dependencies
@@ -52,7 +50,7 @@ bun install
 cp .env.example .env
 ```
 
-### Development
+## Development
 
 ```bash
 # Init the development database
@@ -79,7 +77,7 @@ bun run clean
 bun run -F @hebo/db clean 
 ```
 
-### Run modes
+## Run modes
 
 | #   | Mode                        | Command                    | Database                       | API availability                        |
 | --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
@@ -87,7 +85,7 @@ bun run -F @hebo/db clean
 | 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | Env variables `VITE_API_URL`, `VITE_GATEWAY_URL`                   |
 | 3   | **Remote full-stack**       | `bun run sst deploy`               | Aurora PostgreSQL              | HTTPS URLs injected by SST              |
 
-### Building
+## Building
 
 ```bash
 # Build all packages and apps
@@ -97,7 +95,7 @@ bun run build
 bun run -F @hebo/console build
 ```
 
-### Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -107,13 +105,13 @@ bun run test
 bun run -F @hebo/console test
 ```
 
-### Deployment
+## Deployment
 
 The repository uses GitHub Actions for CI/CD:
 
 - Push a new tag to trigger the deployment
 
-#### Manual deployments:
+### Manual deployments:
 
 For deployments, we utilize the SST framework (https://sst.dev/).
 
@@ -138,7 +136,37 @@ bun run sst remove --stage PR-XX
 bun run sst deploy --stage production
 ```
 
-#### Service URLs
+#### Secrets
+Set secrets using
+
+```bash
+bun run sst secret set <secret-name> <secret-value> --stage <stage>
+```
+
+Required secrets are:
+
+**Auth**
+
+* StackSecretServerKey
+* stackPublishableClientKey
+* StackProjectId
+
+Generate yours from [stack-auth](https://stack-auth.com/).
+
+**Database**
+
+* DbUsername
+* DbPassword
+
+User-define.
+
+**LLMs**
+
+* GroqApiKey: create under "API Keys" in [Groq Console](https://console.groq.com/).
+* VoyageApiKey: create in [Voyage AI Dashboard](https://dashboard.voyageai.com/api-keys).
+
+
+### Service URLs
 
 - API: `https://api.hebo.ai` (prod) or `https://api.<stage>.hebo.ai` (preview)
 - Gateway: `https://gateway.hebo.ai` (prod) or `https://gateway.<stage>.hebo.ai` (preview)
