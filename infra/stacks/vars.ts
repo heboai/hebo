@@ -4,12 +4,12 @@ const _stackPublishableClientKey = new sst.Secret("StackPublishableClientKey");
 const _stackProjectId = new sst.Secret("StackProjectId");
 
 // Database
-export const _dbUsername = new sst.Secret("DbUsername");
-export const _dbPassword = new sst.Secret("DbPassword");
+const _dbUsername = new sst.Secret("DbUsername");
+const _dbPassword = new sst.Secret("DbPassword");
 
 // LLMs
-export const _groqApiKey = new sst.Secret("GroqApiKey");
-export const _voyageApiKey = new sst.Secret("VoyageApiKey");
+const _groqApiKey = new sst.Secret("GroqApiKey");
+const _voyageApiKey = new sst.Secret("VoyageApiKey");
 
 const createParameter = (name: string, secret: sst.Secret) => {
   return new aws.ssm.Parameter(name, {
