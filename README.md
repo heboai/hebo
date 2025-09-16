@@ -111,9 +111,9 @@ The repository uses GitHub Actions for CI/CD:
 
 - Push a new tag to trigger the deployment
 
-### Manual deployments:
+### Manual deployments
 
-For deployments, we utilize the SST framework (https://sst.dev/).
+For deployments, we utilize the SST framework ([sst.dev](https://sst.dev/)).
 
 ```bash
 # Setup env variables
