@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Required to allow reuse. Do not remove.
   workflow_call:
 
 jobs:
