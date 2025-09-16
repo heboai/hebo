@@ -1,5 +1,5 @@
-import { isProd } from "./env";
-import * as ssm from "./ssm";
+import { isProd } from "./vars";
+import * as vars from "./vars";
 import { heboVpc } from "./vpc";
 
 const globalCluster = new aws.rds.GlobalCluster("HeboDbGlobal", {
@@ -17,8 +17,8 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   scaling: isProd
     ? { min: "0.5 ACU" }
     : { min: "0 ACU", max: "4 ACU", pauseAfter: "20 minutes" },
-  username: ssm.dbUsername.value,
-  password: ssm.dbPassword.value,
+  username: vars.dbUsername.value,
+  password: vars.dbPassword.value,
   database: "hebo",
   transform: {
     cluster: (a) => {
@@ -37,7 +37,7 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
   permissions: [
     {
       actions: ["ssm:GetParameter", "ssm:GetParameters"],
-      resources: [ssm.dbUsername.arn, ssm.dbPassword.arn],
+      resources: [vars.dbUsername.arn, vars.dbPassword.arn],
     },
     {
       actions: ["kms:Decrypt"],
@@ -53,8 +53,8 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
   environment: {
     NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
     PG_HOST: heboDatabase.host,
-    PG_PASSWORD_SSM_NAME: ssm.dbPassword.name,
-    PG_USER_SSM_NAME: ssm.dbUsername.name,
+    PG_PASSWORD_SSM_NAME: vars.dbPassword.name,
+    PG_USER_SSM_NAME: vars.dbUsername.name,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
     PG_DATABASE: heboDatabase.database,
   },

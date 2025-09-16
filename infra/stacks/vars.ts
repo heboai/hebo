@@ -1,5 +1,7 @@
 // Auth
 const _stackSecretServerKey = new sst.Secret("StackSecretServerKey");
+const _stackPublishableClientKey = new sst.Secret("StackPublishableClientKey");
+const _stackProjectId = new sst.Secret("StackProjectId");
 
 // Database
 export const _dbUsername = new sst.Secret("DbUsername");
@@ -18,9 +20,18 @@ const createParameter = (name: string, secret: sst.Secret) => {
   });
 };
 
+export const isProd = $app.stage === "production";
 export const stackSecretServerKey = createParameter(
   "StackSecretServerKey",
   _stackSecretServerKey,
+);
+export const stackPublishableClientKey = createParameter(
+  "StackPublishableClientKey",
+  _stackPublishableClientKey,
+);
+export const stackProjectId = createParameter(
+  "StackProjectId",
+  _stackProjectId,
 );
 export const dbUsername = createParameter("DbUsername", _dbUsername);
 export const dbPassword = createParameter("DbPassword", _dbPassword);

@@ -1,7 +1,7 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
-import { isProd, stackProjectId } from "./env";
-import * as ssm from "./ssm";
+import { isProd } from "./vars";
+import * as vars from "./vars";
 
 const apiDomain = isProd ? "api.hebo.ai" : `api.${$app.stage}.hebo.ai`;
 const apiPort = "3001";
@@ -23,12 +23,12 @@ const heboApi = new sst.aws.Service("HeboApi", {
     PG_HOST: heboDatabase.host,
     PG_PORT: heboDatabase.port.apply((port) => port.toString()),
     PORT: apiPort,
-    VITE_STACK_PROJECT_ID: stackProjectId,
+    VITE_STACK_PROJECT_ID: vars.stackProjectId.value,
   },
   ssm: {
-    PG_PASSWORD: ssm.dbPassword.arn,
-    PG_USER: ssm.dbUsername.arn,
-    STACK_SECRET_SERVER_KEY: ssm.stackSecretServerKey.arn,
+    PG_PASSWORD: vars.dbPassword.arn,
+    PG_USER: vars.dbUsername.arn,
+    STACK_SECRET_SERVER_KEY: vars.stackSecretServerKey.arn,
   },
   loadBalancer: {
     domain: apiDomain,
