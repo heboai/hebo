@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Form, useActionData, useNavigation, useParams, useRouteLoaderData, useSearchParams } from "react-router";
 import { useForm, getFormProps } from "@conform-to/react";
-import { parseWithValibot } from "@conform-to/valibot";
+import { parseWithValibot, getValibotConstraint } from "@conform-to/valibot";
 import { object, string, nonEmpty, pipe, trim, message, type InferOutput } from "valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
@@ -76,9 +76,7 @@ export function BranchModelForm({ onCancel, editModel }: BranchModelFormProps) {
       alias: defaultModel?.alias,
       modelType: defaultModel?.type,
     },
-    onValidate({ formData }: { formData: FormData }) {
-      return parseWithValibot(formData, { schema: BranchConfigSchema });
-    },
+    constraint: getValibotConstraint(BranchConfigSchema),
     lastResult: actionData,
   });
 
