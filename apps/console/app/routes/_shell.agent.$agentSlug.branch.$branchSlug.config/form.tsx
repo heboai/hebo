@@ -249,14 +249,12 @@ export default function ModelConfigurationForm() {
                   />
                   
                   {/* Separate Remove Form */}
-                  <div className="mt-4 pt-4 border-t border-border">
                     <div className="flex items-center justify-between">
                       <RemoveModelForm 
                         model={m}
                         onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))}
                       />
                     </div>
-                  </div>
                 </Card>
               </CollapsibleContent>
             </Collapsible>
