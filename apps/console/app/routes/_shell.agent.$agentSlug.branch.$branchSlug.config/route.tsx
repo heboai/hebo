@@ -14,8 +14,8 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   const action = String(formData.get("intent"));
 
   if (action === "remove") {
-    const alias = String(formData.get("alias"));
-    if (!alias.trim()) {
+    const alias = String(formData.get("alias")).trim();
+    if (!alias) {
       return { status: "error", error: { "": ["Alias is required to remove a model"] } };
     }
 
