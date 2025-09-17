@@ -13,7 +13,7 @@ const createDb = () =>
       slug: String,
       name: String,
       models: Array,
-      agentSlug: String, // Foreign key reference to agent
+      agentSlug: String,
     },
   });
 
