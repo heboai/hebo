@@ -54,14 +54,19 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     try {
       const currentModelsJson = String(formData.get("currentModels"));
       const currentModels: Model[] = JSON.parse(currentModelsJson);
+      const originalAlias = String(formData.get("originalAlias") || "");
 
-      const modelIndex = currentModels.findIndex((m: Model) => m.alias === alias);
+      // Use originalAlias for lookup if it exists (edit mode), otherwise use new alias (create mode)
+      const lookupAlias = originalAlias || alias;
+      const modelIndex = currentModels.findIndex((m: Model) => m.alias === lookupAlias);
       const updatedModel = { alias, type: modelType };
 
       let updatedModels;
       if (modelIndex === -1) {
+        // Model not found - adding new model
         updatedModels = [...currentModels, updatedModel];
       } else {
+        // Model found - updating existing model
         updatedModels = currentModels.map((m: Model, index: number) => (index === modelIndex ? updatedModel : m));
       }
 

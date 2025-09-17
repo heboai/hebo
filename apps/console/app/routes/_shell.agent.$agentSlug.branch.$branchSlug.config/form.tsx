@@ -83,6 +83,7 @@ export function BranchModelForm({ onCancel, editModel }: BranchModelFormProps) {
   return (
     <Form method="post" {...getFormProps(form)} className="contents">
       <input type="hidden" name="currentModels" value={JSON.stringify(currentModels)} />
+      {isEditMode && <input type="hidden" name="originalAlias" value={defaultModel?.alias} />}
 
       <CardContent className="space-y-6">
         <div className="flex gap-4">
