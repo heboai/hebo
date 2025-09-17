@@ -47,29 +47,6 @@ export const branchHandlers = [
     },
   ),
 
-  http.get<{ agentSlug: string; branchSlug: string }>(
-    "/api/v1/agents/:agentSlug/branches/:branchSlug",
-    async ({ params }) => {
-      try {
-        const branch = db.branch.findFirst({
-          where: {
-            agentSlug: { equals: params.agentSlug },
-            slug: { equals: params.branchSlug },
-          },
-        });
-
-        if (!branch) {
-          return new HttpResponse("Branch not found", { status: 404 });
-        }
-
-        await delay(500);
-        return HttpResponse.json(branch);
-      } catch {
-        return new HttpResponse("Failed to fetch branch", { status: 500 });
-      }
-    },
-  ),
-
   // Update entire branch (including models JSON object)
   http.put<{ agentSlug: string; branchSlug: string }>(
     "/api/v1/agents/:agentSlug/branches/:branchSlug",
