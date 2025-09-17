@@ -35,6 +35,46 @@ export type BranchModelFormProps = {
   editModel?: { alias: string; type: string };
 };
 
+export type RemoveModelFormProps = {
+  model: { alias: string; type: string };
+  onCancel?: () => void;
+};
+
+export function RemoveModelForm({ model, onCancel }: RemoveModelFormProps) {
+  const navigation = useNavigation();
+  const { agent } = useRouteLoaderData<{
+    agent: { branches: Array<{ models: Model[] }> };
+  }>("routes/_shell.agent.$agentSlug")!;
+  const currentModels = agent.branches[0]?.models ?? [];
+
+  const currentIntent = String(navigation.formData?.get("intent") || "");
+  const isRemoving = navigation.state === "submitting" && currentIntent === "remove";
+
+  return (
+    <Form method="post" className="contents">
+      <input type="hidden" name="intent" value="remove" />
+      <input type="hidden" name="alias" value={model.alias} />
+      <input type="hidden" name="currentModels" value={JSON.stringify(currentModels)} />
+      
+      <div className="flex gap-2">
+        {onCancel && (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+        <Button 
+          type="submit" 
+          variant="destructive" 
+          isLoading={isRemoving}
+          disabled={model.alias === "default"}
+        >
+          Remove
+        </Button>
+      </div>
+    </Form>
+  );
+}
+
 export function BranchModelForm({ onCancel, editModel }: BranchModelFormProps) {
   const actionData = useActionData<any>();
   const navigation = useNavigation();
@@ -68,7 +108,6 @@ export function BranchModelForm({ onCancel, editModel }: BranchModelFormProps) {
 
   const currentIntent = String(navigation.formData?.get("intent") || "");
   const isSubmitting = navigation.state === "submitting";
-  const isRemoving = isSubmitting && currentIntent === "remove";
   const isSaving = isSubmitting && currentIntent === "save";
 
   const [form, fields] = useForm<{ alias: string; modelType: string }>({
@@ -115,34 +154,26 @@ export function BranchModelForm({ onCancel, editModel }: BranchModelFormProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-between">
-        {isEditMode && (
-          <Button type="submit" name="intent" value="remove" variant="destructive" isLoading={isRemoving}>
-            Remove
-          </Button>
-        )}
-        {!isEditMode && <div />} {/* Spacer for consistent layout */}
-        <div className="flex gap-2">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={() => {
-              // Clear the edit URL param when canceling
-              const newSearchParams = new URLSearchParams(window.location.search);
-              newSearchParams.delete('edit');
-              const newUrl = newSearchParams.toString() 
-                ? `${window.location.pathname}?${newSearchParams}` 
-                : window.location.pathname;
-              window.history.replaceState({}, '', newUrl);
-              onCancel();
-            }}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" name="intent" value="save" isLoading={isSaving} disabled={!fields.modelType.value}>
-            {isEditMode ? 'Update' : 'Save'}
-          </Button>
-        </div>
+      <CardFooter className="flex justify-end gap-2">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={() => {
+            // Clear the edit URL param when canceling
+            const newSearchParams = new URLSearchParams(window.location.search);
+            newSearchParams.delete('edit');
+            const newUrl = newSearchParams.toString() 
+              ? `${window.location.pathname}?${newSearchParams}` 
+              : window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+            onCancel();
+          }}
+        >
+          Cancel
+        </Button>
+        <Button type="submit" name="intent" value="save" isLoading={isSaving} disabled={!fields.modelType.value}>
+          {isEditMode ? 'Update' : 'Save'}
+        </Button>
       </CardFooter>
     </Form>
   );
@@ -216,6 +247,16 @@ export default function ModelConfigurationForm() {
                       setOpenMap((prev) => ({ ...prev, [m.alias]: false }));
                     }} 
                   />
+                  
+                  {/* Separate Remove Form */}
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <div className="flex items-center justify-between">
+                      <RemoveModelForm 
+                        model={m}
+                        onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))}
+                      />
+                    </div>
+                  </div>
                 </Card>
               </CollapsibleContent>
             </Collapsible>

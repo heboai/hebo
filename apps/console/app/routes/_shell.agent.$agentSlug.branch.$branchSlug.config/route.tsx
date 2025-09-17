@@ -42,48 +42,49 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       console.error("Error removing model config:", error);
       return { status: "error", error: { "": ["An unexpected error occurred while removing model"] } };
     }
-  } else {
-    const submission = parseWithValibot(formData, { schema: BranchConfigSchema });
+  }
 
-    if (submission.status !== "success") {
-      return submission.reply();
+  // Handle create/update operations
+  const submission = parseWithValibot(formData, { schema: BranchConfigSchema });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const { alias, modelType } = submission.value;
+
+  try {
+    const currentModelsJson = String(formData.get("currentModels"));
+    const currentModels: Model[] = JSON.parse(currentModelsJson);
+    const originalAlias = String(formData.get("originalAlias") || "");
+
+    // Use originalAlias for lookup if it exists (edit mode), otherwise use new alias (create mode)
+    const lookupAlias = originalAlias || alias;
+    const modelIndex = currentModels.findIndex((m: Model) => m.alias === lookupAlias);
+    const updatedModel = { alias, type: modelType };
+
+    let updatedModels;
+    if (modelIndex === -1) {
+      // Model not found - adding new model
+      updatedModels = [...currentModels, updatedModel];
+    } else {
+      // Model found - updating existing model
+      updatedModels = currentModels.map((m: Model, index: number) => (index === modelIndex ? updatedModel : m));
     }
 
-    const { alias, modelType } = submission.value;
+    const { error: putError } = await api
+      .agents({ agentSlug: params.agentSlug! })
+      .branches({ branchSlug: params.branchSlug! })
+      .put({ models: updatedModels });
 
-    try {
-      const currentModelsJson = String(formData.get("currentModels"));
-      const currentModels: Model[] = JSON.parse(currentModelsJson);
-      const originalAlias = String(formData.get("originalAlias") || "");
-
-      // Use originalAlias for lookup if it exists (edit mode), otherwise use new alias (create mode)
-      const lookupAlias = originalAlias || alias;
-      const modelIndex = currentModels.findIndex((m: Model) => m.alias === lookupAlias);
-      const updatedModel = { alias, type: modelType };
-
-      let updatedModels;
-      if (modelIndex === -1) {
-        // Model not found - adding new model
-        updatedModels = [...currentModels, updatedModel];
-      } else {
-        // Model found - updating existing model
-        updatedModels = currentModels.map((m: Model, index: number) => (index === modelIndex ? updatedModel : m));
-      }
-
-      const { error: putError } = await api
-        .agents({ agentSlug: params.agentSlug! })
-        .branches({ branchSlug: params.branchSlug! })
-        .put({ models: updatedModels });
-
-      if (putError) {
-        return submission.reply({ formErrors: [String(putError.value)] });
-      }
-
-      return { success: true, message: "Model configuration updated successfully" };
-    } catch (error) {
-      console.error("Error updating model config:", error);
-      return submission.reply({ formErrors: ["An unexpected error occurred while updating model configuration"] });
+    if (putError) {
+      return submission.reply({ formErrors: [String(putError.value)] });
     }
+
+    return { success: true, message: "Model configuration updated successfully" };
+  } catch (error) {
+    console.error("Error updating model config:", error);
+    return submission.reply({ formErrors: ["An unexpected error occurred while updating model configuration"] });
   }
 }
 
