@@ -55,10 +55,12 @@ bun run sst secret load .secrets --stage <stage>
 2. **AWS CLI configured**
 3. **Docker installed and running**
 
-### Setup the environment
+### Setup AWS keys and secrets
 
 ```bash
 cp .env.example .env
+# Fill in your values
+cp .secrets.example
 # Fill in your values
 ```
 
