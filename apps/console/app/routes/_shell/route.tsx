@@ -44,7 +44,7 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
   const { user } = useSnapshot(authStore);
   const { agent: activeAgent = null } = useRouteLoaderData("routes/_shell.agent.$agentSlug") ?? {};
-  // Branch selection: until multi-branch is supported, always use first ("main")
+  // TODO: Implement multi-branch support - currently defaulting to "main" branch
   const activeBranch = activeAgent?.branches?.[0];
 
   // FUTURE replace with session storage
@@ -125,7 +125,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           />
         <Sidebar side="right" collapsible="offcanvas" className="data-[state=collapsed]:[inert]">
           <SidebarContent>
-            <PlaygroundSidebar activeBranch={activeAgent?.branches?.[0]} />
+            <PlaygroundSidebar activeBranch={activeBranch} />
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>
