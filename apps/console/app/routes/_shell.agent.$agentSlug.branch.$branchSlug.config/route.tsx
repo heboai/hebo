@@ -11,7 +11,7 @@ type Model = { alias: string; type: string };
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  const action = String(formData.get("intent") || formData.get("_action") || "");
+  const action = String(formData.get("intent"));
 
   if (action === "remove") {
     const alias = String(formData.get("alias"));
