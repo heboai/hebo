@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Form, useActionData, useNavigation, useParams, useRouteLoaderData, useSearchParams } from "react-router";
 import { useForm, getFormProps } from "@conform-to/react";
-import { parseWithValibot, getValibotConstraint } from "@conform-to/valibot";
+import { getValibotConstraint } from "@conform-to/valibot";
 import { object, string, nonEmpty, pipe, trim, message, type InferOutput } from "valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
@@ -57,11 +57,6 @@ export function RemoveModelForm({ model, onCancel }: RemoveModelFormProps) {
       <input type="hidden" name="currentModels" value={JSON.stringify(currentModels)} />
       
       <div className="flex gap-2">
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-        )}
         <Button 
           type="submit" 
           variant="destructive" 
@@ -154,26 +149,37 @@ export function BranchModelForm({ onCancel, editModel }: BranchModelFormProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-end gap-2">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={() => {
-            // Clear the edit URL param when canceling
-            const newSearchParams = new URLSearchParams(window.location.search);
-            newSearchParams.delete('edit');
-            const newUrl = newSearchParams.toString() 
-              ? `${window.location.pathname}?${newSearchParams}` 
-              : window.location.pathname;
-            window.history.replaceState({}, '', newUrl);
-            onCancel();
-          }}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" name="intent" value="save" isLoading={isSaving} disabled={!fields.modelType.value}>
-          {isEditMode ? 'Update' : 'Save'}
-        </Button>
+      <CardFooter className="flex justify-between gap-2">
+        <div className="flex">
+          {/* Only show Remove button when editing an existing model */}
+          {isEditMode && defaultModel && (
+            <RemoveModelForm 
+              model={defaultModel}
+              onCancel={() => onCancel()}
+            />
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => {
+              // Clear the edit URL param when canceling
+              const newSearchParams = new URLSearchParams(window.location.search);
+              newSearchParams.delete('edit');
+              const newUrl = newSearchParams.toString() 
+                ? `${window.location.pathname}?${newSearchParams}` 
+                : window.location.pathname;
+              window.history.replaceState({}, '', newUrl);
+              onCancel();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" name="intent" value="save" isLoading={isSaving} disabled={!fields.modelType.value}>
+            {isEditMode ? 'Update' : 'Save'}
+          </Button>
+        </div>
       </CardFooter>
     </Form>
   );
@@ -202,81 +208,110 @@ export default function ModelConfigurationForm() {
   const activeBranch = agent.branches[0];
   const models = activeBranch.models;
 
+  const allItems = [
+    ...models.map((m) => ({ type: 'model' as const, data: m })),
+    ...newFormIds.map((id) => ({ type: 'new' as const, data: id }))
+  ];
+
   return (
-    <div className="absolute flex items-center w-full justify-center flex-col gap-2 max-w-lg">
-      <div className="flex flex-col">
-        <h2>Model Configuration</h2>
-        <p className="text-muted-foreground">
-          Configure access for agents to different models and their routing behaviour (incl. to your
-          existing inference endpoints). Learn more about Model Configuration
-        </p>
-      </div>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none">
+        <div className="flex flex-col mb-6">
+          <h2>Model Configuration</h2>
+          <p className="text-muted-foreground">
+            Configure access for agents to different models and their routing behaviour (incl. to your
+            existing inference endpoints). Learn more about Model Configuration
+          </p>
+        </div>
 
-      {models.map((m) => {
-        const isOpen = !!openMap[m.alias];
-        return (
-          <Card key={m.alias} className="w-full border-none p-3">
-            <Collapsible open={isOpen} onOpenChange={(v) => setOpenMap((prev) => ({ ...prev, [m.alias]: v }))}>
-              <div className="flex items-center justify-between gap-4 mb-2">
-                <p className="text-sm">
-                  {agentSlug}/{branchSlug}/{m.alias}
-                </p>
-                <p className="text-sm">{getModelDisplayName(m.type)}</p>
-                <Badge variant="secondary">
-                  Custom <RailSymbol />
-                </Badge>
-                <CollapsibleTrigger asChild>
-                  <Button variant="outline" className={isOpen ? "invisible" : ""}>
-                    Edit
-                  </Button>
-                </CollapsibleTrigger>
-              </div>
-
-              <CollapsibleContent>
-                <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
-                  <BranchModelForm 
-                    editModel={m}
-                    onCancel={() => {
-                      // Clear the edit URL parameter when canceling
-                      const newSearchParams = new URLSearchParams(window.location.search);
-                      newSearchParams.delete('edit');
-                      const newUrl = newSearchParams.toString() 
-                        ? `${window.location.pathname}?${newSearchParams}` 
-                        : window.location.pathname;
-                      window.history.replaceState({}, '', newUrl);
-                      setOpenMap((prev) => ({ ...prev, [m.alias]: false }));
-                    }} 
-                  />
-                  
-                  {/* Separate Remove Form */}
-                    <div className="flex items-center justify-between">
-                      <RemoveModelForm 
-                        model={m}
-                        onCancel={() => setOpenMap((prev) => ({ ...prev, [m.alias]: false }))}
-                      />
+      {/* Container card with outer border radius */}
+      {allItems.length > 0 && (
+        <div className="w-full border border-border rounded-lg overflow-hidden">
+          {allItems.map((item, index) => {
+            const isFirst = index === 0;
+            const isLast = index === allItems.length - 1;
+            
+            if (item.type === 'model') {
+              const m = item.data;
+              const isOpen = !!openMap[m.alias];
+              
+              return (
+                <div 
+                  key={m.alias} 
+                  className={`
+                    bg-card p-3
+                    ${!isFirst ? 'border-t border-border' : ''}
+                  `}
+                >
+                  <Collapsible open={isOpen} onOpenChange={(v) => setOpenMap((prev) => ({ ...prev, [m.alias]: v }))}>
+                    <div className="flex items-center justify-between gap-4 mb-2">
+                      <p className="font-semibold text-sm">
+                        {agentSlug}/{branchSlug}/{m.alias}
+                      </p>
+                      <p className="text-medium">{getModelDisplayName(m.type)}</p>
+                      <div className="flex gap-1">
+                        <RailSymbol className="size-6"/>
+                        <p className="text-regular">
+                          Custom
+                        </p>
+                      </div>
+                      <CollapsibleTrigger asChild>
+                        <Button variant="outline" className={isOpen ? "invisible" : ""}>
+                          Edit
+                        </Button>
+                      </CollapsibleTrigger>
                     </div>
-                </Card>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
-        );
-      })}
 
-      {newFormIds.map((id) => (
-        <Card key={id} className="w-full border-none p-3">
-          <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
-            <BranchModelForm onCancel={() => setNewFormIds((prev) => prev.filter((nid) => nid !== id))} />
-          </Card>
-        </Card>
-      ))}
+                    <CollapsibleContent className="overflow-hidden">
+                      <div className="mt-4">
+                        <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
+                          <BranchModelForm 
+                            editModel={m}
+                            onCancel={() => {
+                              // Clear the edit URL parameter when canceling
+                              const newSearchParams = new URLSearchParams(window.location.search);
+                              newSearchParams.delete('edit');
+                              const newUrl = newSearchParams.toString() 
+                                ? `${window.location.pathname}?${newSearchParams}` 
+                                : window.location.pathname;
+                              window.history.replaceState({}, '', newUrl);
+                              setOpenMap((prev) => ({ ...prev, [m.alias]: false }));
+                            }} 
+                          />
+                        </Card>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+              );
+            } else {
+              const id = item.data;
+              return (
+                <div 
+                  key={id} 
+                  className={`
+                    bg-card p-3
+                    ${!isFirst ? 'border-t border-border' : ''}
+                  `}
+                >
+                  <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
+                    <BranchModelForm onCancel={() => setNewFormIds((prev) => prev.filter((nid) => nid !== id))} />
+                  </Card>
+                </div>
+              );
+            }
+          })}
+        </div>
+      )}
 
-      <Button
-        variant="outline"
-        className="self-start"
-        onClick={() => setNewFormIds((prev) => [...prev, `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`])}
-      >
-        + Add Model
-      </Button>
+        <Button
+          variant="outline"
+          className="self-start mt-2"
+          onClick={() => setNewFormIds((prev) => [...prev, `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`])}
+        >
+          + Add Model
+        </Button>
+      </div>
     </div>
   );
 }
