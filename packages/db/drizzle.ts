@@ -25,7 +25,7 @@ export const dbConnectionConfig = {
   user: Resource.HeboDatabase.username,
   password: Resource.HeboDatabase.password,
   database: Resource.HeboDatabase.database,
-  ssl: process.env.NODE_ENV === "production",
+  ssl: process.env.IS_REMOTE === "true",
 };
 
 const pool = new Pool({ ...dbConnectionConfig });

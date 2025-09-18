@@ -46,8 +46,8 @@ if (!$dev) {
       },
     ],
     environment: {
-      NODE_ENV: "production",
       NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
+      IS_REMOTE: "true",
     },
   });
   // eslint-disable-next-line sonarjs/constructor-for-side-effects
