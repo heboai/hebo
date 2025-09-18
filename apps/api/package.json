@@ -4,7 +4,7 @@
   "private": true,
   "sideEffects": false,
   "engines": {
-    "bun": ">=1.2.21"
+    "bun": ">=1.2.22"
   },
   "type": "module",
   "scripts": {
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.7",
     "@types/pg": "^8.15.5",
-    "bun-types": "^1.2.19",
+    "bun-types": "^1.2.22",
     "pino-pretty": "^13.1.1"
   }
 }

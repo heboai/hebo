@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ########################  pruner stage  ########################
-FROM oven/bun:1.2.21 AS pruner
+FROM oven/bun:1.2.22 AS pruner
 WORKDIR /repo
 RUN bun install --global turbo@2.5.6
 
@@ -11,7 +11,7 @@ COPY . .
 RUN turbo prune @hebo/gateway --docker
 
 ########################  installer + builder stage  ########################
-FROM oven/bun:1.2.21 AS builder
+FROM oven/bun:1.2.22 AS builder
 WORKDIR /repo
 
 COPY --from=pruner /repo/out/json/ ./
