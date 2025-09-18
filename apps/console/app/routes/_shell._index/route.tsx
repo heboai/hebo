@@ -13,7 +13,7 @@ async function defaultAgentMiddleware() {
   throw redirect("/agent/create");
 }
 
-export const unstable_clientMiddleware = [defaultAgentMiddleware];
+export const clientMiddleware = [defaultAgentMiddleware];
 
 export default function EmptyRoute() {
   return <></>

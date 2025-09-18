@@ -34,7 +34,7 @@ async function authMiddleware() {
   await authService.ensureSignedIn();
 }
 
-export const unstable_clientMiddleware = [authMiddleware];
+export const clientMiddleware = [authMiddleware];
 
 export async function clientLoader() {
   return { agents: (await api.agents.get()).data ?? [] };
@@ -81,7 +81,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           <SidebarContent />
           <SidebarFooter>
               <StaticContent />
-              <SidebarSeparator className="mx-0" />
+              <SidebarSeparator />
               <UserMenu user={user} />
           </SidebarFooter>
         </div>
