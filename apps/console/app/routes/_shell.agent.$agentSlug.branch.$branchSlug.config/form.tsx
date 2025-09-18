@@ -244,22 +244,28 @@ export default function ModelConfigurationForm() {
                   `}
                 >
                   <Collapsible open={isOpen} onOpenChange={(v) => setOpenMap((prev) => ({ ...prev, [m.alias]: v }))}>
-                    <div className="flex items-center justify-between gap-4 mb-2">
-                      <p className="font-semibold text-sm">
-                        {agentSlug}/{branchSlug}/{m.alias}
-                      </p>
-                      <p className="text-medium">{getModelDisplayName(m.type)}</p>
-                      <div className="flex gap-1">
+                    <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center mb-2">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-sm truncate">
+                          {agentSlug}/{branchSlug}/{m.alias}
+                        </p>
+                      </div>
+                      <div className="text-left">
+                        <p className="text-medium">{getModelDisplayName(m.type)}</p>
+                      </div>
+                      <div className="flex gap-1 items-center">
                         <RailSymbol className="size-6"/>
                         <p className="text-regular">
                           Custom
                         </p>
                       </div>
-                      <CollapsibleTrigger asChild>
-                        <Button variant="outline" className={isOpen ? "invisible" : ""}>
-                          Edit
-                        </Button>
-                      </CollapsibleTrigger>
+                      <div>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="outline" className={isOpen ? "invisible" : ""}>
+                            Edit
+                          </Button>
+                        </CollapsibleTrigger>
+                      </div>
                     </div>
 
                     <CollapsibleContent className="overflow-hidden">
