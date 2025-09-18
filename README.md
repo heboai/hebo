@@ -19,8 +19,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 │   └── ui/                         # UI components (Shadcn + custom)
 │
 ├── infra/                          # Infrastructure as Code (SST)
-│   ├── stacks/                     # SST stacks
-│   └── package.json                # Infra dependencies
+│   └──stacks/                     # SST stacks
 │
 ├── .github/
 │   └── workflows/                  # CI/CD pipelines
@@ -36,6 +35,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 ## Prerequisites
 
 - Bun >= 1.2.19
+- Docker >= 28.4.0
 - AWS CLI (only required for deployment)
 
 ## Installation
@@ -54,7 +54,7 @@ cp .env.example .env
 
 ```bash
 # Init the development database
-bun run db:migrate
+bun run db:dev:migrate
 ```
 
 ```bash
@@ -68,13 +68,15 @@ bun run -F @hebo/console dev
 ```
 
 ```bash
-# Cleanup
-bun run clean
+# Use secrets
+cp infra/.secrets.example infra/.secrets
+# Fill in infra/.secrets values, then:
+bun run dev
 ```
 
 ```bash
-# Cleanup just the DB package
-bun run -F @hebo/db clean 
+# Cleanup
+bun run clean
 ```
 
 ## Run modes
@@ -82,7 +84,7 @@ bun run -F @hebo/db clean
 | #   | Mode                        | Command                    | Database                       | API availability                        |
 | --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
 | 1   | **Frontend-only** (offline) | `bun run -F @hebo/console dev` | —                              | none – UI relies on local state manager |
-| 2   | **Local full-stack**        | `bun run dev`              | PGLite (`packages/db/hebo.db`) | Env variables `VITE_API_URL`, `VITE_GATEWAY_URL`                   |
+| 2   | **Local full-stack**        | `bun run dev`              | Dockerized  PostgreSQL | HTTPS URLs injected by SST `VITE_API_URL`, `VITE_GATEWAY_URL`                   |
 | 3   | **Remote full-stack**       | `bun run sst deploy`               | Aurora PostgreSQL              | HTTPS URLs injected by SST              |
 
 ## Building

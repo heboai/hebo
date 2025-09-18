@@ -1,4 +1,4 @@
-import { heboVpc } from "./vpc";
+import { heboVpc } from "./network";
 
 const heboCluster = new sst.aws.Cluster("HeboCluster", { vpc: heboVpc });
 

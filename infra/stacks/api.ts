@@ -1,7 +1,6 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
-import { isProd } from "./vars";
-import * as vars from "./vars";
+import { allSecrets, isProd } from "./vars";
 
 const apiDomain = isProd ? "api.hebo.ai" : `api.${$app.stage}.hebo.ai`;
 const apiPort = "3001";
@@ -10,6 +9,7 @@ const heboApi = new sst.aws.Service("HeboApi", {
   cluster: heboCluster,
   architecture: "arm64",
   cpu: isProd ? "1 vCPU" : "0.25 vCPU",
+  link: [heboDatabase, ...allSecrets],
   image: {
     context: ".",
     dockerfile: "infra/stacks/docker/Dockerfile.api",
@@ -18,17 +18,9 @@ const heboApi = new sst.aws.Service("HeboApi", {
   environment: {
     LOG_LEVEL: isProd ? "info" : "debug",
     NO_COLOR: "1",
+    NODE_ENV: $dev ? "development" : "production",
     NODE_EXTRA_CA_CERTS: "/etc/ssl/certs/rds-bundle.pem",
-    PG_DATABASE: heboDatabase.database,
-    PG_HOST: heboDatabase.host,
-    PG_PORT: heboDatabase.port.apply((port) => port.toString()),
     PORT: apiPort,
-    VITE_STACK_PROJECT_ID: vars.stackProjectId.value,
-  },
-  ssm: {
-    PG_PASSWORD: vars.dbPassword.arn,
-    PG_USER: vars.dbUsername.arn,
-    STACK_SECRET_SERVER_KEY: vars.stackSecretServerKey.arn,
   },
   loadBalancer: {
     domain: apiDomain,
@@ -43,6 +35,10 @@ const heboApi = new sst.aws.Service("HeboApi", {
   },
   capacity: isProd ? undefined : "spot",
   wait: isProd,
+  dev: {
+    command: "bun run --filter @hebo/api dev",
+    url: `http://localhost:${apiPort}`,
+  },
 });
 
 export default heboApi;

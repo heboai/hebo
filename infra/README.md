@@ -55,15 +55,6 @@ bun run sst secret load .secrets --stage <stage>
 2. **AWS CLI configured**
 3. **Docker installed and running**
 
-### Setup AWS keys and secrets
-
-```bash
-cp .env.example .env
-# Fill in your values
-cp .secrets.example
-# Fill in your values
-```
-
 ### Install SST providers
 
 ```bash
@@ -73,20 +64,8 @@ bun run sst install
 ### Deploy Infrastructure
 
 ```bash
-# From project root
-bun run sst deploy
-
-# Or specific stage
 bun run sst deploy --stage production
 ```
-
-## Security
-
-- **VPC Isolation**: All resources run within private subnets
-- **Encryption**: Database storage encrypted at rest
-- **IAM**: Least privilege access through SST
-- **Container Security**: Non-root user, minimal Distroless base image
-- **SSM**: Secrets and config managed in AWS Parameter Store
 
 ## Monitoring and Scaling
 

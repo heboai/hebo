@@ -1,6 +1,5 @@
-import { isProd } from "./vars";
-import * as vars from "./vars";
-import { heboVpc } from "./vpc";
+import { heboVpc } from "./network";
+import { dbUsername, dbPassword, isProd } from "./vars";
 
 const globalCluster = new aws.rds.GlobalCluster("HeboDbGlobal", {
   globalClusterIdentifier: isProd ? "hebo-global" : `${$app.stage}-hebo-global`,
@@ -17,43 +16,43 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   scaling: isProd
     ? { min: "0.5 ACU" }
     : { min: "0 ACU", max: "4 ACU", pauseAfter: "20 minutes" },
-  username: vars.dbUsername.value,
-  password: vars.dbPassword.value,
+  username: dbUsername.value,
+  password: dbPassword.value,
   database: "hebo",
   transform: {
     cluster: (a) => {
       a.globalClusterIdentifier = globalCluster.id;
     },
   },
-});
-
-const migrator = new sst.aws.Function("DatabaseMigrator", {
-  handler: "packages/db/lambda/migrator.handler",
-  vpc: heboVpc,
-  link: [heboDatabase],
-  copyFiles: [
-    {
-      from: "packages/db/migrations",
-      to: "./migrations",
-    },
-  ],
-  environment: {
-    NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
-    PG_HOST: heboDatabase.host,
-    PG_PORT: heboDatabase.port.apply((port) => port.toString()),
-    PG_DATABASE: heboDatabase.database,
-  },
-  nodejs: {
-    install: ["sst"],
+  dev: {
+    username: "postgres",
+    // eslint-disable-next-line sonarjs/no-hardcoded-passwords
+    password: "password",
+    database: "local",
+    host: "localhost",
+    port: 5432,
   },
 });
 
 if (!$dev) {
+  const migrator = new sst.aws.Function("DatabaseMigrator", {
+    handler: "packages/db/lambda/migrator.handler",
+    vpc: heboVpc,
+    link: [heboDatabase],
+    copyFiles: [
+      {
+        from: "packages/db/migrations",
+        to: "./migrations",
+      },
+    ],
+    environment: {
+      NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
+    },
+  });
   // eslint-disable-next-line sonarjs/constructor-for-side-effects
   new aws.lambda.Invocation("DatabaseMigratorInvocation", {
     input: Date.now().toString(),
     functionName: migrator.name,
   });
 }
-
 export default heboDatabase;
