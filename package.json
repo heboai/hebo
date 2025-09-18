@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "clean": "git clean -fdx -e '.env*' -e '.secrets*'",
+    "clean": "bun run sst remove && git clean -fdx -e '.env*' -e '.secrets*'",
     "db:dev:start": "docker compose -f infra/stacks/docker/docker-compose.dev.yml up -d",
     "db:dev:stop": "docker compose -f infra/stacks/docker/docker-compose.dev.yml down",
     "db:dev:migrate": "bun run --filter @hebo/db db migrate",
