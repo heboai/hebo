@@ -15,6 +15,8 @@ FROM oven/bun:1.2.22 AS builder
 WORKDIR /repo
 
 COPY --from=pruner /repo/out/json/ ./
+# FUTURE: remove this once turbo prune is more stable
+RUN bun install --lockfile-only
 RUN bun install --frozen-lockfile --production --ignore-scripts
 
 COPY --from=pruner /repo/out/full/ ./

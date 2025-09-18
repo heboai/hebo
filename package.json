@@ -46,6 +46,7 @@
     "eslint-plugin-unicorn": "^60.0.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "lefthook": "^1.12.2",
+    "mime-db": "^1.54.0",
     "prettier": "^3.6.2",
     "sst": "^3.17.13",
     "tailwindcss": "^4.1.12",
