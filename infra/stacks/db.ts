@@ -46,6 +46,7 @@ if (!$dev) {
       },
     ],
     environment: {
+      NODE_ENV: "production",
       NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
     },
   });
