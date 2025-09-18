@@ -17,6 +17,7 @@ import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 import { FormField, FormLabel, FormControl, FormMessage } from "@hebo/shared-ui/components/Form";
 import { RailSymbol } from "lucide-react";
+import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
 
@@ -245,10 +246,14 @@ export default function ModelConfigurationForm() {
                 >
                   <Collapsible open={isOpen} onOpenChange={(v) => setOpenMap((prev) => ({ ...prev, [m.alias]: v }))}>
                     <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center mb-2">
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex items-center gap-2">
                         <p className="font-semibold text-sm truncate">
                           {agentSlug}/{branchSlug}/{m.alias}
                         </p>
+                        <CopyToClipboardButton
+                          textToCopy={`${agentSlug}/${branchSlug}/${m.alias}`}
+                          className="shrink-0"
+                        />
                       </div>
                       <div className="text-left">
                         <p className="text-medium">{getModelDisplayName(m.type)}</p>
