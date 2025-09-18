@@ -89,5 +89,9 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 }
 
 export default function AgentBranchConfig({ loaderData, actionData }: Route.ComponentProps) {
-  return <ModelConfigurationForm />;
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <ModelConfigurationForm />
+    </div>
+  );
 }
