@@ -12,6 +12,7 @@ import {
   SidebarProvider,
   SidebarSeparator,
   SidebarTrigger,
+  SidebarGroup,
 } from "@hebo/shared-ui/components/Sidebar";
 
 import { authService } from "~console/lib/auth";
@@ -77,7 +78,9 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
             <AgentSelect agents={agents} activeAgent={activeAgent} />
           </SidebarHeader>
           <SidebarContent>
-            <SidebarNav activeAgent={activeAgent} />
+            <SidebarGroup>
+              <SidebarNav activeAgent={activeAgent} />
+            </SidebarGroup>            
           </SidebarContent>
           <SidebarFooter>
               <StaticContent />
