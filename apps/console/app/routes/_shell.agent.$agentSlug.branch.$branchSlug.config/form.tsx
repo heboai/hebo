@@ -16,7 +16,7 @@ import { CardContent, CardFooter } from "@hebo/shared-ui/components/Card";
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 import { FormField, FormLabel, FormControl, FormMessage } from "@hebo/shared-ui/components/Form";
-import { RailSymbol } from "lucide-react";
+import { Split } from "lucide-react";
 import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
@@ -259,7 +259,7 @@ export default function ModelConfigurationForm() {
                         <p className="text-medium">{getModelDisplayName(m.type)}</p>
                       </div>
                       <div className="flex gap-1 items-center">
-                        <RailSymbol className="size-6"/>
+                        <Split/>
                         <p className="text-regular">
                           Custom
                         </p>
