@@ -11,7 +11,6 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Button } from "@hebo/shared-ui/components/Button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/shared-ui/components/Collapsible";
 import { Card } from "@hebo/shared-ui/components/Card";
-import { Badge } from "@hebo/shared-ui/components/Badge";
 import { CardContent, CardFooter } from "@hebo/shared-ui/components/Card";
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
@@ -215,9 +214,9 @@ export default function ModelConfigurationForm() {
   ];
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center">
+    <div className="absolute inset-0 flex justify-center">
       <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none">
-        <div className="flex flex-col mb-6">
+        <div className="flex flex-col mb-6 mt-16">
           <h2>Model Configuration</h2>
           <p className="text-muted-foreground">
             Configure access for agents to different models and their routing behaviour (incl. to your
