@@ -81,11 +81,11 @@ bun run clean
 
 ## Run modes
 
-| #   | Mode                        | Command                    | Database                       | API availability                        |
-| --- | --------------------------- | -------------------------- | ------------------------------ | --------------------------------------- |
-| 1   | **Frontend-only** (offline) | `bun run -F @hebo/console dev` | —                              | none – UI relies on local state manager |
-| 2   | **Local full-stack**        | `bun run dev`              | Dockerized  PostgreSQL | HTTPS URLs injected by SST `VITE_API_URL`, `VITE_GATEWAY_URL`                   |
-| 3   | **Remote full-stack**       | `bun run sst deploy`               | Aurora PostgreSQL              | HTTPS URLs injected by SST              |
+| #   | Mode                         | Command                          | Database              | API availability                        |
+|-----|------------------------------|----------------------------------|-----------------------|-----------------------------------------|
+| 1   | **Frontend-only** (offline)  | `bun run -F @hebo/console dev`   | —                     | none – UI relies on MSW / MSW data       |
+| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | HTTPS URLs injected by SST              |
+| 3   | **Remote full-stack**        | `bun run sst deploy`             | Aurora PostgreSQL     | HTTPS URLs injected by SST              |
 
 ## Building
 
