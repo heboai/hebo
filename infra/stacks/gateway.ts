@@ -1,6 +1,6 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
-import { allSecrets, isProd } from "./vars";
+import { allSecrets, isProd } from "./env";
 
 const gatewayDomain = isProd
   ? "gateway.hebo.ai"

@@ -1,5 +1,5 @@
+import { dbUsername, dbPassword, isProd } from "./env";
 import { heboVpc } from "./network";
-import { dbUsername, dbPassword, isProd } from "./vars";
 
 const globalCluster = new aws.rds.GlobalCluster("HeboDbGlobal", {
   globalClusterIdentifier: isProd ? "hebo-global" : `${$app.stage}-hebo-global`,

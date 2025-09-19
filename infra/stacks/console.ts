@@ -1,6 +1,6 @@
 import heboApi from "./api";
+import { isProd, stackProjectId, stackPublishableClientKey } from "./env";
 import heboGateway from "./gateway";
-import { isProd, stackProjectId, stackPublishableClientKey } from "./vars";
 
 const heboConsole = new sst.aws.StaticSite("HeboConsole", {
   path: "apps/console",

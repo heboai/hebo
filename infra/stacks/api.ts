@@ -1,6 +1,6 @@
 import heboCluster from "./cluster";
 import heboDatabase from "./db";
-import { allSecrets, isProd } from "./vars";
+import { allSecrets, isProd } from "./env";
 
 const apiDomain = isProd ? "api.hebo.ai" : `api.${$app.stage}.hebo.ai`;
 const apiPort = "3001";
