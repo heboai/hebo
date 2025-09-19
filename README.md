@@ -64,7 +64,9 @@ bun run dev
 
 ```bash
 # Start only the console in dev
-bun run -F @hebo/console dev
+bun run sst dev --mode=basic
+# In a separate terminal session
+APP=console bun run dev:app
 ```
 
 ```bash
@@ -77,6 +79,9 @@ bun run dev
 ```bash
 # Cleanup
 bun run clean
+
+# Cleanup the database
+bun run -F @hebo/infra clean
 ```
 
 ## Run modes

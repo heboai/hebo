@@ -65,8 +65,7 @@ next-env.d.ts
 .cursor
 
 # db
-local-db
-hebo.db
+.local-storage
 
 # eslint
 .eslintcache

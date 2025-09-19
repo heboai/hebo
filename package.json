@@ -10,16 +10,18 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "bun run sst remove && git clean -fdx -e '.env*' -e '.secrets*'",
-    "db:generate": "bun run --filter @hebo/db db generate",
-    "dev": "sst secret load infra/.secrets && sst dev",
+    "db": "bun run --filter @hebo/db db",
+    "dev": "sst dev",
+    "dev:app": "sst dev -- bun run --filter @hebo/{$APP} dev",
     "format": "prettier --write .",
     "format:staged": "prettier --write",
     "lint": "turbo run lint",
     "lint:deps": "check-dependency-version-consistency .",
     "lint:staged": "eslint --cache --fix",
     "postinstall": "lefthook install",
-    "test": "turbo run test",
-    "sst": "sst"
+    "predev": "docker compose -f infra/stacks/docker/docker-compose.dev.yml up -d && bun run db migrate && sst secret load infra/.secrets",
+    "postdev": "docker compose -f infra/stacks/docker/docker-compose.dev.yml down",
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
