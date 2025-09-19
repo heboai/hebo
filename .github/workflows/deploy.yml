@@ -41,8 +41,8 @@ jobs:
         run: |
           bun run sst secret set DbUsername ${{ secrets.DB_USERNAME }} --stage production
           bun run sst secret set DbPassword ${{ secrets.DB_PASSWORD }} --stage production
-          bun run sst secret set stackProjectId ${{ secrets.STACK_PROJECT_ID }} --stage production
-          bun run sst secret set stackPublishableClientKey ${{ secrets.STACK_PUBLISHABLE_CLIENT_KEY }} --stage production
+          bun run sst secret set StackProjectId ${{ secrets.STACK_PROJECT_ID }} --stage production
+          bun run sst secret set StackPublishableClientKey ${{ secrets.STACK_PUBLISHABLE_CLIENT_KEY }} --stage production
           bun run sst secret set StackSecretServerKey ${{ secrets.STACK_SECRET_SERVER_KEY }} --stage production
           bun run sst secret set GroqApiKey ${{ secrets.GROQ_API_KEY }} --stage production
           bun run sst secret set VoyageApiKey ${{ secrets.VOYAGE_API_KEY }} --stage production
