@@ -45,16 +45,16 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 bun install
 ```
 
-```bash
-# Set up your environment variables
-cp .env.example .env
-```
-
 ## Development
 
 ```bash
 # Run the entire stack locally
 bun run dev
+```
+
+```bash
+# Apply migrations once dev is running
+bun run db migrate
 ```
 
 ```bash
