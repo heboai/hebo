@@ -53,11 +53,6 @@ cp .env.example .env
 ## Development
 
 ```bash
-# Init the development database
-bun run db:dev:migrate
-```
-
-```bash
 # Run the entire stack locally
 bun run dev
 ```
