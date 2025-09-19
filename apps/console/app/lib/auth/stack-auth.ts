@@ -56,10 +56,7 @@ const authService = {
 
   getAccessToken() {
     const rawCookie = getCookie("stack-access");
-    if (!rawCookie) return;
-    const parsed = JSON.parse(decodeURIComponent(rawCookie));
-    const accessToken: unknown = Array.isArray(parsed) ? parsed[1] : undefined;
-    return typeof accessToken === "string" ? accessToken : undefined;
+    return JSON.parse(decodeURIComponent(rawCookie!))[1];
   },
 } satisfies AuthService;
 
