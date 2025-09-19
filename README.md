@@ -19,7 +19,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 │   └── ui/                         # UI components (Shadcn + custom)
 │
 ├── infra/                          # Infrastructure as Code (SST)
-│   └──stacks/                     # SST stacks
+│   └── stacks/                     # SST stacks
 │
 ├── .github/
 │   └── workflows/                  # CI/CD pipelines
