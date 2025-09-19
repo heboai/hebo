@@ -12,7 +12,7 @@
     "clean": "bun run sst remove && git clean -fdx -e '.env*' -e '.secrets*'",
     "db": "bun run --filter @hebo/db db",
     "dev": "sst dev",
-    "dev:app": "sst dev -- bun run --filter @hebo/{$APP} dev",
+    "dev:app": "sst dev -- bun run --filter @hebo/${APP} dev",
     "format": "prettier --write .",
     "format:staged": "prettier --write",
     "lint": "turbo run lint",
