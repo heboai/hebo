@@ -45,6 +45,36 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 bun install
 ```
 
+## Secrets
+
+Use `infra/.secrets.example` as the single source of truth for secret names.
+
+```bash
+# Prepare secrets
+cp infra/.secrets.example infra/.secrets
+# Open infra/.secrets and fill in values
+```
+
+Load secrets to a stage (for preview/prod):
+
+```bash
+bun run sst secret load infra/.secrets --stage <stage>
+# Examples:
+# bun run sst secret load infra/.secrets --stage PR-123
+# bun run sst secret load infra/.secrets --stage production
+```
+
+Local development:
+
+```bash
+# Once infra/.secrets is populated
+bun run dev
+```
+
+Notes:
+- Do not commit `infra/.secrets`.
+- Secrets are injected by SST into app environments based on the selected `--stage`.
+
 ## Development
 
 ```bash
@@ -62,13 +92,6 @@ bun run db migrate
 bun run sst dev --mode=basic
 # In a separate terminal session
 APP=console bun run dev:app
-```
-
-```bash
-# Use secrets
-cp infra/.secrets.example infra/.secrets
-# Fill in infra/.secrets values, then:
-bun run dev
 ```
 
 ```bash
