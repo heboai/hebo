@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Required to allow reuse. Do not remove.
+  workflow_call:
 
 jobs:
   quality:
@@ -18,7 +20,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          version: "1.2.19"
+          bun-version: "1.2.22"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
