@@ -55,7 +55,7 @@ dist
 Thumbs.db
 *.pem
 .env*
-.secrets
+.secrets*
 .build-complete
 .node_repl_history
 
