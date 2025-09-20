@@ -47,33 +47,38 @@ bun install
 
 ## Secrets
 
-Use `infra/.secrets.example` as the single source of truth for secret names.
+Set each secret individually before running development.
+
+Secrets to set:
+
+LLM keys
+- `GroqApiKey`
+- `VoyageApiKey`
+
+Auth secrets (optional)
+- `StackSecretServerKey`
+- `StackPublishableClientKey`
+- `StackProjectId`
+
+
+Examples (replace `<value>`):
 
 ```bash
-# Prepare secrets
-cp infra/.secrets.example infra/.secrets
-# Open infra/.secrets and fill in values
-```
+# LLM Keys
+bun run sst secret set GroqApiKey <value> --stage <stage>
+bun run sst secret set VoyageApiKey <value> --stage <stage>
 
-Load secrets to a stage (for preview/prod):
-
-```bash
-bun run sst secret load infra/.secrets --stage <stage>
-# Examples:
-# bun run sst secret load infra/.secrets --stage PR-123
-# bun run sst secret load infra/.secrets --stage production
+# Auth secrets (optional)
+bun run sst secret set StackSecretServerKey <value> --stage <stage>
+bun run sst secret set StackPublishableClientKey <value> --stage <stage>
+bun run sst secret set StackProjectId <value> --stage <stage>
 ```
 
 Local development:
 
 ```bash
-# Once infra/.secrets is populated
 bun run dev
 ```
-
-Notes:
-- Do not commit `infra/.secrets`.
-- Secrets are injected by SST into app environments based on the selected `--stage`.
 
 ## Development
 
@@ -144,10 +149,7 @@ For deployments, we utilize the SST framework ([sst.dev](https://sst.dev/)).
 # Install providers
 bun run sst install
 
-# Prepare and load secrets
-cp infra/.secrets.example infra/.secrets
-# Fill in infra/.secrets values, then:
-bun run sst secret load infra/.secrets --stage <stage>
+# Ensure secrets are set for your desired stage (--stage flag) including DbUsername, and DbPassword secrets
 
 # Deploy a preview link
 bun run sst deploy --stage PR-XX

@@ -19,7 +19,7 @@
     "lint:deps": "check-dependency-version-consistency .",
     "lint:staged": "eslint --cache --fix",
     "postinstall": "lefthook install",
-    "predev": "docker compose -f infra/stacks/docker/docker-compose.dev.yml up -d && sst secret load infra/.secrets",
+    "predev": "docker compose -f infra/stacks/docker/docker-compose.dev.yml up -d",
     "test": "turbo run test"
   },
   "devDependencies": {
