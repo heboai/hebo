@@ -60,23 +60,17 @@ Auth secrets (optional)
 - `StackPublishableClientKey`
 - `StackProjectId`
 
+Database (only required for deployments)
+- `DbUsername`
+- `DbPassword`
 
-Examples (replace `<value>`):
-`--stage <stage>` is not required in dev.
+Examples usage:
+
+* replace `<value>` and `<stage>`
+* `--stage <stage>` is not required in development.
 
 ```bash
-# LLM Keys
 bun run sst secret set GroqApiKey <value> --stage <stage>
-bun run sst secret set VoyageApiKey <value> --stage <stage>
-
-# Auth secrets (optional)
-bun run sst secret set StackSecretServerKey <value> --stage <stage>
-bun run sst secret set StackPublishableClientKey <value> --stage <stage>
-bun run sst secret set StackProjectId <value> --stage <stage>
-
-# Database (only required for a remote deployment)
-bun run sst secret set DbUsername <value> --stage <stage>
-bun run sst secret set DbPassword <value> --stage <stage>
 ```
 
 ## Development
