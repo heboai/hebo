@@ -86,6 +86,7 @@ bun run db migrate
 ```
 
 ```bash
+# Start only the console in dev
 APP=console bun run dev
 ```
 
