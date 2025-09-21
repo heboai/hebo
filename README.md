@@ -62,6 +62,7 @@ Auth secrets (optional)
 
 
 Examples (replace `<value>`):
+`--stage <stage>` is not required in dev.
 
 ```bash
 # LLM Keys
@@ -72,6 +73,10 @@ bun run sst secret set VoyageApiKey <value> --stage <stage>
 bun run sst secret set StackSecretServerKey <value> --stage <stage>
 bun run sst secret set StackPublishableClientKey <value> --stage <stage>
 bun run sst secret set StackProjectId <value> --stage <stage>
+
+# Database (only required for a remote deoloyment)
+bun run sst secret set DbUsername <value> --stage <stage>
+bun run sst secret set DbPassword <value> --stage <stage>
 ```
 
 ## Development
