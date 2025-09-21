@@ -87,7 +87,7 @@ bun run db migrate
 ```
 
 ```bash
-APP=console bun dev
+APP=console bun run dev
 ```
 
 ```bash
