@@ -74,12 +74,6 @@ bun run sst secret set StackPublishableClientKey <value> --stage <stage>
 bun run sst secret set StackProjectId <value> --stage <stage>
 ```
 
-Local development:
-
-```bash
-bun run dev
-```
-
 ## Development
 
 ```bash
@@ -93,10 +87,7 @@ bun run db migrate
 ```
 
 ```bash
-# Start only the console in dev
-bun run sst dev --mode=basic
-# In a separate terminal session
-APP=console bun run dev:app
+APP=console bun dev
 ```
 
 ```bash
