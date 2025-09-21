@@ -74,7 +74,7 @@ bun run sst secret set StackSecretServerKey <value> --stage <stage>
 bun run sst secret set StackPublishableClientKey <value> --stage <stage>
 bun run sst secret set StackProjectId <value> --stage <stage>
 
-# Database (only required for a remote deoloyment)
+# Database (only required for a remote deployment)
 bun run sst secret set DbUsername <value> --stage <stage>
 bun run sst secret set DbPassword <value> --stage <stage>
 ```
