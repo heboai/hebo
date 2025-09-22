@@ -7,5 +7,4 @@ export const handler = async (event: unknown) => {
   await migrate(db, {
     migrationsFolder: "./migrations",
   });
-  console.log("Migrations completed successfully.");
 };
