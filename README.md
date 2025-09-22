@@ -37,6 +37,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 - Bun >= 1.2.22
 - Docker >= 28
 - AWS CLI (only required for deployment)
+- Windows: Bash must be installed and on PATH. Install via [WSL](https://learn.microsoft.com/windows/wsl/install), [Git for Windows (Git Bash)](https://git-scm.com/download/win), or [Cygwin](https://www.cygwin.com/).
 
 ## Installation
 
@@ -74,6 +75,8 @@ bun run sst secret set GroqApiKey <value> --stage <stage>
 ```
 
 ## Development
+
+Windows note: You can run these commands from PowerShell or cmd as long as `bash` is available on PATH (via WSL/Git Bash/Cygwin).
 
 ```bash
 # Run the entire stack locally
