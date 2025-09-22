@@ -212,8 +212,8 @@ export default function ModelConfigurationForm() {
                                 <Button
                                   type="submit"
                                   name="intent"
-                                  value={`save:${index}`}
-                                  isLoading={isSubmitting && currentIntent === `save:${index}`}
+                                  value="save"
+                                  isLoading={isSubmitting && currentIntent === "save"}
                                 >
                                   Save
                                 </Button>
