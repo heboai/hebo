@@ -18,10 +18,9 @@ const heboGateway = new sst.aws.Service("HeboGateway", {
     tags: [gatewayDomain],
   },
   environment: {
-    LOG_LEVEL: isProd ? "info" : "debug",
-    NO_COLOR: "1",
-    NODE_EXTRA_CA_CERTS: "/etc/ssl/certs/rds-bundle.pem",
     IS_REMOTE: $dev ? "false" : "true",
+    LOG_LEVEL: isProd ? "info" : "debug",
+    NODE_EXTRA_CA_CERTS: "/etc/ssl/certs/rds-bundle.pem",
     PORT: gatewayPort,
   },
   loadBalancer: {
