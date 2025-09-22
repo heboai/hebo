@@ -1,14 +1,14 @@
 import { dbUsername, dbPassword, isProd } from "./env";
-import { heboVpc } from "./network";
+import heboVpc from "./network";
 
 const globalCluster = isProd
   ? new aws.rds.GlobalCluster("HeboDbGlobal", {
-      globalClusterIdentifier: "hebo-global",
+      globalClusterIdentifier: `hebo-db-global`,
       engine: "aurora-postgresql",
       engineVersion: "17.5",
       storageEncrypted: true,
     })
-  : aws.rds.GlobalCluster.get("HeboDbGlobal", "development-hebo-global");
+  : aws.rds.GlobalCluster.get("HeboDbGlobal", "shared-hebo-db-global");
 
 const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   engine: "postgres",

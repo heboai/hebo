@@ -1,5 +1,7 @@
 import { isProd } from "./env";
 
-export const heboVpc = isProd
+const heboVpc = isProd
   ? new sst.aws.Vpc("HeboVpc", { nat: "managed" })
-  : sst.aws.Vpc.get("HeboVpc", "vpc-0f75bb58699c6defa");
+  : sst.aws.Vpc.get("--", "vpc-0e7e8d03d2e27591e");
+
+export default heboVpc;
