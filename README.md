@@ -95,7 +95,7 @@ APP=console bun run dev
 # Cleanup
 bun run clean
 
-# Cleanup the database (any any other untracked files/directories)
+# Cleanup the database (and any other untracked files/directories)
 bun run -F @hebo/infra clean
 ```
 
