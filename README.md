@@ -76,8 +76,6 @@ bun run sst secret set GroqApiKey <value> --stage <stage>
 
 ## Development
 
-Windows note: You can run these commands from PowerShell or cmd as long as `bash` is available on PATH (via WSL/Git Bash/Cygwin).
-
 ```bash
 # Run the entire stack locally
 bun run dev
