@@ -66,8 +66,8 @@ Database (only required for deployments)
 
 Examples usage:
 
-* replace `<value>` and `<stage>`
-* `--stage <stage>` is not required in development.
+- Replace `<value>` and `<stage>`
+- The `--stage <stage>` is not required in development.
 
 ```bash
 bun run sst secret set GroqApiKey <value> --stage <stage>
