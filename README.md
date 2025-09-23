@@ -68,7 +68,7 @@ cp .env.example .env
 
 ```bash
 # Start only the console in dev
-bun run -F @hebo/console
+bun run -F @hebo/console dev
 ```
 
 ```bash
