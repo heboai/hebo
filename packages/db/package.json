@@ -27,6 +27,6 @@
     "pg": "^8.16.3"
   },
   "dependencies": {
-    "@hebo/shared-utils": "workspace:*"
+    "sst": "^3.17.13"
   }
 }

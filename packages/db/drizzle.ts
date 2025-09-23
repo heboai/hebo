@@ -1,7 +1,6 @@
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-
-import { getSSTResource } from "@hebo/shared-utils/sst/resource";
+import { Resource } from "sst";
 
 import { agents } from "./schema/agents";
 import { branches } from "./schema/branches";
@@ -21,11 +20,41 @@ type TxOf<D> = D extends {
   : never;
 
 export const dbConnectionConfig = {
-  host: getSSTResource("HeboDatabase", "host", "localhost"),
-  port: getSSTResource("HeboDatabase", "port", 5432),
-  user: getSSTResource("HeboDatabase", "username", "postgres"),
-  password: getSSTResource("HeboDatabase", "password", "password"),
-  database: getSSTResource("HeboDatabase", "database", "local"),
+  host: (() => {
+    try {
+      return Resource.HeboDatabase.host;
+    } catch {
+      return "localhost";
+    }
+  })(),
+  port: (() => {
+    try {
+      return Resource.HeboDatabase.port;
+    } catch {
+      return 5432;
+    }
+  })(),
+  user: (() => {
+    try {
+      return Resource.HeboDatabase.username;
+    } catch {
+      return "postgres";
+    }
+  })(),
+  password: (() => {
+    try {
+      return Resource.HeboDatabase.password;
+    } catch {
+      return "password";
+    }
+  })(),
+  database: (() => {
+    try {
+      return Resource.HeboDatabase.database;
+    } catch {
+      return "local";
+    }
+  })(),
   ssl: process.env.IS_REMOTE === "true",
 };
 

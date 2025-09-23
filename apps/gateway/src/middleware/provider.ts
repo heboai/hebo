@@ -1,19 +1,32 @@
 import { createGroq } from "@ai-sdk/groq";
 import { Elysia } from "elysia";
+import { Resource } from "sst";
 import { createVoyage } from "voyage-ai-provider";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
-import { getSSTResource } from "@hebo/shared-utils/sst/resource";
 
 import type { LanguageModel, EmbeddingModel } from "ai";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
 const groq = createGroq({
-  apiKey: getSSTResource("GroqApiKey", "value", process.env.GROQ_API_KEY),
+  apiKey: (() => {
+    try {
+      return Resource.GroqApiKey.value;
+    } catch {
+      return process.env.GROQ_API_KEY;
+    }
+  })(),
 });
+
 const voyage = createVoyage({
-  apiKey: getSSTResource("VoyageApiKey", "value", process.env.VOYAGE_API_KEY),
+  apiKey: (() => {
+    try {
+      return Resource.VoyageApiKey.value;
+    } catch {
+      return process.env.VOYAGE_API_KEY;
+    }
+  })(),
 });
 
 // FUTURE more robust logic based on supported-models.json

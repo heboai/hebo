@@ -17,8 +17,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 │   ├── db/                         # Database schema, migrations & PGLite
 │   ├── shared-api/                 # API utilities (auth, CORS)
 │   ├── shared-data/                # Shared data models & schemas
-│   ├── shared-ui/                  # UI components (Shadcn + custom)
-│   └── shared-utils/               # Shared utilities
+│   └──shared-ui/                  # UI components (Shadcn + custom)
 │
 ├── infra/                          # Infrastructure as Code (SST)
 │   └── stacks/                     # SST stacks
