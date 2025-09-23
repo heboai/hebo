@@ -34,10 +34,6 @@ const heboApi = new sst.aws.Service("HeboApi", {
   },
   capacity: isProd ? undefined : "spot",
   wait: isProd,
-  dev: {
-    command: "bun run --filter @hebo/api dev",
-    url: `http://localhost:${apiPort}`,
-  },
 });
 
 export default heboApi;

@@ -22,36 +22,27 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
       a.globalClusterIdentifier = globalCluster.id;
     },
   },
-  dev: {
-    username: "postgres",
-    // eslint-disable-next-line sonarjs/no-hardcoded-passwords
-    password: "password",
-    database: "local",
-    host: "localhost",
-    port: 5432,
-  },
 });
 
-if (!$dev) {
-  const migrator = new sst.aws.Function("DatabaseMigrator", {
-    handler: "packages/db/lambda/migrator.handler",
-    vpc: heboVpc,
-    link: [heboDatabase],
-    copyFiles: [
-      {
-        from: "packages/db/migrations",
-        to: "./migrations",
-      },
-    ],
-    environment: {
-      NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
-      IS_REMOTE: "true",
+const migrator = new sst.aws.Function("DatabaseMigrator", {
+  handler: "packages/db/lambda/migrator.handler",
+  vpc: heboVpc,
+  link: [heboDatabase],
+  copyFiles: [
+    {
+      from: "packages/db/migrations",
+      to: "./migrations",
     },
-  });
-  // eslint-disable-next-line sonarjs/constructor-for-side-effects
-  new aws.lambda.Invocation("DatabaseMigratorInvocation", {
-    input: Date.now().toString(),
-    functionName: migrator.name,
-  });
-}
+  ],
+  environment: {
+    NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
+    IS_REMOTE: "true",
+  },
+});
+// eslint-disable-next-line sonarjs/constructor-for-side-effects
+new aws.lambda.Invocation("DatabaseMigratorInvocation", {
+  input: Date.now().toString(),
+  functionName: migrator.name,
+});
+
 export default heboDatabase;

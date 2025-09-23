@@ -36,10 +36,6 @@ const heboGateway = new sst.aws.Service("HeboGateway", {
   },
   capacity: isProd ? undefined : "spot",
   wait: isProd,
-  dev: {
-    command: "bun run --filter @hebo/gateway dev",
-    url: `http://localhost:${gatewayPort}`,
-  },
 });
 
 export default heboGateway;
