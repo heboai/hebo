@@ -84,8 +84,8 @@ bun run -F @hebo/db clean
 | #   | Mode                         | Command                          | Database              | API availability                        |
 |-----|------------------------------|----------------------------------|-----------------------|-----------------------------------------|
 | 1   | **Frontend-only** (offline)  | `bun run -F @hebo/console dev`    | —                     | none – UI relies on MSW / MSW data       |
-| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | HTTPS URLs read from ENV              |
-| 3   | **Remote full-stack**        | `bun run sst deploy`             | Aurora PostgreSQL     | HTTPS URLs injected by SST              |
+| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | URLs from env              |
+| 3   | **Remote full-stack**        | `bun run sst deploy`             | Aurora PostgreSQL     | HTTPS URLs exported by SST              |
 
 ## Building
 
@@ -125,7 +125,7 @@ For deployments, we utilize the SST framework ([sst.dev](https://sst.dev/)).
 
 #### Secrets
 
-Set each secret individually before running development.
+Set each secret individually.
 
 Secrets to set:
 
