@@ -1,6 +1,6 @@
 {
   "name": "hebo",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "packageManager": "bun@1.2.22",
   "workspaces": [
