@@ -1,5 +1,5 @@
 import { XCircle, SquareChevronRight } from "lucide-react";
-import { Outlet, useLocation, useRouteLoaderData } from "react-router";
+import { Outlet, useLocation, useParams, useRouteLoaderData } from "react-router";
 import { useRef } from "react";
 import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
@@ -23,6 +23,7 @@ import { authStore } from "~console/state/auth";
 
 import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
+import { BranchSelect } from "./sidebar-branch";
 import { StaticContent } from "./sidebar-static";
 import { PlaygroundSidebar } from "./sidebar-playground";
 
@@ -47,6 +48,10 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
 
   const { user } = useSnapshot(authStore);
   const { agent: activeAgent = null } = useRouteLoaderData("routes/_shell.agent.$agentSlug") ?? {};
+  const { branchSlug } = useParams();
+  const activeBranch =
+    (activeAgent?.branches ?? []).find((b: { slug: string }) => b.slug === branchSlug) ??
+    (activeAgent?.branches ?? [])[0];
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
@@ -77,6 +82,9 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
         <div className="h-full flex flex-col transition-[padding] group-data-[state=collapsed]:p-2">
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
+            {activeAgent?.branches?.length ? (
+              <BranchSelect activeAgent={activeAgent} activeBranch={activeBranch} />
+            ) : null}
           </SidebarHeader>
           <SidebarContent />
           <SidebarFooter>
@@ -125,7 +133,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           />
         <Sidebar side="right" collapsible="offcanvas">
           <SidebarContent>
-            <PlaygroundSidebar activeBranch={activeAgent?.branches?.[0]} />
+            <PlaygroundSidebar activeBranch={activeBranch} />
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>
