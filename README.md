@@ -52,16 +52,21 @@ Set each secret individually before running development.
 
 Secrets to set:
 
-LLM keys
+### LLM keys
+
 - `GroqApiKey`
 - `VoyageApiKey`
 
-Auth secrets (optional)
+### Auth secrets (optional)
+
+Get these variables by creating a project on https://app.stack-auth.com.
+
 - `StackSecretServerKey`
 - `StackPublishableClientKey`
 - `StackProjectId`
 
-Database (only required for deployments)
+### Database (only required for deployments)
+
 - `DbUsername`
 - `DbPassword`
 
