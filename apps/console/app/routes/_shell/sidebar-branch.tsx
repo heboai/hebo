@@ -1,12 +1,11 @@
-import { Check, GitBranch, ChevronsUpDown } from "lucide-react";
+import { Check, GitBranch, ChevronsUpDown, ChevronDown } from "lucide-react";
 import { Link } from "react-router";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@hebo/shared-ui/components/DropdownMenu";
 import {
@@ -14,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@hebo/shared-ui/components/Sidebar";
+import { kbs } from "~console/lib/utils";
 
 type Branch = { name: string; slug: string };
 type AgentWithBranches = { slug: string; branches?: Branch[] | undefined };
@@ -35,13 +35,19 @@ export const BranchSelect = ({
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="sm" aria-label="Select branch">
+          <DropdownMenuTrigger asChild className="border-1 bg-white">
+            <SidebarMenuButton aria-label="Select branch">
                 <GitBranch className="size-4" aria-hidden="true" color="black"/>
                 <span className="truncate font-medium">
                   {activeBranch?.name ?? "Select branch"}
                 </span>
-              <ChevronsUpDown className="ml-auto size-4" aria-hidden="true" />
+                
+                
+                <span className="ml-auto flex items-center justify-end">
+  <DropdownMenuShortcut>{kbs("cmd+B")}</DropdownMenuShortcut>
+  <ChevronDown className="size-4" aria-hidden="true" />
+</span>
+              
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -50,8 +56,6 @@ export const BranchSelect = ({
             side="bottom"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="font-normal">Branches</DropdownMenuLabel>
-            <DropdownMenuSeparator />
             {branches.map((branch) => (
               <DropdownMenuItem key={branch.slug} asChild className="gap-2 p-2">
                 <Link
