@@ -40,12 +40,10 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
   },
 });
 
-if (!$dev) {
-  // eslint-disable-next-line sonarjs/constructor-for-side-effects
-  new aws.lambda.Invocation("DatabaseMigratorInvocation", {
-    input: Date.now().toString(),
-    functionName: migrator.name,
-  });
-}
+// eslint-disable-next-line sonarjs/constructor-for-side-effects
+new aws.lambda.Invocation("DatabaseMigratorInvocation", {
+  input: Date.now().toString(),
+  functionName: migrator.name,
+});
 
 export default heboDatabase;
