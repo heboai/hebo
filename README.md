@@ -83,8 +83,8 @@ bun run -F @hebo/db clean
 
 | #   | Mode                         | Command                          | Database              | API availability                        |
 |-----|------------------------------|----------------------------------|-----------------------|-----------------------------------------|
-| 1   | **Frontend-only** (offline)  | `APP=console bun run dev:app`    | —                     | none – UI relies on MSW / MSW data       |
-| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | HTTPS URLs injected by SST              |
+| 1   | **Frontend-only** (offline)  | `bun run -F @hebo/console dev`    | —                     | none – UI relies on MSW / MSW data       |
+| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | HTTPS URLs read from ENV              |
 | 3   | **Remote full-stack**        | `bun run sst deploy`             | Aurora PostgreSQL     | HTTPS URLs injected by SST              |
 
 ## Building
