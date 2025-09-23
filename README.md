@@ -59,7 +59,7 @@ Secrets to set:
 
 ### Auth secrets (optional)
 
-Get these variables by creating a project on https://app.stack-auth.com.
+Get these by creating a project on [Stack Auth](https://app.stack-auth.com).
 
 - `StackSecretServerKey`
 - `StackPublishableClientKey`
@@ -72,8 +72,7 @@ Get these variables by creating a project on https://app.stack-auth.com.
 
 Examples usage:
 
-- Replace `<value>` and `<stage>`
-- The `--stage <stage>` is not required in development.
+Replace `<value>`. Omit `--stage` for local development (defaults to your dev stage).
 
 ```bash
 bun run sst secret set GroqApiKey <value> --stage <stage>
