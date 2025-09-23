@@ -32,19 +32,14 @@ export const BranchSelect = ({
   }
 
   return (
-    <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="sm" aria-label="Select branch">
-              <div className="text-sidebar-primary-foreground flex aspect-square size-6 items-center justify-center rounded-md">
-                <GitBranch className="size-4" aria-hidden="true" />
-              </div>
-              <div className="grid flex-1 text-left text-xs leading-tight">
+                <GitBranch className="size-4" aria-hidden="true" color="black"/>
                 <span className="truncate font-medium">
                   {activeBranch?.name ?? "Select branch"}
                 </span>
-              </div>
               <ChevronsUpDown className="ml-auto size-4" aria-hidden="true" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -73,6 +68,5 @@ export const BranchSelect = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
-    </SidebarMenu>
   );
 };
