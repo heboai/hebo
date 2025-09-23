@@ -9,6 +9,7 @@ const heboApi = new sst.aws.Service("HeboApi", {
   cluster: heboCluster,
   architecture: "arm64",
   cpu: isProd ? "1 vCPU" : "0.25 vCPU",
+  memory: isProd ? "2 GB" : "0.5 GB",
   link: [heboDatabase, ...allSecrets],
   image: {
     context: ".",
