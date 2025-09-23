@@ -1,4 +1,4 @@
-import { dbUsername, dbPassword, isProd } from "./env";
+import { isProd } from "./env";
 import heboVpc from "./network";
 
 const globalCluster = isProd
@@ -18,8 +18,6 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   scaling: isProd
     ? { min: "0.5 ACU" }
     : { min: "0 ACU", max: "4 ACU", pauseAfter: "20 minutes" },
-  username: dbUsername.value,
-  password: dbPassword.value,
   database: "hebo",
   transform: {
     cluster: (a) => {

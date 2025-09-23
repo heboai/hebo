@@ -65,12 +65,7 @@ Get these by creating a project on [Stack Auth](https://app.stack-auth.com).
 - `StackPublishableClientKey`
 - `StackProjectId`
 
-### Database (only required for deployments)
-
-- `DbUsername`
-- `DbPassword`
-
-Examples usage:
+### Examples usage:
 
 Replace `<value>`. Omit `--stage` for local development (defaults to your dev stage).
 
@@ -145,7 +140,7 @@ For deployments, we utilize the SST framework ([sst.dev](https://sst.dev/)).
 # Install providers
 bun run sst install
 
-# Ensure secrets are set for your desired stage (--stage flag) including DbUsername, and DbPassword secrets
+# Ensure secrets are set for your desired stage (--stage flag)
 
 # Deploy a preview link
 bun run sst deploy --stage PR-XX
