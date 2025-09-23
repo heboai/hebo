@@ -85,7 +85,7 @@ export default function ModelConfigurationForm() {
 
   return (
     <div className="absolute inset-0 flex justify-center">
-      <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none">
+      <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none px-4 sm:px-6 md:px-0">
         <div className="flex flex-col mb-6 mt-16">
           <h2>Model Configuration</h2>
           <p className="text-muted-foreground">
