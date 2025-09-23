@@ -1,59 +1,68 @@
-import {
-  drizzle as drizzlePostgres,
-  NodePgDatabase,
-} from "drizzle-orm/node-postgres";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { Resource } from "sst";
 
-import { isLocal, getConnectionConfig } from "./runtime-config";
 import { agents } from "./schema/agents";
 import { branches } from "./schema/branches";
-
-import type { DbCredentials } from "./runtime-config";
-import type { PgliteDatabase } from "drizzle-orm/pglite";
 
 const postgresSchema = {
   agents,
   branches,
 };
 
-type PostgresDb = NodePgDatabase<typeof postgresSchema>;
-type PgliteDb = PgliteDatabase<typeof postgresSchema>;
-type UniversalDb = PostgresDb | PgliteDb;
 type TxOf<D> = D extends {
-  transaction: (fn: (tx: infer T, ...args: any[]) => any, ...a: any[]) => any;
+  transaction: (
+    fn: (tx: infer T, ...args: unknown[]) => unknown,
+    ...a: unknown[]
+  ) => unknown;
 }
   ? T
   : never;
 
-const initDb = async (): Promise<UniversalDb> => {
-  if (isLocal) {
-    // Local development – PGLite via pglite client
-    const dataDir = getConnectionConfig() as string;
-
-    type DrizzlePgLite = (config: {
-      schema: typeof postgresSchema;
-      connection: { dataDir: string };
-    }) => PgliteDatabase<typeof postgresSchema>;
-
-    // Import pglite only in local development
-    const { drizzle: drizzlePgLite } = (await import("drizzle-orm/pglite")) as {
-      drizzle: DrizzlePgLite;
-    };
-
-    return drizzlePgLite({
-      schema: postgresSchema,
-      connection: { dataDir },
-    });
-  }
-
-  // Remote/production – PostgreSQL via pg Pool
-  const { host, port, user, password, database } =
-    getConnectionConfig() as DbCredentials;
-
-  const pool = new Pool({ host, port, user, password, database });
-
-  return drizzlePostgres(pool, { schema: postgresSchema });
+export const dbConnectionConfig = {
+  host: (() => {
+    try {
+      return Resource.HeboDatabase.host;
+    } catch {
+      return "localhost";
+    }
+  })(),
+  port: (() => {
+    try {
+      return Resource.HeboDatabase.port;
+    } catch {
+      return 5432;
+    }
+  })(),
+  user: (() => {
+    try {
+      return Resource.HeboDatabase.username;
+    } catch {
+      return "postgres";
+    }
+  })(),
+  password: (() => {
+    try {
+      return Resource.HeboDatabase.password;
+    } catch {
+      return "password";
+    }
+  })(),
+  database: (() => {
+    try {
+      return Resource.HeboDatabase.database;
+    } catch {
+      return "local";
+    }
+  })(),
+  ssl: process.env.IS_REMOTE === "true",
 };
 
-export const db: UniversalDb = await initDb();
-export type UniversalDbClient = UniversalDb | TxOf<PostgresDb> | TxOf<PgliteDb>;
+const pool = new Pool({ ...dbConnectionConfig });
+
+export const db: NodePgDatabase<typeof postgresSchema> = drizzle(pool, {
+  schema: postgresSchema,
+});
+
+export type Database = NodePgDatabase<typeof postgresSchema>;
+export type UniversalDbClient = Database | TxOf<Database>;

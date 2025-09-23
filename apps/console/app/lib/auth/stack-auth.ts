@@ -1,6 +1,7 @@
 import { StackClientApp } from "@stackframe/react";
 import { useNavigate } from "react-router";
 
+import { getCookie } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
 
 import type { AuthService } from "./types";
@@ -51,6 +52,10 @@ const authService = {
       isPublic: false,
     });
     return apiKey.value;
+  },
+
+  getAccessToken() {
+    return JSON.parse(decodeURIComponent(getCookie("stack-access")!))[1];
   },
 } satisfies AuthService;
 

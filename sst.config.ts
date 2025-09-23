@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./.sst/platform/config.d.ts" />
+
 export default $config({
   app(input) {
     return {
@@ -12,6 +13,6 @@ export default $config({
     };
   },
   async run() {
-    await import("./infra/stacks/app");
+    await import("./infra/stacks/console");
   },
 });

@@ -1,11 +1,23 @@
-import { logger } from "@bogeychan/elysia-logger";
 import { type Logger } from "@bogeychan/elysia-logger/types";
 import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import { Resource } from "sst";
 
-export const projectId = process.env.VITE_STACK_PROJECT_ID ?? "";
-export const secretServerKey = process.env.STACK_SECRET_SERVER_KEY ?? "";
+export const projectId = (() => {
+  try {
+    return Resource.StackProjectId.value;
+  } catch {
+    return process.env.VITE_STACK_PROJECT_ID;
+  }
+})() as string;
+export const secretServerKey = (() => {
+  try {
+    return Resource.StackSecretServerKey.value;
+  } catch {
+    return process.env.STACK_SECRET_SERVER_KEY;
+  }
+})() as string;
 
 const jwks = createRemoteJWKSet(
   new URL(
@@ -21,7 +33,7 @@ const verifyJwt = async (
     const { payload } = await jwtVerify(token, jwks);
     return payload.sub;
   } catch (error) {
-    log.warn(error, "JWT verification failed");
+    log.info({ err: error }, "JWT verification failed");
   }
 };
 
@@ -45,27 +57,28 @@ const checkApiKey = async (
   if (res.status === 200) {
     const { user_id } = await res.json();
     return user_id;
-  } else log.warn(res, "API Key check failed");
+  } else log.info(res, "API Key check failed");
 };
 
 export const authServiceStackAuth = new Elysia({
   name: "authenticate-user-stack-auth",
 })
-  .use(logger())
   .use(bearer())
-  .resolve(async ({ bearer: apiKey, cookie, log }) => {
-    const jwt =
-      cookie["stack-access"]?.value &&
-      JSON.parse(decodeURIComponent(cookie["stack-access"]!.value))[1];
+  .resolve(async (ctx) => {
+    const jwt = ctx.headers["x-stack-access-token"] as string | undefined;
+    const apiKey = ctx.bearer;
+    const log = (ctx as unknown as { log: Logger }).log;
 
     if (apiKey && jwt)
       throw status(
         400,
-        "Provide exactly one credential: Bearer API Key or JWT Cookie",
+        "Provide exactly one credential: Bearer API Key or JWT Header",
       );
 
     if (apiKey) return { userId: await checkApiKey(apiKey, log) } as const;
+    if (jwt) return { userId: await verifyJwt(jwt, log) } as const;
 
-    if (jwt) return { userId: await verifyJwt(jwt!, log) } as const;
+    log.info("No credentials provided");
+    return { userId: undefined } as const;
   })
   .as("scoped");

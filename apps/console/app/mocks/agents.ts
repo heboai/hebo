@@ -64,7 +64,9 @@ export const agentHandlers = [
 
       await delay(500);
 
-      return expand === "branches" ? HttpResponse.json(agent) : HttpResponse.json({ ...agent, branches: [] });
+      return expand === "branches"
+        ? HttpResponse.json(agent)
+        : HttpResponse.json({ ...agent, branches: [] });
     },
   ),
 

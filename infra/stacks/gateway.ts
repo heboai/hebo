@@ -1,90 +1,41 @@
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../../.sst/platform/config.d.ts" />
-
+import heboCluster from "./cluster";
 import heboDatabase from "./db";
-import heboSecurityGroup from "./security-group";
-import heboVpc from "./vpc";
-import appRunnerEcrAccessRole from "./iam";
+import { allSecrets, isProd } from "./env";
 
-const stackProjectId = new sst.Secret("StackProjectId");
-const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
-const groqApiKey = new sst.Secret("GroqApiKey");
-const voyagerApiKey = new sst.Secret("VoyagerApiKey");
+const gatewayDomain = isProd
+  ? "gateway.hebo.ai"
+  : `gateway.${$app.stage}.hebo.ai`;
+const gatewayPort = "3002";
 
-const resourceName = $app.stage === "production" ? "hebo-gateway" : `${$app.stage}-hebo-gateway`;
-const dockerTag = $app.stage === "production" ? "latest" : `${$app.stage}`;
-
-const heboGatewayRepo = new aws.ecr.Repository(resourceName, {
-  forceDelete: true,
-  imageScanningConfiguration: { scanOnPush: true },
+const heboGateway = new sst.aws.Service("HeboGateway", {
+  cluster: heboCluster,
+  architecture: "arm64",
+  cpu: isProd ? "1 vCPU" : "0.25 vCPU",
+  link: [heboDatabase, ...allSecrets],
+  image: {
+    context: ".",
+    dockerfile: "infra/stacks/docker/Dockerfile.gateway",
+    tags: [gatewayDomain],
+  },
+  environment: {
+    IS_REMOTE: $dev ? "false" : "true",
+    LOG_LEVEL: isProd ? "info" : "debug",
+    NODE_EXTRA_CA_CERTS: "/etc/ssl/certs/rds-bundle.pem",
+    PORT: gatewayPort,
+  },
+  loadBalancer: {
+    domain: gatewayDomain,
+    rules: [
+      { listen: "80/http", redirect: "443/https" },
+      { listen: "443/https", forward: `${gatewayPort}/http` },
+    ],
+  },
+  scaling: {
+    min: isProd ? 2 : 1,
+    max: isProd ? 16 : 1,
+  },
+  capacity: isProd ? undefined : "spot",
+  wait: isProd,
 });
-
-const ecrAuth = aws.ecr.getAuthorizationTokenOutput({});
-
-const heboGatewayImage = new docker.Image("hebo-gateway-image", {
-  build: {
-    context: "../../",
-    dockerfile: "../../infra/stacks/docker/Dockerfile.gateway",
-    platform: "linux/amd64",
-  },
-  imageName: $interpolate`${heboGatewayRepo.repositoryUrl}:${dockerTag}`,
-  registry: {
-    server: heboGatewayRepo.repositoryUrl.apply(url => {
-      const parts = url.split('/');
-      return parts.slice(0, -1).join('/');
-    }),
-    username: ecrAuth.userName,
-    password: ecrAuth.password,
-  },
-});
-
-const heboGatewayConnector = new aws.apprunner.VpcConnector(
-  "HeboGatewayConnector",
-  {
-    subnets: heboVpc.privateSubnets,
-    securityGroups: [heboSecurityGroup.id],
-    vpcConnectorName:
-      $app.stage === "production"
-        ? "hebo-gateway"
-        : `${$app.stage}-hebo-gateway`,
-  },
-);
-
-const heboGateway = new aws.apprunner.Service("HeboGateway", {
-  serviceName:
-    resourceName,
-  sourceConfiguration: {
-    authenticationConfiguration: {
-      accessRoleArn: appRunnerEcrAccessRole.arn,
-    },
-    imageRepository: {
-      imageConfiguration: {
-        port: "3002",
-        runtimeEnvironmentVariables: {
-          PG_HOST: heboDatabase.host,
-          PG_PORT: heboDatabase.port.apply((port) => port.toString()),
-          PG_USER: heboDatabase.username,
-          PG_PASSWORD: new sst.Secret("HeboDbPassword").value,
-          PG_DATABASE: heboDatabase.database,
-          VITE_STACK_PROJECT_ID: stackProjectId.value,
-          STACK_SECRET_SERVER_KEY: stackSecretServerKey.value,
-          GROQ_API_KEY: groqApiKey.value,
-          VOYAGER_API_KEY: voyagerApiKey.value,
-        },
-      },
-      imageIdentifier: heboGatewayImage.imageName,
-      imageRepositoryType: "ECR",
-    },
-    autoDeploymentsEnabled: true,
-  },
-  networkConfiguration: {
-    egressConfiguration: {
-      egressType: "VPC",
-      vpcConnectorArn: heboGatewayConnector.arn,
-    },
-  },
-});
-
-export const heboGatewayUrl = heboGateway.serviceUrl;
 
 export default heboGateway;

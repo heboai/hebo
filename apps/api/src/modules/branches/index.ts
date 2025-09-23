@@ -3,7 +3,6 @@ import { Elysia, t } from "elysia";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import { agentId } from "~api/middlewares/agent-id";
-import * as AgentsModel from "~api/modules/agents/model";
 
 import * as BranchesModel from "./model";
 import { BranchService } from "./service";
@@ -23,7 +22,7 @@ export const branchesModule = new Elysia({
       return branch;
     },
     {
-      params: AgentsModel.PathParam,
+      params: BranchesModel.AgentPathParam,
       body: BranchesModel.CreateBody,
       response: {
         201: BranchesModel.Branch,
@@ -40,7 +39,7 @@ export const branchesModule = new Elysia({
       return list;
     },
     {
-      params: AgentsModel.PathParam,
+      params: BranchesModel.AgentPathParam,
       response: BranchesModel.BranchList,
     },
   )

@@ -11,11 +11,14 @@ import { completions } from "./modules/completions";
 import { embeddings } from "./modules/embeddings";
 import { models } from "./modules/models";
 
-const PORT = Number(process.env.GATEWAY_PORT) || 3002;
+const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
+const PORT = Number(process.env.PORT ?? 3002);
 
 export const createApp = () =>
   new Elysia()
-    .use(logger())
+    .use(logger({ level: LOG_LEVEL }))
+    // Root route ("/") is unauthenticated and unprotected for health checks.
+    .get("/", () => "🐵 Hebo AI Gateway says hello!")
     .use(cors(corsConfig))
     .use(
       swagger({
@@ -30,7 +33,6 @@ export const createApp = () =>
     )
     .use(authService)
     .use(oaiErrors)
-    .get("/", () => "🐵 Hebo AI Gateway says hello!")
     .group(
       "/v1",
       {

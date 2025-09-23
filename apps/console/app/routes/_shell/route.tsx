@@ -16,7 +16,7 @@ import {
 } from "@hebo/shared-ui/components/Sidebar";
 
 import { authService } from "~console/lib/auth";
-import { api } from "~console/lib/data";
+import { api } from "~console/lib/service";
 import { dontRevalidateOnFormErrors } from "~console/lib/errors";
 import { getCookie, kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
@@ -34,7 +34,7 @@ async function authMiddleware() {
   await authService.ensureSignedIn();
 }
 
-export const unstable_clientMiddleware = [authMiddleware];
+export const clientMiddleware = [authMiddleware];
 
 export async function clientLoader() {
   return { agents: (await api.agents.get()).data ?? [] };

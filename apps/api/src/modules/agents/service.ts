@@ -43,7 +43,11 @@ export const AgentService = {
     return agentList;
   },
 
-  async getAgentBySlug(agentSlug: string, userId: string) {
+  async getAgentBySlug(
+    agentSlug: string,
+    userId: string,
+    expand?: AgentsModel.AgentExpand,
+  ) {
     const agentsRepo = withAudit(agents, { userId });
     const [agent] = await agentsRepo.select(
       getDb(),
@@ -53,7 +57,12 @@ export const AgentService = {
     if (!agent) {
       throw status(404, AgentsModel.NotFound.const);
     }
-    return agent;
+
+    const branches = await BranchService.listBranches(agent.id, userId);
+    if (expand === "branches") {
+      return { ...agent, branches };
+    }
+    return { ...agent, branches: branches.map((b) => b.slug) };
   },
 
   async updateAgent(

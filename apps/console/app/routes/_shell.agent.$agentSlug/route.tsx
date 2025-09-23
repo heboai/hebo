@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 
 import { ErrorView } from "~console/components/ui/ErrorView";
-import { api } from "~console/lib/data";
+import { api } from "~console/lib/service";
 import { dontRevalidateOnFormErrors } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";

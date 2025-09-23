@@ -23,7 +23,7 @@ npm install ai
 ```
 
 ```bash Langchain
-pip install -U langchain-openai portkey-ai
+pip install -U langchain-openai
 ```
 </CodeGroup>
 
@@ -36,7 +36,7 @@ import { generateText } from 'ai';
 
 const provider = createOpenAICompatible({
     apiKey: 'YOUR_API_KEY',
-    baseURL: 'https://cloud.hebo.ai/api',
+    baseURL: 'https://gateway.hebo.ai/v1',
 });
 
 const { text } = await generateText({
@@ -50,13 +50,8 @@ console.log(text);
 from langchain_openai import ChatOpenAI
 import os
 
-portkey_headers = createHeaders(
-    api_key="YOUR_API_KEY",
-    provider="openai"
-)
-
 llm = ChatOpenAI(
-    base_url="https://cloud.hebo.ai/api",
+    base_url="https://gateway.hebo.ai/v1",
     model="YOUR_MODEL_ALIAS"
 )
 

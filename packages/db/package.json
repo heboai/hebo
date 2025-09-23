@@ -9,17 +9,14 @@
   },
   "scripts": {
     "clean": "git clean -fdx -e '.env*' .",
-    "lint": "bunx eslint .",
-    "migrate": "drizzle-kit migrate",
-    "generate": "drizzle-kit generate",
-    "studio": "drizzle-kit studio",
-    "check": "drizzle-kit check"
+    "lint": "eslint .",
+    "db": "sst shell drizzle-kit"
   },
   "peerDependencies": {
     "@electric-sql/pglite": "^0.3.7",
     "@types/pg": "^8.15.5",
     "drizzle-orm": "^0.44.5",
-    "bun-types": "^1.2.19",
+    "bun-types": "^1.2.22",
     "pg": "^8.16.3"
   },
   "devDependencies": {
@@ -28,5 +25,8 @@
     "drizzle-kit": "^0.31.4",
     "drizzle-orm": "^0.44.5",
     "pg": "^8.16.3"
+  },
+  "dependencies": {
+    "sst": "^3.17.13"
   }
 }

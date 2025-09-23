@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 
-import { api } from "~console/lib/data";
+import { api } from "~console/lib/service";
 
 async function defaultAgentMiddleware() {
   const { data: agents = [] } = await api.agents.get();
@@ -13,7 +13,7 @@ async function defaultAgentMiddleware() {
   throw redirect("/agent/create");
 }
 
-export const unstable_clientMiddleware = [defaultAgentMiddleware];
+export const clientMiddleware = [defaultAgentMiddleware];
 
 export default function EmptyRoute() {
   return <></>

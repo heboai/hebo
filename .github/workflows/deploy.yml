@@ -7,25 +7,7 @@ on:
 
 jobs:
   quality:
-    name: Run Quality Checks
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          version: "1.2.19"
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Run lint
-        run: bun run lint
-
-      # - name: Run tests
-      #  run: bun run test
+    uses: ./.github/workflows/quality.yml
 
   deploy:
     name: Deploy to Production
@@ -43,7 +25,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
-          version: "1.2.19"
+          bun-version: "1.2.22"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -56,7 +38,11 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to Production
-        env:
-          VITE_STACK_PROJECT_ID: ${{ secrets.VITE_STACK_PROJECT_ID }}
-          VITE_STACK_PUBLISHABLE_CLIENT_KEY: ${{ secrets.VITE_STACK_PUBLISHABLE_CLIENT_KEY }}
-        run: bunx sst deploy --stage production
+        run: |
+          bun run sst secret set StackProjectId ${{ secrets.STACK_PROJECT_ID }} --stage production
+          bun run sst secret set StackPublishableClientKey ${{ secrets.STACK_PUBLISHABLE_CLIENT_KEY }} --stage production
+          bun run sst secret set StackSecretServerKey ${{ secrets.STACK_SECRET_SERVER_KEY }} --stage production
+          bun run sst secret set GroqApiKey ${{ secrets.GROQ_API_KEY }} --stage production
+          bun run sst secret set VoyageApiKey ${{ secrets.VOYAGE_API_KEY }} --stage production
+
+          bun run sst deploy --stage production

@@ -4,15 +4,15 @@
   "private": true,
   "sideEffects": false,
   "engines": {
-    "bun": ">=1.2.21"
+    "bun": ">=1.2.22"
   },
   "type": "module",
   "scripts": {
     "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile dist/server",
     "clean": "git clean -fdx -e '.env*' .",
     "dev": "bun --hot src/index.ts | pino-pretty",
-    "lint": "bunx eslint .",
-    "type-check": "bunx tsc --noEmit",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
     "prestart": "bun run build",
     "start": "./dist/server"
   },
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.7",
     "@types/pg": "^8.15.5",
-    "bun-types": "^1.2.19",
+    "bun-types": "^1.2.22",
     "pino-pretty": "^13.1.1"
   }
 }

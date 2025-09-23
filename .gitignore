@@ -25,7 +25,7 @@ Thumbs.db
 *.pem
 .env*
 !.env.example
-.secrets
+.secrets*
 .build-complete
 .node_repl_history
 
@@ -65,8 +65,7 @@ next-env.d.ts
 .cursor
 
 # db
-local-db
-hebo.db
+.local-storage
 
 # eslint
 .eslintcache

@@ -1,12 +1,10 @@
 import { defineConfig } from "drizzle-kit";
 
-import { getDrizzleConfig } from "./runtime-config";
-
-const dbConfig = getDrizzleConfig();
+import { dbConnectionConfig } from "./drizzle";
 
 export default defineConfig({
   dialect: "postgresql",
   schema: [`./schema`],
   out: `./migrations`,
-  ...dbConfig,
+  dbCredentials: dbConnectionConfig,
 });
