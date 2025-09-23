@@ -3,7 +3,7 @@ import { Elysia, status } from "elysia";
 import { authServiceStackAuth, projectId } from "./stack-auth";
 
 const createAuthService = async () => {
-  if (projectId === "__UNSET__") {
+  if (!projectId) {
     const { authServiceLocalhost } = await import("./localhost");
     return authServiceLocalhost;
   }

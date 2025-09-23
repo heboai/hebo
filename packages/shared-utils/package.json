@@ -1,0 +1,19 @@
+{
+  "name": "@hebo/shared-utils",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./sst/*": "./sst/*.ts"
+  },
+  "scripts": {
+    "clean": "git clean -fdx -e '.env*' ."
+  },
+  "devDependencies": {
+    "bun-types": "^1.2.22"
+  },
+  "dependencies": {
+    "sst": "^3.17.13"
+  }
+}

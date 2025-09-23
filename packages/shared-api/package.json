@@ -24,6 +24,6 @@
   "dependencies": {
     "@elysiajs/bearer": "^1.3.0",
     "jose": "^6.0.12",
-    "sst": "^3.17.13"
+    "@hebo/shared-utils": "workspace:*"
   }
 }

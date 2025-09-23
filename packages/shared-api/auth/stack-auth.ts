@@ -2,10 +2,19 @@ import { type Logger } from "@bogeychan/elysia-logger/types";
 import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { Resource } from "sst";
 
-export const projectId = Resource.StackProjectId.value as string;
-export const secretServerKey = Resource.StackSecretServerKey.value as string;
+import { getSSTResource } from "@hebo/shared-utils/sst/resource";
+
+export const projectId = getSSTResource(
+  "StackProjectId",
+  "value",
+  process.env.VITE_STACK_PROJECT_ID,
+) as string;
+export const secretServerKey = getSSTResource(
+  "StackSecretServerKey",
+  "value",
+  process.env.STACK_SECRET_SERVER_KEY,
+) as string;
 
 const jwks = createRemoteJWKSet(
   new URL(

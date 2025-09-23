@@ -1,13 +1,9 @@
 // Auth
-export const stackSecretServerKey = new sst.Secret(
-  "StackSecretServerKey",
-  "__UNSET__",
-);
+export const stackSecretServerKey = new sst.Secret("StackSecretServerKey");
 export const stackPublishableClientKey = new sst.Secret(
   "StackPublishableClientKey",
-  "__UNSET__",
 );
-export const stackProjectId = new sst.Secret("StackProjectId", "__UNSET__");
+export const stackProjectId = new sst.Secret("StackProjectId");
 
 // LLMs
 export const groqApiKey = new sst.Secret("GroqApiKey");

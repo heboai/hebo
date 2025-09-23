@@ -13,10 +13,12 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 │
 ├── packages/                       # Shared libraries and utilities
 │   ├── aikit-respond-io/           # Respond.io AI Kit integration
+│   ├── aikit-ui/                   # Chat UI components (Shadcn + custom)
 │   ├── db/                         # Database schema, migrations & PGLite
 │   ├── shared-api/                 # API utilities (auth, CORS)
 │   ├── shared-data/                # Shared data models & schemas
-│   └── ui/                         # UI components (Shadcn + custom)
+│   ├── shared-ui/                  # UI components (Shadcn + custom)
+│   └── shared-utils/               # Shared utilities
 │
 ├── infra/                          # Infrastructure as Code (SST)
 │   └── stacks/                     # SST stacks
@@ -37,40 +39,12 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 - Bun >= 1.2.22
 - Docker >= 28
 - AWS CLI (only required for deployment)
-- Windows: Bash must be installed and on PATH. Install via [WSL](https://learn.microsoft.com/windows/wsl/install), [Git for Windows (Git Bash)](https://git-scm.com/download/win), or [Cygwin](https://www.cygwin.com/).
 
 ## Installation
 
 ```bash
 # Install dependencies
 bun install
-```
-
-## Secrets
-
-Set each secret individually before running development.
-
-Secrets to set:
-
-### LLM keys
-
-- `GroqApiKey`
-- `VoyageApiKey`
-
-### Auth secrets (optional)
-
-Get these by creating a project on [Stack Auth](https://app.stack-auth.com).
-
-- `StackSecretServerKey`
-- `StackPublishableClientKey`
-- `StackProjectId`
-
-### Examples usage:
-
-Replace `<value>`. Omit `--stage` for local development (defaults to your dev stage).
-
-```bash
-bun run sst secret set GroqApiKey <value> --stage <stage>
 ```
 
 ## Development
@@ -86,8 +60,15 @@ bun run db migrate
 ```
 
 ```bash
+# configure env variables per each app
+cd apps/console
+cp .env.example .env
+# Fill with your values
+```
+
+```bash
 # Start only the console in dev
-APP=console bun run dev
+bun run -F @hebo/console
 ```
 
 ```bash
@@ -95,7 +76,7 @@ APP=console bun run dev
 bun run clean
 
 # Cleanup the database (and any other untracked files/directories)
-bun run -F @hebo/infra clean
+bun run -F @hebo/db clean
 ```
 
 ## Run modes
@@ -132,15 +113,48 @@ The repository uses GitHub Actions for CI/CD:
 
 - Push a new tag to trigger the deployment
 
+### Service URLs
+
+- API: `https://api.hebo.ai` (prod) or `https://api.<stage>.hebo.ai` (preview)
+- Gateway: `https://gateway.hebo.ai` (prod) or `https://gateway.<stage>.hebo.ai` (preview)
+- Console: `https://console.hebo.ai` (prod) or `https://console.<stage>.hebo.ai` (preview)
+
 ### Manual deployments
 
 For deployments, we utilize the SST framework ([sst.dev](https://sst.dev/)).
 
+#### Secrets
+
+Set each secret individually before running development.
+
+Secrets to set:
+
+##### LLM keys
+
+- `GroqApiKey`
+- `VoyageApiKey`
+
+##### Auth secrets
+
+Get these by creating a project on [Stack Auth](https://app.stack-auth.com).
+
+- `StackSecretServerKey`
+- `StackPublishableClientKey`
+- `StackProjectId`
+
+##### Examples usage:
+
+Replace `<value>`. Omit `--stage` for local development (defaults to your dev stage).
+
+```bash
+bun run sst secret set GroqApiKey <value> --stage <stage>
+```
+
+#### Launch and Clean up
+
 ```bash
 # Install providers
 bun run sst install
-
-# Ensure secrets are set for your desired stage (--stage flag)
 
 # Deploy a preview link
 bun run sst deploy --stage PR-XX
@@ -151,9 +165,3 @@ bun run sst remove --stage PR-XX
 # Deploy to production
 bun run sst deploy --stage production
 ```
-
-### Service URLs
-
-- API: `https://api.hebo.ai` (prod) or `https://api.<stage>.hebo.ai` (preview)
-- Gateway: `https://gateway.hebo.ai` (prod) or `https://gateway.<stage>.hebo.ai` (preview)
-- Console: `https://console.hebo.ai` (prod) or `https://console.<stage>.hebo.ai` (preview)
