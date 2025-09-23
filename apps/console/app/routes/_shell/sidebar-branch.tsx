@@ -32,6 +32,7 @@ export const BranchSelect = ({
   }
 
   return (
+    <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -68,5 +69,6 @@ export const BranchSelect = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
+    </SidebarMenu>
   );
 };
