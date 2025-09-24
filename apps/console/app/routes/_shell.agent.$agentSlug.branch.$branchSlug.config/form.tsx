@@ -98,20 +98,6 @@ export default function ModelConfigurationForm() {
           method="post"
           {...getFormProps(form)}
           className="contents"
-          onChange={(e) => {
-            const target = e.target as HTMLInputElement;
-            if (!target?.name) return;
-            const aliasMatch = target.name.match(/^models\[(\d+)\]\.alias$/);
-            const typeUiMatch = target.name.match(/^modelsUI\[(\d+)\]\.type$/);
-            const modelsTypeMatch = target.name.match(/^models\[(\d+)\]\.type$/);
-            const match = aliasMatch || typeUiMatch || modelsTypeMatch;
-            if (!match) return;
-            const index = Number(match[1]);
-            const field: "alias" | "type" = aliasMatch ? "alias" : "type";
-            if (!Number.isFinite(index)) return;
-            const value = target.value;
-            setItems((prev) => prev.map((it, idx) => (idx === index ? { ...it, [field]: value } as Item : it)));
-          }}
         >
           <input type="hidden" name="currentModels" value={JSON.stringify(initialModels)} />
           {/* Container card with outer border radius */}
