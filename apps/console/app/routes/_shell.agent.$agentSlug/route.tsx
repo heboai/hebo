@@ -17,7 +17,14 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
       status: 404, statusText: "Not Found"
     });
 
-  return { agent: result.data };
+  // Always fetch latest branches list from the branches endpoint to reflect newly created branches
+  const branchesResult = await api
+    .agents({ agentSlug: params.agentSlug })
+    .branches.get();
+
+  const branches = branchesResult.data;
+
+  return { agent: { ...(result.data), branches } };
 }
 
 export { dontRevalidateOnFormErrors as shouldRevalidate }
