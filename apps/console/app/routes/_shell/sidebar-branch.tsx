@@ -1,10 +1,11 @@
-import { Check, GitBranch, ChevronsUpDown, ChevronDown } from "lucide-react";
+import { Check, GitBranch, ChevronDown, Plus } from "lucide-react";
 import { Link } from "react-router";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@hebo/shared-ui/components/DropdownMenu";
@@ -41,13 +42,10 @@ export const BranchSelect = ({
                 <span className="truncate font-medium">
                   {activeBranch?.name ?? "Select branch"}
                 </span>
-                
-                
                 <span className="ml-auto flex items-center justify-end">
                   <DropdownMenuShortcut>{kbs("cmd+B")}</DropdownMenuShortcut>
                   <ChevronDown className="size-4" aria-hidden="true" />
                 </span>
-              
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -70,6 +68,15 @@ export const BranchSelect = ({
                 </Link>
               </DropdownMenuItem>
             ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild className="gap-2 p-2">
+              <Link to="/branch/create" aria-label="Create branch" viewTransition>
+                <Plus className="size-4" aria-hidden="true" />
+                <div className="text-muted-foreground font-medium">
+                  Create Branch
+                </div>
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
