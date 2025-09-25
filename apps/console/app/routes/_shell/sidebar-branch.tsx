@@ -44,9 +44,9 @@ export const BranchSelect = ({
                 
                 
                 <span className="ml-auto flex items-center justify-end">
-  <DropdownMenuShortcut>{kbs("cmd+B")}</DropdownMenuShortcut>
-  <ChevronDown className="size-4" aria-hidden="true" />
-</span>
+                  <DropdownMenuShortcut>{kbs("cmd+B")}</DropdownMenuShortcut>
+                  <ChevronDown className="size-4" aria-hidden="true" />
+                </span>
               
             </SidebarMenuButton>
           </DropdownMenuTrigger>
