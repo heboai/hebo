@@ -7,6 +7,8 @@ export const agentHandlers = [
   http.post("/api/v1/agents", async ({ request }) => {
     const body = (await request.json()) as ReturnType<typeof db.agent.create>;
 
+    const agentSlug = slugify(body.name, { lower: true, strict: true });
+
     // always create main branch by default
     const branch = db.branch.create({
       slug: "main",
@@ -17,11 +19,12 @@ export const agentHandlers = [
           type: body.defaultModel,
         },
       ],
+      agentSlug: agentSlug,
     });
 
     const agent = {
       name: body.name,
-      slug: slugify(body.name, { lower: true, strict: true }),
+      slug: agentSlug,
       branches: [branch],
     };
 
