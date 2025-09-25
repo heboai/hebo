@@ -11,9 +11,20 @@ export const branchHandlers = [
         typeof db.branch.create
       >;
 
+      const slug = slugify(body.name, { lower: true, strict: true });
+
+      // Idempotency: if a branch with the same slug already exists, return it
+      const existing = db.branch.findFirst({
+        where: { slug: { equals: slug } },
+      });
+      if (existing) {
+        return HttpResponse.json(existing, { status: 200 });
+      }
+
       const branch = {
         name: body.name,
-        slug: slugify(body.name, { lower: true, strict: true }),
+        slug,
+        models: body.models,
       };
 
       try {
