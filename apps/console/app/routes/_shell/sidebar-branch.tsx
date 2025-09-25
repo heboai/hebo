@@ -1,5 +1,6 @@
 import { Check, GitBranch, ChevronDown, Plus } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import {
   DropdownMenu,
@@ -27,6 +28,12 @@ export const BranchSelect = ({
   activeBranch?: Branch | null;
 }) => {
   const branches = activeAgent.branches ?? [];
+  const navigate = useNavigate();
+
+  // Keyboard shortcuts
+  useHotkeys("shift+mod+b", () =>
+    navigate(`/agent/${activeAgent.slug}/branch/create`, { viewTransition: true })
+  , { preventDefault: true }, [navigate, activeAgent.slug]);
 
   if (branches.length === 0) {
     return null;
@@ -70,11 +77,14 @@ export const BranchSelect = ({
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="gap-2 p-2">
-              <Link to="/branch/create" aria-label="Create branch" viewTransition>
+              <Link to={`/agent/${activeAgent.slug}/branch/create`} aria-label="Create branch" viewTransition>
                 <Plus className="size-4" aria-hidden="true" />
                 <div className="text-muted-foreground font-medium">
                   Create Branch
                 </div>
+                <DropdownMenuShortcut>
+                  {kbs("shift+cmd+B")}
+                </DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
