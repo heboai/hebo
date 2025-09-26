@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "clean": "git clean -fdX -e '.env*' -e '.secrets*'",
+    "clean": "# TODO: THIS IS REMOVING ENV FILES git clean -fdX -e '.env*' -e '.secrets*'",
     "reset": "git clean -fdx -e '.env*' -e '.secrets*'",
     "db": "bun run --filter @hebo/database db",
     "dev": "turbo run dev --parallel",

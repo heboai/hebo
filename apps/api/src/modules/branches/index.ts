@@ -17,22 +17,15 @@ export const branchesModule = new Elysia({
     "/",
     // FUTURE: use Ajv to validate the models field
     async ({ body, set, agentSlug, userId }) => {
-      const sourceBranch = await Repository.getBranchBySlug(
+      const branch = await Repository.copyBranch(
         agentSlug,
         body.sourceBranchSlug,
+        body.name,
         userId!,
       );
-
-      if (!sourceBranch) {
+      if (!branch) {
         throw status(404, BranchesModel.NotFound.const);
       }
-
-      const branch = await Repository.createBranch(
-        agentSlug,
-        body.name,
-        sourceBranch.models,
-        userId!,
-      );
       set.status = 201;
       return branch;
     },

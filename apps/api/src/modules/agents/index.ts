@@ -36,7 +36,6 @@ export const agentsModule = new Elysia({
       body: AgentsModel.CreateBody,
       response: {
         201: AgentsModel.Agent,
-        400: AgentsModel.InvalidModel,
         409: AgentsModel.AlreadyExists,
       },
     },

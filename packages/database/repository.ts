@@ -2,7 +2,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 import { connectionString } from "./prisma.config";
 import { createSlug } from "./src/create-slug";
-import { PrismaClient } from "./src/generated/prisma/client";
+import { Prisma, PrismaClient } from "./src/generated/prisma/client";
 
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
@@ -14,7 +14,6 @@ export const createAgent = async (
   includeBranches: boolean = true,
 ) => {
   const slug = createSlug(name, true);
-  console.log("slug", slug);
   // FUTURE: Apply a fallback strategy with retries with different slugs in case of conflict
   return await prisma.agent.create({
     data: {
@@ -77,25 +76,6 @@ export const softDeleteAgent = async (agentSlug: string, userId: string) => {
   });
 };
 
-export const createBranch = async (
-  agentSlug: string,
-  name: string,
-  models: any[],
-  userId: string,
-) => {
-  const slug = createSlug(name);
-  return await prisma.branch.create({
-    data: {
-      agent_slug: agentSlug,
-      name: name,
-      slug: slug,
-      models: models,
-      created_by: userId,
-      updated_by: userId,
-    },
-  });
-};
-
 export const getAllBranches = async (agentSlug: string, userId: string) => {
   return await prisma.branch.findMany({
     where: { agent_slug: agentSlug, created_by: userId, deleted_at: undefined },
@@ -146,5 +126,39 @@ export const softDeleteBranch = async (
       deleted_at: undefined,
     },
     data: { deleted_by: userId, deleted_at: new Date() },
+  });
+};
+
+export const copyBranch = async (
+  agentSlug: string,
+  sourceBranchSlug: string,
+  name: string,
+  userId: string,
+) => {
+  const sourceBranch = await prisma.branch.findFirst({
+    where: {
+      agent_slug: agentSlug,
+      slug: sourceBranchSlug,
+      created_by: userId,
+      deleted_at: undefined,
+    },
+  });
+
+  if (!sourceBranch) {
+    return;
+  }
+
+  const slug = createSlug(name);
+
+  return await prisma.branch.create({
+    data: {
+      agent_slug: agentSlug,
+      name,
+      slug,
+      // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
+      models: sourceBranch.models as Prisma.InputJsonValue[],
+      created_by: userId,
+      updated_by: userId,
+    },
   });
 };

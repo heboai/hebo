@@ -6,16 +6,24 @@ import {
   BranchInputCreate,
   BranchInputUpdate,
 } from "@hebo/database/src/generated/prismabox/Branch";
+
+import { SupportedModelEnum } from "~api/modules/agents/model";
+
 export { Branch } from "@hebo/database/src/generated/prismabox/Branch";
 
+const BranchModels = t.Array(
+  t.Object({ type: SupportedModelEnum }, { additionalProperties: true }),
+);
+
 // DTOs
-export const CopyBody = t.Composite([
-  BranchInputCreate,
-  t.Object({
-    sourceBranchSlug: t.String(),
-  }),
-]);
-export const UpdateBody = BranchInputUpdate;
+export const CopyBody = t.Object({
+  name: BranchInputCreate.properties.name,
+  sourceBranchSlug: t.String(),
+});
+export const UpdateBody = t.Object({
+  name: BranchInputUpdate.properties.name,
+  models: t.Optional(BranchModels),
+});
 export const BranchList = t.Array(Branch);
 export const AgentPathParam = t.Object({
   agentSlug: Agent.properties.slug,

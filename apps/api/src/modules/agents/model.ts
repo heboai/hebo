@@ -8,16 +8,23 @@ import {
 export { Agent } from "@hebo/database/src/generated/prismabox/Agent";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
-const SupportedModelNames: ReadonlySet<string> = new Set(
-  supportedModels.map((m) => m.name),
-);
+const SupportedModels = supportedModels.map(({ name }) => name) as [
+  string,
+  ...string[],
+];
+
+export const SupportedModelEnum = t.UnionEnum(SupportedModels, {
+  error() {
+    return "Invalid model name";
+  },
+});
 
 // DTOs
 // The create agent schema accepts a default model name which is later used to insert the branch record for that agent.
 export const CreateBody = t.Composite([
   AgentInputCreate,
   t.Object({
-    defaultModel: t.String({ enum: [...SupportedModelNames] }),
+    defaultModel: SupportedModelEnum,
   }),
 ]);
 export const UpdateBody = AgentInputUpdate;
@@ -31,7 +38,6 @@ export const QueryParam = t.Object({
 });
 
 // Error DTOs
-export const InvalidModel = t.Literal("Invalid model name");
 export const AlreadyExists = t.Literal("Agent with this name already exists");
 export const NotFound = t.Literal("Agent not found");
 
