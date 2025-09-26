@@ -18,6 +18,7 @@ import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToCli
 import { Split } from "lucide-react";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
+import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
 
 export const ModelConfigSchema = object({
   models: array(
@@ -66,17 +67,18 @@ export default function ModelConfigurationForm() {
   const initialModelsRef = useRef(activeBranch.models);
 
   // Conform wrapper only for submission plumbing
-  const [form] = useForm<ModelConfigFormValues>({
+  const [form, fields] = useForm<ModelConfigFormValues>({
     defaultValue: { models: activeBranch.models },
     constraint: getValibotConstraint(ModelConfigSchema),
     lastResult: actionData,
     shouldValidate: "onBlur",
-    key: JSON.stringify(activeBranch.models),
   });
+
+  const modelFields = (fields as any)?.models?.getFieldList?.() ?? [];
 
   return (
     <div className="absolute inset-0 flex justify-center">
-      <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none px-4 sm:px-6 md:px-0">
+      <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none px-4 sm:px-6 md:px-0 p-4">
         <div className="flex flex-col mb-6 mt-16">
           <h2>Model Configuration</h2>
           <p className="text-muted-foreground">
@@ -90,7 +92,11 @@ export default function ModelConfigurationForm() {
           {...getFormProps(form)}
           className="contents"
         >
-          <input type="hidden" name="currentModels" value={JSON.stringify(initialModelsRef.current)} />
+          <input
+            type="hidden"
+            name="currentModels"
+            value={JSON.stringify(items.map(({ alias, type }) => ({ alias, type })))}
+          />
           {/* Container card with outer border radius */}
           {items.length > 0 && (
             <div className="w-full border border-border rounded-lg overflow-hidden">
@@ -151,18 +157,36 @@ export default function ModelConfigurationForm() {
                                   />
                                 </div>
                                 <div className="flex-1">
-                                  <Label className="py-1.5">Model Type</Label>
-                                  <Select
-                                    name={`models[${index}].type`}
-                                    placeholder="Select a model type"
-                                    defaultValue={item.type}
-                                    items={supportedModels.map((model: { name: string; displayName?: string }) => ({
-                                      value: model.name,
-                                      name: model.displayName,
-                                    }))}
-                                    aria-label="Model type"
-                                  />
-                                  <input type="hidden" name={`models[${index}]._originalAlias`} value={item.originalAlias ?? ""} />
+                                  {modelFields[index]?.type ? (
+                                    <FormField field={modelFields[index]!.type} className="flex-1">
+                                      <FormLabel className="py-1.5">Model Type</FormLabel>
+                                      <FormControl>
+                                        <Select
+                                          placeholder="Select a model type"
+                                          name={modelFields[index]!.type.name}
+                                          defaultValue={String(modelFields[index]!.type.initialValue ?? "")}
+                                          items={supportedModels.map((model) => ({
+                                            value: model.name,
+                                            name: model.displayName,
+                                          }))}
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormField>
+                                  ) : (
+                                    <div className="flex-1">
+                                      <Label className="py-1.5">Model Type</Label>
+                                      <Select
+                                        placeholder="Select a model type"
+                                        name={`models[${index}].type`}
+                                        items={supportedModels.map((model) => ({
+                                          value: model.name,
+                                          name: model.displayName,
+                                        }))}
+                                        defaultValue={item.type}
+                                      />
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </CardContent>
