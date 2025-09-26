@@ -13,6 +13,7 @@ import {
   SidebarProvider,
   SidebarSeparator,
   SidebarTrigger,
+  SidebarGroup,
 } from "@hebo/shared-ui/components/Sidebar";
 
 import { authService } from "~console/lib/auth";
@@ -28,6 +29,7 @@ import { PlaygroundSidebar } from "./sidebar-playground";
 
 import type { Route } from "./+types/route";
 import { useEffect } from "react";
+import { SidebarNav } from "./sidebar-nav";
 
 
 async function authMiddleware() {
@@ -78,10 +80,14 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
           </SidebarHeader>
-          <SidebarContent />
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarNav activeAgent={activeAgent} />
+            </SidebarGroup>
+          </SidebarContent>
           <SidebarFooter>
               <StaticContent />
-              <SidebarSeparator className="mx-0" />
+              <SidebarSeparator />
               <UserMenu user={user} />
           </SidebarFooter>
         </div>
