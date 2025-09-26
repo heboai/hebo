@@ -13,6 +13,7 @@ const createDb = () =>
       slug: String,
       name: String,
       models: Array,
+      agentSlug: String,
     },
   });
 
