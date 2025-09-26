@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "react-router build",
-    "clean": "git clean -fdx -e '.env*' .",
+    "clean": "git clean -fdX -e '.env*' .",
     "dev": "react-router dev",
     "lint": "eslint .",
     "start": "vite preview",

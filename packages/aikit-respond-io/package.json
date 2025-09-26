@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "git clean -fdx -e '.env*' .",
+    "clean": "git clean -fdX -e '.env*' .",
     "lint": "eslint .",
     "dev": "tsc -w"
   },

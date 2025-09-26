@@ -9,7 +9,7 @@
     "./cors/*": "./cors/*.ts"
   },
   "scripts": {
-    "clean": "git clean -fdx -e '.env*' ."
+    "clean": "git clean -fdX -e '.env*' ."
   },
   "peerDependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",

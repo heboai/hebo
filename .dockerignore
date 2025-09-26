@@ -118,3 +118,6 @@ server
 
 # dynamodb local
 .dynamodb/
+
+# prisma client
+**/src/generated

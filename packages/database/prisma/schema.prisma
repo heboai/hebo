@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider   = "prisma-client"
+  output     = "../src/generated/prisma"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator prismabox { 
+  provider = "prismabox"
+  typeboxImportDependencyName = "elysia"
+  typeboxImportVariableName = "t"
+  inputModel = true
+  output   = "../src/generated/prismabox"
+} 
+
+model Agent {
+  /// @prismabox.input.hide
+  slug       String     @id
+  name       String
+  /// @prismabox.hide
+  created_by String
+  /// @prismabox.hide
+  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  /// @prismabox.hide
+  updated_by String
+  /// @prismabox.hide
+  updated_at DateTime   @default(now()) @db.Timestamptz(6)
+  /// @prismabox.hide
+  deleted_by String?
+  /// @prismabox.hide
+  deleted_at DateTime?  @db.Timestamptz(6)
+  /// @prismabox.input.hide
+  branches   Branch[]
+
+  @@map("agents")
+}
+
+model Branch {
+  /// @prismabox.input.hide
+  slug       String
+  /// @prismabox.hide
+  agent_slug String
+  name       String
+  models     Json[]
+  /// @prismabox.hide
+  created_by String
+  /// @prismabox.hide
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  /// @prismabox.hide
+  updated_by String
+  /// @prismabox.hide
+  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  /// @prismabox.hide
+  deleted_by String?
+  /// @prismabox.hide
+  deleted_at DateTime? @db.Timestamptz(6)
+  /// @prismabox.hide
+  agents     Agent    @relation(fields: [agent_slug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("branches")
+  @@id(name: "branch_agent_slug", [slug, agent_slug])
+}

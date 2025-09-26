@@ -1,29 +1,44 @@
-import { Elysia, t } from "elysia";
+import { Elysia, status, t } from "elysia";
 
+import * as Repository from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
-import { agentId } from "~api/middlewares/agent-id";
+import { agentSlug, branchSlug } from "~api/middlewares/slugs";
 
 import * as BranchesModel from "./model";
-import { BranchService } from "./service";
 
 export const branchesModule = new Elysia({
   name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
   .use(authService)
-  .use(agentId)
+  .use(agentSlug)
   .post(
     "/",
     // FUTURE: use Ajv to validate the models field
-    async ({ body, set, agentId, userId }) => {
-      const branch = await BranchService.createBranch(agentId, body, userId!);
+    async ({ body, set, agentSlug, userId }) => {
+      const sourceBranch = await Repository.getBranchBySlug(
+        agentSlug,
+        body.sourceBranchSlug,
+        userId!,
+      );
+
+      if (!sourceBranch) {
+        throw status(404, BranchesModel.NotFound.const);
+      }
+
+      const branch = await Repository.createBranch(
+        agentSlug,
+        body.name,
+        sourceBranch.models,
+        userId!,
+      );
       set.status = 201;
       return branch;
     },
     {
       params: BranchesModel.AgentPathParam,
-      body: BranchesModel.CreateBody,
+      body: BranchesModel.CopyBody,
       response: {
         201: BranchesModel.Branch,
         404: BranchesModel.AgentNotFound,
@@ -33,8 +48,8 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/",
-    async ({ set, agentId, userId }) => {
-      const list = await BranchService.listBranches(agentId, userId!);
+    async ({ set, agentSlug, userId }) => {
+      const list = await Repository.getAllBranches(agentSlug, userId!);
       set.status = 200;
       return list;
     },
@@ -43,15 +58,18 @@ export const branchesModule = new Elysia({
       response: BranchesModel.BranchList,
     },
   )
+  .use(branchSlug)
   .get(
     "/:branchSlug",
-    async ({ params, set, agentId, userId }) => {
-      const branch = await BranchService.getBranchBySlug(
-        agentId,
-        params.branchSlug,
+    async ({ agentSlug, branchSlug, userId }) => {
+      const branch = await Repository.getBranchBySlug(
+        agentSlug,
+        branchSlug,
         userId!,
       );
-      set.status = 200;
+      if (!branch) {
+        throw status(404, BranchesModel.NotFound.const);
+      }
       return branch;
     },
     {
@@ -64,14 +82,14 @@ export const branchesModule = new Elysia({
   )
   .put(
     "/:branchSlug",
-    async ({ params, body, set, agentId, userId }) => {
-      const branch = await BranchService.updateBranch(
-        agentId,
-        params.branchSlug,
-        body,
+    async ({ body, agentSlug, branchSlug, userId }) => {
+      const branch = await Repository.updateBranch(
+        agentSlug,
+        branchSlug,
+        body.name!,
+        body.models!,
         userId!,
       );
-      set.status = 200;
       return branch;
     },
     {

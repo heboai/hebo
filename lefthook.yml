@@ -3,22 +3,22 @@ output: false
 
 post-checkout:
   commands:
-    clean:
+    reset:
       run: |
         # only run on branch switches (not file checkout)
         if [ "$3" = "1" ]; then
-          bun run clean
+          bun run reset
         fi
 
 post-merge:
   commands:
-    clean:
-      run: bun run clean
+    reset:
+      run: bun run reset
 
 post-rewrite:
   commands:
-    clean:
-      run: bun run clean
+    reset:
+      run: bun run reset
 
 pre-commit:
   parallel: true

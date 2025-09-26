@@ -9,8 +9,9 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "clean": "git clean -fdx -e '.env*' -e '.secrets*'",
-    "db": "bun run --filter @hebo/db db",
+    "clean": "git clean -fdX -e '.env*' -e '.secrets*'",
+    "reset": "git clean -fdx -e '.env*' -e '.secrets*'",
+    "db": "bun run --filter @hebo/database db",
     "dev": "turbo run dev --parallel",
     "format": "prettier --write .",
     "format:staged": "prettier --write",
@@ -18,12 +19,13 @@
     "lint:deps": "check-dependency-version-consistency .",
     "lint:staged": "eslint --cache --fix",
     "postinstall": "lefthook install",
-    "predev": "docker start hebo-postgres 2>/dev/null || docker run -d --name hebo-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=local -p 5432:5432 -v \"$(pwd)/db/.local-storage/postgres:/var/lib/postgresql/data\" postgres:17.5",
+    "predev": "docker start hebo-postgres 2>/dev/null || docker run -d --name hebo-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=local -p 5432:5432 -v \"$(pwd)packages/database/.local-storage/postgres:/var/lib/postgresql/data\" postgres:17.5",
     "postdev": "docker stop hebo-postgres 2>/dev/null || true",
     "test": "turbo run test"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "bun-types": "^1.2.22",
     "check-dependency-version-consistency": "^5.0.1",
     "eslint": "^9.33.0",
     "eslint-config-flat-gitignore": "^2.1.0",

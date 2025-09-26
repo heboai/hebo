@@ -11,7 +11,7 @@
     "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {
-    "clean": "git clean -fdx -e '.env*' .",
+    "clean": "git clean -fdX -e '.env*' .",
     "lint": "eslint ."
   },
   "dependencies": {

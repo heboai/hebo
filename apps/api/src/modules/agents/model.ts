@@ -1,47 +1,30 @@
 import { t } from "elysia";
 
-import { agents } from "@hebo/db/schema/agents";
+import {
+  Agent,
+  AgentInputCreate,
+  AgentInputUpdate,
+} from "@hebo/database/src/generated/prismabox/Agent";
+export { Agent } from "@hebo/database/src/generated/prismabox/Agent";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
-import { BranchList } from "~api/modules/branches/model";
-import {
-  createSchemaFactory,
-  AUDIT_FIELDS,
-  ID_FIELDS,
-} from "~api/utils/schema-factory";
-
-const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS] as const;
-const { createInsertSchema, createUpdateSchema, createSelectSchema } =
-  createSchemaFactory({ typeboxInstance: t });
-
-const _createAgent = createInsertSchema(agents);
-const _updateAgent = createUpdateSchema(agents);
-const _selectAgent = createSelectSchema(agents);
-
-export const SupportedModelNames: ReadonlySet<string> = new Set(
+const SupportedModelNames: ReadonlySet<string> = new Set(
   supportedModels.map((m) => m.name),
 );
 
 // DTOs
 // The create agent schema accepts a default model name which is later used to insert the branch record for that agent.
-export const CreateBody = t.Intersect([
-  t.Omit(_createAgent, [...OMIT_FIELDS, "slug"]),
+export const CreateBody = t.Composite([
+  AgentInputCreate,
   t.Object({
     defaultModel: t.String({ enum: [...SupportedModelNames] }),
   }),
 ]);
-export const UpdateBody = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
-export const Agent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
-
-export const AgentWithBranches = t.Object({
-  ...Agent.properties,
-  branches: t.Union([BranchList, t.Array(t.String())]),
-});
-
+export const UpdateBody = AgentInputUpdate;
 export const AgentList = t.Array(Agent);
 export const NoContent = t.Void();
 export const PathParam = t.Object({
-  agentSlug: _createAgent.properties.slug,
+  agentSlug: Agent.properties.slug,
 });
 export const QueryParam = t.Object({
   expand: t.Optional(t.Literal("branches")),
