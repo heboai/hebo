@@ -1,87 +1,78 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import { Form, useActionData, useNavigation, useParams, useRouteLoaderData } from "react-router";
 import { useForm, getFormProps } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
-import { object, array, string, nonEmpty, pipe, trim, message, type InferOutput } from "valibot";
+import { object, array, string, nonEmpty, pipe, trim, type InferOutput } from "valibot";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { Button } from "@hebo/shared-ui/components/Button";
+import { Card, CardContent, CardFooter } from "@hebo/shared-ui/components/Card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/shared-ui/components/Collapsible";
-import { Card } from "@hebo/shared-ui/components/Card";
-import { CardContent, CardFooter } from "@hebo/shared-ui/components/Card";
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 import { Label } from "@hebo/shared-ui/components/Label";
-import { Split } from "lucide-react";
 import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
+import { Split } from "lucide-react";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
 
-
-type Model = { alias: string; type: string };
-
-export const BranchModelsSchema = object({
+export const ModelConfigSchema = object({
   models: array(
     object({
-      alias: message(pipe(string(), trim(), nonEmpty()), "Please enter a model alias"),
-      type: message(pipe(string(), trim(), nonEmpty()), "Please select a model type"),
+      alias: pipe(string(), trim(), nonEmpty()),
+      type: string(),
     })
   ),
 });
-export type BranchModelsFormValues = InferOutput<typeof BranchModelsSchema>;
+
+export type ModelConfigFormValues = InferOutput<typeof ModelConfigSchema>;
 
 const getModelDisplayName = (modelName: string): string => {
-  if (modelName === "custom") {
-    return "Custom Model";
-  }
+  if (modelName === "custom") return "Custom Model";
   const model = supportedModels.find((m) => m.name === modelName);
   return model?.displayName || modelName;
 };
 
 export default function ModelConfigurationForm() {
-  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
-
   const { agent } = useRouteLoaderData<{
-    agent: {
-      branches: Array<{
-        models: Array<{ alias: string; type: string }>;
-      }>;
-    };
+    agent: { branches: Array<{ models: Array<{ alias: string; type: string }> }> };
   }>("routes/_shell.agent.$agentSlug")!;
+  
   const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
   const activeBranch = agent.branches[0];
-  const initialModels = activeBranch.models;
-
-  type Item = { key: string; alias: string; type: string; originalAlias?: string };
-  const [items, setItems] = useState<Array<Item>>(() =>
-    initialModels.map((m) => ({ key: `existing-${m.alias}`, alias: m.alias, type: m.type, originalAlias: m.alias }))
-  );
-
-  // Keep local items in sync if loader data changes (e.g., after navigation)
-  useEffect(() => {
-    setItems(initialModels.map((m) => ({ key: `existing-${m.alias}`, alias: m.alias, type: m.type, originalAlias: m.alias })));
-  }, [initialModels]);
 
   const actionData = useActionData<any>();
   useActionDataErrorToast();
   const navigation = useNavigation();
-
-  const defaultValue = useMemo<BranchModelsFormValues>(() => ({
-    models: items.map((i) => ({ alias: i.alias, type: i.type })),
-  }), [items]);
-
-  const [form] = useForm<BranchModelsFormValues>({
-    defaultValue,
-    constraint: getValibotConstraint(BranchModelsSchema),
-    lastResult: actionData,
-    shouldValidate: "onBlur",
-  });
-
   const isSubmitting = navigation.state === "submitting";
   const currentIntent = String(navigation.formData?.get("intent") || "");
+
+  // Local editable items and open state
+  type Item = { key: string; alias: string; type: string; originalAlias?: string };
+  const [items, setItems] = useState<Item[]>(() =>
+    activeBranch.models.map((m) => ({
+      key: `${m.alias}-${Math.random().toString(36).slice(2, 8)}`,
+      alias: m.alias,
+      type: m.type,
+      originalAlias: m.alias,
+    })),
+  );
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
+
+  // Stable snapshot of initial models for server-side merge
+  const initialModelsRef = useRef(activeBranch.models);
+
+  // Conform wrapper only for submission plumbing
+  const [form] = useForm<ModelConfigFormValues>({
+    defaultValue: { models: activeBranch.models },
+    constraint: getValibotConstraint(ModelConfigSchema),
+    lastResult: actionData,
+    shouldValidate: "onBlur",
+    key: JSON.stringify(activeBranch.models),
+  });
 
   return (
     <div className="absolute inset-0 flex justify-center">
@@ -99,7 +90,7 @@ export default function ModelConfigurationForm() {
           {...getFormProps(form)}
           className="contents"
         >
-          <input type="hidden" name="currentModels" value={JSON.stringify(initialModels)} />
+          <input type="hidden" name="currentModels" value={JSON.stringify(initialModelsRef.current)} />
           {/* Container card with outer border radius */}
           {items.length > 0 && (
             <div className="w-full border border-border rounded-lg overflow-hidden">
@@ -153,7 +144,7 @@ export default function ModelConfigurationForm() {
                                   <Input
                                     name={`models[${index}].alias`}
                                     placeholder="Enter model alias"
-                                    defaultValue={item.alias}
+                                    value={item.alias}
                                     onChange={(e) =>
                                       setItems((prev) => prev.map((it, idx) => idx === index ? { ...it, alias: e.target.value } : it))
                                     }
@@ -162,7 +153,7 @@ export default function ModelConfigurationForm() {
                                 <div className="flex-1">
                                   <Label className="py-1.5">Model Type</Label>
                                   <Select
-                                    name={`modelsUI[${index}].type`}
+                                    name={`models[${index}].type`}
                                     placeholder="Select a model type"
                                     defaultValue={item.type}
                                     items={supportedModels.map((model: { name: string; displayName?: string }) => ({
@@ -171,7 +162,6 @@ export default function ModelConfigurationForm() {
                                     }))}
                                     aria-label="Model type"
                                   />
-                                  <input type="hidden" name={`models[${index}].type`} value={item.type} />
                                   <input type="hidden" name={`models[${index}]._originalAlias`} value={item.originalAlias ?? ""} />
                                 </div>
                               </div>
@@ -198,8 +188,8 @@ export default function ModelConfigurationForm() {
                                 <Button
                                   type="submit"
                                   name="intent"
-                                  value="save"
-                                  isLoading={isSubmitting && currentIntent === "save"}
+                                  value={`save:${index}`}
+                                  isLoading={isSubmitting && currentIntent === `save:${index}`}
                                 >
                                   Save
                                 </Button>
