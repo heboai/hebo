@@ -20,6 +20,6 @@
     "slugify": "^1.6.6"
   },
   "peerDependencies": {
-    "elysia": "1.3.20"
+    "elysia": "^1.4.7"
   }
 }

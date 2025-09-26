@@ -6,6 +6,7 @@ import { Elysia } from "elysia";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 
+import { repositoryErrors } from "./middleware/repository-errors";
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
 
@@ -30,6 +31,7 @@ const createApi = () =>
       }),
     )
     .use(authService)
+    .use(repositoryErrors)
     .group(
       "/v1",
       {

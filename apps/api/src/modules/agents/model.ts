@@ -12,7 +12,6 @@ const SupportedModels = supportedModels.map(({ name }) => name) as [
   string,
   ...string[],
 ];
-
 export const SupportedModelEnum = t.UnionEnum(SupportedModels, {
   error() {
     return "Invalid model name";
@@ -36,10 +35,6 @@ export const PathParam = t.Object({
 export const QueryParam = t.Object({
   expand: t.Optional(t.Literal("branches")),
 });
-
-// Error DTOs
-export const AlreadyExists = t.Literal("Agent with this name already exists");
-export const NotFound = t.Literal("Agent not found");
 
 // Types
 export type CreateBody = typeof CreateBody.static;

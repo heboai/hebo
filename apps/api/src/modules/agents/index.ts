@@ -1,9 +1,13 @@
-import { Elysia, status } from "elysia";
+import { Elysia } from "elysia";
 
-import * as Repository from "@hebo/database/repository";
+import {
+  createAgent,
+  getAllAgents,
+  getAgentBySlug,
+  softDeleteAgent,
+  updateAgent,
+} from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
-
-import { agentSlug } from "~api/middlewares/slugs";
 
 import * as AgentsModel from "./model";
 
@@ -15,7 +19,7 @@ export const agentsModule = new Elysia({
   .get(
     "/",
     async ({ userId }) => {
-      const agentList = await Repository.getAllAgents(userId!, true);
+      const agentList = await getAllAgents(userId!, true);
       return agentList;
     },
     { response: AgentsModel.AgentList },
@@ -23,7 +27,7 @@ export const agentsModule = new Elysia({
   .post(
     "/",
     async ({ body, set, userId }) => {
-      const agent = await Repository.createAgent(
+      const agent = await createAgent(
         body.name,
         body.defaultModel,
         userId!,
@@ -36,22 +40,18 @@ export const agentsModule = new Elysia({
       body: AgentsModel.CreateBody,
       response: {
         201: AgentsModel.Agent,
-        409: AgentsModel.AlreadyExists,
       },
     },
   )
-  .use(agentSlug)
   .get(
     "/:agentSlug",
-    async ({ query, agentSlug, userId }) => {
-      const agent = await Repository.getAgentBySlug(
-        agentSlug,
+    async ({ /*query,*/ params, userId }) => {
+      const agent = await getAgentBySlug(
+        params.agentSlug,
         userId!,
-        query.expand === "branches",
+        // TODO: fix this
+        true,
       );
-      if (!agent) {
-        throw status(404, AgentsModel.NotFound.const);
-      }
       return agent;
     },
     {
@@ -59,16 +59,15 @@ export const agentsModule = new Elysia({
       params: AgentsModel.PathParam,
       response: {
         200: AgentsModel.Agent,
-        404: AgentsModel.NotFound,
       },
     },
   )
   .put(
     "/:agentSlug",
-    async ({ body, agentSlug, userId }) => {
-      const agent = await Repository.updateAgent(
-        agentSlug,
-        body.name!,
+    async ({ body, params, userId }) => {
+      const agent = await updateAgent(
+        params.agentSlug,
+        body.name,
         userId!,
         true,
       );
@@ -77,15 +76,17 @@ export const agentsModule = new Elysia({
     {
       params: AgentsModel.PathParam,
       body: AgentsModel.UpdateBody,
-      response: { 200: AgentsModel.Agent, 404: AgentsModel.NotFound },
+      response: { 200: AgentsModel.Agent },
     },
   )
   .delete(
     "/:agentSlug",
-    async ({ set, agentSlug, userId }) => {
-      const agent = await Repository.softDeleteAgent(agentSlug, userId!);
+    async ({ params, set, userId }) => {
+      await softDeleteAgent(params.agentSlug, userId!);
       set.status = 204;
-      return agent;
     },
-    { params: AgentsModel.PathParam, response: { 204: AgentsModel.NoContent } },
+    {
+      params: AgentsModel.PathParam,
+      response: { 204: AgentsModel.NoContent },
+    },
   );

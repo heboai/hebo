@@ -6,6 +6,7 @@ function upstreamResponse(e: unknown): Response | undefined {
 }
 
 export const oaiErrors = new Elysia({ name: "oai-error" }).onError(
+  { as: "global" },
   async ({ code, error, set }) => {
     // 1) Validation → 400 in OpenAI shape
     if (code === "VALIDATION") {

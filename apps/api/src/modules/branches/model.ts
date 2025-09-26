@@ -33,11 +33,6 @@ export const PathParams = t.Object({
   branchSlug: Branch.properties.slug,
 });
 
-// Error DTOs
-export const AlreadyExists = t.Literal("Branch with this name already exists");
-export const NotFound = t.Literal("Branch not found");
-export const AgentNotFound = t.Literal("Agent not found");
-
 // Types
 export type CopyBody = typeof CopyBody.static;
 export type UpdateBody = typeof UpdateBody.static;
