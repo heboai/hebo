@@ -1,4 +1,3 @@
-
 import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
