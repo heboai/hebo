@@ -1,85 +1,80 @@
-import { Elysia, t } from "elysia";
+import Elysia from "elysia";
 
+import { BranchRepo } from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
-import { agentId } from "~api/middlewares/agent-id";
-
 import * as BranchesModel from "./model";
-import { BranchService } from "./service";
 
 export const branchesModule = new Elysia({
   name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
   .use(authService)
-  .use(agentId)
+  .get(
+    "/",
+    async ({ params, userId }) => {
+      return await BranchRepo(userId!).getAll(params.agentSlug);
+    },
+    {
+      params: BranchesModel.AgentPathParam,
+      response: { 200: BranchesModel.BranchList },
+    },
+  )
   .post(
     "/",
-    // FUTURE: use Ajv to validate the models field
-    async ({ body, set, agentId, userId }) => {
-      const branch = await BranchService.createBranch(agentId, body, userId!);
+    // FUTURE: use Ajv to validate the models fields
+    async ({ body, params, set, userId }) => {
+      const branch = await BranchRepo(userId!).copy(
+        params.agentSlug,
+        body.sourceBranchSlug,
+        body.name,
+      );
       set.status = 201;
       return branch;
     },
     {
       params: BranchesModel.AgentPathParam,
-      body: BranchesModel.CreateBody,
-      response: {
-        201: BranchesModel.Branch,
-        404: BranchesModel.AgentNotFound,
-        409: BranchesModel.AlreadyExists,
-      },
-    },
-  )
-  .get(
-    "/",
-    async ({ set, agentId, userId }) => {
-      const list = await BranchService.listBranches(agentId, userId!);
-      set.status = 200;
-      return list;
-    },
-    {
-      params: BranchesModel.AgentPathParam,
-      response: BranchesModel.BranchList,
+      body: BranchesModel.CopyBody,
+      response: { 201: BranchesModel.Branch },
     },
   )
   .get(
     "/:branchSlug",
-    async ({ params, set, agentId, userId }) => {
-      const branch = await BranchService.getBranchBySlug(
-        agentId,
+    async ({ params, userId }) => {
+      return await BranchRepo(userId!).getBySlug(
+        params.agentSlug,
         params.branchSlug,
-        userId!,
       );
-      set.status = 200;
-      return branch;
     },
     {
       params: BranchesModel.PathParams,
-      response: {
-        200: BranchesModel.Branch,
-        404: t.Union([BranchesModel.AgentNotFound, BranchesModel.NotFound]),
-      },
+      response: { 200: BranchesModel.Branch },
     },
   )
   .put(
     "/:branchSlug",
-    async ({ params, body, set, agentId, userId }) => {
-      const branch = await BranchService.updateBranch(
-        agentId,
+    async ({ body, params, userId }) => {
+      return await BranchRepo(userId!).update(
+        params.agentSlug,
         params.branchSlug,
-        body,
-        userId!,
+        body.name,
+        body.models,
       );
-      set.status = 200;
-      return branch;
     },
     {
       params: BranchesModel.PathParams,
       body: BranchesModel.UpdateBody,
-      response: {
-        200: BranchesModel.Branch,
-        404: t.Union([BranchesModel.AgentNotFound, BranchesModel.NotFound]),
-      },
+      response: { 200: BranchesModel.Branch },
+    },
+  )
+  .delete(
+    "/:branchSlug",
+    async ({ params, set, userId }) => {
+      await BranchRepo(userId!).softDelete(params.agentSlug, params.branchSlug);
+      set.status = 204;
+    },
+    {
+      params: BranchesModel.PathParams,
+      response: { 204: BranchesModel.NoContent },
     },
   );

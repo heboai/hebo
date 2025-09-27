@@ -1,58 +1,54 @@
 import { t } from "elysia";
 
-import { agents } from "@hebo/db/schema/agents";
+import {
+  AgentInputCreate,
+  AgentInputUpdate,
+  AgentPlain,
+  AgentRelations,
+} from "@hebo/database/src/generated/prismabox/Agent";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
-import { BranchList } from "~api/modules/branches/model";
-import {
-  createSchemaFactory,
-  AUDIT_FIELDS,
-  ID_FIELDS,
-} from "~api/utils/schema-factory";
-
-const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS] as const;
-const { createInsertSchema, createUpdateSchema, createSelectSchema } =
-  createSchemaFactory({ typeboxInstance: t });
-
-const _createAgent = createInsertSchema(agents);
-const _updateAgent = createUpdateSchema(agents);
-const _selectAgent = createSelectSchema(agents);
-
-export const SupportedModelNames: ReadonlySet<string> = new Set(
-  supportedModels.map((m) => m.name),
-);
-
-// DTOs
-// The create agent schema accepts a default model name which is later used to insert the branch record for that agent.
-export const CreateBody = t.Intersect([
-  t.Omit(_createAgent, [...OMIT_FIELDS, "slug"]),
-  t.Object({
-    defaultModel: t.String({ enum: [...SupportedModelNames] }),
-  }),
-]);
-export const UpdateBody = t.Omit(_updateAgent, [...OMIT_FIELDS, "slug"]);
-export const Agent = t.Omit(_selectAgent, [...OMIT_FIELDS]);
-
-export const AgentWithBranches = t.Object({
-  ...Agent.properties,
-  branches: t.Union([BranchList, t.Array(t.String())]),
+const SupportedModels = supportedModels.map(({ name }) => name) as [
+  string,
+  ...string[],
+];
+export const SupportedModelEnum = t.UnionEnum(SupportedModels, {
+  error() {
+    // TODO this is breaking the API. Fix it.
+    return "Invalid model name";
+  },
 });
 
+// DTOs
+const AgentRelationItemProperties =
+  AgentRelations.properties.branches.items.properties;
+const Branch = t.Object(
+  {
+    slug: AgentRelationItemProperties.slug,
+    name: t.Optional(AgentRelationItemProperties.name),
+    models: t.Optional(AgentRelationItemProperties.models),
+  },
+  { additionalProperties: false },
+);
+export const Agent = t.Composite([
+  AgentPlain,
+  t.Object({ branches: t.Array(Branch) }),
+]);
+
+// The create agent schema accepts a default model name which is later used to insert the branch record for that agent.
+export const CreateBody = t.Composite([
+  AgentInputCreate,
+  t.Object({
+    defaultModel: SupportedModelEnum,
+  }),
+]);
+export const UpdateBody = AgentInputUpdate;
 export const AgentList = t.Array(Agent);
 export const NoContent = t.Void();
 export const PathParam = t.Object({
-  agentSlug: _createAgent.properties.slug,
+  agentSlug: AgentPlain.properties.slug,
 });
-export const QueryParam = t.Object({
-  expand: t.Optional(t.Literal("branches")),
-});
-
-// Error DTOs
-export const InvalidModel = t.Literal("Invalid model name");
-export const AlreadyExists = t.Literal("Agent with this name already exists");
-export const NotFound = t.Literal("Agent not found");
 
 // Types
 export type CreateBody = typeof CreateBody.static;
 export type UpdateBody = typeof UpdateBody.static;
-export type AgentExpand = (typeof QueryParam.static)["expand"];

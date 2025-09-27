@@ -75,7 +75,7 @@ bun run -F @hebo/console dev
 bun run clean
 
 # Cleanup the database (and any other untracked files/directories)
-bun run -F @hebo/db clean
+bun run -F @hebo/database clean
 ```
 
 ## Run modes

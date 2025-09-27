@@ -1,43 +1,39 @@
 import { t } from "elysia";
 
-import { agents } from "@hebo/db/schema/agents";
-import { branches } from "@hebo/db/schema/branches";
-
+import { Agent } from "@hebo/database/src/generated/prismabox/Agent";
 import {
-  createSchemaFactory,
-  AUDIT_FIELDS,
-  ID_FIELDS,
-} from "~api/utils/schema-factory";
+  Branch,
+  BranchInputCreate,
+  BranchInputUpdate,
+} from "@hebo/database/src/generated/prismabox/Branch";
 
-const OMIT_FIELDS = [...AUDIT_FIELDS, ...ID_FIELDS, "agentId"] as const;
-const { createInsertSchema, createUpdateSchema, createSelectSchema } =
-  createSchemaFactory({
-    typeboxInstance: t,
-  });
+import { SupportedModelEnum } from "~api/modules/agents/model";
 
-const _createBranch = createInsertSchema(branches);
-const _updateBranch = createUpdateSchema(branches);
-const _selectBranch = createSelectSchema(branches);
-const _createAgent = createInsertSchema(agents);
+export { Branch } from "@hebo/database/src/generated/prismabox/Branch";
+
+const BranchModels = t.Array(
+  t.Object({ type: SupportedModelEnum }, { additionalProperties: true }),
+);
 
 // DTOs
-export const CreateBody = t.Omit(_createBranch, [...OMIT_FIELDS, "slug"]);
-export const UpdateBody = t.Omit(_updateBranch, [...OMIT_FIELDS, "slug"]);
-export const Branch = t.Omit(_selectBranch, [...OMIT_FIELDS]);
+export const CopyBody = t.Object({
+  name: BranchInputCreate.properties.name,
+  sourceBranchSlug: t.String(),
+});
+export const UpdateBody = t.Object({
+  name: BranchInputUpdate.properties.name,
+  models: t.Optional(BranchModels),
+});
 export const BranchList = t.Array(Branch);
 export const AgentPathParam = t.Object({
-  agentSlug: _createAgent.properties.slug,
+  agentSlug: Agent.properties.slug,
 });
 export const PathParams = t.Object({
   ...AgentPathParam.properties,
-  branchSlug: _createBranch.properties.slug,
+  branchSlug: Branch.properties.slug,
 });
-
-// Error DTOs
-export const AlreadyExists = t.Literal("Branch with this name already exists");
-export const NotFound = t.Literal("Branch not found");
-export const AgentNotFound = t.Literal("Agent not found");
+export const NoContent = t.Void();
 
 // Types
-export type CreateBody = typeof CreateBody.static;
+export type CopyBody = typeof CopyBody.static;
 export type UpdateBody = typeof UpdateBody.static;
