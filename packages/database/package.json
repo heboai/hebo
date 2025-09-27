@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "clean": "git clean -fdX .",
+    "clean": "git clean -fdx .",
     "format": "prisma format",
     "db": "prisma"
   },

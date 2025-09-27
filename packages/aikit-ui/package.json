@@ -8,7 +8,7 @@
     "./blocks/*": "./src/blocks/*.tsx"
   },
   "scripts": {
-    "clean": "git clean -fdX -e \".env*\" .",
+    "clean": "git clean -fdx -e \".env*\" .",
     "lint": "bunx eslint ."
   },
   "dependencies": {
