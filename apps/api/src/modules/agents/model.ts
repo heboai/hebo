@@ -14,6 +14,7 @@ const SupportedModels = supportedModels.map(({ name }) => name) as [
 ];
 export const SupportedModelEnum = t.UnionEnum(SupportedModels, {
   error() {
+    // TODO this is breaking the API. Fix it.
     return "Invalid model name";
   },
 });
