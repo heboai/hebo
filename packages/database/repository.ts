@@ -168,6 +168,7 @@ export const BranchRepo = (userId: string) => ({
           agent_slug: agentSlug,
           name,
           slug,
+          // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
           models: sourceBranch.models as Prisma.InputJsonValue[],
           created_by: userId,
           updated_by: userId,
