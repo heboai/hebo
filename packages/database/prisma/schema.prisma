@@ -48,7 +48,7 @@ model Branch {
   /// @prismabox.hide
   agent_slug String
   name       String
-  models     Json[]
+  models     Json[]    @default([])
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide

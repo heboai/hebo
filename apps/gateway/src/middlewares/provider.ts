@@ -1,5 +1,5 @@
 import { createGroq } from "@ai-sdk/groq";
-import { Elysia } from "elysia";
+import Elysia from "elysia";
 import { Resource } from "sst";
 import { createVoyage } from "voyage-ai-provider";
 

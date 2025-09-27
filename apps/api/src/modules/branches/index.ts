@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import Elysia from "elysia";
 
 import {
   copyBranch,
@@ -22,7 +22,7 @@ export const branchesModule = new Elysia({
     },
     {
       params: BranchesModel.AgentPathParam,
-      response: BranchesModel.BranchList,
+      response: { 200: BranchesModel.BranchList },
     },
   )
   .post(
@@ -41,45 +41,37 @@ export const branchesModule = new Elysia({
     {
       params: BranchesModel.AgentPathParam,
       body: BranchesModel.CopyBody,
-      response: {
-        201: BranchesModel.Branch,
-      },
+      response: { 201: BranchesModel.Branch },
     },
   )
   .get(
     "/:branchSlug",
     async ({ params, userId }) => {
-      const branch = await getBranchBySlug(
+      return await getBranchBySlug(
         params.agentSlug,
         params.branchSlug,
         userId!,
       );
-      return branch;
     },
     {
       params: BranchesModel.PathParams,
-      response: {
-        200: BranchesModel.Branch,
-      },
+      response: { 200: BranchesModel.Branch },
     },
   )
   .put(
     "/:branchSlug",
     async ({ body, params, userId }) => {
-      const branch = await updateBranch(
+      return await updateBranch(
         params.agentSlug,
         params.branchSlug,
         body.name,
         body.models,
         userId!,
       );
-      return branch;
     },
     {
       params: BranchesModel.PathParams,
       body: BranchesModel.UpdateBody,
-      response: {
-        200: BranchesModel.Branch,
-      },
+      response: { 200: BranchesModel.Branch },
     },
   );

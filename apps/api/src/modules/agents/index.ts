@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import Elysia from "elysia";
 
 import {
   createAgent,
@@ -9,6 +9,8 @@ import {
 } from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
+import { queryParams } from "~api/middlewares/query-params";
+
 import * as AgentsModel from "./model";
 
 export const agentsModule = new Elysia({
@@ -16,62 +18,58 @@ export const agentsModule = new Elysia({
   prefix: "/agents",
 })
   .use(authService)
+  .use(queryParams)
   .get(
     "/",
-    async ({ userId }) => {
-      const agentList = await getAllAgents(userId!, true);
-      return agentList;
+    async ({ userId, expandBranches }) => {
+      return await getAllAgents(userId!, expandBranches);
     },
-    { response: AgentsModel.AgentList },
+    { response: { 200: AgentsModel.AgentList } },
   )
   .post(
     "/",
-    async ({ body, set, userId }) => {
+    async ({ body, set, userId, expandBranches }) => {
       const agent = await createAgent(
         body.name,
         body.defaultModel,
         userId!,
-        true,
+        expandBranches,
       );
       set.status = 201;
       return agent;
     },
     {
       body: AgentsModel.CreateBody,
-      response: {
-        201: AgentsModel.Agent,
-      },
+      response: { 201: AgentsModel.Agent },
     },
   )
   .get(
     "/:agentSlug",
-    async ({ /*query,*/ params, userId }) => {
+    async ({ params, userId, expandBranches }) => {
+      console.log("expandBranches", expandBranches);
+      // TODO: just return here
       const agent = await getAgentBySlug(
         params.agentSlug,
         userId!,
-        // TODO: fix this
-        true,
+        expandBranches,
       );
+      console.log("agent", agent);
       return agent;
     },
     {
-      query: AgentsModel.QueryParam,
       params: AgentsModel.PathParam,
-      response: {
-        200: AgentsModel.Agent,
-      },
+      response: { 200: AgentsModel.Agent },
     },
   )
   .put(
     "/:agentSlug",
-    async ({ body, params, userId }) => {
-      const agent = await updateAgent(
+    async ({ body, params, userId, expandBranches }) => {
+      return await updateAgent(
         params.agentSlug,
         body.name,
         userId!,
-        true,
+        expandBranches,
       );
-      return agent;
     },
     {
       params: AgentsModel.PathParam,

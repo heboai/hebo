@@ -17,6 +17,9 @@ export const createAgent = async (
   userId: string,
   includeBranches: boolean = true,
 ) => {
+  const includeOption = includeBranches
+    ? { branches: true }
+    : { branches: { select: { slug: true } } };
   const slug = createSlug(name, true);
   // FUTURE: Apply a fallback strategy with retries with different slugs in case of conflict
   return await resolveOrThrow(
@@ -36,7 +39,7 @@ export const createAgent = async (
           },
         },
       },
-      include: { branches: includeBranches },
+      include: includeOption,
     }),
   );
 };
@@ -45,10 +48,13 @@ export const getAllAgents = async (
   userId: string,
   includeBranches: boolean = true,
 ) => {
+  const includeOption = includeBranches
+    ? { branches: true }
+    : { branches: { select: { slug: true } } };
   return await resolveOrThrow(
     prisma.agent.findMany({
       where: { created_by: userId, deleted_at: dbNull },
-      include: { branches: includeBranches },
+      include: includeOption,
     }),
   );
 };
@@ -58,10 +64,13 @@ export const getAgentBySlug = async (
   userId: string,
   includeBranches: boolean = true,
 ) => {
+  const includeOption = includeBranches
+    ? { branches: true }
+    : { branches: { select: { slug: true } } };
   return await resolveOrThrow(
     prisma.agent.findFirst({
       where: { slug: agentSlug, created_by: userId, deleted_at: dbNull },
-      include: { branches: includeBranches },
+      include: includeOption,
     }),
   );
 };
@@ -72,11 +81,14 @@ export const updateAgent = async (
   userId: string,
   includeBranches: boolean = true,
 ) => {
+  const includeOption = includeBranches
+    ? { branches: true }
+    : { branches: { select: { slug: true } } };
   return await resolveOrThrow(
     prisma.agent.update({
       where: { slug: agentSlug, created_by: userId, deleted_at: dbNull },
       data: { name: name, updated_by: userId },
-      include: { branches: includeBranches },
+      include: includeOption,
     }),
   );
 };

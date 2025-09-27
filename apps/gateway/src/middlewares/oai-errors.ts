@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import Elysia from "elysia";
 
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;

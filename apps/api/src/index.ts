@@ -1,12 +1,13 @@
+
 import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
-import { Elysia } from "elysia";
+import Elysia from "elysia";
 
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 
-import { repositoryErrors } from "./middleware/repository-errors";
+import { repositoryErrors } from "./middlewares/repository-errors";
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
 
