@@ -32,6 +32,7 @@ export const PathParams = t.Object({
   ...AgentPathParam.properties,
   branchSlug: Branch.properties.slug,
 });
+export const NoContent = t.Void();
 
 // Types
 export type CopyBody = typeof CopyBody.static;

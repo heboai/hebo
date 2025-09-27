@@ -15,7 +15,7 @@ export const createAgent = async (
   name: string,
   defaultModel: string,
   userId: string,
-  includeBranches: boolean = true,
+  includeBranches: boolean = false,
 ) => {
   const includeOption = includeBranches
     ? { branches: true }
@@ -46,7 +46,7 @@ export const createAgent = async (
 
 export const getAllAgents = async (
   userId: string,
-  includeBranches: boolean = true,
+  includeBranches: boolean = false,
 ) => {
   const includeOption = includeBranches
     ? { branches: true }
@@ -62,7 +62,7 @@ export const getAllAgents = async (
 export const getAgentBySlug = async (
   agentSlug: string,
   userId: string,
-  includeBranches: boolean = true,
+  includeBranches: boolean = false,
 ) => {
   const includeOption = includeBranches
     ? { branches: true }
@@ -79,7 +79,7 @@ export const updateAgent = async (
   agentSlug: string,
   name: string | undefined,
   userId: string,
-  includeBranches: boolean = true,
+  includeBranches: boolean = false,
 ) => {
   const includeOption = includeBranches
     ? { branches: true }

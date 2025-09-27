@@ -4,6 +4,7 @@ import {
   copyBranch,
   getAllBranches,
   getBranchBySlug,
+  softDeleteBranch,
   updateBranch,
 } from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
@@ -73,5 +74,16 @@ export const branchesModule = new Elysia({
       params: BranchesModel.PathParams,
       body: BranchesModel.UpdateBody,
       response: { 200: BranchesModel.Branch },
+    },
+  )
+  .delete(
+    "/:branchSlug",
+    async ({ params, set, userId }) => {
+      await softDeleteBranch(params.agentSlug, params.branchSlug, userId!);
+      set.status = 204;
+    },
+    {
+      params: BranchesModel.PathParams,
+      response: { 204: BranchesModel.NoContent },
     },
   );
