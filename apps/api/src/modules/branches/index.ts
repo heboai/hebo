@@ -1,12 +1,6 @@
 import Elysia from "elysia";
 
-import {
-  copyBranch,
-  getAllBranches,
-  getBranchBySlug,
-  softDeleteBranch,
-  updateBranch,
-} from "@hebo/database/repository";
+import { BranchRepo } from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import * as BranchesModel from "./model";
@@ -19,7 +13,7 @@ export const branchesModule = new Elysia({
   .get(
     "/",
     async ({ params, userId }) => {
-      return await getAllBranches(params.agentSlug, userId!);
+      return await BranchRepo(userId!).getAll(params.agentSlug);
     },
     {
       params: BranchesModel.AgentPathParam,
@@ -30,11 +24,10 @@ export const branchesModule = new Elysia({
     "/",
     // FUTURE: use Ajv to validate the models fields
     async ({ body, params, set, userId }) => {
-      const branch = await copyBranch(
+      const branch = await BranchRepo(userId!).copy(
         params.agentSlug,
         body.sourceBranchSlug,
         body.name,
-        userId!,
       );
       set.status = 201;
       return branch;
@@ -48,10 +41,9 @@ export const branchesModule = new Elysia({
   .get(
     "/:branchSlug",
     async ({ params, userId }) => {
-      return await getBranchBySlug(
+      return await BranchRepo(userId!).getBySlug(
         params.agentSlug,
         params.branchSlug,
-        userId!,
       );
     },
     {
@@ -62,12 +54,11 @@ export const branchesModule = new Elysia({
   .put(
     "/:branchSlug",
     async ({ body, params, userId }) => {
-      return await updateBranch(
+      return await BranchRepo(userId!).update(
         params.agentSlug,
         params.branchSlug,
         body.name,
         body.models,
-        userId!,
       );
     },
     {
@@ -79,7 +70,7 @@ export const branchesModule = new Elysia({
   .delete(
     "/:branchSlug",
     async ({ params, set, userId }) => {
-      await softDeleteBranch(params.agentSlug, params.branchSlug, userId!);
+      await BranchRepo(userId!).softDelete(params.agentSlug, params.branchSlug);
       set.status = 204;
     },
     {

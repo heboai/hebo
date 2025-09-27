@@ -1,12 +1,6 @@
 import Elysia from "elysia";
 
-import {
-  createAgent,
-  getAllAgents,
-  getAgentBySlug,
-  softDeleteAgent,
-  updateAgent,
-} from "@hebo/database/repository";
+import { AgentRepo } from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import { queryParams } from "~api/middlewares/query-params";
@@ -22,17 +16,16 @@ export const agentsModule = new Elysia({
   .get(
     "/",
     async ({ userId, expandBranches }) => {
-      return await getAllAgents(userId!, expandBranches);
+      return await AgentRepo(userId!).getAll(expandBranches);
     },
     { response: { 200: AgentsModel.AgentList } },
   )
   .post(
     "/",
     async ({ body, set, userId, expandBranches }) => {
-      const agent = await createAgent(
+      const agent = await AgentRepo(userId!).create(
         body.name,
         body.defaultModel,
-        userId!,
         expandBranches,
       );
       set.status = 201;
@@ -46,15 +39,10 @@ export const agentsModule = new Elysia({
   .get(
     "/:agentSlug",
     async ({ params, userId, expandBranches }) => {
-      console.log("expandBranches", expandBranches);
-      // TODO: just return here
-      const agent = await getAgentBySlug(
+      return await AgentRepo(userId!).getBySlug(
         params.agentSlug,
-        userId!,
         expandBranches,
       );
-      console.log("agent", agent);
-      return agent;
     },
     {
       params: AgentsModel.PathParam,
@@ -64,10 +52,9 @@ export const agentsModule = new Elysia({
   .put(
     "/:agentSlug",
     async ({ body, params, userId, expandBranches }) => {
-      return await updateAgent(
+      return await AgentRepo(userId!).update(
         params.agentSlug,
         body.name,
-        userId!,
         expandBranches,
       );
     },
@@ -80,7 +67,7 @@ export const agentsModule = new Elysia({
   .delete(
     "/:agentSlug",
     async ({ params, set, userId }) => {
-      await softDeleteAgent(params.agentSlug, userId!);
+      await AgentRepo(userId!).softDelete(params.agentSlug);
       set.status = 204;
     },
     {
