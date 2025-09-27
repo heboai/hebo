@@ -63,6 +63,7 @@ export const AgentRepo = (userId: string) => ({
   async getAll(includeBranches: boolean = false) {
     return await resolveOrThrow(
       prisma(userId).agent.findMany({
+        where: {},
         include: agentInclude(includeBranches),
       }),
     );

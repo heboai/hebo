@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, status } from "elysia";
 
 import {
   ConflictError,
@@ -8,18 +8,15 @@ import {
 
 export const repositoryErrors = new Elysia({
   name: "repository-errors",
-}).onError({ as: "global" }, ({ error, set }) => {
+}).onError({ as: "global" }, ({ error }) => {
   if (error instanceof NotFoundError) {
-    set.status = 404;
-    return "Resource not found";
+    return status(404, "Resource not found");
   }
   if (error instanceof ConflictError) {
-    set.status = 409;
-    return "Resource already exists";
+    return status(409, "Resource already exists");
   }
   if (error instanceof DatabaseError) {
-    set.status = 500;
-    return "Unexpected database error";
+    return status(500, "Unexpected database error");
   }
   throw error;
 });

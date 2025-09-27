@@ -17,7 +17,7 @@ CREATE TABLE "public"."branches" (
     "slug" TEXT NOT NULL,
     "agent_slug" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "models" JSONB[],
+    "models" JSONB[] DEFAULT ARRAY[]::JSONB[],
     "created_by" TEXT NOT NULL,
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_by" TEXT NOT NULL,

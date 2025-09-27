@@ -36,6 +36,7 @@ export const handlePrismaError = (error: unknown): never => {
   if (error instanceof NotFoundError) {
     throw error;
   }
+  console.error(error);
   throw new DatabaseError(undefined, error);
 };
 
