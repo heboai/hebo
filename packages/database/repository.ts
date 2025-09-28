@@ -102,8 +102,8 @@ export const AgentRepo = (userId: string) => ({
   },
 });
 
-export const BranchRepo = (userId: string) => ({
-  async getAll(agentSlug: string) {
+export const BranchRepo = (userId: string, agentSlug: string) => ({
+  async getAll() {
     return await resolveOrThrow(
       prisma(userId).branch.findMany({
         where: { agent_slug: agentSlug },
@@ -111,7 +111,7 @@ export const BranchRepo = (userId: string) => ({
     );
   },
 
-  async getBySlug(agentSlug: string, branchSlug: string) {
+  async getBySlug(branchSlug: string) {
     return await resolveOrThrow(
       prisma(userId).branch.findFirst({
         where: {
@@ -123,7 +123,6 @@ export const BranchRepo = (userId: string) => ({
   },
 
   async update(
-    agentSlug: string,
     branchSlug: string,
     name: string | undefined,
     models: any[] | undefined,
@@ -138,7 +137,7 @@ export const BranchRepo = (userId: string) => ({
     );
   },
 
-  async softDelete(agentSlug: string, branchSlug: string) {
+  async softDelete(branchSlug: string) {
     return await resolveOrThrow(
       prisma(userId).branch.update({
         where: {
@@ -149,7 +148,7 @@ export const BranchRepo = (userId: string) => ({
     );
   },
 
-  async copy(agentSlug: string, sourceBranchSlug: string, name: string) {
+  async copy(sourceBranchSlug: string, name: string) {
     const userScoped = prisma(userId);
     const sourceBranch = await resolveOrThrow(
       userScoped.branch.findFirst({

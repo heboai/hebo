@@ -13,7 +13,7 @@ export const branchesModule = new Elysia({
   .get(
     "/",
     async ({ params, userId }) => {
-      return await BranchRepo(userId!).getAll(params.agentSlug);
+      return BranchRepo(userId!, params.agentSlug).getAll();
     },
     {
       params: BranchesModel.AgentPathParam,
@@ -24,8 +24,7 @@ export const branchesModule = new Elysia({
     "/",
     // FUTURE: use Ajv to validate the models fields
     async ({ body, params, set, userId }) => {
-      const branch = await BranchRepo(userId!).copy(
-        params.agentSlug,
+      const branch = BranchRepo(userId!, params.agentSlug).copy(
         body.sourceBranchSlug,
         body.name,
       );
@@ -41,10 +40,7 @@ export const branchesModule = new Elysia({
   .get(
     "/:branchSlug",
     async ({ params, userId }) => {
-      return await BranchRepo(userId!).getBySlug(
-        params.agentSlug,
-        params.branchSlug,
-      );
+      return BranchRepo(userId!, params.agentSlug).getBySlug(params.branchSlug);
     },
     {
       params: BranchesModel.PathParams,
@@ -54,8 +50,7 @@ export const branchesModule = new Elysia({
   .put(
     "/:branchSlug",
     async ({ body, params, userId }) => {
-      return await BranchRepo(userId!).update(
-        params.agentSlug,
+      return BranchRepo(userId!, params.agentSlug).update(
         params.branchSlug,
         body.name,
         body.models,
@@ -70,7 +65,7 @@ export const branchesModule = new Elysia({
   .delete(
     "/:branchSlug",
     async ({ params, set, userId }) => {
-      await BranchRepo(userId!).softDelete(params.agentSlug, params.branchSlug);
+      BranchRepo(userId!, params.agentSlug).softDelete(params.branchSlug);
       set.status = 204;
     },
     {

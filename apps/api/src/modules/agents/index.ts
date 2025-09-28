@@ -16,14 +16,14 @@ export const agentsModule = new Elysia({
   .get(
     "/",
     async ({ userId, expandBranches }) => {
-      return await AgentRepo(userId!).getAll(expandBranches);
+      return AgentRepo(userId!).getAll(expandBranches);
     },
     { response: { 200: AgentsModel.AgentList } },
   )
   .post(
     "/",
     async ({ body, set, userId, expandBranches }) => {
-      const agent = await AgentRepo(userId!).create(
+      const agent = AgentRepo(userId!).create(
         body.name,
         body.defaultModel,
         expandBranches,
@@ -39,10 +39,7 @@ export const agentsModule = new Elysia({
   .get(
     "/:agentSlug",
     async ({ params, userId, expandBranches }) => {
-      return await AgentRepo(userId!).getBySlug(
-        params.agentSlug,
-        expandBranches,
-      );
+      return AgentRepo(userId!).getBySlug(params.agentSlug, expandBranches);
     },
     {
       params: AgentsModel.PathParam,
@@ -52,7 +49,7 @@ export const agentsModule = new Elysia({
   .put(
     "/:agentSlug",
     async ({ body, params, userId, expandBranches }) => {
-      return await AgentRepo(userId!).update(
+      return AgentRepo(userId!).update(
         params.agentSlug,
         body.name,
         expandBranches,
@@ -67,7 +64,7 @@ export const agentsModule = new Elysia({
   .delete(
     "/:agentSlug",
     async ({ params, set, userId }) => {
-      await AgentRepo(userId!).softDelete(params.agentSlug);
+      AgentRepo(userId!).softDelete(params.agentSlug);
       set.status = 204;
     },
     {
