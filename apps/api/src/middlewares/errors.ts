@@ -1,4 +1,4 @@
-import { Elysia, status } from "elysia";
+import { Elysia, ValidationError, status } from "elysia";
 
 import {
   ConflictError,
@@ -6,9 +6,12 @@ import {
   NotFoundError,
 } from "@hebo/database/src/errors";
 
-export const repositoryErrors = new Elysia({
-  name: "repository-errors",
+export const errors = new Elysia({
+  name: "errors",
 }).onError({ as: "global" }, ({ error }) => {
+  if (error instanceof ValidationError) {
+    return status(422, error.customError ?? "Invalid request body");
+  }
   if (error instanceof NotFoundError) {
     return status(404, "Resource not found");
   }
