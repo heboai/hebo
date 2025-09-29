@@ -67,7 +67,9 @@ export const branchesModule = new Elysia({
   .delete(
     "/:branchSlug",
     async ({ params, set, userId }) => {
-      createBranchRepo(userId!, params.agentSlug).softDelete(params.branchSlug);
+      await createBranchRepo(userId!, params.agentSlug).softDelete(
+        params.branchSlug,
+      );
       set.status = 204;
     },
     {

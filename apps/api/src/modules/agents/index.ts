@@ -67,7 +67,7 @@ export const agentsModule = new Elysia({
   .delete(
     "/:agentSlug",
     async ({ params, set, userId }) => {
-      createAgentRepo(userId!).softDelete(params.agentSlug);
+      await createAgentRepo(userId!).softDelete(params.agentSlug);
       set.status = 204;
     },
     {
