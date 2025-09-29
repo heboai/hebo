@@ -120,4 +120,4 @@ server
 .dynamodb/
 
 # prisma client
-**/src/generated
+packages/database/src/generated/
