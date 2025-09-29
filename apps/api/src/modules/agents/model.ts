@@ -12,6 +12,7 @@ const SupportedModels = supportedModels.map(({ name }) => name) as [
   string,
   ...string[],
 ];
+// FUTURE: move to shared-api
 export const SupportedModelEnum = t.UnionEnum(SupportedModels, {
   error() {
     return "Invalid model name";
