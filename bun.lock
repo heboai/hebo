@@ -203,7 +203,6 @@
       "version": "0.0.1",
       "dependencies": {
         "@elysiajs/bearer": "^1.4.1",
-        "elysia": "^1.4.7",
         "jose": "^6.0.12",
         "sst": "^3.17.13",
       },
@@ -213,6 +212,7 @@
       },
       "peerDependencies": {
         "@bogeychan/elysia-logger": "^0.1.10",
+        "elysia": "^1.4.7",
       },
     },
     "packages/shared-data": {
