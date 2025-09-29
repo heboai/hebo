@@ -28,5 +28,8 @@ CREATE TABLE "public"."branches" (
     CONSTRAINT "branches_pkey" PRIMARY KEY ("slug","agent_slug")
 );
 
+-- CreateIndex
+CREATE INDEX "idx_branch_agent_slug" ON "public"."branches"("agent_slug");
+
 -- AddForeignKey
 ALTER TABLE "public"."branches" ADD CONSTRAINT "branches_agent_slug_fkey" FOREIGN KEY ("agent_slug") REFERENCES "public"."agents"("slug") ON DELETE CASCADE ON UPDATE NO ACTION;
