@@ -1,6 +1,6 @@
 import Elysia from "elysia";
 
-import { AgentRepo } from "@hebo/database/repository";
+import { createAgentRepo } from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import { queryParams } from "~api/middlewares/query-params";
@@ -16,14 +16,14 @@ export const agentsModule = new Elysia({
   .get(
     "/",
     async ({ userId, expandBranches }) => {
-      return AgentRepo(userId!).getAll(expandBranches);
+      return createAgentRepo(userId!).getAll(expandBranches);
     },
     { response: { 200: AgentsModel.AgentList } },
   )
   .post(
     "/",
     async ({ body, set, userId, expandBranches }) => {
-      const agent = AgentRepo(userId!).create(
+      const agent = createAgentRepo(userId!).create(
         body.name,
         body.defaultModel,
         expandBranches,
@@ -39,7 +39,10 @@ export const agentsModule = new Elysia({
   .get(
     "/:agentSlug",
     async ({ params, userId, expandBranches }) => {
-      return AgentRepo(userId!).getBySlug(params.agentSlug, expandBranches);
+      return createAgentRepo(userId!).getBySlug(
+        params.agentSlug,
+        expandBranches,
+      );
     },
     {
       params: AgentsModel.PathParam,
@@ -49,7 +52,7 @@ export const agentsModule = new Elysia({
   .put(
     "/:agentSlug",
     async ({ body, params, userId, expandBranches }) => {
-      return AgentRepo(userId!).update(
+      return createAgentRepo(userId!).update(
         params.agentSlug,
         body.name,
         expandBranches,
@@ -64,7 +67,7 @@ export const agentsModule = new Elysia({
   .delete(
     "/:agentSlug",
     async ({ params, set, userId }) => {
-      AgentRepo(userId!).softDelete(params.agentSlug);
+      createAgentRepo(userId!).softDelete(params.agentSlug);
       set.status = 204;
     },
     {

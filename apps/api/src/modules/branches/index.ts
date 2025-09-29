@@ -1,6 +1,6 @@
 import Elysia from "elysia";
 
-import { BranchRepo } from "@hebo/database/repository";
+import { createBranchRepo } from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import * as BranchesModel from "./model";
@@ -13,7 +13,7 @@ export const branchesModule = new Elysia({
   .get(
     "/",
     async ({ params, userId }) => {
-      return BranchRepo(userId!, params.agentSlug).getAll();
+      return createBranchRepo(userId!, params.agentSlug).getAll();
     },
     {
       params: BranchesModel.AgentPathParam,
@@ -24,7 +24,7 @@ export const branchesModule = new Elysia({
     "/",
     // FUTURE: use Ajv to validate the models fields
     async ({ body, params, set, userId }) => {
-      const branch = BranchRepo(userId!, params.agentSlug).copy(
+      const branch = createBranchRepo(userId!, params.agentSlug).copy(
         body.sourceBranchSlug,
         body.name,
       );
@@ -40,7 +40,9 @@ export const branchesModule = new Elysia({
   .get(
     "/:branchSlug",
     async ({ params, userId }) => {
-      return BranchRepo(userId!, params.agentSlug).getBySlug(params.branchSlug);
+      return createBranchRepo(userId!, params.agentSlug).getBySlug(
+        params.branchSlug,
+      );
     },
     {
       params: BranchesModel.PathParams,
@@ -50,7 +52,7 @@ export const branchesModule = new Elysia({
   .put(
     "/:branchSlug",
     async ({ body, params, userId }) => {
-      return BranchRepo(userId!, params.agentSlug).update(
+      return createBranchRepo(userId!, params.agentSlug).update(
         params.branchSlug,
         body.name,
         body.models,
@@ -65,7 +67,7 @@ export const branchesModule = new Elysia({
   .delete(
     "/:branchSlug",
     async ({ params, set, userId }) => {
-      BranchRepo(userId!, params.agentSlug).softDelete(params.branchSlug);
+      createBranchRepo(userId!, params.agentSlug).softDelete(params.branchSlug);
       set.status = 204;
     },
     {
