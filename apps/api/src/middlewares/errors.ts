@@ -6,7 +6,7 @@ import {
   NotFoundError,
 } from "@hebo/database/src/errors";
 
-// FUTYRE: move to shared-api
+// FUTURE: move to shared-api
 export const errors = new Elysia({
   name: "errors",
 }).onError({ as: "global" }, ({ error }) => {
