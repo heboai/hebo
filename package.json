@@ -17,7 +17,7 @@
     "lint": "turbo run lint",
     "lint:deps": "check-dependency-version-consistency .",
     "lint:staged": "eslint --cache --fix",
-    "postinstall": "lefthook install & bun db generate",
+    "postinstall": "lefthook install && bun db generate",
     "predev": "docker start hebo-postgres 2>/dev/null || docker run -d --name hebo-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=local -p 5432:5432 -v \"$(pwd)packages/database/.local-storage/postgres:/var/lib/postgresql/data\" postgres:17.5",
     "postdev": "docker stop hebo-postgres 2>/dev/null || true",
     "test": "turbo run test"
