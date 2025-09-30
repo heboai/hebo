@@ -16,15 +16,25 @@ const _prisma = new PrismaClient({ adapter });
 const prisma = (userId: string) =>
   _prisma.$extends({
     query: {
-      $allOperations({ args, query }) {
-        if ("where" in args) {
-          args.where = {
-            ...args.where,
-            created_by: userId,
-            deleted_at: dbNull,
-          };
-        }
-        return query(args);
+      $allModels: {
+        async $allOperations({ args, query, operation }) {
+          if ("where" in args) {
+            args.where = {
+              ...args.where,
+              created_by: userId,
+              deleted_at: dbNull,
+            };
+          }
+
+          if (operation === "update") {
+            args.data = {
+              ...args.data,
+              updated_by: userId,
+            };
+          }
+
+          return query(args);
+        },
       },
     },
   });
@@ -34,35 +44,31 @@ export const createAgentRepo = (userId: string) => {
 
   return {
     create: async (name: string, defaultModel: string, withBranches = false) =>
-      unwrap(
-        // FUTURE: Apply a fallback strategy with retries with different slugs in case of conflict
-        client.agent.create({
-          data: {
-            name,
-            slug: createSlug(name, true),
-            created_by: userId,
-            updated_by: userId,
-            branches: {
-              create: {
-                name: "Main",
-                slug: "main",
-                created_by: userId,
-                updated_by: userId,
-                models: [{ alias: "default", type: defaultModel }],
-              },
+      // FUTURE: Apply a fallback strategy with retries with different slugs in case of conflict
+      client.agent.create({
+        data: {
+          name,
+          slug: createSlug(name, true),
+          created_by: userId,
+          updated_by: userId,
+          branches: {
+            create: {
+              name: "Main",
+              slug: "main",
+              created_by: userId,
+              updated_by: userId,
+              models: [{ alias: "default", type: defaultModel }],
             },
           },
-          include: agentInclude(withBranches),
-        }),
-      ),
+        },
+        include: agentInclude(withBranches),
+      }),
 
     getAll: async (withBranches = false) =>
-      unwrap(
-        client.agent.findMany({
-          where: {},
-          include: agentInclude(withBranches),
-        }),
-      ),
+      client.agent.findMany({
+        where: {},
+        include: agentInclude(withBranches),
+      }),
 
     getBySlug: async (agentSlug: string, withBranches = false) =>
       unwrap(
@@ -77,21 +83,17 @@ export const createAgentRepo = (userId: string) => {
       name: string | undefined,
       withBranches = false,
     ) =>
-      unwrap(
-        client.agent.update({
-          where: { slug: agentSlug },
-          data: { name, updated_by: userId },
-          include: agentInclude(withBranches),
-        }),
-      ),
+      client.agent.update({
+        where: { slug: agentSlug },
+        data: { name },
+        include: agentInclude(withBranches),
+      }),
 
     softDelete: async (agentSlug: string) =>
-      unwrap(
-        client.agent.update({
-          where: { slug: agentSlug },
-          data: { deleted_by: userId, deleted_at: new Date() },
-        }),
-      ),
+      client.agent.update({
+        where: { slug: agentSlug },
+        data: { deleted_by: userId, deleted_at: new Date() },
+      }),
   };
 };
 
@@ -107,7 +109,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
 
   return {
     getAll: async () =>
-      unwrap(client.branch.findMany({ where: { agent_slug: agentSlug } })),
+      client.branch.findMany({ where: { agent_slug: agentSlug } }),
 
     getBySlug: async (branchSlug: string) => findBranchBySlug(branchSlug),
 
@@ -117,40 +119,34 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
       models: any[] | undefined,
     ) => {
       const branch = await findBranchBySlug(branchSlug);
-      return unwrap(
-        client.branch.update({
-          where: { id: branch.id },
-          data: { name, models, updated_by: userId },
-        }),
-      );
+      return client.branch.update({
+        where: { id: branch.id },
+        data: { name, models },
+      });
     },
 
     softDelete: async (branchSlug: string) => {
       const branch = await findBranchBySlug(branchSlug);
-      return unwrap(
-        client.branch.update({
-          where: { id: branch.id },
-          data: { deleted_by: userId, deleted_at: new Date() },
-        }),
-      );
+      return client.branch.update({
+        where: { id: branch.id },
+        data: { deleted_by: userId, deleted_at: new Date() },
+      });
     },
 
     copy: async (sourceBranchSlug: string, name: string) => {
       const sourceBranch = await findBranchBySlug(sourceBranchSlug);
       const slug = createSlug(name);
-      return unwrap(
-        client.branch.create({
-          data: {
-            agent_slug: agentSlug,
-            name,
-            slug,
-            // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
-            models: sourceBranch.models as Prisma.InputJsonValue[],
-            created_by: userId,
-            updated_by: userId,
-          },
-        }),
-      );
+      return client.branch.create({
+        data: {
+          agent_slug: agentSlug,
+          name,
+          slug,
+          // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
+          models: sourceBranch.models as Prisma.InputJsonValue[],
+          created_by: userId,
+          updated_by: userId,
+        },
+      });
     },
   };
 };
