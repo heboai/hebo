@@ -22,7 +22,6 @@ export const branchesModule = new Elysia({
   )
   .post(
     "/",
-    // FUTURE: use Ajv to validate the models fields
     async ({ body, params, set, userId }) => {
       const branch = createBranchRepo(userId!, params.agentSlug).copy(
         body.sourceBranchSlug,
@@ -52,6 +51,7 @@ export const branchesModule = new Elysia({
   .put(
     "/:branchSlug",
     async ({ body, params, userId }) => {
+      // FUTURE: use Ajv to validate the models fields
       return createBranchRepo(userId!, params.agentSlug).update(
         params.branchSlug,
         body.name,
