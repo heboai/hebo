@@ -30,8 +30,8 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
   link: [heboDatabase],
   copyFiles: [
     {
-      from: "packages/db/migrations",
-      to: "./migrations",
+      from: "packages/database",
+      to: ".",
     },
   ],
   environment: {
