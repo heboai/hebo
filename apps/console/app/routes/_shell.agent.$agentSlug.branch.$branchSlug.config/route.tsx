@@ -1,66 +1,52 @@
 "use client";
 
+import { parseWithValibot } from "@conform-to/valibot";
 import { api } from "~console/lib/service";
+import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
-import ModelConfigurationForm from "./form";
-
-type Model = { alias: string; type: string };
+import ModelConfigurationForm, { ModelConfigSchema } from "./form";
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const intent = String(formData.get("intent") || "");
 
   // Only proceed when a Save button is clicked
-  if (!intent.startsWith("save")) {
-    return null;
+  if (!intent.startsWith("save:")) {
+    return undefined;
   }
 
-  // Intent format: save:index
-  const [, indexStr] = intent.split(":");
-  const index = Number.isFinite(Number(indexStr)) ? Number(indexStr) : -1;
+  // Parse the form data with Conform
+  const submission = parseWithValibot(formData, { schema: ModelConfigSchema });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
 
   try {
-    const currentModelsRaw = String(formData.get("currentModels") || "[]");
-    const currentModels: Model[] = JSON.parse(currentModelsRaw);
+    const { models } = submission.value;
 
-    // Read just the submitted item's fields
-    const alias = String(formData.get(`models[${index}].alias`) || "").trim();
-    const type = String(formData.get(`models[${index}].type`) || "").trim();
-
-    if (!alias || !type) {
-      return { status: "error", error: { "": ["Alias and type are required"] } };
-    }
-
-    const nextModels: Model[] = Array.isArray(currentModels) ? [...currentModels] : [];
-
-    if (index >= 0 && index < nextModels.length) {
-      nextModels[index] = { alias, type };
-    } else if (index >= nextModels.length && index >= 0) {
-      // New item appended
-      nextModels.push({ alias, type });
-    }
-
+    // Send the entire models array to the API
     const { error: putError } = await api
       .agents({ agentSlug: params.agentSlug! })
       .branches({ branchSlug: params.branchSlug! })
-      .put({ models: nextModels });
+      .put({ models });
 
     if (putError) {
-      return { status: "error", error: { "": [String(putError.value)] } };
+      return submission.reply({
+        formErrors: [parseError(putError).message],
+      });
     }
 
-    return { success: true, message: "Model updated" };
+    return { success: true, message: "Model updated successfully" };
   } catch (error) {
-    console.error("Error updating model config:", error);
-    return {
-      status: "error",
-      error: { "": ["An unexpected error occurred while updating model configuration"] },
-    };
+    return submission.reply({
+      formErrors: [parseError(error).message],
+    });
   }
 }
 
-export default function AgentBranchConfig({ loaderData, actionData }: Route.ComponentProps) {
+export default function AgentBranchConfig() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <ModelConfigurationForm />
