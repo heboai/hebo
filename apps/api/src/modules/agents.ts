@@ -37,7 +37,6 @@ const Agent = t.Composite([
 ]);
 
 export const agentsModule = new Elysia({
-  name: "agents-module",
   prefix: "/agents",
 })
   .use(authService)

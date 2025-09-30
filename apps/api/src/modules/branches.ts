@@ -11,7 +11,6 @@ import { authService } from "@hebo/shared-api/auth/auth-service";
 import { SupportedModelEnum } from "~api/modules/agents";
 
 export const branchesModule = new Elysia({
-  name: "branches-module",
   prefix: "/:agentSlug/branches",
 })
   .use(authService)
