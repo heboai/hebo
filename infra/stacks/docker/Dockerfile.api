@@ -18,6 +18,7 @@ COPY --from=pruner /repo/out/json/ ./
 # FUTURE: remove this once turbo prune is more stable
 RUN bun install --lockfile-only
 RUN bun install --frozen-lockfile --production --ignore-scripts
+RUN bun db generate
 
 COPY --from=pruner /repo/out/full/ ./
 

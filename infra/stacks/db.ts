@@ -25,7 +25,7 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
 });
 
 const migrator = new sst.aws.Function("DatabaseMigrator", {
-  handler: "packages/db/lambda/migrator.handler",
+  handler: "packages/database/lambda/migrator.handler",
   vpc: heboVpc,
   link: [heboDatabase],
   copyFiles: [
@@ -36,7 +36,6 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
   ],
   environment: {
     NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
-    IS_REMOTE: "true",
   },
 });
 
