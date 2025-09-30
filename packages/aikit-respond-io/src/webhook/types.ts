@@ -61,6 +61,37 @@ interface BaseChannel {
 
 // --- Event-Specific Payload Interfaces ---
 
+// --- Message Content Types ---
+
+/**
+ * Represents a text message.
+ */
+export interface TextContent {
+  type: "text";
+  text: string;
+}
+
+/**
+ * Represents a message with an attachment.
+ */
+export interface AttachmentContent {
+  type: "attachment";
+  attachment: {
+    type: "image" | "file" | "video" | "audio";
+    url: string;
+    isPending: boolean;
+    fileName: string;
+    ext: string;
+    size: string;
+    mime: string;
+  };
+}
+
+/**
+ * A union of all possible message content types.
+ */
+export type MessageContent = TextContent | AttachmentContent;
+
 export interface MessageReceivedPayload {
   event_type: "message.received";
   timestamp: number;
@@ -70,11 +101,7 @@ export interface MessageReceivedPayload {
     channelMessageId: number;
     contactId: number;
     traffic: "incoming";
-    message: {
-      type: string; // 'text', 'image', etc.
-      text?: string;
-      // FUTURE: Other message type fields can be added here
-    };
+    message: MessageContent;
     timestamp: number;
   };
 }
@@ -89,10 +116,7 @@ export interface MessageSentPayload {
     lastMessageTime: number;
     lastIncomingMessageTime: number;
   };
-  message: {
-    type: string;
-    text?: string;
-  };
+  message: TextContent;
   user: BaseUser;
 }
 

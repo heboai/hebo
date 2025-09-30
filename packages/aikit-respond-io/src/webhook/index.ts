@@ -1,4 +1,4 @@
-import { WebhookError } from "./errors";
+import { WebhookError } from "./errors.js";
 import {
   WebhookEvents,
   ErrorHandler,
@@ -6,8 +6,8 @@ import {
   WebhookConfig,
   EventPayloadMap,
   WebhookEventConfig,
-} from "./types";
-import { verifySignature } from "./utils";
+} from "./types.js";
+import { verifySignature } from "./utils.js";
 
 /**
  * A builder and handler for webhooks.
@@ -16,7 +16,7 @@ export class Webhook extends EventTarget {
   private readonly eventConfigs: Partial<
     Record<WebhookEvents, WebhookEventConfig>
   >;
-  private errorHandler: ErrorHandler = (err) => {
+  private errorHandler: ErrorHandler = (err: any) => {
     throw err;
   };
 
@@ -39,7 +39,7 @@ export class Webhook extends EventTarget {
       try {
         await this.process(request);
         return new Response("OK", { status: 200 });
-      } catch (error) {
+      } catch (error: any) {
         if (error instanceof WebhookError) {
           return new Response(error.message, { status: 400 });
         }
@@ -117,7 +117,7 @@ export class Webhook extends EventTarget {
       verifySignature(body, signature, signingKey);
 
       this.dispatchEvent(new CustomEvent(eventType, { detail: payload }));
-    } catch (error) {
+    } catch (error: any) {
       await this.errorHandler(error as Error);
       throw error;
     }
@@ -133,5 +133,5 @@ export function createWebhookHandler(config: WebhookConfig): Webhook {
   return new Webhook(config);
 }
 
-export * from "./types";
-export * from "./errors";
+export * from "./types.js";
+export * from "./errors.js";

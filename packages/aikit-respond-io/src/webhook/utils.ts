@@ -1,6 +1,6 @@
 import * as crypto from "node:crypto";
 
-import { SignatureVerificationError } from "./errors";
+import { SignatureVerificationError } from "./errors.js";
 
 export function verifySignature(
   body: string,

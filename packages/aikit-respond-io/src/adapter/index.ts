@@ -2,11 +2,14 @@ import {
   createRespondIoClient,
   RespondIoClient,
   RespondIoClientConfig,
-} from "../client";
-import { Webhook, WebhookConfig } from "../webhook";
-import { WebhookEvents, MessageReceivedPayload } from "../webhook/types";
+} from "../client/index.js";
+import { Webhook, WebhookConfig } from "../webhook/index.js";
+import { WebhookEvents, MessageReceivedPayload } from "../webhook/types.js";
 
-import type { ContactIdentifier, SendMessageResponse } from "../client/types";
+import type {
+  ContactIdentifier,
+  SendMessageResponse,
+} from "../client/types.js";
 
 /**
  * Configuration for the adapter.

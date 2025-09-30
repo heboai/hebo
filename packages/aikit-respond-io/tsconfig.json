@@ -5,7 +5,9 @@
     "rootDir": "./src",
     "declaration": true,
     "types": ["bun-types"],
-    "noEmit": false
+    "noEmit": false,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.d.ts"]
