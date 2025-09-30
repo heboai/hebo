@@ -1,6 +1,6 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
-import { swagger } from "@elysiajs/swagger";
+import { openapi, fromTypes } from "@elysiajs/openapi";
 import Elysia from "elysia";
 
 import { authService } from "@hebo/shared-api/auth/auth-service";
@@ -20,7 +20,8 @@ const createApi = () =>
     .get("/", () => "🐵 Hebo API says hello!")
     .use(cors(corsConfig))
     .use(
-      swagger({
+      openapi({
+        references: fromTypes("src/index.ts"),
         // FUTURE: document security schemes
         documentation: {
           info: {
