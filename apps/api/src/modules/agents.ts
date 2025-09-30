@@ -1,9 +1,40 @@
-import Elysia from "elysia";
+import { Elysia, t } from "elysia";
 
 import { createAgentRepo } from "@hebo/database/repository";
+import {
+  AgentInputCreate,
+  AgentInputUpdate,
+  AgentPlain,
+  AgentRelations,
+} from "@hebo/database/src/generated/prismabox/Agent";
 import { authService } from "@hebo/shared-api/auth/auth-service";
+import supportedModels from "@hebo/shared-data/json/supported-models";
 
-import * as AgentsModel from "./model";
+const SupportedModels = supportedModels.map(({ name }) => name) as [
+  string,
+  ...string[],
+];
+// FUTURE: move to shared-api
+export const SupportedModelEnum = t.UnionEnum(SupportedModels, {
+  error() {
+    return "Invalid model name";
+  },
+});
+
+const AgentRelationItemProperties =
+  AgentRelations.properties.branches.items.properties;
+const Branch = t.Object(
+  {
+    slug: AgentRelationItemProperties.slug,
+    name: t.Optional(AgentRelationItemProperties.name),
+    models: t.Optional(AgentRelationItemProperties.models),
+  },
+  { additionalProperties: false },
+);
+const Agent = t.Composite([
+  AgentPlain,
+  t.Object({ branches: t.Array(Branch) }),
+]);
 
 export const agentsModule = new Elysia({
   name: "agents-module",
@@ -18,7 +49,7 @@ export const agentsModule = new Elysia({
     async ({ userId, expandBranches }) => {
       return createAgentRepo(userId!).getAll(expandBranches);
     },
-    { response: { 200: AgentsModel.AgentList } },
+    { response: { 200: t.Array(Agent) } },
   )
   .post(
     "/",
@@ -32,8 +63,13 @@ export const agentsModule = new Elysia({
       return agent;
     },
     {
-      body: AgentsModel.CreateBody,
-      response: { 201: AgentsModel.Agent },
+      body: t.Composite([
+        AgentInputCreate,
+        t.Object({
+          defaultModel: SupportedModelEnum,
+        }),
+      ]),
+      response: { 201: Agent },
     },
   )
   .get(
@@ -45,8 +81,7 @@ export const agentsModule = new Elysia({
       );
     },
     {
-      params: AgentsModel.PathParam,
-      response: { 200: AgentsModel.Agent },
+      response: { 200: Agent },
     },
   )
   .put(
@@ -59,9 +94,8 @@ export const agentsModule = new Elysia({
       );
     },
     {
-      params: AgentsModel.PathParam,
-      body: AgentsModel.UpdateBody,
-      response: { 200: AgentsModel.Agent },
+      body: AgentInputUpdate,
+      response: { 200: Agent },
     },
   )
   .delete(
@@ -71,7 +105,6 @@ export const agentsModule = new Elysia({
       set.status = 204;
     },
     {
-      params: AgentsModel.PathParam,
-      response: { 204: AgentsModel.NoContent },
+      response: { 204: t.Void() },
     },
   );

@@ -1,9 +1,14 @@
-import Elysia from "elysia";
+import { Elysia, t } from "elysia";
 
 import { createBranchRepo } from "@hebo/database/repository";
+import {
+  Branch,
+  BranchInputCreate,
+  BranchInputUpdate,
+} from "@hebo/database/src/generated/prismabox/Branch";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
-import * as BranchesModel from "./model";
+import { SupportedModelEnum } from "~api/modules/agents";
 
 export const branchesModule = new Elysia({
   name: "branches-module",
@@ -16,8 +21,7 @@ export const branchesModule = new Elysia({
       return createBranchRepo(userId!, params.agentSlug).getAll();
     },
     {
-      params: BranchesModel.AgentPathParam,
-      response: { 200: BranchesModel.BranchList },
+      response: { 200: t.Array(Branch) },
     },
   )
   .post(
@@ -31,9 +35,11 @@ export const branchesModule = new Elysia({
       return branch;
     },
     {
-      params: BranchesModel.AgentPathParam,
-      body: BranchesModel.CopyBody,
-      response: { 201: BranchesModel.Branch },
+      body: t.Object({
+        name: BranchInputCreate.properties.name,
+        sourceBranchSlug: t.String(),
+      }),
+      response: { 201: Branch },
     },
   )
   .get(
@@ -44,8 +50,7 @@ export const branchesModule = new Elysia({
       );
     },
     {
-      params: BranchesModel.PathParams,
-      response: { 200: BranchesModel.Branch },
+      response: { 200: Branch },
     },
   )
   .put(
@@ -59,9 +64,18 @@ export const branchesModule = new Elysia({
       );
     },
     {
-      params: BranchesModel.PathParams,
-      body: BranchesModel.UpdateBody,
-      response: { 200: BranchesModel.Branch },
+      body: t.Object({
+        name: BranchInputUpdate.properties.name,
+        models: t.Optional(
+          t.Array(
+            t.Object(
+              { type: SupportedModelEnum },
+              { additionalProperties: true },
+            ),
+          ),
+        ),
+      }),
+      response: { 200: Branch },
     },
   )
   .delete(
@@ -73,7 +87,6 @@ export const branchesModule = new Elysia({
       set.status = 204;
     },
     {
-      params: BranchesModel.PathParams,
-      response: { 204: BranchesModel.NoContent },
+      response: { 204: t.Void() },
     },
   );
