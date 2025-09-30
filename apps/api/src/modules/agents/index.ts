@@ -3,8 +3,6 @@ import Elysia from "elysia";
 import { createAgentRepo } from "@hebo/database/repository";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
-import { queryParams } from "~api/middlewares/query-params";
-
 import * as AgentsModel from "./model";
 
 export const agentsModule = new Elysia({
@@ -12,7 +10,9 @@ export const agentsModule = new Elysia({
   prefix: "/agents",
 })
   .use(authService)
-  .use(queryParams)
+  .derive(({ query }) => ({
+    expandBranches: query.expand === "branches",
+  }))
   .get(
     "/",
     async ({ userId, expandBranches }) => {
