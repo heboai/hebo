@@ -98,35 +98,27 @@ export const createAgentRepo = (userId: string) => {
 export const createBranchRepo = (userId: string, agentSlug: string) => {
   const client = prisma(userId);
 
+  const findBranchBySlug = async (branchSlug: string) =>
+    resolveOrThrow(
+      client.branch.findFirst({
+        where: { agent_slug: agentSlug, slug: branchSlug },
+      }),
+    );
+
   return {
     getAll: async () =>
       resolveOrThrow(
         client.branch.findMany({ where: { agent_slug: agentSlug } }),
       ),
 
-    getBySlug: async (branchSlug: string) =>
-      resolveOrThrow(
-        client.branch.findFirst({
-          where: {
-            agent_slug: agentSlug,
-            slug: branchSlug,
-          },
-        }),
-      ),
+    getBySlug: async (branchSlug: string) => findBranchBySlug(branchSlug),
 
     update: async (
       branchSlug: string,
       name: string | undefined,
       models: any[] | undefined,
     ) => {
-      const branch = await resolveOrThrow(
-        client.branch.findFirst({
-          where: {
-            agent_slug: agentSlug,
-            slug: branchSlug,
-          },
-        }),
-      );
+      const branch = await findBranchBySlug(branchSlug);
 
       return resolveOrThrow(
         client.branch.update({
@@ -137,14 +129,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
     },
 
     softDelete: async (branchSlug: string) => {
-      const branch = await resolveOrThrow(
-        client.branch.findFirst({
-          where: {
-            agent_slug: agentSlug,
-            slug: branchSlug,
-          },
-        }),
-      );
+      const branch = await findBranchBySlug(branchSlug);
 
       return resolveOrThrow(
         client.branch.update({
@@ -155,14 +140,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
     },
 
     copy: async (sourceBranchSlug: string, name: string) => {
-      const sourceBranch = await resolveOrThrow(
-        client.branch.findFirst({
-          where: {
-            agent_slug: agentSlug,
-            slug: sourceBranchSlug,
-          },
-        }),
-      );
+      const sourceBranch = await findBranchBySlug(sourceBranchSlug);
 
       const slug = createSlug(name);
 
