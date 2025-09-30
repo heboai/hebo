@@ -118,25 +118,41 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
       branchSlug: string,
       name: string | undefined,
       models: any[] | undefined,
-    ) =>
-      resolveOrThrow(
-        client.branch.update({
+    ) => {
+      const branch = await resolveOrThrow(
+        client.branch.findFirst({
           where: {
-            slug_agent_slug: { slug: branchSlug, agent_slug: agentSlug },
+            agent_slug: agentSlug,
+            slug: branchSlug,
           },
+        }),
+      );
+
+      return resolveOrThrow(
+        client.branch.update({
+          where: { id: branch.id },
           data: { name, models, updated_by: userId },
         }),
-      ),
+      );
+    },
 
-    softDelete: async (branchSlug: string) =>
-      resolveOrThrow(
-        client.branch.update({
+    softDelete: async (branchSlug: string) => {
+      const branch = await resolveOrThrow(
+        client.branch.findFirst({
           where: {
-            slug_agent_slug: { slug: branchSlug, agent_slug: agentSlug },
+            agent_slug: agentSlug,
+            slug: branchSlug,
           },
+        }),
+      );
+
+      return resolveOrThrow(
+        client.branch.update({
+          where: { id: branch.id },
           data: { deleted_by: userId, deleted_at: new Date() },
         }),
-      ),
+      );
+    },
 
     copy: async (sourceBranchSlug: string, name: string) => {
       const sourceBranch = await resolveOrThrow(

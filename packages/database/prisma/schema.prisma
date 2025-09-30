@@ -43,6 +43,8 @@ model Agent {
 }
 
 model Branch {
+  /// @prismabox.hide
+  id         Int       @id @default(autoincrement())
   /// @prismabox.input.hide
   slug       String
   /// @prismabox.hide
@@ -64,7 +66,7 @@ model Branch {
   /// @prismabox.hide
   agents     Agent     @relation(fields: [agent_slug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([slug, agent_slug], map: "branches_pkey")
+  @@index([slug, agent_slug], map: "idx_branch_slug_agent_slug")
   @@index([agent_slug], map: "idx_branch_agent_slug")
   @@map("branches")
 }
