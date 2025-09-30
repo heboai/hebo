@@ -1,7 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 
 import { connectionString } from "./prisma.config";
-import { resolveOrThrow } from "./src/errors";
+import { unwrap } from "./src/errors";
 import { PrismaClient, type Prisma } from "./src/generated/prisma/client";
 import { createSlug } from "./src/utils/create-slug";
 
@@ -34,7 +34,7 @@ export const createAgentRepo = (userId: string) => {
 
   return {
     create: async (name: string, defaultModel: string, withBranches = false) =>
-      resolveOrThrow(
+      unwrap(
         // FUTURE: Apply a fallback strategy with retries with different slugs in case of conflict
         client.agent.create({
           data: {
@@ -57,7 +57,7 @@ export const createAgentRepo = (userId: string) => {
       ),
 
     getAll: async (withBranches = false) =>
-      resolveOrThrow(
+      unwrap(
         client.agent.findMany({
           where: {},
           include: agentInclude(withBranches),
@@ -65,7 +65,7 @@ export const createAgentRepo = (userId: string) => {
       ),
 
     getBySlug: async (agentSlug: string, withBranches = false) =>
-      resolveOrThrow(
+      unwrap(
         client.agent.findFirst({
           where: { slug: agentSlug },
           include: agentInclude(withBranches),
@@ -77,7 +77,7 @@ export const createAgentRepo = (userId: string) => {
       name: string | undefined,
       withBranches = false,
     ) =>
-      resolveOrThrow(
+      unwrap(
         client.agent.update({
           where: { slug: agentSlug },
           data: { name, updated_by: userId },
@@ -86,7 +86,7 @@ export const createAgentRepo = (userId: string) => {
       ),
 
     softDelete: async (agentSlug: string) =>
-      resolveOrThrow(
+      unwrap(
         client.agent.update({
           where: { slug: agentSlug },
           data: { deleted_by: userId, deleted_at: new Date() },
@@ -99,7 +99,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
   const client = prisma(userId);
 
   const findBranchBySlug = async (branchSlug: string) =>
-    resolveOrThrow(
+    unwrap(
       client.branch.findFirst({
         where: { agent_slug: agentSlug, slug: branchSlug },
       }),
@@ -107,9 +107,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
 
   return {
     getAll: async () =>
-      resolveOrThrow(
-        client.branch.findMany({ where: { agent_slug: agentSlug } }),
-      ),
+      unwrap(client.branch.findMany({ where: { agent_slug: agentSlug } })),
 
     getBySlug: async (branchSlug: string) => findBranchBySlug(branchSlug),
 
@@ -119,7 +117,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
       models: any[] | undefined,
     ) => {
       const branch = await findBranchBySlug(branchSlug);
-      return resolveOrThrow(
+      return unwrap(
         client.branch.update({
           where: { id: branch.id },
           data: { name, models, updated_by: userId },
@@ -129,7 +127,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
 
     softDelete: async (branchSlug: string) => {
       const branch = await findBranchBySlug(branchSlug);
-      return resolveOrThrow(
+      return unwrap(
         client.branch.update({
           where: { id: branch.id },
           data: { deleted_by: userId, deleted_at: new Date() },
@@ -140,7 +138,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
     copy: async (sourceBranchSlug: string, name: string) => {
       const sourceBranch = await findBranchBySlug(sourceBranchSlug);
       const slug = createSlug(name);
-      return resolveOrThrow(
+      return unwrap(
         client.branch.create({
           data: {
             agent_slug: agentSlug,
