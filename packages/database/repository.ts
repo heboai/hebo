@@ -119,7 +119,6 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
       models: any[] | undefined,
     ) => {
       const branch = await findBranchBySlug(branchSlug);
-
       return resolveOrThrow(
         client.branch.update({
           where: { id: branch.id },
@@ -130,7 +129,6 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
 
     softDelete: async (branchSlug: string) => {
       const branch = await findBranchBySlug(branchSlug);
-
       return resolveOrThrow(
         client.branch.update({
           where: { id: branch.id },
@@ -141,9 +139,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
 
     copy: async (sourceBranchSlug: string, name: string) => {
       const sourceBranch = await findBranchBySlug(sourceBranchSlug);
-
       const slug = createSlug(name);
-
       return resolveOrThrow(
         client.branch.create({
           data: {
