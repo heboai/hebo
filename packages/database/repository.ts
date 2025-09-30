@@ -122,7 +122,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
       resolveOrThrow(
         client.branch.update({
           where: {
-            branch_agent_slug: { slug: branchSlug, agent_slug: agentSlug },
+            slug_agent_slug: { slug: branchSlug, agent_slug: agentSlug },
           },
           data: { name, models, updated_by: userId },
         }),
@@ -132,7 +132,7 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
       resolveOrThrow(
         client.branch.update({
           where: {
-            branch_agent_slug: { slug: branchSlug, agent_slug: agentSlug },
+            slug_agent_slug: { slug: branchSlug, agent_slug: agentSlug },
           },
           data: { deleted_by: userId, deleted_at: new Date() },
         }),
