@@ -64,7 +64,7 @@ model Branch {
   /// @prismabox.hide
   agents     Agent     @relation(fields: [agent_slug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id(name: "branch_agent_slug", [slug, agent_slug])
-  @@index([agent_slug], name: "idx_branch_agent_slug")
+  @@id([slug, agent_slug], map: "branches_pkey")
+  @@index([agent_slug], map: "idx_branch_agent_slug")
   @@map("branches")
 }
