@@ -87,14 +87,6 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
     setOpenMap({});
   };
 
-  const toggleOpen = (index: number) => {
-    setOpenMap((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
-
-  const closeItem = (index: number) => {
-    setOpenMap((prev) => ({ ...prev, [index]: false }));
-  };
-
   return (
     <div className="absolute inset-0 flex justify-center">
       <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none px-4 sm:px-6 md:px-0 p-4">
@@ -135,7 +127,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                   >
                     <Collapsible 
                       open={isOpen} 
-                      onOpenChange={() => toggleOpen(index)}
+                      onOpenChange={() => setOpenMap((prev) => ({ ...prev, [index]: !prev[index] }))}
                     >
                       <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center mb-2">
                         <div className="min-w-0 flex items-center gap-2">
@@ -216,7 +208,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                                 <Button
                                   type="button"
                                   variant="outline"
-                                  onClick={() => closeItem(index)}
+                                  onClick={() => setOpenMap((prev) => ({ ...prev, [index]: false }))}
                                 >
                                   Cancel
                                 </Button>
