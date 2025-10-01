@@ -1,6 +1,7 @@
 "use client";
 
 import { parseWithValibot } from "@conform-to/valibot";
+import { useRouteLoaderData, useParams } from "react-router";
 import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
@@ -47,9 +48,19 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 }
 
 export default function AgentBranchConfig() {
+  const { agent } = useRouteLoaderData<{
+    agent: { branches: Array<{ models: Array<{ alias: string; type: string }> }> };
+  }>("routes/_shell.agent.$agentSlug")!;
+  
+  const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
+
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <ModelConfigurationForm />
+      <ModelConfigurationForm 
+        agent={agent} 
+        agentSlug={agentSlug!} 
+        branchSlug={branchSlug!} 
+      />
     </div>
   );
 }
