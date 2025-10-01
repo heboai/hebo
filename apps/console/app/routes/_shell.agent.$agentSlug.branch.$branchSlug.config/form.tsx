@@ -60,14 +60,8 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
 
   // Use Conform as the single source of truth
   const [form, fields] = useForm<ModelConfigFormValues>({
-    constraint: getValibotConstraint(ModelConfigSchema),
     defaultValue: { models: activeBranch.models },
-    onValidate({ formData }) {
-      return parseWithValibot(formData, { schema: ModelConfigSchema });
-    },
     lastResult: actionData,
-    shouldValidate: "onBlur",
-    shouldRevalidate: "onInput",
   });
 
   // Get the list of model fields from Conform
