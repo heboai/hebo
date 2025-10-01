@@ -7,7 +7,7 @@
       "env": ["NODE_ENV", "VITE_"],
       "outputs": [
         "dist/**",
-        ".next/**",
+        ".astro/**",
         "out/**",
         "build/**",
         ".build-complete"
