@@ -68,15 +68,12 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   const modelsList = fields.models.getFieldList();
 
   const handleAddModel = () => {
-    const currentLength = modelsList.length;
+    const newIndex = modelsList.length;
     form.insert({
       name: fields.models.name,
       defaultValue: { alias: "", type: "" },
     });
-    // Open the newly added item
-    setTimeout(() => {
-      setOpenIndex(currentLength);
-    }, 0);
+    setOpenIndex(newIndex);
   };
 
   const handleRemoveModel = (index: number) => {
