@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionData, useNavigation, useParams, useRouteLoaderData } from "react-router";
+import { useActionData, useNavigation, useParams } from "react-router";
 import { useForm, getFormProps, getInputProps } from "@conform-to/react";
 import { parseWithValibot, getValibotConstraint } from "@conform-to/valibot";
 import { object, array, string, nonEmpty, pipe, trim, type InferOutput } from "valibot";
@@ -36,11 +36,15 @@ const getModelDisplayName = (modelName: string): string => {
   return model?.displayName || modelName;
 };
 
-export default function ModelConfigurationForm() {
-  const { agent } = useRouteLoaderData<{
-    agent: { branches: Array<{ models: Array<{ alias: string; type: string }> }> };
-  }>("routes/_shell.agent.$agentSlug")!;
-  
+interface ModelConfigurationFormProps {
+  agent: { 
+    branches: Array<{ 
+      models: Array<{ alias: string; type: string }> 
+    }> 
+  };
+}
+
+export default function ModelConfigurationForm({ agent }: ModelConfigurationFormProps) {
   const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
   const activeBranch = agent.branches[0];
 
