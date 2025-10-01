@@ -7,7 +7,6 @@ import { Prisma } from "@hebo/database/src/generated/prisma/client";
 export const errors = new Elysia({
   name: "errors",
 }).onError({ as: "global" }, ({ error }) => {
-  console.log("error", error);
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === "P2002") {
       return status(409, "Resource already exists");
@@ -15,7 +14,6 @@ export const errors = new Elysia({
     if (error.code === "P2025") {
       return status(404, "Resource not found");
     }
-    return status(500, "Unexpected database error");
   }
   if (
     error instanceof NotFoundError ||
