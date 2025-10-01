@@ -108,10 +108,9 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
           {modelsList.length > 0 && (
             <div className="w-full border border-border rounded-lg overflow-hidden mb-4">
               {modelsList.map((modelField, index) => {
-                // Get current values for display (prefer current value, fallback to initial)
-                const currentAlias = String((modelField.getFieldset().alias.value ?? modelField.getFieldset().alias.initialValue));
-                const currentType = String((modelField.getFieldset().type.value ?? modelField.getFieldset().type.initialValue));
-                const isDefault = currentAlias === "default";
+                const aliasField = modelField.getFieldset().alias;
+                const typeField = modelField.getFieldset().type;
+                const isDefault = aliasField.value === "default";
 
                 return (
                   <div
@@ -128,17 +127,17 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                       <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center mb-2">
                         <div className="min-w-0 flex items-center gap-2">
                           <p className="font-semibold text-sm truncate">
-                            {agentSlug}/{branchSlug}/{currentAlias || 'new'}
+                            {agentSlug}/{branchSlug}/{aliasField.value || 'new'}
                           </p>
-                          {currentAlias && (
+                          {aliasField.value && (
                             <CopyToClipboardButton
-                              textToCopy={`${agentSlug}/${branchSlug}/${currentAlias}`}
+                              textToCopy={`${agentSlug}/${branchSlug}/${aliasField.value}`}
                               className="shrink-0"
                             />
                           )}
                         </div>
                         <div className="text-left">
-                          <p className="text-medium">{currentType ? getModelDisplayName(currentType) : "—"}</p>
+                          <p className="text-medium">{typeField.value ? getModelDisplayName(typeField.value) : "—"}</p>
                         </div>
                         <div className="flex gap-1 items-center">
                           <Split/>
