@@ -32,7 +32,6 @@ export const ModelConfigSchema = object({
 export type ModelConfigFormValues = InferOutput<typeof ModelConfigSchema>;
 
 const getModelDisplayName = (modelName: string): string => {
-  if (modelName === "custom") return "Custom Model";
   const model = supportedModels.find((m) => m.name === modelName);
   return model?.displayName || modelName;
 };
