@@ -1,6 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 
-import { connectionString } from "./prisma.config";
+import { connectionString } from "./config";
 import { unwrap } from "./src/errors";
 import { PrismaClient, type Prisma } from "./src/generated/prisma/client";
 import { createSlug } from "./src/utils/create-slug";

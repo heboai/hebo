@@ -8,7 +8,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile=dist/server",
+    "build": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile dist/server",
     "clean": "git clean -fdx -e '.env*' .",
     "dev": "bun run --watch src/index.ts | pino-pretty",
     "lint": "eslint .",

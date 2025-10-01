@@ -1,4 +1,3 @@
-import { defineConfig } from "prisma/config";
 import { Resource } from "sst";
 
 export const connectionString = (() => {
@@ -12,7 +11,3 @@ export const connectionString = (() => {
 })();
 
 process.env.DATABASE_URL = connectionString;
-
-export default defineConfig({
-  schema: "./prisma/schema.prisma",
-});

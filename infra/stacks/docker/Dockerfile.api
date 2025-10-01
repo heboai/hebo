@@ -17,13 +17,13 @@ WORKDIR /repo
 COPY --from=pruner /repo/out/json/ ./
 # FUTURE: remove this once turbo prune is more stable
 RUN bun install --lockfile-only
-RUN bun install --frozen-lockfile --production --ignore-scripts
+RUN bun install --frozen-lockfile --ignore-scripts
+
+COPY --from=pruner /repo/out/full/packages/database/prisma ./packages/database/prisma
 RUN bun db generate
 
 COPY --from=pruner /repo/out/full/ ./
-
 ADD https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /rds-bundle.pem
-
 WORKDIR /repo/apps/api
 RUN bun run build
 

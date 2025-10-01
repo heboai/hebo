@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "git clean -fdx .",
     "format": "prisma format",
-    "db": "prisma"
+    "db": "DATABASE_URL=postgresql://postgres:password@localhost:5432/local prisma"
   },
   "devDependencies": {
     "bun-types": "^1.2.22",
