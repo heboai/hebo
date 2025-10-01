@@ -108,14 +108,9 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
           {modelsList.length > 0 && (
             <div className="w-full border border-border rounded-lg overflow-hidden mb-4">
               {modelsList.map((modelField, index) => {
-                const isFirst = index === 0;
-                const isOpen = openIndex === index; // Much simpler check!
-                const aliasField = modelField.getFieldset().alias;
-                const typeField = modelField.getFieldset().type;
-                
                 // Get current values for display (prefer current value, fallback to initial)
-                const currentAlias = String((aliasField.value ?? aliasField.initialValue));
-                const currentType = String((typeField.value ?? typeField.initialValue));
+                const currentAlias = String((modelField.getFieldset().alias.value ?? modelField.getFieldset().alias.initialValue));
+                const currentType = String((modelField.getFieldset().type.value ?? modelField.getFieldset().type.initialValue));
                 const isDefault = currentAlias === "default";
 
                 return (
@@ -123,12 +118,12 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                     key={modelField.key}
                     className={`
                       bg-card p-3
-                      ${!isFirst ? 'border-t border-border' : ''}
+                      ${index !== 0 ? 'border-t border-border' : ''}
                     `}
                   >
                     <Collapsible 
-                      open={isOpen} 
-                      onOpenChange={() => setOpenIndex(isOpen ? null : index)} // Toggle logic
+                      open={openIndex === index} 
+                      onOpenChange={() => setOpenIndex(openIndex === index ? null : index)}
                     >
                       <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center mb-2">
                         <div className="min-w-0 flex items-center gap-2">
@@ -153,7 +148,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                         </div>
                         <div>
                           <CollapsibleTrigger asChild>
-                            <Button variant="outline" className={isOpen ? "invisible" : ""}>
+                            <Button variant="outline" className={openIndex === index ? "invisible" : ""}>
                               Edit
                             </Button>
                           </CollapsibleTrigger>
@@ -165,25 +160,25 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                           <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
                             <CardContent className="space-y-6">
                               <div className="flex gap-4">
-                                <FormField field={aliasField} className="flex-1">
+                                <FormField field={modelField.getFieldset().alias} className="flex-1">
                                   <FormLabel className="py-1.5">Model Alias</FormLabel>
                                   <FormControl>
                                     <Input
-                                      {...getInputProps(aliasField, { type: "text" })}
+                                      {...getInputProps(modelField.getFieldset().alias, { type: "text" })}
                                       placeholder="Enter model alias"
                                     />
                                   </FormControl>
                                   <FormMessage />
                                 </FormField>
 
-                                <FormField field={typeField} className="flex-1">
+                                <FormField field={modelField.getFieldset().type} className="flex-1">
                                   <FormLabel className="py-1.5">Model Type</FormLabel>
                                   <FormControl>
                                     <Select
-                                      key={typeField.key}
+                                      key={modelField.getFieldset().type.key}
                                       placeholder="Select a model type"
-                                      name={typeField.name}
-                                      defaultValue={String((typeField.value ?? typeField.initialValue) ?? "")}
+                                      name={modelField.getFieldset().type.name}
+                                      defaultValue={String((modelField.getFieldset().type.value ?? modelField.getFieldset().type.initialValue) ?? "")}
                                       items={supportedModels.map((model) => ({
                                         value: model.name,
                                         name: model.displayName,
@@ -209,7 +204,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                                 <Button
                                   type="button"
                                   variant="outline"
-                                  onClick={() => setOpenIndex(null)} // Close current item
+                                  onClick={() => setOpenIndex(null)}
                                 >
                                   Cancel
                                 </Button>
