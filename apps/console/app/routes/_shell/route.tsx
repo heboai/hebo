@@ -87,7 +87,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           </SidebarContent>
           <SidebarFooter>
               <StaticContent />
-              <SidebarSeparator />
+              <SidebarSeparator className="mx-0"/>
               <UserMenu user={user} />
           </SidebarFooter>
         </div>
