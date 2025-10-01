@@ -10,6 +10,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 │   ├── api/                        # REST API server (ElysiaJS)
 │   ├── console/                    # Web console (React Router + Vite)
 │   └── gateway/                    # AI Gateway (ElysiaJS + Vercel AI SDK)
+│   └── wwww/                       # Hebo.ai Website
 │
 ├── packages/                       # Shared libraries and utilities
 │   ├── aikit-respond-io/           # Respond.io AI Kit integration
@@ -117,6 +118,7 @@ The repository uses GitHub Actions for CI/CD:
 - API: `https://api.hebo.ai` (prod) or `https://api.<stage>.hebo.ai` (preview)
 - Gateway: `https://gateway.hebo.ai` (prod) or `https://gateway.<stage>.hebo.ai` (preview)
 - Console: `https://console.hebo.ai` (prod) or `https://console.<stage>.hebo.ai` (preview)
+- Web: `https://hebo.ai` (prod) or `https://<stage>.hebo.ai` (preview)
 
 ### Manual deployments
 

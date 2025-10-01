@@ -47,6 +47,9 @@ out/
 build
 dist
 
+# astro
+.astro/
+
 # react router
 .react-router
 
