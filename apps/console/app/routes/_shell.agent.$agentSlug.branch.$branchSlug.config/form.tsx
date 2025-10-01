@@ -55,8 +55,8 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   const isSubmitting = navigation.state === "submitting";
   const currentIntent = String(navigation.formData?.get("intent") || "");
 
-  // Track which items are open/collapsed
-  const [openMap, setOpenMap] = useState<Record<number, boolean>>({});
+  // Track which item is open (only one can be open at a time)
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   // Use Conform as the single source of truth
   const [form, fields] = useForm<ModelConfigFormValues>({
@@ -73,9 +73,9 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
       name: fields.models.name,
       defaultValue: { alias: "", type: "" },
     });
-    // Open the newly added item (it will be at the end of the array)
+    // Open the newly added item
     setTimeout(() => {
-      setOpenMap((prev) => ({ ...prev, [currentLength]: true }));
+      setOpenIndex(currentLength);
     }, 0);
   };
 
@@ -84,7 +84,8 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
       name: fields.models.name,
       index,
     });
-    setOpenMap({});
+    // Close any open item
+    setOpenIndex(null);
   };
 
   return (
@@ -108,7 +109,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
             <div className="w-full border border-border rounded-lg overflow-hidden mb-4">
               {modelsList.map((modelField, index) => {
                 const isFirst = index === 0;
-                const isOpen = !!openMap[index];
+                const isOpen = openIndex === index; // Much simpler check!
                 const aliasField = modelField.getFieldset().alias;
                 const typeField = modelField.getFieldset().type;
                 
@@ -127,7 +128,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                   >
                     <Collapsible 
                       open={isOpen} 
-                      onOpenChange={() => setOpenMap((prev) => ({ ...prev, [index]: !prev[index] }))}
+                      onOpenChange={() => setOpenIndex(isOpen ? null : index)} // Toggle logic
                     >
                       <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-4 items-center mb-2">
                         <div className="min-w-0 flex items-center gap-2">
@@ -208,7 +209,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                                 <Button
                                   type="button"
                                   variant="outline"
-                                  onClick={() => setOpenMap((prev) => ({ ...prev, [index]: false }))}
+                                  onClick={() => setOpenIndex(null)} // Close current item
                                 >
                                   Cancel
                                 </Button>
