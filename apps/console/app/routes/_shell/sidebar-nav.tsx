@@ -9,7 +9,7 @@ export function SidebarNav({ activeAgent }: { activeAgent?: { slug: string } }) 
               {activeAgent ? (
                   <SidebarMenuButton asChild tooltip="Models Config">
                       <Link
-                          to={`/agent/${activeAgent.slug}/branch/main/config`}
+                          to={`/agent/${activeAgent.slug}/branch/main/models`}
                           aria-label="Models Config"
                       >
                           <BrainCog />
