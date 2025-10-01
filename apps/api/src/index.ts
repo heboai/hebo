@@ -1,11 +1,12 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
-import { swagger } from "@elysiajs/swagger";
-import { Elysia } from "elysia";
+import { openapi, fromTypes } from "@elysiajs/openapi";
+import Elysia from "elysia";
 
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import { corsConfig } from "@hebo/shared-api/cors/cors-config";
 
+import { errors } from "./middlewares/errors";
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
 
@@ -19,7 +20,8 @@ const createApi = () =>
     .get("/", () => "🐵 Hebo API says hello!")
     .use(cors(corsConfig))
     .use(
-      swagger({
+      openapi({
+        references: fromTypes("src/index.ts"),
         // FUTURE: document security schemes
         documentation: {
           info: {
@@ -30,6 +32,7 @@ const createApi = () =>
       }),
     )
     .use(authService)
+    .use(errors)
     .group(
       "/v1",
       {
