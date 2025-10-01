@@ -84,19 +84,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
       name: fields.models.name,
       index,
     });
-    // Clean up and reindex open state
-    setOpenMap((prev) => {
-      const next: Record<number, boolean> = {};
-      Object.keys(prev).forEach((key) => {
-        const idx = Number(key);
-        if (idx < index) {
-          next[idx] = prev[idx];
-        } else if (idx > index) {
-          next[idx - 1] = prev[idx];
-        }
-      });
-      return next;
-    });
+    setOpenMap({});
   };
 
   const toggleOpen = (index: number) => {
