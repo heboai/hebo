@@ -52,7 +52,7 @@ export const branchesModule = new Elysia({
       response: { 200: Branch },
     },
   )
-  .put(
+  .patch(
     "/:branchSlug",
     async ({ body, params, userId }) => {
       // FUTURE: use Ajv to validate the models fields
@@ -64,7 +64,7 @@ export const branchesModule = new Elysia({
     },
     {
       body: t.Object({
-        name: BranchInputUpdate.properties.name,
+        name: t.Optional(BranchInputUpdate.properties.name),
         models: t.Optional(
           t.Array(
             t.Object(

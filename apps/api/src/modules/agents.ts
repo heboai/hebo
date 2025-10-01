@@ -83,7 +83,7 @@ export const agentsModule = new Elysia({
       response: { 200: Agent },
     },
   )
-  .put(
+  .patch(
     "/:agentSlug",
     async ({ body, params, userId, expandBranches }) => {
       return createAgentRepo(userId!).update(
