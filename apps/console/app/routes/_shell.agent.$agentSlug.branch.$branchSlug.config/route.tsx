@@ -24,9 +24,9 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     return submission.reply();
   }
 
-  try {
-    const { models } = submission.value;
+  const { models } = submission.value;
 
+  try {
     // Send the entire models array to the API
     const { error: putError } = await api
       .agents({ agentSlug: params.agentSlug! })
