@@ -14,7 +14,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 ├── packages/                       # Shared libraries and utilities
 │   ├── aikit-respond-io/           # Respond.io AI Kit integration
 │   ├── aikit-ui/                   # Chat UI components (Shadcn + custom)
-│   ├── db/                         # Database schema, migrations & PGLite
+│   ├── database/                   # Database schema, migrations (Prisma)
 │   ├── shared-api/                 # API utilities (auth, CORS)
 │   ├── shared-data/                # Shared data models & schemas
 │   └── shared-ui/                  # UI components (Shadcn + custom)
@@ -55,7 +55,7 @@ bun run dev
 
 ```bash
 # Apply migrations once dev is running
-bun run db migrate
+bun run db migrate dev
 ```
 
 ```bash
@@ -66,7 +66,7 @@ cp .env.example .env
 ```
 
 ```bash
-# Start only the console in dev
+# Start only the console in dev from project root
 bun run -F @hebo/console dev
 ```
 
