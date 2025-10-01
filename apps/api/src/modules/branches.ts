@@ -64,7 +64,7 @@ export const branchesModule = new Elysia({
     },
     {
       body: t.Object({
-        name: t.Optional(BranchInputUpdate.properties.name),
+        name: BranchInputUpdate.properties.name,
         models: t.Optional(
           t.Array(
             t.Object(
