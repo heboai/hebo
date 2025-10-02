@@ -1,23 +1,24 @@
 "use client";
 
-import { useActionData, useNavigation, useRevalidator } from "react-router";
-import { useForm, getFormProps, getInputProps } from "@conform-to/react";
-import { object, string, nonEmpty, pipe, trim, type InferOutput } from "valibot";
+import { useEffect, useState } from "react";
+
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { Form, useActionData, useNavigation, useRevalidator } from "react-router";
+import { object, nonEmpty, pipe, string, trim, type InferOutput } from "valibot";
+import { Split } from "lucide-react";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import { Card, CardContent, CardFooter } from "@hebo/shared-ui/components/Card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/shared-ui/components/Collapsible";
+import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
+import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
-import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
-import { Split } from "lucide-react";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
-import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
-import { Form } from "react-router";
-import { useState, useEffect } from "react";
+
 
 export const ModelConfigSchema = object({
   alias: pipe(string(), trim(), nonEmpty("Alias is required")),
