@@ -31,7 +31,7 @@ export type EventHandler<T extends WebhookPayload = WebhookPayload> = (
   payload: T,
 ) => void | Promise<void>;
 
-export type ErrorHandler = (error: Error) => void | Promise<void>;
+export type ErrorHandler = (error: unknown) => void | Promise<void>;
 
 // --- Common Base Interfaces ---
 
