@@ -23,6 +23,12 @@ export const completions = new Elysia({
         });
         return result.toTextStreamResponse();
       }
+      if (messages[0].content[0].type === "image_url") {
+        messages[0].content[0] = {
+          type: "image",
+          image: messages[0].content[0].image_url.url,
+        };
+      }
 
       const result = await generateText({
         model: chatModel,
@@ -65,10 +71,18 @@ export const completions = new Elysia({
             content: t.Union([
               t.String(),
               t.Array(
-                t.Object({
-                  type: t.Literal("text"),
-                  text: t.String(),
-                }),
+                t.Union([
+                  t.Object({
+                    type: t.Literal("text"),
+                    text: t.String(),
+                  }),
+                  t.Object({
+                    type: t.Literal("image_url"),
+                    image_url: t.Object({
+                      url: t.String(),
+                    }),
+                  }),
+                ]),
                 { minItems: 1 },
               ),
             ]),
