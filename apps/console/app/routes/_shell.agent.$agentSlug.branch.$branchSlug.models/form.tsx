@@ -76,12 +76,6 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
     setOpenIndex(newModels.length - 1);
   };
 
-  const handleRemoveModel = (index: number) => {
-    const newModels = models.filter((_, i) => i !== index);
-    setModels(newModels);
-    setOpenIndex(null);
-  };
-
   return (
     <div className="absolute inset-0 flex justify-center">
       <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none px-4 sm:px-6 md:px-0 p-4">
@@ -108,10 +102,10 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
                   branchSlug={branchSlug}
                   isOpen={openIndex === index}
                   onOpenChange={() => setOpenIndex(openIndex === index ? null : index)}
-                  onRemove={() => handleRemoveModel(index)}
                   isDefault={isDefault}
                   isFirst={index === 0}
                   isSubmitting={isSubmitting && currentIntent === `save:${index}`}
+                  isRemoving={isSubmitting && currentIntent === `remove:${index}`}
                   allModels={models}
                 />
               );
@@ -140,10 +134,10 @@ interface ModelRowProps {
   branchSlug: string;
   isOpen: boolean;
   onOpenChange: () => void;
-  onRemove: () => void;
   isDefault: boolean;
   isFirst: boolean;
   isSubmitting: boolean;
+  isRemoving: boolean;
   allModels: Array<{ alias: string; type: string }>;
 }
 
@@ -154,9 +148,10 @@ function ModelRow({
   branchSlug, 
   isOpen, 
   onOpenChange, 
-  onRemove, 
+  isDefault, 
   isFirst,
   isSubmitting,
+  isRemoving,
   allModels
 }: ModelRowProps) {
   const actionData = useActionData<any>();
@@ -244,13 +239,16 @@ function ModelRow({
                 </CardContent>
                 <CardFooter className="flex justify-between gap-2">
                   <div className="flex">
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={onRemove}
-                    >
-                      Remove
-                    </Button>
+                  <Button
+                    type="submit"
+                    name="intent"
+                    value={`remove:${index}`}
+                    variant="destructive"
+                    disabled={isDefault}
+                    isLoading={isRemoving}
+                  >
+                    Remove
+                  </Button>
                   </div>
                   <div className="flex gap-2">
                     <Button

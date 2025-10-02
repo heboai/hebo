@@ -12,7 +12,39 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   const formData = await request.formData();
   const intent = String(formData.get("intent") || "");
 
-  // Only proceed when a Save button is clicked
+  // Handle remove action
+  if (intent.startsWith("remove:")) {
+    const index = Number(formData.get("index"));
+    const modelsJson = String(formData.get("models") || "[]");
+    
+    try {
+      const currentModels = JSON.parse(modelsJson);
+      const updatedModels = currentModels.filter((_: any, i: number) => i !== index);
+
+      const { error: putError } = await api
+        .agents({ agentSlug: params.agentSlug! })
+        .branches({ branchSlug: params.branchSlug! })
+        .put({ models: updatedModels });
+
+      if (putError) {
+        return {
+          formErrors: [parseError(putError).message],
+        };
+      }
+
+      return { 
+        success: true, 
+        message: "Model removed successfully",
+        models: updatedModels 
+      };
+    } catch (error) {
+      return {
+        formErrors: [parseError(error).message],
+      };
+    }
+  }
+
+  // Handle save action
   if (!intent.startsWith("save:")) {
     return undefined;
   }
