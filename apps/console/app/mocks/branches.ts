@@ -3,13 +3,17 @@ import slugify from "slugify";
 
 import { db } from "~console/mocks/db";
 
+type ModelConfig = { alias: string; type: string; endpoint?: unknown };
+type BranchCreateBody = { name: string; models: ModelConfig[] };
+
 export const branchHandlers = [
   http.post<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async ({ request, params }) => {
-      const body = (await request.json()) as ReturnType<
-        typeof db.branch.create
-      >;
+      const body = (await request.json()) as BranchCreateBody;
+      if (!body?.name || !Array.isArray(body.models)) {
+        return new HttpResponse("Invalid payload", { status: 400 });
+      }
 
       const branch = {
         name: body.name,
@@ -27,7 +31,15 @@ export const branchHandlers = [
       }
 
       await delay(200);
-      return HttpResponse.json(branch, { status: 201 });
+      return HttpResponse.json(
+        db.branch.findFirst({
+          where: {
+            agentSlug: { equals: params.agentSlug },
+            slug: { equals: branch.slug },
+          },
+        })!,
+        { status: 201 },
+      );
     },
   ),
 
@@ -53,7 +65,7 @@ export const branchHandlers = [
     async ({ request, params }) => {
       const body = (await request.json()) as {
         name?: string;
-        models?: Array<{ alias: string; type: string; endpoint?: any }>;
+        models?: Array<{ alias: string; type: string; endpoint?: unknown }>;
       };
 
       try {
@@ -70,8 +82,31 @@ export const branchHandlers = [
 
         // Update branch properties
         if (body.name) {
+          const newSlug = slugify(body.name, { lower: true, strict: true });
+
+          // Check for slug collision among other branches of the same agent
+          const existingBranches = db.branch.findMany({
+            where: {
+              agentSlug: { equals: params.agentSlug },
+              slug: { equals: newSlug },
+            },
+          });
+
+          const existingBranch = existingBranches.find(
+            (b) => b.id !== branch.id,
+          );
+
+          if (existingBranch) {
+            return new HttpResponse(
+              "Branch with the same name already exists",
+              {
+                status: 409,
+              },
+            );
+          }
+
           branch.name = body.name;
-          branch.slug = slugify(body.name, { lower: true, strict: true });
+          branch.slug = newSlug;
         }
 
         // Update models JSON object
