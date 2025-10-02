@@ -21,7 +21,7 @@ export const SidebarNav = ({ activeAgent }: SidebarNavProps) => {
                       </Link>
                   </SidebarMenuButton>
               ) : (
-                  <SidebarMenuButton tooltip="Select an agent" disabled aria-disabled>
+                  <SidebarMenuButton tooltip="Select an agent" disabled aria-disabled={true}>
                       <BrainCog />
                       Models
                   </SidebarMenuButton>
