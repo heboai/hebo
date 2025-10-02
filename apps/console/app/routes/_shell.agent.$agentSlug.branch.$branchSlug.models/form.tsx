@@ -73,6 +73,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
       name: fields.models.name,
       defaultValue: { alias: "", type: "" },
     });
+    form.update();
     setOpenIndex(newIndex);
   };
 
@@ -81,7 +82,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
       name: fields.models.name,
       index,
     });
-    // Close any open item
+    form.update();
     setOpenIndex(null);
   };
 
