@@ -11,9 +11,6 @@ export interface WebhookEventConfig {
 }
 
 export interface WebhookConfig {
-  /**
-   * A map of event types to their corresponding configurations.
-   */
   events: Partial<Record<WebhookEvents, WebhookEventConfig>>;
 }
 
@@ -59,21 +56,13 @@ interface BaseChannel {
   source: string;
 }
 
-// --- Event-Specific Payload Interfaces ---
-
 // --- Message Content Types ---
 
-/**
- * Represents a text message.
- */
 export interface TextContent {
   type: "text";
   text: string;
 }
 
-/**
- * Represents a message with an attachment.
- */
 export interface AttachmentContent {
   type: "attachment";
   attachment: {
@@ -87,9 +76,6 @@ export interface AttachmentContent {
   };
 }
 
-/**
- * A union of all possible message content types.
- */
 export type MessageContent = TextContent | AttachmentContent;
 
 export interface MessageReceivedPayload {
