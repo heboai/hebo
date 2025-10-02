@@ -46,16 +46,12 @@ export const branchHandlers = [
   http.get<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async ({ params }) => {
-      try {
-        const branches = db.branch.findMany({
-          where: { agentSlug: { equals: params.agentSlug } },
-        });
+      const branches = db.branch.findMany({
+        where: { agentSlug: { equals: params.agentSlug } },
+      });
 
-        await delay(1000);
-        return HttpResponse.json(branches);
-      } catch {
-        return new HttpResponse("Failed to fetch branches", { status: 500 });
-      }
+      await delay(1000);
+      return HttpResponse.json(branches);
     },
   ),
 
@@ -68,66 +64,49 @@ export const branchHandlers = [
         models?: Array<{ alias: string; type: string; endpoint?: unknown }>;
       };
 
-      try {
-        const branch = db.branch.findFirst({
+      const branch = db.branch.findFirst({
+        where: {
+          agentSlug: { equals: params.agentSlug },
+          slug: { equals: params.branchSlug },
+        },
+      });
+
+      if (!branch) {
+        return new HttpResponse("Branch not found", { status: 404 });
+      }
+
+      if (body.name) {
+        const newSlug = slugify(body.name, { lower: true, strict: true });
+
+        const existingBranches = db.branch.findMany({
           where: {
             agentSlug: { equals: params.agentSlug },
-            slug: { equals: params.branchSlug },
+            slug: { equals: newSlug },
           },
         });
 
-        if (!branch) {
-          return new HttpResponse("Branch not found", { status: 404 });
-        }
-
-        // Update branch properties
-        if (body.name) {
-          const newSlug = slugify(body.name, { lower: true, strict: true });
-
-          // Check for slug collision among other branches of the same agent
-          const existingBranches = db.branch.findMany({
-            where: {
-              agentSlug: { equals: params.agentSlug },
-              slug: { equals: newSlug },
-            },
+        const existingBranch = existingBranches.find((b) => b.id !== branch.id);
+        if (existingBranch) {
+          return new HttpResponse("Branch with the same name already exists", {
+            status: 409,
           });
-
-          const existingBranch = existingBranches.find(
-            (b) => b.id !== branch.id,
-          );
-
-          if (existingBranch) {
-            return new HttpResponse(
-              "Branch with the same name already exists",
-              {
-                status: 409,
-              },
-            );
-          }
-
-          branch.name = body.name;
-          branch.slug = newSlug;
         }
 
-        // Update models JSON object
-        if (body.models) {
-          branch.models = body.models;
-        }
-
-        // Persist the changes to the database
-        db.branch.update({
-          where: { id: { equals: branch.id } },
-          data: branch,
-        });
-
-        await delay(500);
-        return HttpResponse.json(branch);
-      } catch (error) {
-        return new HttpResponse(
-          error instanceof Error ? error.message : String(error),
-          { status: 500 },
-        );
+        branch.name = body.name;
+        branch.slug = newSlug;
       }
+
+      if (body.models) {
+        branch.models = body.models;
+      }
+
+      db.branch.update({
+        where: { id: { equals: branch.id } },
+        data: branch,
+      });
+
+      await delay(500);
+      return HttpResponse.json(branch);
     },
   ),
 ];
