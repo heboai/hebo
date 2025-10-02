@@ -2,7 +2,11 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@hebo/shared-ui
 import { BrainCog } from "lucide-react";
 import { Link } from "react-router";
 
-export function SidebarNav({ activeAgent }: { activeAgent?: { slug: string } }) {
+type SidebarNavProps = {
+  activeAgent?: { slug: string };
+};
+
+export const SidebarNav = ({ activeAgent }: SidebarNavProps) => {
   return (
       <SidebarMenu>
           <SidebarMenuItem>
