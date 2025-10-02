@@ -24,7 +24,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       const { error: putError } = await api
         .agents({ agentSlug: params.agentSlug! })
         .branches({ branchSlug: params.branchSlug! })
-        .put({ models: updatedModels });
+        .patch({ models: updatedModels });
 
       if (putError) {
         return {
@@ -72,7 +72,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     const { error: putError } = await api
       .agents({ agentSlug: params.agentSlug! })
       .branches({ branchSlug: params.branchSlug! })
-      .put({ models: updatedModels });
+      .patch({ models: updatedModels });
 
     if (putError) {
       return submission.reply({
