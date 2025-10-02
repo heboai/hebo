@@ -48,7 +48,7 @@ export const branchHandlers = [
   ),
 
   // Update entire branch (including models JSON object)
-  http.put<{ agentSlug: string; branchSlug: string }>(
+  http.patch<{ agentSlug: string; branchSlug: string }>(
     "/api/v1/agents/:agentSlug/branches/:branchSlug",
     async ({ request, params }) => {
       const body = (await request.json()) as {
