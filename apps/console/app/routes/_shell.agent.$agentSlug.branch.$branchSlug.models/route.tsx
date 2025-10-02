@@ -101,7 +101,7 @@ export default function AgentBranchConfig() {
   const { agentSlug, branchSlug } = useParams<{ agentSlug: string; branchSlug: string }>();
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center">
+    <div className="absolute inset-0 flex justify-center">
       <ModelConfigurationForm 
         agent={agent} 
         agentSlug={agentSlug!} 

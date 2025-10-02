@@ -77,51 +77,47 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   };
 
   return (
-    <div className="absolute inset-0 flex justify-center">
-      <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none px-4 sm:px-6 md:px-0 p-4">
-        <div className="flex flex-col mb-6 mt-16">
-          <h2>Model Configuration</h2>
-          <p className="text-muted-foreground">
-            Configure access for agents to different models and their routing behaviour (incl. to your
-            existing inference endpoints). Learn more about Model Configuration
-          </p>
+    <div className="max-w-2xl min-w-0 w-full border-none bg-transparent shadow-none px-4 sm:px-6 md:px-0 p-4">
+      <div className="flex flex-col mb-6 mt-16">
+        <h2>Model Configuration</h2>
+        <p className="text-muted-foreground">
+          Configure access for agents to different models and their routing behaviour (incl. to your
+          existing inference endpoints). Learn more about Model Configuration
+        </p>
+      </div>
+
+      {models.length > 0 && (
+        <div className="w-full border border-border rounded-lg overflow-hidden mb-4">
+          {models.map((model, index) => {
+            const isDefault = model.alias === "default";
+            return (
+              <ModelRow
+                key={index}
+                index={index}
+                model={model}
+                agentSlug={agentSlug}
+                branchSlug={branchSlug}
+                isOpen={openIndex === index}
+                onOpenChange={() => setOpenIndex(openIndex === index ? null : index)}
+                isDefault={isDefault}
+                isFirst={index === 0}
+                isSubmitting={isSubmitting && currentIntent === `save:${index}`}
+                isRemoving={isSubmitting && currentIntent === `remove:${index}`}
+                allModels={models}
+              />
+            );
+          })}
         </div>
+      )}
 
-        {/* Container card with outer border radius */}
-        {models.length > 0 && (
-          <div className="w-full border border-border rounded-lg overflow-hidden mb-4">
-            {models.map((model, index) => {
-              const isDefault = model.alias === "default";
-
-              return (
-                <ModelRow
-                  key={index}
-                  index={index}
-                  model={model}
-                  agentSlug={agentSlug}
-                  branchSlug={branchSlug}
-                  isOpen={openIndex === index}
-                  onOpenChange={() => setOpenIndex(openIndex === index ? null : index)}
-                  isDefault={isDefault}
-                  isFirst={index === 0}
-                  isSubmitting={isSubmitting && currentIntent === `save:${index}`}
-                  isRemoving={isSubmitting && currentIntent === `remove:${index}`}
-                  allModels={models}
-                />
-              );
-            })}
-          </div>
-        )}
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={handleAddModel}
-            type="button"
-          >
-            + Add Model
-          </Button>
-        </div>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          onClick={handleAddModel}
+          type="button"
+        >
+          + Add Model
+        </Button>
       </div>
     </div>
   );
