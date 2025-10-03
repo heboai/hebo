@@ -47,7 +47,9 @@ export function toAiModelMessage(
         throw new Error(`Unsupported attachment type: ${attachment.type}`);
       }
     } else {
-      throw new Error(`Unsupported message type: ${messageContent.type}`);
+      throw new Error(
+        `Unsupported message type: ${(messageContent as any).type}`,
+      );
     }
 
     return {
