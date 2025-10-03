@@ -63,13 +63,45 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
     setModels(activeBranch.models);
   }, [activeBranch.models]);
 
-  // Close collapsible and revalidate after successful submission
+  // Handle optimistic updates and form closing
+  useEffect(() => {
+    if (isSubmitting && currentIntent.startsWith("save:")) {
+      const saveIndex = Number(currentIntent.split(":")[1]);
+      if (openIndex === saveIndex) {
+        // Get the form data from the submission
+        const formData = navigation.formData;
+        if (formData) {
+          const alias = String(formData.get("alias") || "");
+          const type = String(formData.get("type") || "");
+          
+          // Optimistically update the local state
+          setModels(prevModels => {
+            const updatedModels = [...prevModels];
+            updatedModels[saveIndex] = { alias, type };
+            return updatedModels;
+          });
+        }
+        
+        // Close the form immediately
+        setOpenIndex(null);
+      }
+    }
+  }, [isSubmitting, currentIntent, openIndex, navigation.formData]);
+
+  // Revalidate after successful submission to sync with server
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
-      setOpenIndex(null);
       revalidator.revalidate();
     }
   }, [actionData, navigation.state, revalidator]);
+
+  // Handle errors by reverting optimistic updates
+  useEffect(() => {
+    if (actionData?.formErrors && navigation.state === "idle") {
+      // Revert to server state on error
+      setModels(activeBranch.models);
+    }
+  }, [actionData?.formErrors, navigation.state, activeBranch.models]);
 
   const handleAddModel = () => {
     const newModels = [...models, { alias: "", type: "" }];
