@@ -60,6 +60,9 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   // Track newly added items for animation
   const [newlyAddedIndex, setNewlyAddedIndex] = useState<number | null>(null);
 
+  // Track items being removed for animation
+  const [removingIndex, setRemovingIndex] = useState<number | null>(null);
+
   // Update local state when agent data changes (after successful submission)
   useEffect(() => {
     setModels(activeBranch.models);
@@ -90,6 +93,27 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
     }
   }, [isSubmitting, currentIntent, openIndex, navigation.formData]);
 
+  // Handle remove operations with animation
+  useEffect(() => {
+    if (isSubmitting && currentIntent.startsWith("remove:")) {
+      const removeIndex = Number(currentIntent.split(":")[1]);
+      
+      // Close the form if it's open
+      if (openIndex === removeIndex) {
+        setOpenIndex(null);
+      }
+      
+      // Start the remove animation
+      setRemovingIndex(removeIndex);
+      
+      // Remove the item after animation completes
+      setTimeout(() => {
+        setModels(prevModels => prevModels.filter((_, index) => index !== removeIndex));
+        setRemovingIndex(null);
+      }, 300); // Match animation duration
+    }
+  }, [isSubmitting, currentIntent, openIndex]);
+
   // Revalidate after successful submission to sync with server
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
@@ -102,6 +126,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
     if (actionData?.formErrors && navigation.state === "idle") {
       // Revert to server state on error
       setModels(activeBranch.models);
+      setRemovingIndex(null);
     }
   }, [actionData?.formErrors, navigation.state, activeBranch.models]);
 
@@ -112,7 +137,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
     setOpenIndex(newIndex);
     setNewlyAddedIndex(newIndex);
     
-    // Clear the newly added flag after animation completes
+    // Clear the animation flag after animation completes
     setTimeout(() => {
       setNewlyAddedIndex(null);
     }, 300);
@@ -133,11 +158,14 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
           {models.map((model, index) => {
             const isDefault = model.alias === "default";
             const isNewlyAdded = newlyAddedIndex === index;
+            const isRemoving = removingIndex === index;
+            
             return (
-              <div
+              <div 
                 key={index}
                 className={`
                   ${isNewlyAdded ? 'animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ease-in-out' : ''}
+                  ${isRemoving ? 'animate-out fade-out-0 slide-out-to-bottom-2 duration-300 ease-in-out' : ''}
                 `}
               >
                 <ModelRow
