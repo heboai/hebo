@@ -25,12 +25,12 @@ export function verifySignature(
  *
  * @param messageContent The content of the message from Respond.io.
  * @param role The role of the message sender.
- * @returns A promise that resolves to a ModelMessage.
+ * @returns ModelMessage.
  */
-export async function toAiModelMessage(
+export function toAiModelMessage(
   messageContent: MessageContent,
   role: "user" | "assistant",
-): Promise<ModelMessage> {
+): ModelMessage {
   if (role === "user") {
     const parts: UserContent = [];
 
@@ -39,21 +39,17 @@ export async function toAiModelMessage(
     } else if (messageContent.type === "attachment") {
       const attachment = (messageContent as AttachmentContent).attachment;
       if (attachment.type === "image") {
-        const response = await fetch(attachment.url);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image from ${attachment.url}`);
-        }
-        const imageBuffer = Buffer.from(await response.arrayBuffer());
         parts.push({
           type: "image",
-          image: imageBuffer,
+          image: new URL(attachment.url),
         });
+      } else {
+        throw new Error(`Unsupported attachment type: ${attachment.type}`);
       }
-      // Other attachment types are ignored for now.
     }
 
     return {
-      role: "user",
+      role: role,
       content: parts,
     };
   } else {
