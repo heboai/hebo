@@ -44,9 +44,11 @@ export function toAiModelMessage(
           image: new URL(attachment.url),
         });
       } else {
+        // FUTURE: Add support for other attachment types
         throw new Error(`Unsupported attachment type: ${attachment.type}`);
       }
     } else {
+      // FUTURE: Add support for other message types
       throw new Error(
         `Unsupported message type: ${(messageContent as any).type}`,
       );

@@ -6,8 +6,8 @@
     "declaration": true,
     "types": ["bun-types"],
     "noEmit": false,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
+    "module": "ESNext",
+    "moduleResolution": "bundler"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.d.ts"]
