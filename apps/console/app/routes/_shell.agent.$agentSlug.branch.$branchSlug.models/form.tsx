@@ -18,6 +18,7 @@ import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
+import { toast } from "sonner";
 
 export const ModelConfigSchema = object({
   alias: pipe(string(), trim(), nonEmpty("Alias is required")),
@@ -117,6 +118,7 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   // Revalidate after successful submission to sync with server
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
+      toast.success(actionData.message);
       revalidator.revalidate();
     }
   }, [actionData, navigation.state, revalidator]);
