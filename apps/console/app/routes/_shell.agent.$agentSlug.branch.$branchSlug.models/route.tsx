@@ -74,7 +74,7 @@ export default function AgentBranchConfig() {
   return (
     <div className="absolute inset-0 flex justify-center">
       <ModelConfigurationForm 
-        agent={agent} 
+        models={agent.branches[0]?.models} 
         agentSlug={agentSlug!} 
         branchSlug={branchSlug!} 
       />

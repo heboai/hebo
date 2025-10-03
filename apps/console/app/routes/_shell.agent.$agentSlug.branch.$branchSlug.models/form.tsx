@@ -29,17 +29,12 @@ export type ModelConfigFormValues = InferOutput<typeof ModelConfigSchema>;
 
 
 interface ModelConfigurationFormProps {
-  agent: { 
-    branches: Array<{ 
-      models: Array<{ alias: string; type: string }> 
-    }> 
-  };
+  models: Array<{ alias: string; type: string }>;
   agentSlug: string;
   branchSlug: string;
 }
 
-export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }: ModelConfigurationFormProps) {
-  const activeBranch = agent.branches[0];
+export default function ModelConfigurationForm({ models: branchModels, agentSlug, branchSlug }: ModelConfigurationFormProps) {
 
   const actionData = useActionData<any>();
   useActionDataErrorToast();
@@ -51,8 +46,8 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   // Track which item is open (only one can be open at a time)
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  // Track local models state - sync with agent data
-  const [models, setModels] = useState(activeBranch.models);
+  // Track local models state - sync with branch models
+  const [models, setModels] = useState(branchModels);
 
   // Track newly added items for animation
   const [newlyAddedIndex, setNewlyAddedIndex] = useState<number | null>(null);
@@ -60,10 +55,10 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   // Track items being removed for animation
   const [removingIndex, setRemovingIndex] = useState<number | null>(null);
 
-  // Update local state when agent data changes (after successful submission)
+  // Update local state when branch models change (after successful submission)
   useEffect(() => {
-    setModels(activeBranch.models);
-  }, [activeBranch.models]);
+    setModels(branchModels);
+  }, [branchModels]);
 
   // Handle optimistic updates and form closing
   useEffect(() => {
@@ -123,10 +118,10 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   useEffect(() => {
     if (actionData?.formErrors && navigation.state === "idle") {
       // Revert to server state on error
-      setModels(activeBranch.models);
+      setModels(branchModels);
       setRemovingIndex(null);
     }
-  }, [actionData?.formErrors, navigation.state, activeBranch.models]);
+  }, [actionData?.formErrors, navigation.state, branchModels]);
 
   const handleAddModel = () => {
     const newModels = [...models, { alias: "", type: "" }];
