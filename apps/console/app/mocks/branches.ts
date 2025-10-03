@@ -6,9 +6,20 @@ export const branchHandlers = [
   http.get<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async ({ params }) => {
-      const branches = db.branch.findMany({
-        where: { agentSlug: { equals: params.agentSlug } },
-      });
+      let branches;
+      try {
+        // First verify the agent exists
+        db.agent.findFirst({
+          where: { slug: { equals: params.agentSlug } },
+          strict: true,
+        });
+
+        branches = db.branch.findMany({
+          where: { agentSlug: { equals: params.agentSlug } },
+        });
+      } catch {
+        return new HttpResponse("Agent not found", { status: 404 });
+      }
 
       await delay(1000);
       return HttpResponse.json(branches);
@@ -24,14 +35,16 @@ export const branchHandlers = [
         models?: Array<{ alias: string; type: string; endpoint?: unknown }>;
       };
 
-      const branch = db.branch.findFirst({
-        where: {
-          agentSlug: { equals: params.agentSlug },
-          slug: { equals: params.branchSlug },
-        },
-      });
-
-      if (!branch) {
+      let branch;
+      try {
+        branch = db.branch.findFirst({
+          where: {
+            agentSlug: { equals: params.agentSlug },
+            slug: { equals: params.branchSlug },
+          },
+          strict: true,
+        });
+      } catch {
         return new HttpResponse("Branch not found", { status: 404 });
       }
 
