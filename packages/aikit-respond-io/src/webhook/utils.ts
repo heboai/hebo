@@ -27,7 +27,7 @@ export function verifySignature(
  * @param role The role of the message sender.
  * @returns A promise that resolves to a ModelMessage.
  */
-export async function toModelMessage(
+export async function toAiModelMessage(
   messageContent: MessageContent,
   role: "user" | "assistant",
 ): Promise<ModelMessage> {
