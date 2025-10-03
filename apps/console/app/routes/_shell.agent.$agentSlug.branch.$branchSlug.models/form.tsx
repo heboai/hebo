@@ -27,10 +27,6 @@ export const ModelConfigSchema = object({
 
 export type ModelConfigFormValues = InferOutput<typeof ModelConfigSchema>;
 
-const getModelDisplayName = (modelName: string): string => {
-  const model = supportedModels.find((m) => m.name === modelName);
-  return model?.displayName || modelName;
-};
 
 interface ModelConfigurationFormProps {
   agent: { 
@@ -257,7 +253,7 @@ function ModelRow({
             )}
           </div>
           <div className="text-left">
-            <p className="text-medium">{model.type ? getModelDisplayName(model.type) : "—"}</p>
+            <p className="text-medium">{model.type ? (supportedModels.find((m) => m.name === model.type)?.displayName || model.type) : "—"}</p>
           </div>
           <div className="flex gap-1 items-center">
             <Split/>
