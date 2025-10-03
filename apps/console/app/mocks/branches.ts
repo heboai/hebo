@@ -1,5 +1,4 @@
 import { http, HttpResponse, delay } from "msw";
-import slugify from "slugify";
 
 import { db } from "~console/mocks/db";
 
@@ -34,27 +33,6 @@ export const branchHandlers = [
 
       if (!branch) {
         return new HttpResponse("Branch not found", { status: 404 });
-      }
-
-      if (body.name) {
-        const newSlug = slugify(body.name, { lower: true, strict: true });
-
-        const existingBranches = db.branch.findMany({
-          where: {
-            agentSlug: { equals: params.agentSlug },
-            slug: { equals: newSlug },
-          },
-        });
-
-        const existingBranch = existingBranches.find((b) => b.id !== branch.id);
-        if (existingBranch) {
-          return new HttpResponse("Branch with the same name already exists", {
-            status: 409,
-          });
-        }
-
-        branch.name = body.name;
-        branch.slug = newSlug;
       }
 
       if (body.models) {
