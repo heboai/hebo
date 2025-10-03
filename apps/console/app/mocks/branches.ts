@@ -3,46 +3,7 @@ import slugify from "slugify";
 
 import { db } from "~console/mocks/db";
 
-type ModelConfig = { alias: string; type: string; endpoint?: unknown };
-type BranchCreateBody = { name: string; models: ModelConfig[] };
-
 export const branchHandlers = [
-  http.post<{ agentSlug: string }>(
-    "/api/v1/agents/:agentSlug/branches",
-    async ({ request, params }) => {
-      const body = (await request.json()) as BranchCreateBody;
-      if (!body?.name || !Array.isArray(body.models)) {
-        return new HttpResponse("Invalid payload", { status: 400 });
-      }
-
-      const branch = {
-        name: body.name,
-        slug: slugify(body.name, { lower: true, strict: true }),
-        models: body.models,
-        agentSlug: params.agentSlug,
-      };
-
-      try {
-        db.branch.create(branch);
-      } catch {
-        return new HttpResponse("Branch with the same name already exists", {
-          status: 409,
-        });
-      }
-
-      await delay(200);
-      return HttpResponse.json(
-        db.branch.findFirst({
-          where: {
-            agentSlug: { equals: params.agentSlug },
-            slug: { equals: branch.slug },
-          },
-        })!,
-        { status: 201 },
-      );
-    },
-  ),
-
   http.get<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async ({ params }) => {
