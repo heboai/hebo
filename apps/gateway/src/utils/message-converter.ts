@@ -1,5 +1,7 @@
+import { OpenAICompatibleMessage } from "@ai-sdk/openai-compatible";
+
 export function convertOpenAICompatibleMessagesToModelMessages(
-  messages: any[],
+  messages: OpenAICompatibleMessage[],
 ) {
   return messages.map((message) => {
     if (Array.isArray(message.content)) {
