@@ -2,7 +2,7 @@
 
 import { parseWithValibot } from "@conform-to/valibot";
 import { useRouteLoaderData, useParams } from "react-router";
-import { api } from "~console/lib/service";
+import { kyFetch } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
@@ -11,16 +11,20 @@ import ModelConfigurationForm, { ModelConfigSchema } from "./form";
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const intent = String(formData.get("intent") || "");
-  const modelsJson = String(formData.get("models") || "[]");
   
   try {
-    const currentModels = JSON.parse(modelsJson);
+    // GET current models before computing update
+    const getRes = await kyFetch.get(`v1/agents/${params.agentSlug!}/branches`);
+    if (!getRes.ok) throw new Error(await getRes.text());
+    const branches = (await getRes.json()) as Array<{ models: Array<{ alias: string; type: string }> }>;
+
+    const currentModels = branches?.[0]?.models ?? [];
     let updatedModels = [...currentModels];
     let message = "";
 
     if (intent.startsWith("remove:")) {
-      // Handle remove action
-      const index = Number(formData.get("index"));
+      // Handle remove action using index from intent
+      const index = Number(intent.split(":")[1]);
       updatedModels = currentModels.filter((_: any, i: number) => i !== index);
       message = "Model removed successfully";
     } else if (intent.startsWith("save:")) {
@@ -32,7 +36,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       }
 
       const { alias, type } = submission.value;
-      const index = Number(formData.get("index"));
+      const index = Number(intent.split(":")[1]);
       
       updatedModels[index] = { alias, type };
       message = "Model updated successfully";
@@ -40,23 +44,18 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       return undefined;
     }
 
-    // Both actions send the complete models array to the API
-    const { error: putError } = await api
-      .agents({ agentSlug: params.agentSlug! })
-      .branches({ branchSlug: params.branchSlug! })
-      .patch({ models: updatedModels });
+    // Send the complete models array via PATCH
+    const res = await kyFetch.patch(
+      `v1/agents/${params.agentSlug!}/branches/${params.branchSlug!}`,
+      { json: { models: updatedModels } },
+    );
 
-    if (putError) {
-      return {
-        formErrors: [parseError(putError).message],
-      };
+    if (!res.ok) {
+      const text = await res.text();
+      return { formErrors: [text] };
     }
 
-    return { 
-      success: true, 
-      message,
-      models: updatedModels 
-    };
+    return { success: true, message, models: updatedModels };
   } catch (error) {
     return {
       formErrors: [parseError(error).message],

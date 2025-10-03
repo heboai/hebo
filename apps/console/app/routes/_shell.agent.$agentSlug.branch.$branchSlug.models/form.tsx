@@ -268,8 +268,6 @@ function ModelRow({
         <CollapsibleContent className="overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-top-1 data-[state=open]:slide-in-from-top-1 duration-300 ease-in-out">
           <div className="mt-4">
             <Form method="post" {...getFormProps(form)}>
-              <input type="hidden" name="index" value={index} />
-              <input type="hidden" name="models" value={JSON.stringify(allModels)} />
               
               <Card className="min-w-0 w-full border-none bg-transparent shadow-none">
                 <CardContent className="space-y-6">
