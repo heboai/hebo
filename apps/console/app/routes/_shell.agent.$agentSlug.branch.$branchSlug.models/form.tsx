@@ -193,7 +193,7 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
   );
 }
 
-interface ModelRowProps {
+type ModelRowProps = {
   index: number;
   model: { alias: string; type: string };
   agentSlug: string;
