@@ -11,14 +11,13 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import { Card, CardContent, CardFooter } from "@hebo/shared-ui/components/Card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@hebo/shared-ui/components/Collapsible";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@hebo/shared-ui/components/Collapsible";
 import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
-
 
 export const ModelConfigSchema = object({
   alias: pipe(string(), trim(), nonEmpty("Alias is required")),
@@ -57,6 +56,9 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
 
   // Track local models state - sync with agent data
   const [models, setModels] = useState(activeBranch.models);
+
+  // Track newly added items for animation
+  const [newlyAddedIndex, setNewlyAddedIndex] = useState<number | null>(null);
 
   // Update local state when agent data changes (after successful submission)
   useEffect(() => {
@@ -106,7 +108,14 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
   const handleAddModel = () => {
     const newModels = [...models, { alias: "", type: "" }];
     setModels(newModels);
-    setOpenIndex(newModels.length - 1);
+    const newIndex = newModels.length - 1;
+    setOpenIndex(newIndex);
+    setNewlyAddedIndex(newIndex);
+    
+    // Clear the newly added flag after animation completes
+    setTimeout(() => {
+      setNewlyAddedIndex(null);
+    }, 300);
   };
 
   return (
@@ -123,21 +132,28 @@ export default function ModelConfigurationForm({ agent, agentSlug, branchSlug }:
         <div className="w-full border border-border rounded-lg overflow-hidden mb-4">
           {models.map((model, index) => {
             const isDefault = model.alias === "default";
+            const isNewlyAdded = newlyAddedIndex === index;
             return (
-              <ModelRow
+              <div
                 key={index}
-                index={index}
-                model={model}
-                agentSlug={agentSlug}
-                branchSlug={branchSlug}
-                isOpen={openIndex === index}
-                onOpenChange={() => setOpenIndex(openIndex === index ? null : index)}
-                isDefault={isDefault}
-                isFirst={index === 0}
-                isSubmitting={isSubmitting && currentIntent === `save:${index}`}
-                isRemoving={isSubmitting && currentIntent === `remove:${index}`}
-                allModels={models}
-              />
+                className={`
+                  ${isNewlyAdded ? 'animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ease-in-out' : ''}
+                `}
+              >
+                <ModelRow
+                  index={index}
+                  model={model}
+                  agentSlug={agentSlug}
+                  branchSlug={branchSlug}
+                  isOpen={openIndex === index}
+                  onOpenChange={() => setOpenIndex(openIndex === index ? null : index)}
+                  isDefault={isDefault}
+                  isFirst={index === 0}
+                  isSubmitting={isSubmitting && currentIntent === `save:${index}`}
+                  isRemoving={isSubmitting && currentIntent === `remove:${index}`}
+                  allModels={models}
+                />
+              </div>
             );
           })}
         </div>
@@ -228,7 +244,7 @@ function ModelRow({
           </div>
         </div>
 
-        <CollapsibleContent className="overflow-hidden">
+        <CollapsibleContent className="overflow-hidden data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-top-1 data-[state=open]:slide-in-from-top-1 duration-300 ease-in-out">
           <div className="mt-4">
             <Form method="post" {...getFormProps(form)}>
               <input type="hidden" name="index" value={index} />
