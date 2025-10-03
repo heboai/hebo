@@ -11,85 +11,56 @@ import ModelConfigurationForm, { ModelConfigSchema } from "./form";
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const intent = String(formData.get("intent") || "");
-
-  // Handle remove action
-  if (intent.startsWith("remove:")) {
-    const index = Number(formData.get("index"));
-    const modelsJson = String(formData.get("models") || "[]");
-    
-    try {
-      const currentModels = JSON.parse(modelsJson);
-      const updatedModels = currentModels.filter((_: any, i: number) => i !== index);
-
-      const { error: putError } = await api
-        .agents({ agentSlug: params.agentSlug! })
-        .branches({ branchSlug: params.branchSlug! })
-        .patch({ models: updatedModels });
-
-      if (putError) {
-        return {
-          formErrors: [parseError(putError).message],
-        };
-      }
-
-      return { 
-        success: true, 
-        message: "Model removed successfully",
-        models: updatedModels 
-      };
-    } catch (error) {
-      return {
-        formErrors: [parseError(error).message],
-      };
-    }
-  }
-
-  // Handle save action
-  if (!intent.startsWith("save:")) {
-    return undefined;
-  }
-
-  // Parse the form data with Conform (now expects single model, not array)
-  const submission = parseWithValibot(formData, { schema: ModelConfigSchema });
-
-  if (submission.status !== "success") {
-    return submission.reply();
-  }
-
-  const { alias, type } = submission.value;
-  const index = Number(formData.get("index"));
   const modelsJson = String(formData.get("models") || "[]");
   
   try {
-    // Parse the current models from the hidden field
     const currentModels = JSON.parse(modelsJson);
-    
-    // Update the specific model at the given index
-    const updatedModels = [...currentModels];
-    updatedModels[index] = { alias, type };
+    let updatedModels = [...currentModels];
+    let message = "";
 
-    // Send the entire models array to the API
+    if (intent.startsWith("remove:")) {
+      // Handle remove action
+      const index = Number(formData.get("index"));
+      updatedModels = currentModels.filter((_: any, i: number) => i !== index);
+      message = "Model removed successfully";
+    } else if (intent.startsWith("save:")) {
+      // Handle save action
+      const submission = parseWithValibot(formData, { schema: ModelConfigSchema });
+      
+      if (submission.status !== "success") {
+        return submission.reply();
+      }
+
+      const { alias, type } = submission.value;
+      const index = Number(formData.get("index"));
+      
+      updatedModels[index] = { alias, type };
+      message = "Model updated successfully";
+    } else {
+      return undefined;
+    }
+
+    // Both actions send the complete models array to the API
     const { error: putError } = await api
       .agents({ agentSlug: params.agentSlug! })
       .branches({ branchSlug: params.branchSlug! })
       .patch({ models: updatedModels });
 
     if (putError) {
-      return submission.reply({
+      return {
         formErrors: [parseError(putError).message],
-      });
+      };
     }
 
-    // Return success with the updated models to trigger UI update
     return { 
       success: true, 
-      message: "Model updated successfully",
+      message,
       models: updatedModels 
     };
   } catch (error) {
-    return submission.reply({
+    return {
       formErrors: [parseError(error).message],
-    });
+    };
   }
 }
 
