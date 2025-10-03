@@ -184,7 +184,7 @@ function ModelRow({
           <div className="flex gap-1 items-center">
             <Split/>
             <p className="text-regular">
-              Custom
+              Default
             </p>
           </div>
           <div>
