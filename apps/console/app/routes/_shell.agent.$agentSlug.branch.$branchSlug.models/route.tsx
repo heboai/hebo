@@ -2,7 +2,7 @@
 
 import { parseWithValibot } from "@conform-to/valibot";
 import { useRouteLoaderData, useParams } from "react-router";
-import { kyFetch } from "~console/lib/service";
+import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
@@ -14,9 +14,9 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   
   try {
     // GET current models before computing update
-    const getRes = await kyFetch.get(`v1/agents/${params.agentSlug!}/branches`);
-    if (!getRes.ok) throw new Error(await getRes.text());
-    const branches = (await getRes.json()) as Array<{ models: Array<{ alias: string; type: string }> }>;
+    const getRes = await api.agents({ agentSlug: params.agentSlug! }).branches.get();
+    if (getRes.error) throw new Error(String(getRes.error.value));
+    const branches = getRes.data ?? [];
 
     const currentModels = branches?.[0]?.models ?? [];
     let updatedModels = [...currentModels];
@@ -45,14 +45,12 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     }
 
     // Send the complete models array via PATCH
-    const res = await kyFetch.patch(
-      `v1/agents/${params.agentSlug!}/branches/${params.branchSlug!}`,
-      { json: { models: updatedModels } },
-    );
+    const res = await api.agents({ agentSlug: params.agentSlug! }).branches({ branchSlug: params.branchSlug! }).patch({
+      models: updatedModels
+    });
 
-    if (!res.ok) {
-      const text = await res.text();
-      return { formErrors: [text] };
+    if (res.error) {
+      return { formErrors: [String(res.error.value)] };
     }
 
     return { success: true, message, models: updatedModels };
