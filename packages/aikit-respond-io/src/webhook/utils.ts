@@ -3,7 +3,7 @@ import * as crypto from "node:crypto";
 import { ModelMessage, UserContent } from "ai";
 
 import { SignatureVerificationError } from "./errors.js";
-import { MessageContent, TextContent, AttachmentContent } from "./types.js";
+import { MessageContent, TextContent } from "./types.js";
 
 export function verifySignature(
   body: string,
@@ -35,9 +35,9 @@ export function toAiModelMessage(
     const parts: UserContent = [];
 
     if (messageContent.type === "text") {
-      parts.push({ type: "text", text: (messageContent as TextContent).text });
+      parts.push({ type: "text", text: messageContent.text });
     } else if (messageContent.type === "attachment") {
-      const attachment = (messageContent as AttachmentContent).attachment;
+      const attachment = messageContent.attachment;
       if (attachment.type === "image") {
         parts.push({
           type: "image",
@@ -46,6 +46,8 @@ export function toAiModelMessage(
       } else {
         throw new Error(`Unsupported attachment type: ${attachment.type}`);
       }
+    } else {
+      throw new Error(`Unsupported message type: ${messageContent.type}`);
     }
 
     return {
