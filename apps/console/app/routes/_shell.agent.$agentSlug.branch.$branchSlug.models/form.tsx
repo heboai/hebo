@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
 import { Form, useActionData, useNavigation, useRevalidator } from "react-router";
 import { object, nonEmpty, pipe, string, trim, type InferOutput } from "valibot";
@@ -47,12 +47,6 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
   // Track local models state - sync with branch models
   const [models, setModels] = useState(branchModels);
 
-  // Track newly added items for animation
-  const [newlyAddedIndex, setNewlyAddedIndex] = useState<number | null>(null);
-
-  // Track items being removed for animation
-  const [removingIndex, setRemovingIndex] = useState<number | null>(null);
-
   // Update local state when branch models change (after successful submission)
   useEffect(() => {
     setModels(branchModels);
@@ -65,16 +59,6 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
       if (openIndex === saveIndex) {
         setOpenIndex(null);
       }
-    }
-  }, [isSubmitting, currentIntent, openIndex]);
-
-  // Handle remove operations with simple animation
-  useEffect(() => {
-    if (isSubmitting && currentIntent.startsWith("remove:")) {
-      const removeIndex = Number(currentIntent.split(":")[1]);
-      if (openIndex === removeIndex) setOpenIndex(null);
-      setRemovingIndex(removeIndex);
-      setTimeout(() => setRemovingIndex(null), 300);
     }
   }, [isSubmitting, currentIntent, openIndex]);
 
@@ -91,8 +75,6 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
     setModels(newModels);
     const newIndex = newModels.length - 1;
     setOpenIndex(newIndex);
-    setNewlyAddedIndex(newIndex);
-    setTimeout(() => setNewlyAddedIndex(null), 300);
   };
 
   return (
@@ -110,16 +92,14 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
           <div className="w-full border border-border rounded-lg overflow-hidden mb-4">
             {models.map((model, index) => {
               const isDefault = model.alias === "default";
-              const isNewlyAdded = newlyAddedIndex === index;
-              const isRemoving = removingIndex === index;
+              const isRemoving = isSubmitting && currentIntent === `remove:${index}`;
+              const rowStyle: CSSProperties = { ["--index" as any]: index };
               
               return (
                 <div 
                   key={index}
-                  className={`
-                    ${isNewlyAdded ? 'animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ease-in-out' : ''}
-                    ${isRemoving ? 'animate-out fade-out-0 slide-out-to-bottom-2 duration-300 ease-in-out' : ''}
-                  `}
+                  className={`model-row ${isRemoving ? 'animate-out fade-out-0 slide-out-to-bottom-2 duration-300 ease-in-out' : ''}`}
+                  style={rowStyle}
                 >
                   <ModelRow
                     index={index}
