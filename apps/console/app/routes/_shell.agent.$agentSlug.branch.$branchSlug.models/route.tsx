@@ -28,16 +28,22 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       updatedModels = currentModels.filter((_: any, i: number) => i !== index);
       message = "Model removed successfully";
     } else if (intent.startsWith("save:")) {
-      // Handle save action
-      const submission = parseWithValibot(formData, { schema: ModelConfigSchema });
-      
+      // Handle save action for one row using nested fields from the single form
+      const index = Number(intent.split(":")[1]);
+
+      const alias = String(formData.get(`models[${index}].alias`) || "");
+      const type = String(formData.get(`models[${index}].type`) || "");
+
+      // Validate via conform helper to preserve error shape
+      const perRowData = new FormData();
+      perRowData.set("alias", alias);
+      perRowData.set("type", type);
+
+      const submission = parseWithValibot(perRowData, { schema: ModelConfigSchema });
       if (submission.status !== "success") {
         return submission.reply();
       }
 
-      const { alias, type } = submission.value;
-      const index = Number(intent.split(":")[1]);
-      
       updatedModels[index] = { alias, type };
       message = "Model updated successfully";
     } else {
@@ -45,19 +51,18 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     }
 
     // Send the complete models array via PATCH
-    const res = await api.agents({ agentSlug: params.agentSlug! }).branches({ branchSlug: params.branchSlug! }).patch({
-      models: updatedModels
-    });
+    const res = await api
+      .agents({ agentSlug: params.agentSlug! })
+      .branches({ branchSlug: params.branchSlug! })
+      .patch({ models: updatedModels });
 
     if (res.error) {
-      return { formErrors: [String(res.error.value)] };
+      return { status: "error", error: { "": [String(res.error.value)] } };
     }
 
     return { success: true, message, models: updatedModels };
   } catch (error) {
-    return {
-      formErrors: [parseError(error).message],
-    };
+    return { status: "error", error: { "": [parseError(error).message!] } };
   }
 }
 
