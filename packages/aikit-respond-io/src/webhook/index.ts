@@ -1,4 +1,4 @@
-import { WebhookError } from "./errors.js";
+import { WebhookError } from "./errors";
 import {
   WebhookEvents,
   ErrorHandler,
@@ -6,8 +6,8 @@ import {
   WebhookConfig,
   EventPayloadMap,
   WebhookEventConfig,
-} from "./types.js";
-import { verifySignature } from "./utils.js";
+} from "./types";
+import { verifySignature } from "./utils";
 
 /**
  * A builder and handler for webhooks.
@@ -133,6 +133,6 @@ export function createWebhookHandler(config: WebhookConfig): Webhook {
   return new Webhook(config);
 }
 
-export * from "./types.js";
-export * from "./errors.js";
-export * from "./utils.js";
+export * from "./types";
+export * from "./errors";
+export * from "./utils";

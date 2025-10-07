@@ -2,8 +2,8 @@ import * as crypto from "node:crypto";
 
 import { ModelMessage, UserContent } from "ai";
 
-import { SignatureVerificationError } from "./errors.js";
-import { MessageContent, TextContent } from "./types.js";
+import { SignatureVerificationError } from "./errors";
+import { MessageContent, TextContent } from "./types";
 
 export function verifySignature(
   body: string,

@@ -3,13 +3,13 @@ import ky, { HTTPError, TimeoutError, type KyInstance } from "ky";
 import {
   RespondIoClientFailureError,
   RespondIoClientNetworkError,
-} from "./errors.js";
+} from "./errors";
 import {
   ContactIdentifier,
   RespondIoClientConfig,
   SendMessagePayload,
   SendMessageResponse,
-} from "./types.js";
+} from "./types";
 
 export class RespondIoClient {
   private kyInstance: KyInstance;
@@ -84,8 +84,8 @@ export class RespondIoClient {
   // public async getContact(...) { ... }
 }
 
-export * from "./types.js";
-export * from "./errors.js";
+export * from "./types";
+export * from "./errors";
 
 export const createRespondIoClient = (config: RespondIoClientConfig) => {
   return new RespondIoClient(config);
