@@ -2,6 +2,7 @@ import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
 import { provider } from "~gateway/middleware/provider";
+import { convertOpenAICompatibleMessagesToModelMessages } from "~gateway/utils/message-converter";
 
 export const completions = new Elysia({
   name: "completions",
@@ -15,10 +16,13 @@ export const completions = new Elysia({
 
       const chatModel = provider.chat(model);
 
+      const modelMessages =
+        convertOpenAICompatibleMessagesToModelMessages(messages);
+
       if (stream) {
         const result = streamText({
           model: chatModel,
-          messages: messages as ModelMessage[],
+          messages: modelMessages as ModelMessage[],
           temperature,
         });
         return result.toTextStreamResponse();
@@ -26,7 +30,7 @@ export const completions = new Elysia({
 
       const result = await generateText({
         model: chatModel,
-        messages: messages as ModelMessage[],
+        messages: modelMessages as ModelMessage[],
         temperature,
       });
 
@@ -65,10 +69,18 @@ export const completions = new Elysia({
             content: t.Union([
               t.String(),
               t.Array(
-                t.Object({
-                  type: t.Literal("text"),
-                  text: t.String(),
-                }),
+                t.Union([
+                  t.Object({
+                    type: t.Literal("text"),
+                    text: t.String(),
+                  }),
+                  t.Object({
+                    type: t.Literal("image_url"),
+                    image_url: t.Object({
+                      url: t.String(),
+                    }),
+                  }),
+                ]),
                 { minItems: 1 },
               ),
             ]),
