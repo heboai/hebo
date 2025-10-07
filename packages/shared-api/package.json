@@ -6,7 +6,8 @@
   "sideEffects": false,
   "exports": {
     "./auth/*": "./auth/*.ts",
-    "./cors/*": "./cors/*.ts"
+    "./cors/*": "./cors/*.ts",
+    "./middlewares/*": "./middlewares/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdx -e '.env*' ."
@@ -21,6 +22,7 @@
   },
   "dependencies": {
     "@elysiajs/bearer": "^1.4.1",
+    "@hebo/database": "workspace:*",
     "jose": "^6.0.12",
     "sst": "^3.17.13"
   }

@@ -203,6 +203,7 @@
       "version": "0.0.1",
       "dependencies": {
         "@elysiajs/bearer": "^1.4.1",
+        "@hebo/database": "workspace:*",
         "jose": "^6.0.12",
         "sst": "^3.17.13",
       },

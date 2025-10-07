@@ -5,8 +5,8 @@ import Elysia from "elysia";
 
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import { corsConfig } from "@hebo/shared-api/cors/cors-config";
+import { prismaErrors } from "@hebo/shared-api/middlewares/prisma-errors";
 
-import { errors } from "./middlewares/errors";
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
 
@@ -32,7 +32,7 @@ const createApi = () =>
       }),
     )
     .use(authService)
-    .use(errors)
+    .use(prismaErrors)
     .group(
       "/v1",
       {
