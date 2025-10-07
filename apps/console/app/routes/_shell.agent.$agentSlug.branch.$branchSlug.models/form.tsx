@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 
-import { Form, useActionData, useNavigation, useRevalidator } from "react-router";
+import { Form, useActionData, useNavigation } from "react-router";
 import { object, nonEmpty, pipe, string, trim, type InferOutput } from "valibot";
 import { Split } from "lucide-react";
 
@@ -37,7 +37,6 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
   const actionData = useActionData<any>();
   useActionDataErrorToast();
   const navigation = useNavigation();
-  const revalidator = useRevalidator();
   const isSubmitting = navigation.state === "submitting";
   const currentIntent = String(navigation.formData?.get("intent") || "");
 
@@ -66,9 +65,8 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
       toast.success(actionData.message);
-      revalidator.revalidate();
     }
-  }, [actionData, navigation.state, revalidator]);
+  }, [actionData, navigation.state]);
 
   const handleAddModel = () => {
     const newModels = [...models, { alias: "", type: "" }];
