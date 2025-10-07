@@ -16,7 +16,7 @@ export class Webhook extends EventTarget {
   private readonly eventConfigs: Partial<
     Record<WebhookEvents, WebhookEventConfig>
   >;
-  private errorHandler: ErrorHandler = (err) => {
+  private errorHandler: ErrorHandler = (err: unknown) => {
     throw err;
   };
 
@@ -39,7 +39,7 @@ export class Webhook extends EventTarget {
       try {
         await this.process(request);
         return new Response("OK", { status: 200 });
-      } catch (error) {
+      } catch (error: unknown) {
         if (error instanceof WebhookError) {
           return new Response(error.message, { status: 400 });
         }
@@ -117,8 +117,8 @@ export class Webhook extends EventTarget {
       verifySignature(body, signature, signingKey);
 
       this.dispatchEvent(new CustomEvent(eventType, { detail: payload }));
-    } catch (error) {
-      await this.errorHandler(error as Error);
+    } catch (error: unknown) {
+      await this.errorHandler(error);
       throw error;
     }
   }
@@ -135,3 +135,4 @@ export function createWebhookHandler(config: WebhookConfig): Webhook {
 
 export * from "./types";
 export * from "./errors";
+export * from "./utils";
