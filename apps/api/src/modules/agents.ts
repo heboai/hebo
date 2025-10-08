@@ -25,10 +25,9 @@ const Agent = t.Composite([
   AgentPlain,
   t.Object({ branches: t.Array(Branch) }),
 ]);
-
-const branchExpandParam = t.Optional(
-  t.Object({ expand: t.Literal("branches") }),
-);
+const branchExpandParam = t.Object({
+  expand: t.Optional(t.Literal("branches")),
+});
 
 export const agentsModule = new Elysia({
   prefix: "/agents",
@@ -49,7 +48,7 @@ export const agentsModule = new Elysia({
     "/",
     async ({ body, userId, query }) => {
       const expandBranches = query.expand === "branches";
-      const agent = createAgentRepo(userId!).create(
+      const agent = await createAgentRepo(userId!).create(
         body.name,
         body.defaultModel,
         expandBranches,

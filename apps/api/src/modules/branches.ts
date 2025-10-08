@@ -34,7 +34,7 @@ export const branchesModule = new Elysia({
   .post(
     "/",
     async ({ body, params, userId }) => {
-      const branch = createBranchRepo(userId!, params.agentSlug).copy(
+      const branch = await createBranchRepo(userId!, params.agentSlug).copy(
         body.sourceBranchSlug,
         body.name,
       );
