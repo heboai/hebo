@@ -10,3 +10,19 @@
     animation-duration: 0ms;
   }
 }
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.model-row {
+  animation: slideIn 300ms ease-out;
+  animation-delay: calc(var(--index) * 50ms);
+  animation-fill-mode: both;
+}
