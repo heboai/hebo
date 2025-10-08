@@ -26,23 +26,29 @@ const Agent = t.Composite([
   t.Object({ branches: t.Array(Branch) }),
 ]);
 
+const branchExpandParam = t.Optional(
+  t.Object({ expand: t.Literal("branches") }),
+);
+
 export const agentsModule = new Elysia({
   prefix: "/agents",
 })
   .use(authService)
-  .derive(({ query }) => ({
-    expandBranches: query.expand === "branches",
-  }))
   .get(
     "/",
-    async ({ userId, expandBranches }) => {
+    async ({ userId, query }) => {
+      const expandBranches = query.expand === "branches";
       return createAgentRepo(userId!).getAll(expandBranches);
     },
-    { response: { 200: t.Array(Agent) } },
+    {
+      query: branchExpandParam,
+      response: { 200: t.Array(Agent) },
+    },
   )
   .post(
     "/",
-    async ({ body, set, userId, expandBranches }) => {
+    async ({ body, set, userId, query }) => {
+      const expandBranches = query.expand === "branches";
       const agent = createAgentRepo(userId!).create(
         body.name,
         body.defaultModel,
@@ -52,6 +58,7 @@ export const agentsModule = new Elysia({
       return agent;
     },
     {
+      query: branchExpandParam,
       body: t.Composite([
         AgentInputCreate,
         t.Object({
@@ -63,19 +70,22 @@ export const agentsModule = new Elysia({
   )
   .get(
     "/:agentSlug",
-    async ({ params, userId, expandBranches }) => {
+    async ({ params, userId, query }) => {
+      const expandBranches = query.expand === "branches";
       return createAgentRepo(userId!).getBySlug(
         params.agentSlug,
         expandBranches,
       );
     },
     {
+      query: branchExpandParam,
       response: { 200: Agent },
     },
   )
   .patch(
     "/:agentSlug",
-    async ({ body, params, userId, expandBranches }) => {
+    async ({ body, params, userId, query }) => {
+      const expandBranches = query.expand === "branches";
       return createAgentRepo(userId!).update(
         params.agentSlug,
         body.name,
@@ -83,6 +93,7 @@ export const agentsModule = new Elysia({
       );
     },
     {
+      query: branchExpandParam,
       body: AgentInputUpdate,
       response: { 200: Agent },
     },
