@@ -20,32 +20,32 @@ generator prismabox {
   output                      = "../src/generated/prismabox"
 }
 
-model Agent {
+model Agents {
+  /// @prismabox.hide
+  id         String     @id @default(uuid()) @db.Uuid
   /// @prismabox.input.hide
-  slug       String    @id
+  slug       String     @unique
   name       String
   // audit fields
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  created_at DateTime   @default(now()) @db.Timestamp(3)
   /// @prismabox.hide
   updated_by String
   /// @prismabox.hide
-  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime   @updatedAt
   /// @prismabox.hide
   deleted_by String?
   /// @prismabox.hide
-  deleted_at DateTime? @db.Timestamptz(6)
+  deleted_at DateTime?  @db.Timestamp(3)
   /// @prismabox.input.hide
-  branches   Branch[]
-
-  @@map("agents")
+  branches   Branches[]
 }
 
-model Branch {
+model Branches {
   /// @prismabox.hide
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(uuid()) @db.Uuid
   /// @prismabox.input.hide
   slug       String
   /// @prismabox.hide
@@ -56,19 +56,17 @@ model Branch {
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide
-  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  created_at DateTime  @default(now()) @db.Timestamp(3)
   /// @prismabox.hide
   updated_by String
   /// @prismabox.hide
-  updated_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @updatedAt
   /// @prismabox.hide
   deleted_by String?
   /// @prismabox.hide
-  deleted_at DateTime? @db.Timestamptz(6)
+  deleted_at DateTime? @db.Timestamp(3)
   /// @prismabox.hide
-  agents     Agent     @relation(fields: [agent_slug], references: [slug], onDelete: Cascade, onUpdate: NoAction)
+  agents     Agents    @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
 
-  @@index([slug, agent_slug], map: "idx_branch_slug_agent_slug")
-  @@index([agent_slug], map: "idx_branch_agent_slug")
-  @@map("branches")
+  @@index([agent_slug, slug])
 }

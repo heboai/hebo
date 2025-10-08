@@ -2,17 +2,17 @@ import { Elysia, status, t } from "elysia";
 
 import { createAgentRepo } from "@hebo/database/repository";
 import {
-  AgentInputCreate,
-  AgentInputUpdate,
-  AgentPlain,
-  AgentRelations,
-} from "@hebo/database/src/generated/prismabox/Agent";
+  AgentsInputCreate,
+  AgentsInputUpdate,
+  AgentsPlain,
+  AgentsRelations,
+} from "@hebo/database/src/generated/prismabox/Agents";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import { SupportedModelEnum } from "~api/modules/branches";
 
 const AgentRelationItemProperties =
-  AgentRelations.properties.branches.items.properties;
+  AgentsRelations.properties.branches.items.properties;
 const Branch = t.Object(
   {
     slug: AgentRelationItemProperties.slug,
@@ -22,7 +22,7 @@ const Branch = t.Object(
   { additionalProperties: false },
 );
 const Agent = t.Composite([
-  AgentPlain,
+  AgentsPlain,
   t.Object({ branches: t.Array(Branch) }),
 ]);
 const branchExpandParam = t.Object({
@@ -58,7 +58,7 @@ export const agentsModule = new Elysia({
     {
       query: branchExpandParam,
       body: t.Composite([
-        AgentInputCreate,
+        AgentsInputCreate,
         t.Object({
           defaultModel: SupportedModelEnum,
         }),
@@ -92,7 +92,7 @@ export const agentsModule = new Elysia({
     },
     {
       query: branchExpandParam,
-      body: AgentInputUpdate,
+      body: AgentsInputUpdate,
       response: { 200: Agent },
     },
   )
