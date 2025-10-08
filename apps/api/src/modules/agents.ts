@@ -9,11 +9,11 @@ import {
 } from "@hebo/database/src/generated/prismabox/agents";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
-import { SupportedModelEnum } from "~api/modules/branches";
+import { supportedModelsUnion } from "~api/modules/branches";
 
 const agentsRelationItemProperties =
   agentsRelations.properties.branches.items.properties;
-const Branch = t.Object(
+const branches = t.Object(
   {
     slug: agentsRelationItemProperties.slug,
     name: t.Optional(agentsRelationItemProperties.name),
@@ -23,9 +23,9 @@ const Branch = t.Object(
 );
 const agents = t.Composite([
   agentsPlain,
-  t.Object({ branches: t.Array(Branch) }),
+  t.Object({ branches: t.Array(branches) }),
 ]);
-const branchExpandParam = t.Object({
+const branchesExpandParam = t.Object({
   expand: t.Optional(t.Literal("branches")),
 });
 
@@ -40,7 +40,7 @@ export const agentsModule = new Elysia({
       return createAgentRepo(userId!).getAll(expandBranches);
     },
     {
-      query: branchExpandParam,
+      query: branchesExpandParam,
       response: { 200: t.Array(agents) },
     },
   )
@@ -57,7 +57,7 @@ export const agentsModule = new Elysia({
       body: t.Composite([
         agentsInputCreate,
         t.Object({
-          defaultModel: SupportedModelEnum,
+          defaultModel: supportedModelsUnion,
         }),
       ]),
       response: { 201: agents },
@@ -73,7 +73,7 @@ export const agentsModule = new Elysia({
       );
     },
     {
-      query: branchExpandParam,
+      query: branchesExpandParam,
       response: { 200: agents },
     },
   )
@@ -88,7 +88,7 @@ export const agentsModule = new Elysia({
       );
     },
     {
-      query: branchExpandParam,
+      query: branchesExpandParam,
       body: agentsInputUpdate,
       response: { 200: agents },
     },

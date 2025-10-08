@@ -9,8 +9,8 @@ import {
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
-export const SupportedModelEnum = t.UnionEnum(
-  supportedModels.map(({ name }) => name) as [string, ...string[]],
+export const supportedModelsUnion = t.Union(
+  supportedModels.map(({ name }) => t.Literal(name)),
   {
     error() {
       return "Invalid model name";
@@ -75,7 +75,7 @@ export const branchesModule = new Elysia({
         models: t.Optional(
           t.Array(
             t.Object(
-              { type: SupportedModelEnum },
+              { type: supportedModelsUnion },
               { additionalProperties: true },
             ),
           ),
