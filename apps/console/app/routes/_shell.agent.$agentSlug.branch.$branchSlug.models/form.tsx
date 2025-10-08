@@ -26,7 +26,11 @@ export const ModelConfigSchema = object({
 });
 
 interface ModelConfigurationFormProps {
-  models: Array<{ alias: string; type: string }>;
+  models: Array<{
+    alias: string;
+    type: string;
+    endpoint?: { url?: string; apiKey?: string; strategy?: string } | null;
+  }>;
   agentSlug: string;
   branchSlug: string;
 }
@@ -56,21 +60,21 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
   // Update local state when branch models change (after successful submission)
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
-      setModels(branchModels);
+      setModels(actionData.models ?? branchModels);
       toast.success(actionData.message);
     }
   }, [actionData, navigation.state]);
 
   // Hidden input ref to pass full models snapshot to action
   const modelsJsonInputRef = useRef<HTMLInputElement>(null);
-  const prepareModelsJson = (snapshot: Array<{ alias: string; type: string }>) => {
+  const prepareModelsJson = (snapshot: Array<{ alias: string; type: string; endpoint?: { url?: string; apiKey?: string; strategy?: string } | null }>) => {
     if (modelsJsonInputRef.current) {
       modelsJsonInputRef.current.value = JSON.stringify(snapshot);
     }
   };
 
   const handleAddModel = () => {
-    const newModels = [...models, { alias: "", type: "" }];
+    const newModels = [...models, { alias: "", type: "", endpoint: null }];
     setModels(newModels);
     const newIndex = newModels.length - 1;
     setOpenIndex(newIndex);
@@ -132,7 +136,7 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
 
 type ModelRowProps = {
   index: number;
-  model: { alias: string; type: string };
+  model: { alias: string; type: string; endpoint?: { url?: string; apiKey?: string; strategy?: string } | null };
   agentSlug: string;
   branchSlug: string;
   isOpen: boolean;
@@ -141,8 +145,8 @@ type ModelRowProps = {
   isFirst: boolean;
   isSubmitting: boolean;
   isRemoving: boolean;
-  allModels: Array<{ alias: string; type: string }>;
-  prepareModelsJson: (snapshot: Array<{ alias: string; type: string }>) => void;
+  allModels: Array<{ alias: string; type: string; endpoint?: { url?: string; apiKey?: string; strategy?: string } | null }>;
+  prepareModelsJson: (snapshot: Array<{ alias: string; type: string; endpoint?: { url?: string; apiKey?: string; strategy?: string } | null }>) => void;
 }
 
 function ModelRow({ 
@@ -160,7 +164,7 @@ function ModelRow({
   prepareModelsJson
 }: ModelRowProps) {
   // Track routing selection for header badge + submit hidden input
-  const [routing, setRouting] = useState<"default" | "custom">("default");
+  const [routing, setRouting] = useState<"default" | "custom">(model?.endpoint ? "custom" : "default");
   // Hidden input to register routing selection in native form submit
   const routingInputRef = useRef<HTMLInputElement>(null);
 
@@ -237,8 +241,8 @@ function ModelRow({
                 </div>
                 <div className="flex flex-col gap-4 md:flex-row md:items-start">
                   <div className="md:shrink-0">
-                    <input type="hidden" name={`models[${index}].routing`} defaultValue="default" ref={routingInputRef} />
-                    <RadioGroup defaultValue="default" onValueChange={handleRoutingChange}>
+                    <input type="hidden" name={`models[${index}].routing`} defaultValue={routing} ref={routingInputRef} />
+                    <RadioGroup defaultValue={routing} onValueChange={handleRoutingChange}>
                       <div className="flex items-center gap-3">
                         <RadioGroupItem value="default" id={`models-${index}-routing-default`} />
                         <Label htmlFor={`models-${index}-routing-default`}>Default Routing</Label>
@@ -255,7 +259,7 @@ function ModelRow({
                         key={`models-${index}-routing-strategy`}
                         placeholder="Cheapest"
                         name={`models[${index}].routingStrategy`}
-                        defaultValue="cheapest"
+                        defaultValue={String(model?.endpoint?.strategy ?? "cheapest")}
                         items={[{ value: "cheapest", name: "Cheapest" }]}
                       />
                       <Input
@@ -263,12 +267,14 @@ function ModelRow({
                         name={`models[${index}].endpointUrl`}
                         placeholder="https://"
                         aria-label="Custom endpoint URL"
+                        defaultValue={model?.endpoint?.url ?? ""}
                       />
                       <Input
                         type="password"
                         name={`models[${index}].apiKey`}
                         placeholder="API Key"
                         aria-label="API key"
+                        defaultValue={model?.endpoint?.apiKey ?? ""}
                       />
                     </div>
                   </div>
