@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Form, useActionData, useNavigation } from "react-router";
-import { object, nonEmpty, pipe, string, trim, type InferOutput } from "valibot";
+import { object, nonEmpty, pipe, string, trim } from "valibot";
 import { Split } from "lucide-react";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
@@ -24,9 +24,6 @@ export const ModelConfigSchema = object({
   type: pipe(string(), trim(), nonEmpty("Model type is required")),
 });
 
-export type ModelConfigFormValues = InferOutput<typeof ModelConfigSchema>;
-
-
 interface ModelConfigurationFormProps {
   models: Array<{ alias: string; type: string }>;
   agentSlug: string;
@@ -46,27 +43,30 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
   // Track local models state - sync with branch models
   const [models, setModels] = useState(branchModels);
 
-  // Update local state when branch models change (after successful submission)
-  useEffect(() => {
-    setModels(branchModels);
-  }, [branchModels]);
-
   // Close the form immediately on save submit
   useEffect(() => {
-    if (isSubmitting && currentIntent.startsWith("save:")) {
-      const saveIndex = Number(currentIntent.split(":")[1]);
-      if (openIndex === saveIndex) {
-        setOpenIndex(null);
-      }
-    }
-  }, [isSubmitting, currentIntent, openIndex]);
+    if (!isSubmitting) return;
+    if (!currentIntent.startsWith("save:")) return;
+    const saveIndex = Number(currentIntent.slice(5));
+    if (!Number.isFinite(saveIndex)) return;
+    setOpenIndex((prev) => (prev === saveIndex ? null : prev));
+  }, [isSubmitting, currentIntent]);
 
-  // Revalidate after successful submission to sync with server
+  // Update local state when branch models change (after successful submission)
   useEffect(() => {
     if (actionData?.success && navigation.state === "idle") {
+      setModels(branchModels);
       toast.success(actionData.message);
     }
   }, [actionData, navigation.state]);
+
+  // Hidden input ref to pass full models snapshot to action
+  const modelsJsonInputRef = useRef<HTMLInputElement>(null);
+  const prepareModelsJson = (snapshot: Array<{ alias: string; type: string }>) => {
+    if (modelsJsonInputRef.current) {
+      modelsJsonInputRef.current.value = JSON.stringify(snapshot);
+    }
+  };
 
   const handleAddModel = () => {
     const newModels = [...models, { alias: "", type: "" }];
@@ -78,6 +78,7 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
   return (
     <div className="max-w-2xl min-w-0 w-full px-4 sm:px-6 md:px-0 py-4">
       <Form method="post">
+        <input type="hidden" name="modelsJson" ref={modelsJsonInputRef} />
         <div className="flex flex-col mb-6 mt-16">
           <h2>Model Configuration</h2>
           <p className="text-muted-foreground">
@@ -91,14 +92,9 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
             {models.map((model, index) => {
               const isDefault = model.alias === "default";
               const isRemoving = isSubmitting && currentIntent === `remove:${index}`;
-              const rowStyle: CSSProperties = { ["--index" as any]: index };
               
               return (
-                <div 
-                  key={index}
-                  className={`model-row ${isRemoving ? 'animate-out fade-out-0 slide-out-to-bottom-2 duration-300 ease-in-out' : ''}`}
-                  style={rowStyle}
-                >
+                <div key={index}>
                   <ModelRow
                     index={index}
                     model={model}
@@ -111,6 +107,7 @@ export default function ModelConfigurationForm({ models: branchModels, agentSlug
                     isSubmitting={isSubmitting && currentIntent === `save:${index}`}
                     isRemoving={isSubmitting && currentIntent === `remove:${index}`}
                     allModels={models}
+                    prepareModelsJson={prepareModelsJson}
                   />
                 </div>
               );
@@ -144,6 +141,7 @@ type ModelRowProps = {
   isSubmitting: boolean;
   isRemoving: boolean;
   allModels: Array<{ alias: string; type: string }>;
+  prepareModelsJson: (snapshot: Array<{ alias: string; type: string }>) => void;
 }
 
 function ModelRow({ 
@@ -157,7 +155,8 @@ function ModelRow({
   isFirst,
   isSubmitting,
   isRemoving,
-  allModels
+  allModels,
+  prepareModelsJson
 }: ModelRowProps) {
   return (
     <div
@@ -236,6 +235,7 @@ function ModelRow({
                     variant="destructive"
                     disabled={isDefault}
                     isLoading={isRemoving}
+                    onClick={() => prepareModelsJson(allModels.filter((_, i) => i !== index))}
                   >
                     Remove
                   </Button>
@@ -253,6 +253,7 @@ function ModelRow({
                     name="intent"
                     value={`save:${index}`}
                     isLoading={isSubmitting}
+                    onClick={() => prepareModelsJson(allModels)}
                   >
                     Save
                   </Button>
