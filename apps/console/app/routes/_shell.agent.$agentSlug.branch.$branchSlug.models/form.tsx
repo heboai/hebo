@@ -235,18 +235,43 @@ function ModelRow({
                     />
                   </div>
                 </div>
-                <div>
-                  <input type="hidden" name={`models[${index}].routing`} defaultValue="default" ref={routingInputRef} />
-                  <RadioGroup defaultValue="default" onValueChange={handleRoutingChange}>
-                    <div className="flex items-center gap-3">
-                      <RadioGroupItem value="default" id={`models-${index}-routing-default`} />
-                      <Label htmlFor={`models-${index}-routing-default`}>Default</Label>
+                <div className="flex flex-col gap-4 md:flex-row md:items-start">
+                  <div className="md:shrink-0">
+                    <input type="hidden" name={`models[${index}].routing`} defaultValue="default" ref={routingInputRef} />
+                    <RadioGroup defaultValue="default" onValueChange={handleRoutingChange}>
+                      <div className="flex items-center gap-3">
+                        <RadioGroupItem value="default" id={`models-${index}-routing-default`} />
+                        <Label htmlFor={`models-${index}-routing-default`}>Default Routing</Label>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <RadioGroupItem value="custom" id={`models-${index}-routing-custom`} />
+                        <Label htmlFor={`models-${index}-routing-custom`}>Custom Endpoint</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="flex w-full md:flex-1 md:max-w-full min-w-0">
+                    <div className="flex w-full min-w-0 flex-col gap-3">
+                      <Select
+                        key={`models-${index}-routing-strategy`}
+                        placeholder="Cheapest"
+                        name={`models[${index}].routingStrategy`}
+                        defaultValue="cheapest"
+                        items={[{ value: "cheapest", name: "Cheapest" }]}
+                      />
+                      <Input
+                        type="url"
+                        name={`models[${index}].endpointUrl`}
+                        placeholder="https://"
+                        aria-label="Custom endpoint URL"
+                      />
+                      <Input
+                        type="password"
+                        name={`models[${index}].apiKey`}
+                        placeholder="API Key"
+                        aria-label="API key"
+                      />
                     </div>
-                    <div className="flex items-center gap-3">
-                      <RadioGroupItem value="custom" id={`models-${index}-routing-custom`} />
-                      <Label htmlFor={`models-${index}-routing-custom`}>Custom</Label>
-                    </div>
-                  </RadioGroup>
+                  </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between gap-2">
