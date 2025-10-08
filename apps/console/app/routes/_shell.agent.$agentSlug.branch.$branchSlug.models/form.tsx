@@ -18,6 +18,7 @@ import { Label } from "@hebo/shared-ui/components/Label";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
 import { toast } from "sonner";
+import { RadioGroup, RadioGroupItem } from "@hebo/shared-ui/components/RadioGroup";
 
 export const ModelConfigSchema = object({
   alias: pipe(string(), trim(), nonEmpty("Alias is required")),
@@ -158,6 +159,15 @@ function ModelRow({
   allModels,
   prepareModelsJson
 }: ModelRowProps) {
+  // Track routing selection for header badge + submit hidden input
+  const [routing, setRouting] = useState<"default" | "custom">("default");
+  // Hidden input to register routing selection in native form submit
+  const routingInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRoutingChange = (value: string) => {
+    setRouting((value as "default" | "custom") ?? "default");
+    if (routingInputRef.current) routingInputRef.current.value = value;
+  };
   return (
     <div
       className={`
@@ -184,7 +194,7 @@ function ModelRow({
           <div className="flex gap-1 items-center">
             <Split/>
             <p className="text-regular">
-              Default
+              {routing === "custom" ? "Custom" : "Default"}
             </p>
           </div>
           <div>
@@ -224,6 +234,19 @@ function ModelRow({
                       }))}
                     />
                   </div>
+                </div>
+                <div>
+                  <input type="hidden" name={`models[${index}].routing`} defaultValue="default" ref={routingInputRef} />
+                  <RadioGroup defaultValue="default" onValueChange={handleRoutingChange}>
+                    <div className="flex items-center gap-3">
+                      <RadioGroupItem value="default" id={`models-${index}-routing-default`} />
+                      <Label htmlFor={`models-${index}-routing-default`}>Default</Label>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <RadioGroupItem value="custom" id={`models-${index}-routing-custom`} />
+                      <Label htmlFor={`models-${index}-routing-custom`}>Custom</Label>
+                    </div>
+                  </RadioGroup>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between gap-2">
