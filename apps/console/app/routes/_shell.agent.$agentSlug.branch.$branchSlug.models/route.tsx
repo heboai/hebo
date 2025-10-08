@@ -13,28 +13,31 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   const intent = String(formData.get("intent") || "");
   
   try {
-    // GET current models before computing update
-    const getRes = await api.agents({ agentSlug: params.agentSlug! }).branches.get();
-    if (getRes.error) throw new Error(String(getRes.error.value));
-    const branches = getRes.data ?? [];
+    // Use client-provided models snapshot instead of GET
+    const modelsJson = String(formData.get("modelsJson") || "[]");
 
-    const currentModels = branches?.[0]?.models ?? [];
-    let updatedModels = [...currentModels];
+    let updatedModels: Array<{ alias: string; type: string }> = [];
+    try {
+      const parsed = JSON.parse(modelsJson);
+      if (Array.isArray(parsed)) {
+        updatedModels = parsed.map((m: any) => ({
+          alias: String(m?.alias ?? ""),
+          type: String(m?.type ?? ""),
+        }));
+      }
+    } catch {
+      updatedModels = [];
+    }
+
     let message = "";
 
-    if (intent.startsWith("remove:")) {
-      // Handle remove action using index from intent
-      const index = Number(intent.split(":")[1]);
-      updatedModels = currentModels.filter((_: any, i: number) => i !== index);
-      message = "Model removed successfully";
-    } else if (intent.startsWith("save:")) {
-      // Handle save action for one row using nested fields from the single form
+    if (intent.startsWith("save:")) {
+      // Overlay edited row values onto the snapshot
       const index = Number(intent.split(":")[1]);
 
       const alias = String(formData.get(`models[${index}].alias`) || "");
       const type = String(formData.get(`models[${index}].type`) || "");
 
-      // Validate via conform helper to preserve error shape
       const perRowData = new FormData();
       perRowData.set("alias", alias);
       perRowData.set("type", type);
@@ -44,8 +47,13 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
         return submission.reply();
       }
 
-      updatedModels[index] = { alias, type };
+      if (Number.isFinite(index) && index >= 0) {
+        updatedModels[index] = { alias, type };
+      }
       message = "Model updated successfully";
+    } else if (intent.startsWith("remove:")) {
+      // Snapshot already reflects the removal
+      message = "Model removed successfully";
     } else {
       return undefined;
     }
