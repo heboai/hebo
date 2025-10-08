@@ -1,4 +1,4 @@
-import { Elysia, t } from "elysia";
+import { Elysia, status, t } from "elysia";
 
 import { createAgentRepo } from "@hebo/database/repository";
 import {
@@ -47,15 +47,14 @@ export const agentsModule = new Elysia({
   )
   .post(
     "/",
-    async ({ body, set, userId, query }) => {
+    async ({ body, userId, query }) => {
       const expandBranches = query.expand === "branches";
       const agent = createAgentRepo(userId!).create(
         body.name,
         body.defaultModel,
         expandBranches,
       );
-      set.status = 201;
-      return agent;
+      return status(201, agent);
     },
     {
       query: branchExpandParam,
@@ -100,9 +99,9 @@ export const agentsModule = new Elysia({
   )
   .delete(
     "/:agentSlug",
-    async ({ params, set, userId }) => {
+    async ({ params, userId }) => {
       await createAgentRepo(userId!).softDelete(params.agentSlug);
-      set.status = 204;
+      status(204);
     },
     {
       response: { 204: t.Void() },

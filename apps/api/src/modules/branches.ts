@@ -1,4 +1,4 @@
-import { Elysia, t } from "elysia";
+import { Elysia, status, t } from "elysia";
 
 import { createBranchRepo } from "@hebo/database/repository";
 import {
@@ -33,13 +33,12 @@ export const branchesModule = new Elysia({
   )
   .post(
     "/",
-    async ({ body, params, set, userId }) => {
+    async ({ body, params, userId }) => {
       const branch = createBranchRepo(userId!, params.agentSlug).copy(
         body.sourceBranchSlug,
         body.name,
       );
-      set.status = 201;
-      return branch;
+      return status(201, branch);
     },
     {
       body: t.Object({
@@ -87,11 +86,11 @@ export const branchesModule = new Elysia({
   )
   .delete(
     "/:branchSlug",
-    async ({ params, set, userId }) => {
+    async ({ params, userId }) => {
       await createBranchRepo(userId!, params.agentSlug).softDelete(
         params.branchSlug,
       );
-      set.status = 204;
+      status(204);
     },
     {
       response: { 204: t.Void() },
