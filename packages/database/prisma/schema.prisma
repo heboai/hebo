@@ -24,6 +24,7 @@ model Agent {
   /// @prismabox.input.hide
   slug       String    @id
   name       String
+  // audit fields
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide
@@ -51,6 +52,7 @@ model Branch {
   agent_slug String
   name       String
   models     Json[]    @default([])
+  // audit fields
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide
