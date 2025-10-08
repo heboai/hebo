@@ -32,7 +32,15 @@ export const branchHandlers = [
     async ({ request, params }) => {
       const body = (await request.json()) as {
         name?: string;
-        models?: Array<{ alias: string; type: string; endpoint?: unknown }>;
+        models?: Array<{
+          alias: string;
+          type: string;
+          endpoint?: {
+            url?: string;
+            apiKey?: string;
+            strategy?: string;
+          } | null;
+        }>;
       };
 
       let branch;
