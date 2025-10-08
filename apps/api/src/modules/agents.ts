@@ -13,14 +13,11 @@ import { supportedModelsUnion } from "~api/modules/branches";
 
 const agentsRelationItemProperties =
   agentsRelations.properties.branches.items.properties;
-const branches = t.Object(
-  {
-    slug: agentsRelationItemProperties.slug,
-    name: t.Optional(agentsRelationItemProperties.name),
-    models: t.Optional(agentsRelationItemProperties.models),
-  },
-  { additionalProperties: false },
-);
+const branches = t.Object({
+  slug: agentsRelationItemProperties.slug,
+  name: t.Optional(agentsRelationItemProperties.name),
+  models: t.Optional(agentsRelationItemProperties.models),
+});
 const agents = t.Composite([
   agentsPlain,
   t.Object({ branches: t.Array(branches) }),

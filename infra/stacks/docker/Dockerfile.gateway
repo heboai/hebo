@@ -19,9 +19,9 @@ COPY --from=pruner /repo/out/json/ ./
 RUN bun install --lockfile-only
 RUN bun install --frozen-lockfile --ignore-scripts
 
-# FUTURE: add prisma generate to the build step once adding db operations to the gateway
 COPY --from=pruner /repo/out/full/ ./
 ADD https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /rds-bundle.pem
+# FUTURE: add prisma generate to the build step once adding db operations to the gateway
 WORKDIR /repo/apps/gateway
 RUN bun run build
 

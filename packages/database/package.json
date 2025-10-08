@@ -4,9 +4,11 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "build": "prisma generate",
     "clean": "git clean -fdx .",
-    "format": "prisma format",
-    "db": "DATABASE_URL=postgresql://postgres:password@localhost:5432/local prisma"
+    "db": "DATABASE_URL=postgresql://postgres:password@localhost:5432/local prisma",
+    "dev": "prisma generate",
+    "format": "prisma format"
   },
   "devDependencies": {
     "bun-types": "^1.2.22",
