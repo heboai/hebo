@@ -46,17 +46,14 @@ export const agentsModule = new Elysia({
   )
   .post(
     "/",
-    async ({ body, userId, query }) => {
-      const expandBranches = query.expand === "branches";
+    async ({ body, userId }) => {
       const agent = await createAgentRepo(userId!).create(
         body.name,
         body.defaultModel,
-        expandBranches,
       );
       return status(201, agent);
     },
     {
-      query: branchExpandParam,
       body: t.Composite([
         agentsInputCreate,
         t.Object({

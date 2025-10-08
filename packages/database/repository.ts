@@ -43,7 +43,7 @@ export const createAgentRepo = (userId: string) => {
   const client = prisma(userId);
 
   return {
-    create: async (name: string, defaultModel: string, withBranches = false) =>
+    create: async (name: string, defaultModel: string) =>
       // FUTURE: Apply a fallback strategy with retries with different slugs in case of conflict
       client.agents.create({
         data: {
@@ -61,7 +61,7 @@ export const createAgentRepo = (userId: string) => {
             },
           },
         },
-        include: agentInclude(withBranches),
+        include: agentInclude(true),
       }),
 
     getAll: async (withBranches = false) =>
