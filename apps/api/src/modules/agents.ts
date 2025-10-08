@@ -8,18 +8,8 @@ import {
   AgentRelations,
 } from "@hebo/database/src/generated/prismabox/Agent";
 import { authService } from "@hebo/shared-api/auth/auth-service";
-import supportedModels from "@hebo/shared-data/json/supported-models";
 
-const SupportedModels = supportedModels.map(({ name }) => name) as [
-  string,
-  ...string[],
-];
-// FUTURE: move to shared-api
-export const SupportedModelEnum = t.UnionEnum(SupportedModels, {
-  error() {
-    return "Invalid model name";
-  },
-});
+import { SupportedModelEnum } from "~api/modules/branches";
 
 const AgentRelationItemProperties =
   AgentRelations.properties.branches.items.properties;

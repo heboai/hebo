@@ -7,8 +7,18 @@ import {
   BranchInputUpdate,
 } from "@hebo/database/src/generated/prismabox/Branch";
 import { authService } from "@hebo/shared-api/auth/auth-service";
+import supportedModels from "@hebo/shared-data/json/supported-models";
 
-import { SupportedModelEnum } from "~api/modules/agents";
+const supportedModelNames = supportedModels.map(({ name }) => name) as [
+  string,
+  ...string[],
+];
+
+export const SupportedModelEnum = t.UnionEnum(supportedModelNames, {
+  error() {
+    return "Invalid model name";
+  },
+});
 
 export const branchesModule = new Elysia({
   prefix: "/:agentSlug/branches",
