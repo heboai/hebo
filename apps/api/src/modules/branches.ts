@@ -2,10 +2,10 @@ import { Elysia, status, t } from "elysia";
 
 import { createBranchRepo } from "@hebo/database/repository";
 import {
-  Branches,
-  BranchesInputCreate,
-  BranchesInputUpdate,
-} from "@hebo/database/src/generated/prismabox/Branches";
+  branches,
+  branchesInputCreate,
+  branchesInputUpdate,
+} from "@hebo/database/src/generated/prismabox/branches";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
@@ -28,7 +28,7 @@ export const branchesModule = new Elysia({
       return createBranchRepo(userId!, params.agentSlug).getAll();
     },
     {
-      response: { 200: t.Array(Branches) },
+      response: { 200: t.Array(branches) },
     },
   )
   .post(
@@ -42,10 +42,10 @@ export const branchesModule = new Elysia({
     },
     {
       body: t.Object({
-        name: BranchesInputCreate.properties.name,
+        name: branchesInputCreate.properties.name,
         sourceBranchSlug: t.String(),
       }),
-      response: { 201: Branches },
+      response: { 201: branches },
     },
   )
   .get(
@@ -56,7 +56,7 @@ export const branchesModule = new Elysia({
       );
     },
     {
-      response: { 200: Branches },
+      response: { 200: branches },
     },
   )
   .patch(
@@ -71,7 +71,7 @@ export const branchesModule = new Elysia({
     },
     {
       body: t.Object({
-        name: BranchesInputUpdate.properties.name,
+        name: branchesInputUpdate.properties.name,
         models: t.Optional(
           t.Array(
             t.Object(
@@ -81,7 +81,7 @@ export const branchesModule = new Elysia({
           ),
         ),
       }),
-      response: { 200: Branches },
+      response: { 200: branches },
     },
   )
   .delete(

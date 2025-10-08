@@ -5,7 +5,7 @@ import { unwrap } from "./src/errors";
 import { PrismaClient, type Prisma } from "./src/generated/prisma/client";
 import { createSlug } from "./src/utils/create-slug";
 
-const agentInclude = (withBranches = false): Prisma.AgentsInclude =>
+const agentInclude = (withBranches = false): Prisma.agentsInclude =>
   withBranches ? { branches: true } : { branches: { select: { slug: true } } };
 
 // eslint-disable-next-line unicorn/no-null

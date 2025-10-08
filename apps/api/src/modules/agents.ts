@@ -2,27 +2,27 @@ import { Elysia, status, t } from "elysia";
 
 import { createAgentRepo } from "@hebo/database/repository";
 import {
-  AgentsInputCreate,
-  AgentsInputUpdate,
-  AgentsPlain,
-  AgentsRelations,
-} from "@hebo/database/src/generated/prismabox/Agents";
+  agentsInputCreate,
+  agentsInputUpdate,
+  agentsPlain,
+  agentsRelations,
+} from "@hebo/database/src/generated/prismabox/agents";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import { SupportedModelEnum } from "~api/modules/branches";
 
-const AgentRelationItemProperties =
-  AgentsRelations.properties.branches.items.properties;
+const agentsRelationItemProperties =
+  agentsRelations.properties.branches.items.properties;
 const Branch = t.Object(
   {
-    slug: AgentRelationItemProperties.slug,
-    name: t.Optional(AgentRelationItemProperties.name),
-    models: t.Optional(AgentRelationItemProperties.models),
+    slug: agentsRelationItemProperties.slug,
+    name: t.Optional(agentsRelationItemProperties.name),
+    models: t.Optional(agentsRelationItemProperties.models),
   },
   { additionalProperties: false },
 );
-const Agent = t.Composite([
-  AgentsPlain,
+const agents = t.Composite([
+  agentsPlain,
   t.Object({ branches: t.Array(Branch) }),
 ]);
 const branchExpandParam = t.Object({
@@ -41,7 +41,7 @@ export const agentsModule = new Elysia({
     },
     {
       query: branchExpandParam,
-      response: { 200: t.Array(Agent) },
+      response: { 200: t.Array(agents) },
     },
   )
   .post(
@@ -58,12 +58,12 @@ export const agentsModule = new Elysia({
     {
       query: branchExpandParam,
       body: t.Composite([
-        AgentsInputCreate,
+        agentsInputCreate,
         t.Object({
           defaultModel: SupportedModelEnum,
         }),
       ]),
-      response: { 201: Agent },
+      response: { 201: agents },
     },
   )
   .get(
@@ -77,7 +77,7 @@ export const agentsModule = new Elysia({
     },
     {
       query: branchExpandParam,
-      response: { 200: Agent },
+      response: { 200: agents },
     },
   )
   .patch(
@@ -92,8 +92,8 @@ export const agentsModule = new Elysia({
     },
     {
       query: branchExpandParam,
-      body: AgentsInputUpdate,
-      response: { 200: Agent },
+      body: agentsInputUpdate,
+      response: { 200: agents },
     },
   )
   .delete(
