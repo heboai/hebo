@@ -30,7 +30,7 @@ model Agents {
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide
-  created_at DateTime   @default(now()) @db.Timestamp(3)
+  created_at DateTime   @default(now()) @db.Timestamp()
   /// @prismabox.hide
   updated_by String
   /// @prismabox.hide
@@ -38,7 +38,7 @@ model Agents {
   /// @prismabox.hide
   deleted_by String?
   /// @prismabox.hide
-  deleted_at DateTime?  @db.Timestamp(3)
+  deleted_at DateTime?  @db.Timestamp()
   /// @prismabox.input.hide
   branches   Branches[]
 }
@@ -56,7 +56,7 @@ model Branches {
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide
-  created_at DateTime  @default(now()) @db.Timestamp(3)
+  created_at DateTime  @default(now()) @db.Timestamp()
   /// @prismabox.hide
   updated_by String
   /// @prismabox.hide
@@ -64,7 +64,7 @@ model Branches {
   /// @prismabox.hide
   deleted_by String?
   /// @prismabox.hide
-  deleted_at DateTime? @db.Timestamp(3)
+  deleted_at DateTime? @db.Timestamp()
   /// @prismabox.hide
   agents     Agents    @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
 
