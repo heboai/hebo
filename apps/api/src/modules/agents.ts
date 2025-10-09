@@ -94,7 +94,7 @@ export const agentsModule = new Elysia({
     "/:agentSlug",
     async ({ params, userId }) => {
       await createAgentRepo(userId!).softDelete(params.agentSlug);
-      status(204);
+      return status(204);
     },
     {
       response: { 204: t.Void() },

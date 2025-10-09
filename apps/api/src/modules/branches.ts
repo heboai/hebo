@@ -90,7 +90,7 @@ export const branchesModule = new Elysia({
       await createBranchRepo(userId!, params.agentSlug).softDelete(
         params.branchSlug,
       );
-      status(204);
+      return status(204);
     },
     {
       response: { 204: t.Void() },
