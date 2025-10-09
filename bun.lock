@@ -5,7 +5,6 @@
       "name": "hebo",
       "devDependencies": {
         "@eslint/js": "^9.33.0",
-        "bun-types": "^1.2.22",
         "check-dependency-version-consistency": "^5.0.1",
         "eslint": "^9.33.0",
         "eslint-config-flat-gitignore": "^2.1.0",
@@ -194,9 +193,6 @@
         "prisma": "^6.16.2",
         "prismabox": "^1.1.25",
       },
-      "peerDependencies": {
-        "elysia": "^1.4.7",
-      },
     },
     "packages/shared-api": {
       "name": "@hebo/shared-api",
@@ -208,7 +204,9 @@
         "sst": "^3.17.13",
       },
       "devDependencies": {
+        "@bogeychan/elysia-logger": "^0.1.10",
         "bun-types": "^1.2.22",
+        "elysia": "^1.4.7",
         "is-localhost-ip": "^2.0.0",
       },
       "peerDependencies": {
