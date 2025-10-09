@@ -23,7 +23,14 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["^generate"]
+    },
+    "generate": {
+      "cache": false,
+      "outputs": [
+        "src/generated/**"
+      ]
     },
     "test": {
       "dependsOn": ["^build"],
