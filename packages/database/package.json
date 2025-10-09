@@ -4,7 +4,6 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate": "prisma generate",
     "build": "prisma generate",
     "clean": "git clean -fdx .",
     "db": "DATABASE_URL=postgresql://postgres:password@localhost:5432/local prisma",
