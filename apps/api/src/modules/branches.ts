@@ -18,6 +18,19 @@ export const supportedModelsUnion = t.Union(
   },
 );
 
+const models = t.Array(
+  t.Object({
+    alias: t.String(),
+    type: supportedModelsUnion,
+    endpoint: t.Optional(
+      t.Object({
+        baseUrl: t.String(),
+        apiKey: t.String(),
+      }),
+    ),
+  }),
+);
+
 export const branchesModule = new Elysia({
   prefix: "/:agentSlug/branches",
 })
@@ -62,7 +75,6 @@ export const branchesModule = new Elysia({
   .patch(
     "/:branchSlug",
     async ({ body, params, userId }) => {
-      // FUTURE: use Ajv to validate the models fields
       return createBranchRepo(userId!, params.agentSlug).update(
         params.branchSlug,
         body.name,
@@ -72,14 +84,7 @@ export const branchesModule = new Elysia({
     {
       body: t.Object({
         name: branchesInputUpdate.properties.name,
-        models: t.Optional(
-          t.Array(
-            t.Object(
-              { type: supportedModelsUnion },
-              { additionalProperties: true },
-            ),
-          ),
-        ),
+        models: t.Optional(models),
       }),
       response: { 200: branches },
     },
