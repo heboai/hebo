@@ -33,8 +33,10 @@ export const agentsModule = new Elysia({
   .get(
     "/",
     async ({ userId, query }) => {
-      const expandBranches = query.expand === "branches";
-      return createAgentRepo(userId!).getAll(expandBranches);
+      return status(
+        200,
+        await createAgentRepo(userId!).getAll(query.expand === "branches"),
+      );
     },
     {
       query: branchesExpandParam,
@@ -63,10 +65,12 @@ export const agentsModule = new Elysia({
   .get(
     "/:agentSlug",
     async ({ params, userId, query }) => {
-      const expandBranches = query.expand === "branches";
-      return createAgentRepo(userId!).getBySlug(
-        params.agentSlug,
-        expandBranches,
+      return status(
+        200,
+        await createAgentRepo(userId!).getBySlug(
+          params.agentSlug,
+          query.expand === "branches",
+        ),
       );
     },
     {
@@ -77,11 +81,13 @@ export const agentsModule = new Elysia({
   .patch(
     "/:agentSlug",
     async ({ body, params, userId, query }) => {
-      const expandBranches = query.expand === "branches";
-      return createAgentRepo(userId!).update(
-        params.agentSlug,
-        body.name,
-        expandBranches,
+      return status(
+        200,
+        await createAgentRepo(userId!).update(
+          params.agentSlug,
+          body.name,
+          query.expand === "branches",
+        ),
       );
     },
     {
