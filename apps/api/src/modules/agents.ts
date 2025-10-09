@@ -53,12 +53,10 @@ export const agentsModule = new Elysia({
       return status(201, agent);
     },
     {
-      body: t.Composite([
-        agentsInputCreate,
-        t.Object({
-          defaultModel: supportedModelsUnion,
-        }),
-      ]),
+      body: t.Object({
+        ...agentsInputCreate.properties,
+        defaultModel: supportedModelsUnion,
+      }),
       response: { 201: agents },
     },
   )
