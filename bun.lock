@@ -188,7 +188,6 @@
         "@prisma/adapter-pg": "^6.17.0",
         "@prisma/client": "^6.17.0",
         "crypto-random-string": "^5.0.0",
-        "elysia": "^1.4.9",
         "slugify": "^1.6.6",
       },
       "devDependencies": {
