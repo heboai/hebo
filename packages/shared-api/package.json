@@ -14,12 +14,12 @@
   },
   "peerDependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",
-    "elysia": "^1.4.7"
+    "elysia": "^1.4.9"
   },
   "devDependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",
     "bun-types": "^1.2.22",
-    "elysia": "^1.4.7",
+    "elysia": "^1.4.9",
     "is-localhost-ip": "^2.0.0"
   },
   "dependencies": {

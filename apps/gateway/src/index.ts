@@ -1,6 +1,6 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
-import { swagger } from "@elysiajs/swagger";
+import { openapi } from "@elysiajs/openapi";
 import Elysia from "elysia";
 
 import { authService } from "@hebo/shared-api/auth/auth-service";
@@ -21,7 +21,7 @@ export const createApp = () =>
     .get("/", () => "🐵 Hebo AI Gateway says hello!")
     .use(cors(corsConfig))
     .use(
-      swagger({
+      openapi({
         // FUTURE: document security schemes
         documentation: {
           info: {

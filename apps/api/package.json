@@ -19,12 +19,12 @@
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",
     "@elysiajs/cors": "^1.4.0",
-    "@elysiajs/swagger": "^1.3.1",
+    "@elysiajs/openapi": "^1.4.11",
     "@hebo/database": "workspace:*",
     "@hebo/shared-api": "workspace:*",
     "@hebo/shared-data": "workspace:*",
     "crypto-random-string": "^5.0.0",
-    "elysia": "^1.4.7",
+    "elysia": "^1.4.9",
     "pg": "^8.16.3",
     "slugify": "^1.6.6"
   },
