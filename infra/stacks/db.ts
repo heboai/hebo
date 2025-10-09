@@ -35,7 +35,7 @@ const migrator = new sst.aws.Function("DatabaseMigrator", {
     // eslint-disable-next-line sonarjs/publicly-writable-directories -- Lambda /tmp is execution-isolated
     NPM_CONFIG_CACHE: "/tmp/.npm",
   },
-  timeout: "120 seconds",
+  timeout: "300 seconds",
 });
 
 // eslint-disable-next-line sonarjs/constructor-for-side-effects
