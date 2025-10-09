@@ -22,15 +22,16 @@ generator prismabox {
 
 model agents {
   /// @prismabox.hide
-  id         String     @id @default(uuid()) @db.Uuid
+  id   String @id @default(uuid()) @db.Uuid
   /// @prismabox.input.hide
-  slug       String     @unique
-  name       String
-  // audit fields
+  slug String @unique
+  name String
+
+  // Common audit fields across entities
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide
-  created_at DateTime   @default(now()) @db.Timestamp()
+  created_at DateTime   @default(now())
   /// @prismabox.hide
   updated_by String
   /// @prismabox.hide
@@ -38,25 +39,26 @@ model agents {
   /// @prismabox.hide
   deleted_by String?
   /// @prismabox.hide
-  deleted_at DateTime?  @db.Timestamp()
+  deleted_at DateTime?
   /// @prismabox.input.hide
   branches   branches[]
 }
 
 model branches {
   /// @prismabox.hide
-  id         String    @id @default(uuid()) @db.Uuid
+  id         String @id @default(uuid()) @db.Uuid
   /// @prismabox.input.hide
   slug       String
   /// @prismabox.hide
   agent_slug String
   name       String
-  models     Json[]    @default([])
-  // audit fields
+  models     Json[] @default([])
+
+  // Common audit fields across entities
   /// @prismabox.hide
   created_by String
   /// @prismabox.hide
-  created_at DateTime  @default(now()) @db.Timestamp()
+  created_at DateTime  @default(now())
   /// @prismabox.hide
   updated_by String
   /// @prismabox.hide
@@ -64,9 +66,9 @@ model branches {
   /// @prismabox.hide
   deleted_by String?
   /// @prismabox.hide
-  deleted_at DateTime? @db.Timestamp()
+  deleted_at DateTime?
   /// @prismabox.hide
-  agents     agents    @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
+  agent      agents    @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
 
   @@index([agent_slug, slug])
 }
