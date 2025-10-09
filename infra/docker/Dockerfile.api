@@ -21,8 +21,6 @@ RUN bun install --frozen-lockfile --ignore-scripts
 
 COPY --from=pruner /repo/out/full/ ./
 ADD https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /rds-bundle.pem
-RUN bun db generate
-WORKDIR /repo/apps/api
 RUN bun run build
 
 ########################  runner stage  ########################

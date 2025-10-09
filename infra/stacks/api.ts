@@ -13,7 +13,7 @@ const heboApi = new sst.aws.Service("HeboApi", {
   link: [heboDatabase, ...allSecrets],
   image: {
     context: ".",
-    dockerfile: "infra/stacks/docker/Dockerfile.api",
+    dockerfile: "infra/docker/Dockerfile.api",
     tags: [apiDomain],
   },
   environment: {
