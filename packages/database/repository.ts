@@ -1,7 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 
 import { connectionString } from "./config";
-import { unwrap } from "./src/errors";
 import { PrismaClient, type Prisma } from "./src/generated/prisma/client";
 import { createSlug } from "./src/utils/create-slug";
 
@@ -71,12 +70,10 @@ export const createAgentRepo = (userId: string) => {
       }),
 
     getBySlug: async (agentSlug: string, withBranches = false) =>
-      unwrap(
-        client.agents.findFirst({
-          where: { slug: agentSlug },
-          include: agentInclude(withBranches),
-        }),
-      ),
+      client.agents.findFirstOrThrow({
+        where: { slug: agentSlug },
+        include: agentInclude(withBranches),
+      }),
 
     update: async (
       agentSlug: string,
@@ -101,11 +98,9 @@ export const createBranchRepo = (userId: string, agentSlug: string) => {
   const client = prisma(userId);
 
   const findBranchBySlug = async (branchSlug: string) =>
-    unwrap(
-      client.branches.findFirst({
-        where: { agent_slug: agentSlug, slug: branchSlug },
-      }),
-    );
+    client.branches.findFirstOrThrow({
+      where: { agent_slug: agentSlug, slug: branchSlug },
+    });
 
   return {
     getAll: async () =>

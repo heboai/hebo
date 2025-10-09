@@ -1,6 +1,5 @@
 import { Elysia, status } from "elysia";
 
-import { NotFoundError as DatabaseNotFoundError } from "@hebo/database/src/errors";
 import { Prisma } from "@hebo/database/src/generated/prisma/client";
 
 export const prismaErrors = new Elysia({
@@ -13,8 +12,5 @@ export const prismaErrors = new Elysia({
     if (error.code === "P2025") {
       return status(404, "Resource not found");
     }
-  }
-  if (error instanceof DatabaseNotFoundError) {
-    return status(404, "Resource not found");
   }
 });
