@@ -12,12 +12,12 @@
   },
   "devDependencies": {
     "bun-types": "^1.2.22",
-    "prisma": "^6.16.2",
+    "prisma": "^6.17.0",
     "prismabox": "^1.1.25"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^6.16.2",
-    "@prisma/client": "^6.16.2",
+    "@prisma/adapter-pg": "^6.17.0",
+    "@prisma/client": "^6.17.0",
     "crypto-random-string": "^5.0.0",
     "slugify": "^1.6.6"
   }
