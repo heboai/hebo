@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "clean": "git clean -fdx -e '.env*' -e '.secrets*'",
+    "clean": "git clean -fdx -e '.env*'",
     "db": "bun run --filter @hebo/database db",
     "dev": "turbo run dev --parallel",
     "format": "prettier --write .",
