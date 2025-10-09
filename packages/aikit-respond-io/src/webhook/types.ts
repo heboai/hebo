@@ -11,9 +11,6 @@ export interface WebhookEventConfig {
 }
 
 export interface WebhookConfig {
-  /**
-   * A map of event types to their corresponding configurations.
-   */
   events: Partial<Record<WebhookEvents, WebhookEventConfig>>;
 }
 
@@ -34,7 +31,7 @@ export type EventHandler<T extends WebhookPayload = WebhookPayload> = (
   payload: T,
 ) => void | Promise<void>;
 
-export type ErrorHandler = (error: Error) => void | Promise<void>;
+export type ErrorHandler = (error: unknown) => void | Promise<void>;
 
 // --- Common Base Interfaces ---
 
@@ -59,7 +56,27 @@ interface BaseChannel {
   source: string;
 }
 
-// --- Event-Specific Payload Interfaces ---
+// --- Message Content Types ---
+
+export interface TextContent {
+  type: "text";
+  text: string;
+}
+
+export interface AttachmentContent {
+  type: "attachment";
+  attachment: {
+    type: "image" | "file" | "video" | "audio";
+    url: string;
+    isPending: boolean;
+    fileName: string;
+    ext: string;
+    size: string;
+    mime: string;
+  };
+}
+
+export type MessageContent = TextContent | AttachmentContent;
 
 export interface MessageReceivedPayload {
   event_type: "message.received";
@@ -70,11 +87,7 @@ export interface MessageReceivedPayload {
     channelMessageId: number;
     contactId: number;
     traffic: "incoming";
-    message: {
-      type: string; // 'text', 'image', etc.
-      text?: string;
-      // FUTURE: Other message type fields can be added here
-    };
+    message: MessageContent;
     timestamp: number;
   };
 }
@@ -89,10 +102,7 @@ export interface MessageSentPayload {
     lastMessageTime: number;
     lastIncomingMessageTime: number;
   };
-  message: {
-    type: string;
-    text?: string;
-  };
+  message: TextContent;
   user: BaseUser;
 }
 
