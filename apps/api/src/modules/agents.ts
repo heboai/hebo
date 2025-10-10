@@ -11,7 +11,6 @@ import {
 import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 
-
 import { supportedModelsUnion } from "~api/modules/branches";
 
 const agentsRelationItemProperties =
