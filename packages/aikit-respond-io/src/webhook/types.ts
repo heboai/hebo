@@ -37,8 +37,9 @@ export type ErrorHandler = (error: unknown) => void | Promise<void>;
 
 interface BaseUser {
   id: number;
-  name: string;
-  email?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 interface BaseContact {
@@ -115,7 +116,6 @@ export interface ContactAssigneeUpdatedPayload {
     countryCode: string;
     status: string;
     assignee: BaseUser;
-    lifecycle: string;
   };
   channel: BaseChannel & { meta: null };
 }
