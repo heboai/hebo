@@ -1,11 +1,13 @@
 import { Elysia, status, t } from "elysia";
 
-import { createBranchRepo } from "@hebo/database/repository";
+import { prismaExtended } from "@hebo/database/prisma-config";
+import { type Prisma } from "@hebo/database/src/generated/prisma/client";
 import {
   branches,
   branchesInputCreate,
   branchesInputUpdate,
 } from "@hebo/database/src/generated/prismabox/branches";
+import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { authService } from "@hebo/shared-api/auth/auth-service";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
@@ -35,10 +37,16 @@ export const branchesModule = new Elysia({
   prefix: "/:agentSlug/branches",
 })
   .use(authService)
+  .derive(({ userId }) => ({ client: prismaExtended(userId!) }))
   .get(
     "/",
-    async ({ params, userId }) => {
-      return createBranchRepo(userId!, params.agentSlug).getAll();
+    async ({ client, params }) => {
+      return status(
+        200,
+        await client.branches.findMany({
+          where: { agent_slug: params.agentSlug },
+        }),
+      );
     },
     {
       response: { 200: t.Array(branches) },
@@ -46,12 +54,24 @@ export const branchesModule = new Elysia({
   )
   .post(
     "/",
-    async ({ body, params, userId }) => {
-      const branch = await createBranchRepo(userId!, params.agentSlug).copy(
-        body.sourceBranchSlug,
-        body.name,
+    async ({ body, client, params, userId }) => {
+      const sourceBranch = await client.branches.findFirstOrThrow({
+        where: { agent_slug: params.agentSlug, slug: body.sourceBranchSlug },
+      });
+      return status(
+        201,
+        await client.branches.create({
+          data: {
+            agent_slug: params.agentSlug,
+            name: body.name,
+            slug: createSlug(body.name),
+            // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
+            models: sourceBranch.models as Prisma.InputJsonValue[],
+            created_by: userId!,
+            updated_by: userId!,
+          },
+        }),
       );
-      return status(201, branch);
     },
     {
       body: t.Object({
@@ -63,9 +83,12 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/:branchSlug",
-    async ({ params, userId }) => {
-      return createBranchRepo(userId!, params.agentSlug).getBySlug(
-        params.branchSlug,
+    async ({ client, params }) => {
+      return status(
+        200,
+        await client.branches.findFirstOrThrow({
+          where: { agent_slug: params.agentSlug, slug: params.branchSlug },
+        }),
       );
     },
     {
@@ -74,11 +97,19 @@ export const branchesModule = new Elysia({
   )
   .patch(
     "/:branchSlug",
-    async ({ body, params, userId }) => {
-      return createBranchRepo(userId!, params.agentSlug).update(
-        params.branchSlug,
-        body.name,
-        body.models,
+    async ({ body, client, params }) => {
+      const branch = await client.branches.findFirstOrThrow({
+        where: { agent_slug: params.agentSlug, slug: params.branchSlug },
+      });
+      return status(
+        200,
+        await client.branches.update({
+          where: { id: branch.id },
+          data: {
+            name: body.name,
+            models: body.models as Prisma.InputJsonValue[],
+          },
+        }),
       );
     },
     {
@@ -91,10 +122,14 @@ export const branchesModule = new Elysia({
   )
   .delete(
     "/:branchSlug",
-    async ({ params, userId }) => {
-      await createBranchRepo(userId!, params.agentSlug).softDelete(
-        params.branchSlug,
-      );
+    async ({ client, params, userId }) => {
+      const branch = await client.branches.findFirstOrThrow({
+        where: { agent_slug: params.agentSlug, slug: params.branchSlug },
+      });
+      await client.branches.update({
+        where: { id: branch.id },
+        data: { deleted_by: userId!, deleted_at: new Date() },
+      });
       return status(204);
     },
     {

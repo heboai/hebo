@@ -18,6 +18,7 @@ generator prismabox {
   typeboxImportVariableName   = "t"
   inputModel                  = true
   output                      = "../src/generated/prismabox"
+  additionalProperties        = false
 }
 
 model agents {

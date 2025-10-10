@@ -1,7 +1,7 @@
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
 
-import { connectionString } from "../config";
+import { connectionString } from "../prisma-config";
 
 export const handler = async () => {
   await promisify(exec)("npx prisma migrate deploy", {
