@@ -53,6 +53,7 @@ model branches {
   /// @prismabox.hide
   agent_slug String
   name       String
+  // FUTURE: hide api_key from models
   models     Json[] @default([])
 
   // Common audit fields across entities
