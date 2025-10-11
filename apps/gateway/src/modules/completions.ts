@@ -1,7 +1,7 @@
 import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
-import { provider } from "~gateway/middleware/provider";
+import { provider } from "~gateway/middlewares/provider";
 import { convertOpenAICompatibleMessagesToModelMessages } from "~gateway/utils/message-converter";
 
 export const completions = new Elysia({

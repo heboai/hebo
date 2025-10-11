@@ -25,19 +25,17 @@ const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
 });
 
 const migrator = new sst.aws.Function("DatabaseMigrator", {
-  handler: "packages/db/lambda/migrator.handler",
+  handler: "packages/database/lambda/migrator.handler",
   vpc: heboVpc,
   link: [heboDatabase],
-  copyFiles: [
-    {
-      from: "packages/db/migrations",
-      to: "./migrations",
-    },
-  ],
+  copyFiles: [{ from: "packages/database/prisma", to: "./prisma" }],
+
   environment: {
     NODE_EXTRA_CA_CERTS: "/var/runtime/ca-cert.pem",
-    IS_REMOTE: "true",
+    // eslint-disable-next-line sonarjs/publicly-writable-directories -- Lambda /tmp is execution-isolated
+    NPM_CONFIG_CACHE: "/tmp/.npm",
   },
+  timeout: "300 seconds",
 });
 
 // eslint-disable-next-line sonarjs/constructor-for-side-effects
