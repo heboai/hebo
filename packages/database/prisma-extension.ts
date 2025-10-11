@@ -15,7 +15,7 @@ export const connectionString = (() => {
 
 // eslint-disable-next-line unicorn/no-null
 const dbNull = null;
-const adapter = new PrismaPg({ connectionString });
+const adapter = new PrismaPg({ connectionString, max: 25 });
 const _prisma = new PrismaClient({ adapter });
 
 export const prismaExtension = (userId: string) =>
@@ -50,7 +50,7 @@ export const prismaExtension = (userId: string) =>
             | Prisma.branchesWhereUniqueInput,
         ) {
           const context = Prisma.getExtensionContext(this);
-          await context.update({
+          return await context.update({
             where,
             data: { deleted_by: userId, deleted_at: new Date() },
           });
