@@ -21,16 +21,18 @@ export const supportedModelsUnion = t.Union(
 );
 
 const models = t.Array(
-  t.Object({
-    alias: t.String(),
-    type: supportedModelsUnion,
-    endpoint: t.Optional(
-      t.Object({
-        baseUrl: t.String(),
-        apiKey: t.String(),
-      }),
-    ),
-  }),
+  t.Optional(
+    t.Object({
+      alias: t.String(),
+      type: supportedModelsUnion,
+      endpoint: t.Optional(
+        t.Object({
+          baseUrl: t.String(),
+          apiKey: t.String(),
+        }),
+      ),
+    }),
+  ),
 );
 
 export const branchesModule = new Elysia({
