@@ -13,8 +13,6 @@ export const connectionString = (() => {
   }
 })();
 
-process.env.DATABASE_URL = connectionString;
-
 // eslint-disable-next-line unicorn/no-null
 const dbNull = null;
 const adapter = new PrismaPg({ connectionString });
