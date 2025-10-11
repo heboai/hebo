@@ -23,7 +23,7 @@ generator prismabox {
 
 model agents {
   /// @prismabox.hide
-  id   String @id @default(uuid()) @db.Uuid
+  id   String @id @default(uuid(7)) @db.Uuid
   /// @prismabox.input.hide
   slug String @unique
   name String
@@ -47,7 +47,7 @@ model agents {
 
 model branches {
   /// @prismabox.hide
-  id         String @id @default(uuid()) @db.Uuid
+  id         String @id @default(uuid(7)) @db.Uuid
   /// @prismabox.input.hide
   slug       String
   /// @prismabox.hide
