@@ -20,18 +20,21 @@ export const supportedModelsUnion = t.Union(
   },
 );
 
-const models = t.Array(
-  t.Optional(
-    t.Object({
-      alias: t.String(),
-      type: supportedModelsUnion,
-      endpoint: t.Optional(
-        t.Object({
-          baseUrl: t.String(),
-          apiKey: t.String(),
-        }),
-      ),
-    }),
+// undefined and [] are both valid for models update
+const modelsUpdate = t.Optional(
+  t.Array(
+    t.Optional(
+      t.Object({
+        alias: t.String(),
+        type: supportedModelsUnion,
+        endpoint: t.Optional(
+          t.Object({
+            baseUrl: t.String(),
+            apiKey: t.String(),
+          }),
+        ),
+      }),
+    ),
   ),
 );
 
@@ -117,7 +120,7 @@ export const branchesModule = new Elysia({
     {
       body: t.Object({
         name: branchesInputUpdate.properties.name,
-        models: t.Optional(models),
+        models: modelsUpdate,
       }),
       response: { 200: branches },
     },
