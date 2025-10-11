@@ -13,17 +13,10 @@ import { authService } from "@hebo/shared-api/auth/auth-service";
 
 import { supportedModelsUnion } from "~api/modules/branches";
 
-const agentsRelationItemProperties =
-  agentsRelations.properties.branches.items.properties;
-const branches = t.Object({
-  slug: agentsRelationItemProperties.slug,
-  name: t.Optional(agentsRelationItemProperties.name),
-  models: t.Optional(agentsRelationItemProperties.models),
+const agents = t.Object({
+  ...agentsPlain.properties,
+  branches: t.Array(t.Partial(agentsRelations.properties.branches.items)),
 });
-const agents = t.Composite([
-  agentsPlain,
-  t.Object({ branches: t.Array(branches) }),
-]);
 const branchesExpandParam = t.Object({
   expand: t.Optional(t.Literal("branches")),
 });
