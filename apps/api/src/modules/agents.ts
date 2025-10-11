@@ -28,7 +28,7 @@ export const agentsModule = new Elysia({
   prefix: "/agents",
 })
   .use(authService)
-  .derive(({ userId }) => ({ client: prismaExtension(userId!) }))
+  .resolve(({ userId }) => ({ client: prismaExtension(userId!) }))
   .get(
     "/",
     async ({ client, query }) => {

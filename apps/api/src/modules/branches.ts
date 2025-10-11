@@ -37,7 +37,7 @@ export const branchesModule = new Elysia({
   prefix: "/:agentSlug/branches",
 })
   .use(authService)
-  .derive(({ userId }) => ({ client: prismaExtension(userId!) }))
+  .resolve(({ userId }) => ({ client: prismaExtension(userId!) }))
   .get(
     "/",
     async ({ client, params }) => {

@@ -18,8 +18,11 @@ const dbNull = null;
 const adapter = new PrismaPg({ connectionString, max: 25 });
 const _prisma = new PrismaClient({ adapter });
 
-export const prismaExtension = (userId: string) =>
-  _prisma.$extends({
+export const prismaExtension = (userId: string) => {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+  return _prisma.$extends({
     query: {
       $allModels: {
         async $allOperations({ args, query, operation }) {
@@ -58,3 +61,4 @@ export const prismaExtension = (userId: string) =>
       },
     },
   });
+};
