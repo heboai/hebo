@@ -44,7 +44,11 @@ export const prismaExtension = (userId: string) =>
     },
     model: {
       $allModels: {
-        async softDelete(where: Prisma.agentsWhereUniqueInput) {
+        async softDelete(
+          where:
+            | Prisma.agentsWhereUniqueInput
+            | Prisma.branchesWhereUniqueInput,
+        ) {
           const context = Prisma.getExtensionContext(this);
           await context.update({
             where,
