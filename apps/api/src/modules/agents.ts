@@ -1,6 +1,6 @@
 import { Elysia, status, t } from "elysia";
 
-import { prismaExtended } from "@hebo/database/prisma-config";
+import { prismaExtension } from "@hebo/database/prisma-extension";
 import { type Prisma } from "@hebo/database/src/generated/prisma/client";
 import {
   agentsInputCreate,
@@ -35,13 +35,14 @@ export const agentsModule = new Elysia({
   prefix: "/agents",
 })
   .use(authService)
-  .derive(({ userId }) => ({ client: prismaExtended(userId!) }))
+  .derive(({ userId }) => ({ client: prismaExtension(userId!) }))
   .get(
     "/",
     async ({ client, query }) => {
       return status(
         200,
         await client.agents.findMany({
+          // This is deliberately left blank to apply the audit filters
           where: {},
           include: agentInclude(query.expand === "branches"),
         }),
@@ -121,11 +122,8 @@ export const agentsModule = new Elysia({
   )
   .delete(
     "/:agentSlug",
-    async ({ client, params, userId }) => {
-      await client.agents.update({
-        where: { slug: params.agentSlug },
-        data: { deleted_by: userId!, deleted_at: new Date() },
-      });
+    async ({ client, params }) => {
+      await client.agents.softDelete({ slug: params.agentSlug });
       return status(204);
     },
     {

@@ -1,6 +1,6 @@
 import { Elysia, status, t } from "elysia";
 
-import { prismaExtended } from "@hebo/database/prisma-config";
+import { prismaExtension } from "@hebo/database/prisma-extension";
 import { type Prisma } from "@hebo/database/src/generated/prisma/client";
 import {
   branches,
@@ -37,7 +37,7 @@ export const branchesModule = new Elysia({
   prefix: "/:agentSlug/branches",
 })
   .use(authService)
-  .derive(({ userId }) => ({ client: prismaExtended(userId!) }))
+  .derive(({ userId }) => ({ client: prismaExtension(userId!) }))
   .get(
     "/",
     async ({ client, params }) => {
@@ -55,7 +55,7 @@ export const branchesModule = new Elysia({
   .post(
     "/",
     async ({ body, client, params, userId }) => {
-      const sourceBranch = await client.branches.findFirstOrThrow({
+      const { models } = await client.branches.findFirstOrThrow({
         where: { agent_slug: params.agentSlug, slug: body.sourceBranchSlug },
       });
       return status(
@@ -66,7 +66,7 @@ export const branchesModule = new Elysia({
             name: body.name,
             slug: createSlug(body.name),
             // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
-            models: sourceBranch.models as Prisma.InputJsonValue[],
+            models: models as Prisma.InputJsonValue[],
             created_by: userId!,
             updated_by: userId!,
           },
@@ -98,13 +98,13 @@ export const branchesModule = new Elysia({
   .patch(
     "/:branchSlug",
     async ({ body, client, params }) => {
-      const branch = await client.branches.findFirstOrThrow({
+      const { id } = await client.branches.findFirstOrThrow({
         where: { agent_slug: params.agentSlug, slug: params.branchSlug },
       });
       return status(
         200,
         await client.branches.update({
-          where: { id: branch.id },
+          where: { id },
           data: {
             name: body.name,
             models: body.models as Prisma.InputJsonValue[],
@@ -122,14 +122,11 @@ export const branchesModule = new Elysia({
   )
   .delete(
     "/:branchSlug",
-    async ({ client, params, userId }) => {
-      const branch = await client.branches.findFirstOrThrow({
+    async ({ client, params }) => {
+      const { id } = await client.branches.findFirstOrThrow({
         where: { agent_slug: params.agentSlug, slug: params.branchSlug },
       });
-      await client.branches.update({
-        where: { id: branch.id },
-        data: { deleted_by: userId!, deleted_at: new Date() },
-      });
+      await client.branches.softDelete({ id });
       return status(204);
     },
     {

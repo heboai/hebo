@@ -1,7 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
-import { PrismaClient } from "./src/generated/prisma/client";
+import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 
 export const connectionString = (() => {
   try {
@@ -20,7 +20,7 @@ const dbNull = null;
 const adapter = new PrismaPg({ connectionString });
 const _prisma = new PrismaClient({ adapter });
 
-export const prismaExtended = (userId: string) =>
+export const prismaExtension = (userId: string) =>
   _prisma.$extends({
     query: {
       $allModels: {
@@ -41,6 +41,17 @@ export const prismaExtended = (userId: string) =>
           }
 
           return query(args);
+        },
+      },
+    },
+    model: {
+      $allModels: {
+        async softDelete(where: Prisma.agentsWhereUniqueInput) {
+          const context = Prisma.getExtensionContext(this);
+          await context.update({
+            where,
+            data: { deleted_by: userId, deleted_at: new Date() },
+          });
         },
       },
     },
