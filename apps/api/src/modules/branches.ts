@@ -112,8 +112,7 @@ export const branchesModule = new Elysia({
           where: { id },
           data: {
             name: body.name,
-            // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
-            models: body.models as Prisma.InputJsonValue[] | undefined,
+            models: body.models,
           },
         }),
       );
