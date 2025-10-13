@@ -13,8 +13,6 @@ export const connectionString = (() => {
   }
 })();
 
-// eslint-disable-next-line unicorn/no-null
-const dbNull = null;
 const adapter = new PrismaPg({ connectionString, max: 25 });
 const _prisma = new PrismaClient({ adapter });
 
@@ -28,7 +26,8 @@ export const prismaExtension = (userId: string) => {
         async $allOperations({ args, query, operation }) {
           if (!operation.startsWith("create")) {
             const a = args as unknown as { where?: Record<string, unknown> };
-            a.where = { ...a.where, created_by: userId, deleted_at: dbNull };
+            // eslint-disable-next-line unicorn/no-null
+            a.where = { ...a.where, created_by: userId, deleted_at: null };
           }
 
           if (operation === "update") {
