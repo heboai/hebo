@@ -59,7 +59,7 @@ export const branchesModule = new Elysia({
   )
   .post(
     "/",
-    async ({ body, dbClient, params, userId }) => {
+    async ({ body, dbClient, params }) => {
       const { models } = await dbClient.branches.findFirstOrThrow({
         where: { agent_slug: params.agentSlug, slug: body.sourceBranchSlug },
       });
@@ -72,9 +72,7 @@ export const branchesModule = new Elysia({
             slug: createSlug(body.name),
             // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
             models: models as Prisma.InputJsonValue[],
-            created_by: userId!,
-            updated_by: userId!,
-          },
+          } as any,
         }),
       );
     },

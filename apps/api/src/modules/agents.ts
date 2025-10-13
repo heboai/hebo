@@ -46,25 +46,21 @@ export const agentsModule = new Elysia({
   )
   .post(
     "/",
-    async ({ body, dbClient, userId }) => {
+    async ({ body, dbClient }) => {
       return status(
         201,
         await dbClient.agents.create({
           data: {
             name: body.name,
             slug: createSlug(body.name, true),
-            created_by: userId!,
-            updated_by: userId!,
             branches: {
               create: {
                 name: "Main",
                 slug: "main",
-                created_by: userId!,
-                updated_by: userId!,
                 models: [{ alias: "default", type: body.defaultModel }],
               },
             },
-          },
+          } as any,
           include: agentInclude(true),
         }),
       );

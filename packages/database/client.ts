@@ -40,6 +40,23 @@ export const createDbClient = (userId: string) => {
 
           return query(args);
         },
+        async create({ args, model, query }) {
+          args.data = {
+            ...args.data,
+            created_by: userId,
+            updated_by: userId,
+          };
+
+          if (model === "agents" && args.data.branches) {
+            args.data.branches.create = {
+              ...args.data.branches.create,
+              created_by: userId,
+              updated_by: userId,
+            };
+          }
+
+          return query(args);
+        },
       },
     },
     model: {
