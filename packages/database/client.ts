@@ -31,13 +31,6 @@ export const createDbClient = (userId: string) => {
             a.where = { ...a.where, created_by: userId, deleted_at: null };
           }
 
-          if (operation === "update") {
-            args.data = {
-              ...args.data,
-              updated_by: userId,
-            };
-          }
-
           return query(args);
         },
         async create({ args, model, query }) {
@@ -54,6 +47,14 @@ export const createDbClient = (userId: string) => {
               updated_by: userId,
             };
           }
+
+          return query(args);
+        },
+        async update({ args, query }) {
+          args.data = {
+            ...args.data,
+            updated_by: userId,
+          };
 
           return query(args);
         },
