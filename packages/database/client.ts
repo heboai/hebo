@@ -13,8 +13,9 @@ export const connectionString = (() => {
   }
 })();
 
-const adapter = new PrismaPg({ connectionString, max: 25 });
-const _prisma = new PrismaClient({ adapter });
+const _prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString, max: 25 }),
+});
 
 export const createDbClient = (userId: string) => {
   if (!userId) {
