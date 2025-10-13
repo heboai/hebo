@@ -31,10 +31,10 @@ export const agentsModule = new Elysia({
   .use(dbClient)
   .get(
     "/",
-    async ({ client, query }) => {
+    async ({ dbClient, query }) => {
       return status(
         200,
-        await client.agents.findMany({
+        await dbClient.agents.findMany({
           include: agentInclude(query.expand === "branches"),
         }),
       );
@@ -46,10 +46,10 @@ export const agentsModule = new Elysia({
   )
   .post(
     "/",
-    async ({ body, client, userId }) => {
+    async ({ body, dbClient, userId }) => {
       return status(
         201,
-        await client.agents.create({
+        await dbClient.agents.create({
           data: {
             name: body.name,
             slug: createSlug(body.name, true),
@@ -79,10 +79,10 @@ export const agentsModule = new Elysia({
   )
   .get(
     "/:agentSlug",
-    async ({ client, params, query }) => {
+    async ({ dbClient, params, query }) => {
       return status(
         200,
-        await client.agents.findFirstOrThrow({
+        await dbClient.agents.findFirstOrThrow({
           where: { slug: params.agentSlug },
           include: agentInclude(query.expand === "branches"),
         }),
@@ -95,10 +95,10 @@ export const agentsModule = new Elysia({
   )
   .patch(
     "/:agentSlug",
-    async ({ body, client, params, query }) => {
+    async ({ body, dbClient, params, query }) => {
       return status(
         200,
-        await client.agents.update({
+        await dbClient.agents.update({
           where: { slug: params.agentSlug },
           data: { name: body.name },
           include: agentInclude(query.expand === "branches"),
@@ -113,8 +113,8 @@ export const agentsModule = new Elysia({
   )
   .delete(
     "/:agentSlug",
-    async ({ client, params }) => {
-      await client.agents.softDelete({ slug: params.agentSlug });
+    async ({ dbClient, params }) => {
+      await dbClient.agents.softDelete({ slug: params.agentSlug });
       return status(204);
     },
     {

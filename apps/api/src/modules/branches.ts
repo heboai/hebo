@@ -45,10 +45,10 @@ export const branchesModule = new Elysia({
   .use(dbClient)
   .get(
     "/",
-    async ({ client, params }) => {
+    async ({ dbClient, params }) => {
       return status(
         200,
-        await client.branches.findMany({
+        await dbClient.branches.findMany({
           where: { agent_slug: params.agentSlug },
         }),
       );
@@ -59,13 +59,13 @@ export const branchesModule = new Elysia({
   )
   .post(
     "/",
-    async ({ body, client, params, userId }) => {
-      const { models } = await client.branches.findFirstOrThrow({
+    async ({ body, dbClient, params, userId }) => {
+      const { models } = await dbClient.branches.findFirstOrThrow({
         where: { agent_slug: params.agentSlug, slug: body.sourceBranchSlug },
       });
       return status(
         201,
-        await client.branches.create({
+        await dbClient.branches.create({
           data: {
             agent_slug: params.agentSlug,
             name: body.name,
@@ -88,10 +88,10 @@ export const branchesModule = new Elysia({
   )
   .get(
     "/:branchSlug",
-    async ({ client, params }) => {
+    async ({ dbClient, params }) => {
       return status(
         200,
-        await client.branches.findFirstOrThrow({
+        await dbClient.branches.findFirstOrThrow({
           where: { agent_slug: params.agentSlug, slug: params.branchSlug },
         }),
       );
@@ -102,13 +102,13 @@ export const branchesModule = new Elysia({
   )
   .patch(
     "/:branchSlug",
-    async ({ body, client, params }) => {
-      const { id } = await client.branches.findFirstOrThrow({
+    async ({ body, dbClient, params }) => {
+      const { id } = await dbClient.branches.findFirstOrThrow({
         where: { agent_slug: params.agentSlug, slug: params.branchSlug },
       });
       return status(
         200,
-        await client.branches.update({
+        await dbClient.branches.update({
           where: { id },
           data: {
             name: body.name,
@@ -128,11 +128,11 @@ export const branchesModule = new Elysia({
   )
   .delete(
     "/:branchSlug",
-    async ({ client, params }) => {
-      const { id } = await client.branches.findFirstOrThrow({
+    async ({ dbClient, params }) => {
+      const { id } = await dbClient.branches.findFirstOrThrow({
         where: { agent_slug: params.agentSlug, slug: params.branchSlug },
       });
-      await client.branches.softDelete({ id });
+      await dbClient.branches.softDelete({ id });
       return status(204);
     },
     {

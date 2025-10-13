@@ -1,11 +1,11 @@
 import { Elysia } from "elysia";
 
-import { createDbClient } from "@hebo/database/prisma-extension";
+import { createDbClient } from "@hebo/database/client";
 
 export const dbClient = new Elysia({
   name: "db-client",
 })
   .resolve((ctx) => ({
-    client: createDbClient((ctx as unknown as { userId: string }).userId),
+    dbClient: createDbClient((ctx as unknown as { userId: string }).userId),
   }))
   .as("scoped");
