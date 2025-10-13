@@ -25,7 +25,7 @@ export const createDbClient = (userId: string) => {
     query: {
       $allModels: {
         async $allOperations({ args, query, operation }) {
-          if (!operation.startsWith("create")) {
+          if (operation !== "create") {
             const a = args as unknown as { where?: Record<string, unknown> };
             // eslint-disable-next-line unicorn/no-null
             a.where = { ...a.where, created_by: userId, deleted_at: null };
