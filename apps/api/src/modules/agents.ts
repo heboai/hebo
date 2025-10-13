@@ -35,8 +35,6 @@ export const agentsModule = new Elysia({
       return status(
         200,
         await client.agents.findMany({
-          // This is deliberately left blank to apply the audit filters
-          where: {},
           include: agentInclude(query.expand === "branches"),
         }),
       );

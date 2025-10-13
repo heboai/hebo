@@ -26,12 +26,9 @@ export const prismaExtension = (userId: string) => {
     query: {
       $allModels: {
         async $allOperations({ args, query, operation }) {
-          if ("where" in args) {
-            args.where = {
-              ...args.where,
-              created_by: userId,
-              deleted_at: dbNull,
-            };
+          if (!operation.startsWith("create")) {
+            const a = args as unknown as { where?: Record<string, unknown> };
+            a.where = { ...a.where, created_by: userId, deleted_at: dbNull };
           }
 
           if (operation === "update") {
