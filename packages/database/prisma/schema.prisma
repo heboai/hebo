@@ -23,38 +23,12 @@ generator prismabox {
 
 model agents {
   /// @prismabox.hide
-  id   String @id @default(uuid(7)) @db.Uuid
+  id       String     @id @default(uuid(7)) @db.Uuid
   /// @prismabox.input.hide
-  slug String @unique
-  name String
-
-  // Common audit fields across entities
-  /// @prismabox.hide
-  created_by String
-  /// @prismabox.hide
-  created_at DateTime   @default(now())
-  /// @prismabox.hide
-  updated_by String
-  /// @prismabox.hide
-  updated_at DateTime   @updatedAt
-  /// @prismabox.hide
-  deleted_by String?
-  /// @prismabox.hide
-  deleted_at DateTime?
+  slug     String     @unique
+  name     String
   /// @prismabox.input.hide
-  branches   branches[]
-}
-
-model branches {
-  /// @prismabox.hide
-  id         String @id @default(uuid(7)) @db.Uuid
-  /// @prismabox.input.hide
-  slug       String
-  /// @prismabox.hide
-  agent_slug String
-  name       String
-  // FUTURE: hide api_key from models
-  models     Json[] @default([])
+  branches branches[]
 
   // Common audit fields across entities
   /// @prismabox.hide
@@ -69,8 +43,34 @@ model branches {
   deleted_by String?
   /// @prismabox.hide
   deleted_at DateTime?
+}
+
+model branches {
   /// @prismabox.hide
-  agent      agents    @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
+  id         String @id @default(uuid(7)) @db.Uuid
+  /// @prismabox.input.hide
+  slug       String
+  /// @prismabox.hide
+  agent_slug String
+  name       String
+  // FUTURE: hide api_key from models
+  models     Json[] @default([])
+  /// @prismabox.hide
+  agent      agents @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
+
+  // Common audit fields across entities
+  /// @prismabox.hide
+  created_by String
+  /// @prismabox.hide
+  created_at DateTime  @default(now())
+  /// @prismabox.hide
+  updated_by String
+  /// @prismabox.hide
+  updated_at DateTime  @updatedAt
+  /// @prismabox.hide
+  deleted_by String?
+  /// @prismabox.hide
+  deleted_at DateTime?
 
   @@index([agent_slug, slug])
 }
