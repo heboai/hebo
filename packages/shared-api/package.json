@@ -7,6 +7,7 @@
   "exports": {
     "./auth/*": "./auth/*.ts",
     "./cors/*": "./cors/*.ts",
+    "./db-client/*": "./db-client/*.ts",
     "./errors/*": "./errors/*.ts"
   },
   "scripts": {

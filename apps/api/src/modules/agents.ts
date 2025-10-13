@@ -1,6 +1,5 @@
 import { Elysia, status, t } from "elysia";
 
-import { prismaExtension } from "@hebo/database/prisma-extension";
 import { type Prisma } from "@hebo/database/src/generated/prisma/client";
 import {
   agentsInputCreate,
@@ -10,6 +9,7 @@ import {
 } from "@hebo/database/src/generated/prismabox/agents";
 import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { authService } from "@hebo/shared-api/auth/auth-service";
+import { dbClient } from "@hebo/shared-api/db-client/db-client";
 
 import { supportedModelsUnion } from "~api/modules/branches";
 
@@ -28,7 +28,7 @@ export const agentsModule = new Elysia({
   prefix: "/agents",
 })
   .use(authService)
-  .resolve(({ userId }) => ({ client: prismaExtension(userId!) }))
+  .use(dbClient)
   .get(
     "/",
     async ({ client, query }) => {
