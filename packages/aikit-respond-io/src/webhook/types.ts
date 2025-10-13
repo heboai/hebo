@@ -53,7 +53,7 @@ interface BaseContact {
   language: string | null;
   profilePic: string | null;
   countryCode: string | null;
-  assignee: BaseUser;
+  assignee: BaseUser | null;
   created_at: number;
   tags?: string[];
   custom_fields?: { name: string; value: string | null }[] | null;
