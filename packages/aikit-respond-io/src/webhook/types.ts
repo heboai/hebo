@@ -110,28 +110,25 @@ export interface MessageReceivedPayload {
 }
 
 export interface MessageSentPayload {
+  event_id: string;
   event_type: "message.sent";
-  traffic: "outgoing";
-  channelMessageId: number;
-  timestamp: number;
   contact: BaseContact;
   channel: BaseChannel & {
     lastMessageTime: number;
     lastIncomingMessageTime: number;
   };
   message: BaseMessage;
-  user: BaseUser;
 }
 
 export interface ContactAssigneeUpdatedPayload {
-  event_type: "contact.assignee.updated";
   event_id: string;
+  event_type: "contact.assignee.updated";
   contact: BaseContact;
 }
 
 export interface ConversationClosedPayload {
-  event_type: "conversation.closed";
   event_id: string;
+  event_type: "conversation.closed";
   contact: BaseContact;
   conversation: {
     category: string;
