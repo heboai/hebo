@@ -16,7 +16,7 @@ export const connectionString = (() => {
 const adapter = new PrismaPg({ connectionString, max: 25 });
 const _prisma = new PrismaClient({ adapter });
 
-export const prismaExtension = (userId: string) => {
+export const createDbClient = (userId: string) => {
   if (!userId) {
     throw new Error("User ID is required");
   }
