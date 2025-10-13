@@ -44,11 +44,7 @@ export const createDbClient = (userId: string) => {
     },
     model: {
       $allModels: {
-        async softDelete(
-          where:
-            | Prisma.agentsWhereUniqueInput
-            | Prisma.branchesWhereUniqueInput,
-        ) {
+        async softDelete<T>(where: T) {
           const context = Prisma.getExtensionContext(this);
           return await context.update({
             where,
