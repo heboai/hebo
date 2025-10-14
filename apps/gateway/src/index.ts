@@ -3,8 +3,8 @@ import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
 import Elysia from "elysia";
 
-import { authService } from "@hebo/shared-api/auth/auth-service";
-import { corsConfig } from "@hebo/shared-api/cors/cors-config";
+import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
+import { corsConfig } from "@hebo/shared-api/middlewares/cors-config";
 
 import { oaiErrors } from "./middlewares/oai-errors";
 import { completions } from "./modules/completions";

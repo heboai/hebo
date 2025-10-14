@@ -5,10 +5,7 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "./auth/*": "./auth/*.ts",
-    "./cors/*": "./cors/*.ts",
-    "./db-client/*": "./db-client/*.ts",
-    "./errors/*": "./errors/*.ts"
+    "./middlewares/*": "./middlewares/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdx -e '.env*' ."

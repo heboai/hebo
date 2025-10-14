@@ -8,8 +8,8 @@ import {
   agentsRelations,
 } from "@hebo/database/src/generated/prismabox/agents";
 import { createSlug } from "@hebo/database/src/utils/create-slug";
-import { authService } from "@hebo/shared-api/auth/auth-service";
-import { dbClient } from "@hebo/shared-api/db-client/db-client";
+import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
+import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 import { supportedModelsUnion } from "~api/modules/branches";
 
