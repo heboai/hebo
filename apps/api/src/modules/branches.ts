@@ -1,6 +1,5 @@
 import { Elysia, status, t } from "elysia";
 
-import { type Prisma } from "@hebo/database/src/generated/prisma/client";
 import {
   branches,
   branchesInputCreate,
@@ -71,8 +70,7 @@ export const branchesModule = new Elysia({
             agent_slug: params.agentSlug,
             name: body.name,
             slug: createSlug(body.name),
-            // Cast to InputJsonValue because Prisma reads JSON arrays as JsonValue[]
-            models: models as Prisma.InputJsonValue[],
+            models: models,
           } as any,
         }),
       );
