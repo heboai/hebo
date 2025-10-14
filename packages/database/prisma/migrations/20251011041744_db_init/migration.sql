@@ -36,6 +36,7 @@ CREATE UNIQUE INDEX "agents_slug_key" ON "agents"("slug");
 -- CreateIndex
 CREATE INDEX "branches_agent_slug_slug_idx" ON "branches"("agent_slug", "slug");
 
+-- The following index has been added manually because Prisma doesn't support partial indexes
 -- CreateIndex
 CREATE UNIQUE INDEX "unique_active_branches_slug_agents" ON "branches"("slug", "agent_slug") WHERE "deleted_at" IS NULL;
 
