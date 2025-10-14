@@ -9,6 +9,7 @@ export const connectionString = (() => {
     const db = Resource.HeboDatabase;
     return `postgresql://${db.username}:${db.password}@${db.host}:${db.port}/${db.database}?sslmode=verify-full`;
   } catch {
+    // FUTURE: remember to update this and the db script after updating the predev script at root
     return "postgresql://postgres:password@localhost:5432/local";
   }
 })();
