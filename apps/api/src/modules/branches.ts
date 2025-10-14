@@ -20,6 +20,7 @@ export const supportedModelsUnion = t.Union(
   },
 );
 
+// FUTURE: infer from models.schema.json
 // undefined and [] are both valid for models update
 const modelsUpdate = t.Optional(
   t.Array(
