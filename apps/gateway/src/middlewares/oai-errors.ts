@@ -5,9 +5,8 @@ function upstreamResponse(e: unknown): Response | undefined {
   return r instanceof Response ? r : undefined;
 }
 
-export const oaiErrors = new Elysia({ name: "oai-error" }).onError(
-  { as: "scoped" },
-  async ({ code, error, set }) => {
+export const oaiErrors = new Elysia({ name: "oai-error" })
+  .onError(async ({ code, error, set }) => {
     // 1) Validation → 400 in OpenAI shape
     if (code === "VALIDATION") {
       set.status = 400;
@@ -62,5 +61,5 @@ export const oaiErrors = new Elysia({ name: "oai-error" }).onError(
         code: "internal",
       },
     };
-  },
-);
+  })
+  .as("scoped");
