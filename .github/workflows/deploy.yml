@@ -36,10 +36,10 @@ jobs:
 
       - name: Deploy to Production
         run: |
-          bunx run sst secret set StackProjectId ${{ secrets.STACK_PROJECT_ID }} --stage production
-          bunx run sst secret set StackPublishableClientKey ${{ secrets.STACK_PUBLISHABLE_CLIENT_KEY }} --stage production
-          bunx run sst secret set StackSecretServerKey ${{ secrets.STACK_SECRET_SERVER_KEY }} --stage production
-          bunx run sst secret set GroqApiKey ${{ secrets.GROQ_API_KEY }} --stage production
-          bunx run sst secret set VoyageApiKey ${{ secrets.VOYAGE_API_KEY }} --stage production
+          bunx sst secret set StackProjectId ${{ secrets.STACK_PROJECT_ID }} --stage production
+          bunx sst secret set StackPublishableClientKey ${{ secrets.STACK_PUBLISHABLE_CLIENT_KEY }} --stage production
+          bunx sst secret set StackSecretServerKey ${{ secrets.STACK_SECRET_SERVER_KEY }} --stage production
+          bunx sst secret set GroqApiKey ${{ secrets.GROQ_API_KEY }} --stage production
+          bunx sst secret set VoyageApiKey ${{ secrets.VOYAGE_API_KEY }} --stage production
 
-          bunx run sst deploy --stage production
+          bunx sst deploy --stage production
