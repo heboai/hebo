@@ -1,53 +1,39 @@
 {
   "$id": "models.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["models", "__supportedTypes"],
-  "properties": {
-    "__supportedTypes": {
-      "type": "array",
-      "items": {
-        "type": "string"
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["alias", "type"],
+    "properties": {
+      "alias": {
+        "type": "string",
+        "minLength": 1
       },
-      "minItems": 1
-    },
-    "models": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
+      "type": {
+        "type": "string",
+        "enum": {
+          "$data": "./json/__supportedTypes.schema.json"
+        }
+      },
+      "endpoint": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["alias", "type"],
+        "required": ["baseUrl", "provider", "apiKey"],
         "properties": {
-          "alias": {
+          "baseUrl": {
             "type": "string",
-            "minLength": 1
+            "format": "uri"
           },
-          "type": {
+          "provider": {
+            "enum": ["aws", "custom"]
+          },
+          "apiKey": {
             "type": "string",
-            "enum": {
-              "$data": "/__supportedTypes"
-            }
-          },
-          "endpoint": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["baseUrl", "provider", "apiKey"],
-            "properties": {
-              "baseUrl": {
-                "type": "string",
-                "format": "uri"
-              },
-              "provider": {
-                "enum": ["aws", "custom"]
-              },
-              "apiKey": {
-                "type": "string",
-                "minLength": 1,
-                "writeOnly": true
-              }
-            }
+            "minLength": 1,
+            "writeOnly": true
           }
         }
       }

@@ -17,15 +17,13 @@ type Branch = {
 };
 
 export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
-  const modelsConfig = {
-    models: (activeBranch?.models ?? []).map((model) => ({
-      ...model,
-      endpoint: {
-        baseUrl: new URL("v1", VITE_GATEWAY_URL).toString(),
-        fetch: kyFetch,
-      },
-    })),
-  };
+  const modelsConfig = (activeBranch?.models ?? []).map((model) => ({
+    ...model,
+    endpoint: {
+      baseUrl: new URL("v1", VITE_GATEWAY_URL).toString(),
+      fetch: kyFetch,
+    },
+  }));
 
   return <Chat modelsConfig={modelsConfig} />;
 }
