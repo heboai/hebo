@@ -195,9 +195,6 @@
         "prisma": "^6.17.0",
         "prismabox": "^1.1.25",
       },
-      "peerDependencies": {
-        "elysia": "^1.4.9",
-      },
     },
     "packages/shared-api": {
       "name": "@hebo/shared-api",

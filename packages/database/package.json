@@ -19,8 +19,5 @@
     "@prisma/client": "^6.17.0",
     "crypto-random-string": "^5.0.0",
     "slugify": "^1.6.6"
-  },
-  "peerDependencies": {
-    "elysia": "^1.4.9"
   }
 }

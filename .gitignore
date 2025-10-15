@@ -93,4 +93,4 @@ server
 .dynamodb/
 
 # prisma client
-packages/database/src/generated/
+**/generated/**

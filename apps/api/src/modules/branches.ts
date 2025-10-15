@@ -1,14 +1,15 @@
 import { Elysia, status, t } from "elysia";
 
-import {
-  branches,
-  branchesInputCreate,
-  branchesInputUpdate,
-} from "@hebo/database/src/generated/prismabox/branches";
 import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import supportedModels from "@hebo/shared-data/json/supported-models";
+
+import {
+  branches,
+  branchesInputCreate,
+  branchesInputUpdate,
+} from "~api/generated/prismabox/branches";
 
 export const supportedModelsUnion = t.Union(
   supportedModels.map(({ name }) => t.Literal(name)),

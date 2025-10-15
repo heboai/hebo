@@ -1,16 +1,16 @@
 import { Elysia, status, t } from "elysia";
 
 import { type Prisma } from "@hebo/database/src/generated/prisma/client";
+import { createSlug } from "@hebo/database/src/utils/create-slug";
+import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
+import { dbClient } from "@hebo/shared-api/middlewares/db-client";
+
 import {
   agentsInputCreate,
   agentsInputUpdate,
   agentsPlain,
   agentsRelations,
-} from "@hebo/database/src/generated/prismabox/agents";
-import { createSlug } from "@hebo/database/src/utils/create-slug";
-import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
-import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-
+} from "~api/generated/prismabox/agents";
 import { supportedModelsUnion } from "~api/modules/branches";
 
 const agents = t.Object({
