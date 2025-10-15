@@ -1,12 +1,12 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { cors } from "@elysiajs/cors";
-import { swagger } from "@elysiajs/swagger";
-import { Elysia } from "elysia";
+import { openapi } from "@elysiajs/openapi";
+import Elysia from "elysia";
 
-import { authService } from "@hebo/shared-api/auth/auth-service";
-import { corsConfig } from "@hebo/shared-api/cors/cors-config";
+import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
+import { corsConfig } from "@hebo/shared-api/middlewares/cors-config";
 
-import { oaiErrors } from "./middleware/oai-errors";
+import { oaiErrors } from "./middlewares/oai-errors";
 import { completions } from "./modules/completions";
 import { embeddings } from "./modules/embeddings";
 import { models } from "./modules/models";
@@ -21,7 +21,7 @@ export const createApp = () =>
     .get("/", () => "🐵 Hebo AI Gateway says hello!")
     .use(cors(corsConfig))
     .use(
-      swagger({
+      openapi({
         // FUTURE: document security schemes
         documentation: {
           info: {

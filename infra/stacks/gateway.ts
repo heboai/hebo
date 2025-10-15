@@ -15,7 +15,7 @@ const heboGateway = new sst.aws.Service("HeboGateway", {
   link: [heboDatabase, ...allSecrets],
   image: {
     context: ".",
-    dockerfile: "infra/stacks/docker/Dockerfile.gateway",
+    dockerfile: "infra/docker/Dockerfile.gateway",
     tags: [gatewayDomain],
   },
   environment: {

@@ -31,16 +31,14 @@ const kbdStyles =
   "inline-flex w-fit rounded-md border border-gray-300 bg-gray-50 px-2 py-1 text-sm font-mono font-medium text-muted-foreground shadow-sm";
 
 // Types based on models.schema.json
-type ModelsConfig = {
-  models: Array<{
-    alias: string;
-    type: string;
-    endpoint?: {
-      baseUrl: string;
-      fetch?: typeof fetch;
-    };
-  }>;
-};
+type ModelsConfig = Array<{
+  alias: string;
+  type: string;
+  endpoint?: {
+    baseUrl: string;
+    fetch?: typeof fetch;
+  };
+}>;
 
 export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
   const [currentModelAlias, setCurrentModelAlias] = useState("");
@@ -50,7 +48,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
 
   // Set default model alias if non has been selected
   useEffect(() => {
-    const aliases = modelsConfig.models.map((m) => m.alias);
+    const aliases = modelsConfig.map((m) => m.alias);
     if (!currentModelAlias || !aliases.includes(currentModelAlias)) {
       setCurrentModelAlias(aliases[0] ?? "");
     }
@@ -58,7 +56,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
 
   // Get current model config for the selected alias
   const currentModel = currentModelAlias
-    ? modelsConfig.models.find((m) => m.alias === currentModelAlias)
+    ? modelsConfig.find((m) => m.alias === currentModelAlias)
     : undefined;
 
   // Create OpenAI client based on current model
@@ -224,21 +222,21 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
             <PromptInputModelSelect
               onValueChange={(alias) => setCurrentModelAlias(alias)}
               value={currentModelAlias}
-              disabled={isLoading || modelsConfig.models.length === 0}
+              disabled={isLoading || modelsConfig.length === 0}
               aria-label="Select AI model"
             >
               <PromptInputModelSelectTrigger
                 aria-label={`Current model: ${currentModelAlias}`}
               >
                 <Bot />
-                {modelsConfig.models.length > 0 ? (
+                {modelsConfig.length > 0 ? (
                   <PromptInputModelSelectValue />
                 ) : (
                   "No agent opened"
                 )}
               </PromptInputModelSelectTrigger>
               <PromptInputModelSelectContent>
-                {modelsConfig.models.map((model) => (
+                {modelsConfig.map((model) => (
                   <PromptInputModelSelectItem
                     key={model.alias}
                     value={model.alias}

@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+
+########################  pruner stage  ########################
+FROM oven/bun:1.2.22 AS pruner
+WORKDIR /repo
+RUN bun install --global turbo@2.5.6
+
+COPY . .
+
+# FUTURE: move to the SST/Pulumi script
+RUN turbo prune @hebo/api --docker
+
+########################  installer + builder stage  ########################
+FROM oven/bun:1.2.22 AS builder
+WORKDIR /repo
+
+COPY --from=pruner /repo/out/json/ ./
+# FUTURE: remove this once turbo prune is more stable
+RUN bun install --lockfile-only
+RUN bun install --frozen-lockfile --ignore-scripts
+
+COPY --from=pruner /repo/out/full/ ./
+ADD https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem /rds-bundle.pem
+RUN bun run build
+
+########################  runner stage  ########################
+FROM gcr.io/distroless/base
+WORKDIR /app
+
+COPY --from=builder --chmod=0644 /rds-bundle.pem /etc/ssl/certs/rds-bundle.pem
+COPY --from=builder /repo/apps/api/dist/server .
+
+EXPOSE 3001
+USER 65532:65532
+ENTRYPOINT ["/app/server"]
