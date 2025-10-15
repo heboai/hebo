@@ -1,6 +1,5 @@
 import { Elysia, status, t } from "elysia";
 
-import { type Prisma } from "@hebo/database/src/generated/prisma/client";
 import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
@@ -21,7 +20,7 @@ const branchesExpandParam = t.Object({
   expand: t.Optional(t.Literal("branches")),
 });
 
-const agentInclude = (withBranches = false): Prisma.agentsInclude =>
+const agentInclude = (withBranches = false) =>
   withBranches ? { branches: true } : { branches: { select: { slug: true } } };
 
 export const agentsModule = new Elysia({
