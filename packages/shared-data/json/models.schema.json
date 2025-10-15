@@ -15,7 +15,7 @@
       "type": {
         "type": "string",
         "enum": {
-          "$data": "./json/__supportedTypes.schema.json"
+          "$data": "./__supportedTypes.schema.json"
         }
       },
       "endpoint": {
