@@ -13,18 +13,16 @@ export const supportedModelsUnion = t.Union(
 
 // FUTURE: infer from models.schema.json
 export const modelsSchema = t.Array(
-  t.Optional(
-    t.Object({
-      alias: t.String(),
-      type: supportedModelsUnion,
-      endpoint: t.Optional(
-        t.Object({
-          baseUrl: t.String(),
-          apiKey: t.String(),
-        }),
-      ),
-    }),
-  ),
+  t.Object({
+    alias: t.String(),
+    type: supportedModelsUnion,
+    endpoint: t.Optional(
+      t.Object({
+        baseUrl: t.String(),
+        apiKey: t.String(),
+      }),
+    ),
+  }),
 );
 
 export type Models = typeof modelsSchema.static;
