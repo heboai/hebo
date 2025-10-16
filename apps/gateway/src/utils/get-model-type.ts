@@ -11,6 +11,7 @@ export const getModelType = async (
   // FUTURE: use cache to avoid multiple database calls
   const { models } = await dbClient.branches.findFirstOrThrow({
     where: { agent_slug: agentSlug, slug: branchSlug },
+    select: { models: true },
   });
   const foundModel = (models as Models).find((m) => m?.alias === modelAlias);
   if (!foundModel?.type) throw new ModelNotFoundError();
