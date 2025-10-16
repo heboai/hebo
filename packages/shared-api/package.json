@@ -6,7 +6,7 @@
   "sideEffects": false,
   "exports": {
     "./middlewares/*": "./middlewares/*.ts",
-    "./types": "./types.ts"
+    "./schemas/*": "./schemas/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdx -e '.env*' ."

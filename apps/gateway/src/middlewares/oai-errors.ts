@@ -1,6 +1,6 @@
 import { Elysia, status } from "elysia";
 
-import { ModelNotFoundError } from "~gateway/utils/get-model-id";
+import { ModelNotFoundError } from "~gateway/utils/get-model-type";
 
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;

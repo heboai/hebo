@@ -1,9 +1,9 @@
 import type { createDbClient } from "@hebo/database/client";
-import type { Models } from "@hebo/shared-api/types";
+import type { Models } from "@hebo/shared-api/schemas/branch-models";
 
 export class ModelNotFoundError extends Error {}
 
-export const getModelId = async (
+export const getModelType = async (
   dbClient: ReturnType<typeof createDbClient>,
   modelString: string,
 ) => {
