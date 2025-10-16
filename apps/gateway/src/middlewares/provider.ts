@@ -12,6 +12,7 @@ export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 const groq = createGroq({
   apiKey: (() => {
     try {
+      // @ts-expect-error: GroqApiKey may not be defined
       return Resource.GroqApiKey.value;
     } catch {
       return process.env.GROQ_API_KEY;
@@ -22,6 +23,7 @@ const groq = createGroq({
 const voyage = createVoyage({
   apiKey: (() => {
     try {
+      // @ts-expect-error: VoyageApiKey may not be defined
       return Resource.VoyageApiKey.value;
     } catch {
       return process.env.VOYAGE_API_KEY;
