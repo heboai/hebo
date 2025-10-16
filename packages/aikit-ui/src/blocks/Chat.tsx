@@ -33,7 +33,7 @@ const kbdStyles =
 // Types based on models.schema.json
 type ModelsConfig = Array<{
   alias: string;
-  type: string;
+  type?: string;
   endpoint?: {
     baseUrl: string;
     fetch?: typeof fetch;
@@ -105,7 +105,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
 
     try {
       const { text } = await generateText({
-        model: openai.chat(currentModel.type),
+        model: openai.chat(currentModel.type ?? currentModel.alias),
         messages: [...messages, userMessage].map((msg) => ({
           role: msg.role,
           content: renderMessagePart(msg.parts[0]),
