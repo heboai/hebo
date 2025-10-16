@@ -22,6 +22,7 @@
     "@bogeychan/elysia-logger": "^0.1.10",
     "@elysiajs/openapi": "^1.4.11",
     "@elysiajs/cors": "^1.4.0",
+    "@hebo/database": "workspace:*",
     "@hebo/shared-api": "workspace:*",
     "@hebo/shared-data": "workspace:*",
     "ai": "^5.0.19",

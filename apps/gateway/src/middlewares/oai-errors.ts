@@ -1,5 +1,7 @@
 import { Elysia, status } from "elysia";
 
+import { ModelNotFoundError } from "~gateway/utils/get-model-id";
+
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;
   return r instanceof Response ? r : undefined;
@@ -35,6 +37,23 @@ export const oaiErrors = new Elysia({ name: "oai-error" })
           },
         });
       }
+    }
+
+    if (
+      error instanceof ModelNotFoundError ||
+      (error &&
+        typeof error === "object" &&
+        "code" in error &&
+        error.code === "P2025")
+    ) {
+      return status(404, {
+        error: {
+          message: "Resource not found",
+          type: "invalid_request_error",
+          param: undefined,
+          code: "not_found",
+        },
+      });
     }
 
     return status(500, {
