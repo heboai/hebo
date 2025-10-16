@@ -1,8 +1,8 @@
 import { Elysia, status, t } from "elysia";
 
 import { createSlug } from "@hebo/database/src/utils/create-slug";
-import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
+import { supportedModelsUnion } from "@hebo/shared-api/types";
 
 import {
   agentsInputCreate,
@@ -10,7 +10,6 @@ import {
   agentsPlain,
   agentsRelations,
 } from "~api/generated/prismabox/agents";
-import { supportedModelsUnion } from "~api/modules/branches";
 
 const agents = t.Object({
   ...agentsPlain.properties,
@@ -26,7 +25,6 @@ const agentInclude = (withBranches = false) =>
 export const agentsModule = new Elysia({
   prefix: "/agents",
 })
-  .use(authService)
   .use(dbClient)
   .get(
     "/",

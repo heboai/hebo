@@ -1,9 +1,8 @@
 import { Elysia, status, t } from "elysia";
 
 import { createSlug } from "@hebo/database/src/utils/create-slug";
-import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-import supportedModels from "@hebo/shared-data/json/supported-models";
+import { modelsSchema } from "@hebo/shared-api/types";
 
 import {
   branches,
@@ -11,38 +10,9 @@ import {
   branchesInputUpdate,
 } from "~api/generated/prismabox/branches";
 
-export const supportedModelsUnion = t.Union(
-  supportedModels.map(({ name }) => t.Literal(name)),
-  {
-    error() {
-      return "Invalid model name";
-    },
-  },
-);
-
-// FUTURE: infer from models.schema.json
-// undefined and [] are both valid for models update
-const modelsUpdate = t.Optional(
-  t.Array(
-    t.Optional(
-      t.Object({
-        alias: t.String(),
-        type: supportedModelsUnion,
-        endpoint: t.Optional(
-          t.Object({
-            baseUrl: t.String(),
-            apiKey: t.String(),
-          }),
-        ),
-      }),
-    ),
-  ),
-);
-
 export const branchesModule = new Elysia({
   prefix: "/:agentSlug/branches",
 })
-  .use(authService)
   .use(dbClient)
   .get(
     "/",
@@ -118,7 +88,7 @@ export const branchesModule = new Elysia({
     {
       body: t.Object({
         name: branchesInputUpdate.properties.name,
-        models: modelsUpdate,
+        models: t.Optional(modelsSchema),
       }),
       response: { 200: branches },
     },
