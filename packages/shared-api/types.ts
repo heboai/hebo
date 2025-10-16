@@ -26,3 +26,5 @@ export const modelsSchema = t.Array(
     }),
   ),
 );
+
+export type Models = typeof modelsSchema.static;
