@@ -12,7 +12,7 @@ export const getModelId = async (
   const { models } = await dbClient.branches.findFirstOrThrow({
     where: { agent_slug: agentSlug, slug: branchSlug },
   });
-  const model = (models as Models).find((m) => m?.alias === modelAlias)?.type;
-  if (!model) throw new ModelNotFoundError();
-  return model;
+  const foundModel = (models as Models).find((m) => m?.alias === modelAlias);
+  if (!foundModel?.type) throw new ModelNotFoundError();
+  return foundModel.type;
 };
