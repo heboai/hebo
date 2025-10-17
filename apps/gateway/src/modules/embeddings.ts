@@ -1,19 +1,24 @@
 import { embed, embedMany } from "ai";
 import { Elysia, t } from "elysia";
 
+import { dbClient } from "@hebo/shared-api/middlewares/db-client";
+
 import { provider } from "~gateway/middlewares/provider";
+import { getModelType } from "~gateway/utils/get-model-type";
 
 export const embeddings = new Elysia({
   name: "embeddings",
   prefix: "/embeddings",
 })
+  .use(dbClient)
   .use(provider)
   .post(
     "/",
-    async ({ body, provider }) => {
+    async ({ body, dbClient, provider }) => {
       const { model, input } = body;
 
-      const embeddingModel = provider.embedding(model);
+      const modelType = await getModelType(dbClient, model);
+      const embeddingModel = provider.embedding(modelType);
 
       if (Array.isArray(input)) {
         const { embeddings, usage } = await embedMany({

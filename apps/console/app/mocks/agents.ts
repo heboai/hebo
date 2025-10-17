@@ -6,10 +6,11 @@ import { db } from "~console/mocks/db";
 export const agentHandlers = [
   http.post("/api/v1/agents", async ({ request }) => {
     const body = (await request.json()) as ReturnType<typeof db.agent.create>;
-
+    const agentSlug = slugify(body.name, { lower: true, strict: true });
     // always create main branch by default
     const branch = db.branch.create({
       slug: "main",
+      agent_slug: agentSlug,
       name: "main",
       models: [
         {
@@ -21,7 +22,7 @@ export const agentHandlers = [
 
     const agent = {
       name: body.name,
-      slug: slugify(body.name, { lower: true, strict: true }),
+      slug: agentSlug,
       branches: [branch],
     };
 

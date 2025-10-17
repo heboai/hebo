@@ -5,7 +5,8 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "./middlewares/*": "./middlewares/*.ts"
+    "./middlewares/*": "./middlewares/*.ts",
+    "./schemas/*": "./schemas/*.ts"
   },
   "scripts": {
     "clean": "git clean -fdx -e '.env*' ."
@@ -23,6 +24,7 @@
   "dependencies": {
     "@elysiajs/bearer": "^1.4.1",
     "@hebo/database": "workspace:*",
+    "@hebo/shared-data": "workspace:*",
     "jose": "^6.0.12",
     "sst": "^3.17.13"
   }

@@ -10,15 +10,16 @@ if (!VITE_GATEWAY_URL) {
 }
 
 type Branch = {
+  agent_slug: string;
   models?: Array<{
     alias: string;
-    type: string;
   }>;
+  slug: string;
 };
 
 export function PlaygroundSidebar({ activeBranch }: { activeBranch?: Branch }) {
   const modelsConfig = (activeBranch?.models ?? []).map((model) => ({
-    ...model,
+    alias: `${activeBranch?.agent_slug}/${activeBranch?.slug}/${model.alias}`,
     endpoint: {
       baseUrl: new URL("v1", VITE_GATEWAY_URL).toString(),
       fetch: kyFetch,
