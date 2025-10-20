@@ -1,16 +1,149 @@
 ---
-
+import Root from '../layouts/root.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Root>
+	<div class="m-full mx-auto flex max-w-6xl flex-col gap-8 p-6">
+		<div id="nav" class="flex justify-center">
+			<div class="flex w-full items-center justify-between">
+				<div class="items-top flex gap-1">
+					<a href="/">
+						<div
+						id="logo"
+						class="flex items-center gap-1 text-xl/5 font-semibold sm:text-2xl/10"
+						>
+							<Image
+								src="/hebo.png"
+								alt="Hebo AI"
+								width={24}
+								height={24}
+								class="h:6 w-6 sm:h-8 sm:w-8"
+							/>
+							Hebo
+						</div>
+					</a>
+					<a
+						href="https://www.linkedin.com/company/heboai/jobs/"
+						target="_blank"
+					>
+						<Badge class="h-5 rounded-lg bg-indigo-500 text-xs">
+							Hiring
+						</Badge>
+					</a>
+				</div>
+				<div class="flex items-center gap-8">
+					<a
+						href="https://github.com/heboai/hebo/"
+						target="_blank"
+						class="hidden sm:block"
+					>
+						<div class="flex items-center gap-2 text-sm font-medium hover:underline">
+						<Image
+							src="/github.png"
+							alt="Hebo AI"
+							width={20}
+							height={20}
+						/>
+						Source
+						</div>
+					</a>
+					<a
+						href="https://discord.gg/cCJtXZRU5p"
+						target="_blank"
+						class="hidden sm:block"
+					>
+						<div class="flex items-center gap-2 text-sm font-medium hover:underline">
+						<Image
+							src="/discord.png"
+							alt="Hebo AI"
+							width={20}
+							height={20}
+						/>
+						Community
+						</div>
+					</a>
+					<Button
+						asChild
+						class="h-8 rounded-2xl border-2 border-solid border-indigo-800 bg-stone-100 py-0 text-sm font-semibold text-stone-900 hover:bg-stone-200"
+					>
+						<a href="https://cloud.hebo.ai" target="_blank">
+							Cloud
+						
+							<Badge class="absolute -mt-8 ml-12 h-5 rotate-6 rounded-lg bg-orange-500 text-xs">
+							Beta
+							</Badge>
+						</a>
+					</Button>
+				</div>
+			</div>
+		</div>
+
+		<div
+		id="infinite-monkey-ai"
+		class="sm:from-yello-100 flex flex-col gap-4 rounded-xl sm:mx-auto sm:max-w-5xl sm:flex-row sm:bg-gradient-to-bl sm:to-zinc-50"
+		>
+		<Image
+			src="/banner-infinite-monkey-ai.png"
+			alt="Infinite Monkey AI"
+			width={400}
+			height={265}
+			class="hidden max-h-[265px] max-w-[400px] lg:block"
+		/>
+		<div class="flex flex-col gap-3 sm:p-10">
+			<div class="text-4xl font-semibold">Can we help you?</div>
+			<div class="text-medium">
+			The team at{" "}
+			<a
+				href="https://8monkey.ai/"
+				target="_blank"
+				class="underline decoration-dotted"
+			>
+				Infinite Monkey AI
+			</a>{" "}
+			has decades of experience in building AI agents. We’d love to
+			talk to you and help you unlock the full power of AI to scale
+			and optimize your business.
+			</div>
+			<Button
+			asChild
+			class="text-medium h-12 bg-indigo-900 text-white hover:bg-indigo-800"
+			>
+			<a
+				href="https://tsgip706sfr0.sg.larksuite.com/scheduler/e9f3bb6edd303246"
+				target="_blank"
+			>
+				Talk to a Human
+			</a>
+			</Button>
+		</div>
+		</div>
+
+		<footer class="flex flex-wrap justify-center gap-y-2 p-4 text-sm">
+			<span class="flex whitespace-nowrap">
+				<Image src="/hebo.png" alt="Hebo AI" width={18} height={18} />
+				&nbsp;
+				<span class="font-semibold">hebo.ai</span>&nbsp;is designed,
+				built and backed by&nbsp;
+			</span>
+			<span class="flex whitespace-nowrap">
+				<Image
+				src="/infinite-monkey-ai.png"
+				alt="Hebo AI"
+				width={18}
+				height={18}
+				/>
+				&nbsp;
+				<span class="font-semibold">
+				<a
+					href="https://8monkey.ai/"
+					target="_blank"
+					class="hover:underline"
+				>
+					Infinite Monkey AI Sdn Bhd
+				</a>
+				</span>
+				&nbsp;(202501003121)
+			</span>
+		</footer>
+	</div>
+</Root>
