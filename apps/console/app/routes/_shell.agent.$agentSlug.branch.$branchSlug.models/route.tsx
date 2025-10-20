@@ -1,76 +1,65 @@
 import { useParams, useRouteLoaderData } from "react-router";
+import { parseWithValibot } from "@conform-to/valibot";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@hebo/shared-ui/components/Card";
+import { api } from "~console/lib/service";
+import { parseError } from "~console/lib/errors";
 
-type AgentLoaderData = {
-  agent?: {
+import type { Route } from "./+types/route";
+import BranchModelsPage from "./page";
+import { branchModelsFormSchema, type BranchModelsFormValues } from "./schema";
+
+export async function clientAction({ request, params }: Route.ClientActionArgs) {
+  
+  const formData = await request.formData();
+  const submission = parseWithValibot(formData, {
+    schema: branchModelsFormSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  let result;
+  try {
+    result = await api
+      .agents({ agentSlug: params.agentSlug })
+      .branches({ branchSlug: params.branchSlug })
+      .patch({ models: submission.value.models });
+
+  } catch (error) {
+    return submission.reply({ formErrors: [parseError(error).message] });
+  }
+
+  if (result.error) {
+    return submission.reply({ formErrors: [String(result.error?.value)] });
+  }
+
+  return submission.reply();
+}
+
+// FUTURE: use new useRoute instead of useRouteLoaderData to avoid redefining types
+type LoaderAgentData = {
+  agent: {
+    slug: string;
     branches?: Array<{
       slug: string;
-      name?: string;
-      models?: Array<{ alias?: string; type?: string }>;
+      models?: BranchModelsFormValues["models"];
     }>;
   };
 };
 
 export default function BranchModelsRoute() {
-  const params = useParams<{ branchSlug: string }>();
-  const parentData =
-    (useRouteLoaderData("routes/_shell.agent.$agentSlug") as AgentLoaderData) ??
-    {};
-
-  const branch =
-    parentData.agent?.branches?.find(
-      (candidate) => candidate.slug === params.branchSlug,
-    ) ?? null;
-
-  const models = branch?.models ?? [];
+  const params = useParams();
+  const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug") as LoaderAgentData;
+  
+  // FUTURE: do this in a loader
+  const branch = agent.branches?.find((a) => a.slug === params.branchSlug);
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Models</h1>
-        <p className="text-muted-foreground">
-          {branch
-            ? `Configure the models exposed by the ${branch.name ?? branch.slug} branch.`
-            : `Configure the models exposed by the ${params.branchSlug ?? "current"} branch.`}
-        </p>
-      </header>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Branch models</CardTitle>
-          <CardDescription>
-            This is a scaffolded view. Replace it with your models management UI.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {models.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No models are defined for this branch yet.
-            </p>
-          ) : (
-            <ul className="space-y-2">
-              {models.map((model, index) => (
-                <li
-                  key={model?.alias ?? index}
-                  className="text-sm text-muted-foreground"
-                >
-                  <span className="font-medium text-foreground">
-                    {model?.alias ?? "Unnamed"}
-                  </span>
-                  {model?.type ? ` · ${model.type}` : null}
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+    <BranchModelsPage
+      agentSlug={agent.slug}
+      branchSlug={branch!.slug}
+      models={branch!.models}
+    />
   );
 }
