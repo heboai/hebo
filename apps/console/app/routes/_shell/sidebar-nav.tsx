@@ -7,6 +7,7 @@ type SidebarNavProps = {
 };
 
 export const SidebarNav = ({ activeAgent }: SidebarNavProps) => {
+  // FUTURE: highlight selected menu item based on current route
   return activeAgent ? (
       <SidebarMenu>
         <SidebarMenuItem>
