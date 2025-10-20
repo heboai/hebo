@@ -11,7 +11,7 @@ export const agentHandlers = [
     // always create main branch by default
     const branch = db.branch.create({
       slug: "main",
-      agentSlug: agentSlug,
+      agent_slug: agentSlug,
       name: "main",
       models: [
         {

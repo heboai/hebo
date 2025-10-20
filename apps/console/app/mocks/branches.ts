@@ -6,7 +6,7 @@ import { db } from "~console/mocks/db";
 export const branchHandlers = [
   http.post<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
-    async ({ request }) => {
+    async ({ request, params }) => {
       const body = (await request.json()) as ReturnType<
         typeof db.branch.create
       >;
@@ -14,6 +14,7 @@ export const branchHandlers = [
       const branch = {
         name: body.name,
         slug: slugify(body.name, { lower: true, strict: true }),
+        agent_slug: params.agentSlug,
       };
 
       try {
@@ -51,7 +52,7 @@ export const branchHandlers = [
       try {
         branch = db.branch.findFirst({
           where: {
-            agentSlug: { equals: params.agentSlug },
+            agent_slug: { equals: params.agentSlug },
             slug: { equals: params.branchSlug },
           },
           strict: true,
