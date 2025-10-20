@@ -38,4 +38,37 @@ export const branchHandlers = [
       return HttpResponse.json(branches);
     },
   ),
+
+  http.patch<{ agentSlug: string; branchSlug: string }>(
+    "/api/v1/agents/:agentSlug/branches/:branchSlug",
+    async ({ params, request }) => {
+      const body = (await request.json()) as {
+        models: ReturnType<typeof db.branch.create>["models"];
+      };
+
+      let branch;
+
+      try {
+        branch = db.branch.findFirst({
+          where: {
+            agentSlug: { equals: params.agentSlug },
+            slug: { equals: params.branchSlug },
+          },
+          strict: true,
+        });
+      } catch {
+        return new HttpResponse("Branch with the slug not found", {
+          status: 404,
+        });
+      }
+
+      const updatedBranch = db.branch.update({
+        where: { id: { equals: branch.id } },
+        data: { models: body.models },
+      });
+
+      await delay(500);
+      return HttpResponse.json(updatedBranch);
+    },
+  ),
 ];
