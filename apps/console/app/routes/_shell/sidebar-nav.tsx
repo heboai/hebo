@@ -1,5 +1,5 @@
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@hebo/shared-ui/components/Sidebar";
-import { BrainCog } from "lucide-react";
+import { BrainCog, Home } from "lucide-react";
 import { Link } from "react-router";
 
 type SidebarNavProps = {
@@ -7,21 +7,26 @@ type SidebarNavProps = {
 };
 
 export const SidebarNav = ({ activeAgent }: SidebarNavProps) => {
-  return (
+  return activeAgent ? (
       <SidebarMenu>
-          <SidebarMenuItem>
-              {activeAgent && (
-                  <SidebarMenuButton asChild tooltip="Models Config">
-                      <Link
-                          to={`/agent/${activeAgent.slug}/branch/main/models`}
-                          aria-label="Models Config"
-                      >
-                          <BrainCog />
-                          Models
-                      </Link>
-                  </SidebarMenuButton>
-              )}
-          </SidebarMenuItem>
+        <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Overview">
+                <Link to={`/agent/${activeAgent.slug}/branch/main`} >
+                    <Home />
+                    Overview
+                </Link>
+            </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Models">
+                <Link to={`/agent/${activeAgent.slug}/branch/main/models`} >
+                    <BrainCog />
+                    Models
+                </Link>
+            </SidebarMenuButton>
+        </SidebarMenuItem>
       </SidebarMenu>
-  )
-}
+    ) : (
+        <></>
+    )
+};
