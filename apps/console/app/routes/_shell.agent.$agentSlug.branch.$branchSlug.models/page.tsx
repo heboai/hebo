@@ -42,26 +42,22 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: 
 
   useActionDataErrorToast();
 
+  const cloneEmptyModel = () => ({
+    ...EMPTY_MODEL,
+    endpoint: EMPTY_MODEL.endpoint
+      ? { ...EMPTY_MODEL.endpoint }
+      : undefined,
+  });
+
   const initialModels =
     models.length > 0
-      ? models.map((model) => {
-          const endpoint = model.endpoint ?? EMPTY_MODEL.endpoint;
-          return {
-            alias: model.alias,
-            type: model.type,
-            endpoint: {
-              mode: endpoint.mode,
-              baseUrl: endpoint.baseUrl,
-              apiKey: endpoint.apiKey,
-            },
-          };
-        })
-      : [
-          {
-            ...EMPTY_MODEL,
-            endpoint: { ...EMPTY_MODEL.endpoint },
-          },
-        ];
+      ? models.map((model) => ({
+          ...model,
+          endpoint: model.endpoint
+            ? { ...model.endpoint }
+            : undefined,
+        }))
+      : [cloneEmptyModel()];
 
   const [form, fields] = useForm<BranchModelsFormValues>({
     lastResult,
@@ -72,6 +68,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: 
   });
 
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
+  const [pendingNewCardIndex, setPendingNewCardIndex] = useState<number | null>(null);
   useEffect(() => {
     if (form.status === "success") {
       setExpandedCardId(null);
@@ -79,6 +76,14 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: 
   }, [form.status]);
 
   const modelItems = fields.models.getFieldList();
+  useEffect(() => {
+    if (pendingNewCardIndex === null) return;
+    const pendingItem = modelItems[pendingNewCardIndex];
+    if (!pendingItem) return;
+    const newId = pendingItem.key ?? `index:${pendingNewCardIndex}`;
+    setExpandedCardId(newId);
+    setPendingNewCardIndex(null);
+  }, [modelItems, pendingNewCardIndex]);
 
   const selectItems = supportedModels.map((item) => ({
     value: item.name,
@@ -101,23 +106,22 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: 
       <Form method="patch" {...getFormProps(form)} className="space-y-4">
         {modelItems.map((modelField, index) => {
           const cardFieldset = modelField.getFieldset();
-          const endpointFieldset = cardFieldset.endpoint.getFieldset();
+          const endpointField = cardFieldset.endpoint;
+          const endpointFieldset = endpointField.getFieldset();
 
           const cardId = modelField.key ?? `index:${index}`;
           const isExpanded = expandedCardId === cardId;
 
-          const aliasValue =
-            (cardFieldset.alias.value as string | undefined) ?? "";
-          const aliasPath = [agentSlug, branchSlug, aliasValue || "alias"]
+          const aliasPath = [agentSlug, branchSlug, cardFieldset.alias.value || "alias"]
             .filter(Boolean)
             .join("/");
 
           const modelType =
             (cardFieldset.type.value as string | undefined) ?? EMPTY_MODEL.type;
-          const mode =
-            (endpointFieldset.mode.value as "custom" | "managed" | undefined) ??
-            "managed";
-          const isCustomEndpoint = mode === "custom";
+          const endpointValue = endpointField.value as
+            | { baseUrl: string; apiKey: string }
+            | undefined;
+          const isCustomEndpoint = endpointValue !== undefined;
 
           return (
             <Card
@@ -195,87 +199,71 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: 
                       </FormField>
                     </div>
 
-                    <FormField
-                      field={endpointFieldset.mode}
-                      className="space-y-3"
-                    >
-                      <FormControl>
-                        <input type="hidden" value={mode} readOnly />
-                      </FormControl>
-                      <div className="flex items-center justify-between rounded-md border border-border/60 px-3 py-2">
-                        <div className="flex items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              form.update({
-                                name: endpointFieldset.mode.name,
-                                value: isCustomEndpoint ? "managed" : "custom",
-                                validated: false,
-                              })
-                            }
-                            className="relative inline-flex size-5 shrink-0 items-center justify-center rounded-full border border-input bg-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                            aria-pressed={isCustomEndpoint}
-                            aria-label="Toggle custom endpoint"
-                          >
-                            <span
-                              className={`absolute inset-0 m-0.5 rounded-full transition-colors ${
-                                isCustomEndpoint ? "bg-primary" : "bg-transparent"
-                              }`}
-                            />
-                          </button>
-                          <div>
-                            <span className="text-sm font-medium text-foreground">
-                              Custom Endpoint
-                            </span>
-                            <p className="text-muted-foreground text-xs">
-                              Route this alias to your own inference endpoint.
-                            </p>
-                          </div>
-                        </div>
-                        <span className="text-xs font-medium uppercase text-muted-foreground">
-                          {isCustomEndpoint ? "Enabled" : "Disabled"}
-                        </span>
+                    <div className="flex items-start gap-3 rounded-md border border-border/60 px-3 py-2">
+                      <input
+                        id={`${endpointField.id}-checkbox`}
+                        type="checkbox"
+                        checked={isCustomEndpoint}
+                        onChange={(event) => {
+                          const checked = event.currentTarget.checked;
+                          form.update({
+                            name: endpointField.name,
+                            value: checked
+                              ? {
+                                  baseUrl: endpointValue?.baseUrl ?? "",
+                                  apiKey: endpointValue?.apiKey ?? "",
+                                }
+                              : undefined,
+                            validated: false,
+                          });
+                        }}
+                        className="size-4 shrink-0 rounded border border-input"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <label
+                          className="text-sm font-medium text-foreground"
+                          htmlFor={`${endpointField.id}-checkbox`}
+                        >
+                          Use custom endpoint
+                        </label>
+                        <p className="text-muted-foreground text-xs">
+                          Route this alias to your own inference endpoint.
+                        </p>
                       </div>
-                      <FormMessage />
-                    </FormField>
-
-                    <div
-                      className={`grid gap-4 sm:grid-cols-2 ${
-                        isCustomEndpoint ? "opacity-100" : "opacity-60"
-                      }`}
-                      aria-hidden={!isCustomEndpoint}
-                    >
-                      <FormField
-                        field={endpointFieldset.baseUrl}
-                        className="flex flex-col gap-2"
-                      >
-                        <FormLabel>Base URL</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="https://"
-                            autoComplete="off"
-                            disabled={!isCustomEndpoint}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormField>
-
-                      <FormField
-                        field={endpointFieldset.apiKey}
-                        className="flex flex-col gap-2"
-                      >
-                        <FormLabel>API Key</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="API key"
-                            type="password"
-                            autoComplete="off"
-                            disabled={!isCustomEndpoint}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormField>
+                      <span className="ml-auto text-xs font-medium uppercase text-muted-foreground">
+                        {isCustomEndpoint ? "Enabled" : "Disabled"}
+                      </span>
                     </div>
+
+                    {isCustomEndpoint ? (
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <FormField
+                          field={endpointFieldset.baseUrl}
+                          className="flex flex-col gap-2"
+                        >
+                          <FormLabel>Base URL</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://" autoComplete="off" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormField>
+
+                        <FormField
+                          field={endpointFieldset.apiKey}
+                          className="flex flex-col gap-2"
+                        >
+                          <FormLabel>API Key</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="API key"
+                              type="password"
+                              autoComplete="off"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormField>
+                      </div>
+                    ) : null}
                   </CardContent>
 
                   <CardFooter className="flex flex-col gap-3 border-t border-border/50 pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -327,9 +315,10 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: 
           onClick={() => {
             const nextIndex = modelItems.length;
             setExpandedCardId(`index:${nextIndex}`);
+            setPendingNewCardIndex(nextIndex);
             form.insert({
               name: fields.models.name,
-              defaultValue: EMPTY_MODEL
+              defaultValue: cloneEmptyModel(),
             });
           }}
         >

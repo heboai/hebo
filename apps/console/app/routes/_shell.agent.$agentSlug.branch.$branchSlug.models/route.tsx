@@ -24,7 +24,9 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     result = await api
       .agents({ agentSlug: params.agentSlug })
       .branches({ branchSlug: params.branchSlug })
-      .patch({ models: submission.value.models });
+      .patch({
+        models: submission.value.models,
+      });
 
   } catch (error) {
     return submission.reply({ formErrors: [parseError(error).message] });
