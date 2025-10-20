@@ -1,6 +1,6 @@
 import { XCircle, SquareChevronRight } from "lucide-react";
 import { Outlet, useLocation, useRouteLoaderData } from "react-router";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
 
@@ -13,6 +13,7 @@ import {
   SidebarProvider,
   SidebarSeparator,
   SidebarTrigger,
+  SidebarGroup,
 } from "@hebo/shared-ui/components/Sidebar";
 
 import { authService } from "~console/lib/auth";
@@ -21,13 +22,13 @@ import { dontRevalidateOnFormErrors } from "~console/lib/errors";
 import { getCookie, kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
 
-import { UserMenu } from "./sidebar-user";
 import { AgentSelect } from "./sidebar-agent";
-import { StaticContent } from "./sidebar-static";
 import { PlaygroundSidebar } from "./sidebar-playground";
+import { UserMenu } from "./sidebar-user";
+import { SidebarNav } from "./sidebar-nav";
+import { StaticContent } from "./sidebar-static";
 
 import type { Route } from "./+types/route";
-import { useEffect } from "react";
 
 
 async function authMiddleware() {
@@ -78,7 +79,11 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
           </SidebarHeader>
-          <SidebarContent />
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarNav activeAgent={activeAgent} />
+            </SidebarGroup>
+          </SidebarContent>
           <SidebarFooter>
               <StaticContent />
               <SidebarSeparator className="mx-0" />
