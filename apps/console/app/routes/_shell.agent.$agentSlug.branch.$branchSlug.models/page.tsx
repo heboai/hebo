@@ -74,25 +74,22 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
       </div>
 
       <Form method="patch" {...getFormProps(form)} className="space-y-4">
-        {modelItems.map((modelField, index) => {
-          const cardFieldset = modelField.getFieldset();
-          const endpointField = cardFieldset.endpoint;
+        {modelItems.map((model, index) => {
+
+          const modelFieldset = model.getFieldset();
+          const endpointField = modelFieldset.endpoint;
           const endpointFieldset = endpointField.getFieldset();
-
-          const isExpanded = expandedCardId === index;
-
-          const aliasPath = [agentSlug, branchSlug, cardFieldset.alias.value || "alias"].join("/");
-
-          const modelType =
-            (cardFieldset.type.value as string | undefined) ?? "";
           const endpointValue = endpointField.value as
             | { baseUrl: string; apiKey: string }
             | undefined;
+
+          const isExpanded = expandedCardId === index;
           const isCustomEndpoint = endpointValue !== undefined;
+          const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
 
           return (
             <Card
-              key={index}
+              key={model.key}
               className="border-border/60 bg-card/70 shadow-sm"
             >
               <CardHeader className="gap-3 border-b border-border/60 pb-4">
@@ -114,8 +111,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                   <div className="flex flex-wrap items-center gap-2 text-sm">
                     <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground">
                       {
-                        supportedModels.find((model) => model.name === modelType)
-                          ?.displayName ?? modelType
+                        supportedModels.find((model) => model.name === modelFieldset.type.value)?.displayName || ""
                       }
                     </span>
                     <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground">
@@ -144,7 +140,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                   <CardContent className="space-y-6 pt-6">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <FormField
-                        field={cardFieldset.alias}
+                        field={modelFieldset.alias}
                         className="flex flex-col gap-2"
                       >
                         <FormLabel>Alias</FormLabel>
@@ -155,14 +151,14 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                       </FormField>
 
                       <FormField
-                        field={cardFieldset.type}
+                        field={modelFieldset.type}
                         className="flex flex-col gap-2"
                       >
                         <FormLabel>Type</FormLabel>
                         <FormControl>
                           <Select items={supportedModels.map((item) => ({
     value: item.name,
-    name: `${item.displayName} (${item.name})`,
+    name: item.displayName,
   }))} />
                         </FormControl>
                         <FormMessage />
@@ -183,8 +179,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                                   baseUrl: endpointValue?.baseUrl ?? "",
                                   apiKey: endpointValue?.apiKey ?? "",
                                 }
-                              : undefined,
-                            validated: false,
+                              : undefined
                           });
                         }}
                         className="size-4 shrink-0 rounded border border-input"
@@ -200,9 +195,6 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                           Route this alias to your own inference endpoint.
                         </p>
                       </div>
-                      <span className="ml-auto text-xs font-medium uppercase text-muted-foreground">
-                        {isCustomEndpoint ? "Enabled" : "Disabled"}
-                      </span>
                     </div>
 
                     {isCustomEndpoint ? (
@@ -247,9 +239,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                           name: fields.models.name,
                           index,
                         });
-                        if (expandedCardId === index) {
-                          setExpandedCardId(null);
-                        }
+                        setExpandedCardId(null);
                       }}
                     >
                       Remove
@@ -283,11 +273,10 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
           type="button"
           variant="outline"
           onClick={() => {
-            const nextIndex = modelItems.length;
             form.insert({
               name: fields.models.name
             });
-            setExpandedCardId(nextIndex);
+            setExpandedCardId(modelItems.length);
           }}
         >
           + Add Model
