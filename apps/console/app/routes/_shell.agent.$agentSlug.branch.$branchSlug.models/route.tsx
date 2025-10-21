@@ -58,10 +58,22 @@ export default function BranchModelsRoute() {
   const branch = agent.branches?.find((a) => a.slug === params.branchSlug);
 
   return (
-    <BranchModelsPage
-      agentSlug={agent.slug}
-      branchSlug={branch!.slug}
-      models={branch!.models}
-    />
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Model Configuration
+          </h1>
+          <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
+            Configure access for agents to different models and their routing
+            behaviour. Connect existing inference endpoints or choose from our
+            managed providers.
+          </p>
+        </div>
+        <BranchModelsPage
+          agentSlug={agent.slug}
+          branchSlug={branch!.slug}
+          models={branch!.models}
+        />
+      </div>
   );
 }
