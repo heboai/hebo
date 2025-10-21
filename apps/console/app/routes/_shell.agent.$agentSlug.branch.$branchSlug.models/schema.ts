@@ -1,5 +1,6 @@
 import {
   array,
+  message,
   minLength,
   nonEmpty,
   object,
@@ -16,7 +17,7 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 
 
 export const branchModelSchema = object({
-  alias: pipe(string(), trim(), nonEmpty("Alias is required")),
+  alias: message(pipe(string(), trim(), nonEmpty()), "Please enter an alias name"),
   type: picklist(
     supportedModels.map((model) => model.name),
     "Select one of the supported models",
@@ -29,7 +30,7 @@ export const branchModelSchema = object({
         nonEmpty("Enter the endpoint base URL"),
         urlRule("Enter a valid URL (https://example.com)"),
       ),
-      apiKey: pipe(string(), trim(), nonEmpty("Provide the API key")),
+      apiKey: message(pipe(string(), trim(), nonEmpty()), "Provide the API key"),
     }),
   ),
 });

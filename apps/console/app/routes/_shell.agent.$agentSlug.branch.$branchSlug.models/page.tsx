@@ -49,15 +49,16 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
     }
   });
 
+  const modelItems = fields.models.getFieldList();
+
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
-  const [pendingNewCardIndex, setPendingNewCardIndex] = useState<number | null>(null);
   useEffect(() => {
     if (form.status === "success") {
       setExpandedCardId(null);
     }
   }, [form.status]);
 
-  const modelItems = fields.models.getFieldList();
+  const [pendingNewCardIndex, setPendingNewCardIndex] = useState<number | null>(null);
   useEffect(() => {
     if (pendingNewCardIndex === null) return;
     const pendingItem = modelItems[pendingNewCardIndex];
