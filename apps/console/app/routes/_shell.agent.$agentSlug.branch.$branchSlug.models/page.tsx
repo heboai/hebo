@@ -29,6 +29,7 @@ import {
   type BranchModelsFormValues,
 } from "./schema";
 
+
 type BranchModelsPageProps = {
   agentSlug: string;
   branchSlug: string;
@@ -51,27 +52,13 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
 
   const modelItems = fields.models.getFieldList();
 
-  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
+  // Close the active card on successful submit
+  const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
     if (form.status === "success") {
       setExpandedCardId(null);
     }
   }, [form.status]);
-
-  const [pendingNewCardIndex, setPendingNewCardIndex] = useState<number | null>(null);
-  useEffect(() => {
-    if (pendingNewCardIndex === null) return;
-    const pendingItem = modelItems[pendingNewCardIndex];
-    if (!pendingItem) return;
-    const newId = pendingItem.key ?? `index:${pendingNewCardIndex}`;
-    setExpandedCardId(newId);
-    setPendingNewCardIndex(null);
-  }, [modelItems, pendingNewCardIndex]);
-
-  const selectItems = supportedModels.map((item) => ({
-    value: item.name,
-    name: `${item.displayName} (${item.name})`,
-  }));
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
@@ -92,8 +79,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
           const endpointField = cardFieldset.endpoint;
           const endpointFieldset = endpointField.getFieldset();
 
-          const cardId = modelField.key ?? `index:${index}`;
-          const isExpanded = expandedCardId === cardId;
+          const isExpanded = expandedCardId === index;
 
           const aliasPath = [agentSlug, branchSlug, cardFieldset.alias.value || "alias"].join("/");
 
@@ -106,7 +92,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
 
           return (
             <Card
-              key={cardId}
+              key={index}
               className="border-border/60 bg-card/70 shadow-sm"
             >
               <CardHeader className="gap-3 border-b border-border/60 pb-4">
@@ -140,7 +126,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                         type="button"
                         variant="outline"
                         className="h-8 gap-2 px-3"
-                        onClick={() => setExpandedCardId(cardId)}
+                        onClick={() => setExpandedCardId(index)}
                       >
                         <Edit className="h-4 w-4" />
                         Edit
@@ -174,7 +160,10 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                       >
                         <FormLabel>Type</FormLabel>
                         <FormControl>
-                          <Select items={selectItems} />
+                          <Select items={supportedModels.map((item) => ({
+    value: item.name,
+    name: `${item.displayName} (${item.name})`,
+  }))} />
                         </FormControl>
                         <FormMessage />
                       </FormField>
@@ -258,7 +247,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
                           name: fields.models.name,
                           index,
                         });
-                        if (expandedCardId === cardId) {
+                        if (expandedCardId === index) {
                           setExpandedCardId(null);
                         }
                       }}
@@ -295,11 +284,10 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models}: Branc
           variant="outline"
           onClick={() => {
             const nextIndex = modelItems.length;
-            setExpandedCardId(`index:${nextIndex}`);
-            setPendingNewCardIndex(nextIndex);
             form.insert({
               name: fields.models.name
             });
+            setExpandedCardId(nextIndex);
           }}
         >
           + Add Model
