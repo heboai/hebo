@@ -40,6 +40,7 @@
         "@elysiajs/openapi": "^1.4.11",
         "@hebo/database": "workspace:*",
         "@hebo/shared-api": "workspace:*",
+        "@hebo/shared-types": "workspace:*",
         "crypto-random-string": "^5.0.0",
         "elysia": "^1.4.9",
         "pg": "^8.16.3",
@@ -123,6 +124,7 @@
         "@hebo/database": "workspace:*",
         "@hebo/shared-api": "workspace:*",
         "@hebo/shared-data": "workspace:*",
+        "@hebo/shared-types": "workspace:*",
         "ai": "^5.0.19",
         "elysia": "^1.4.9",
         "sst": "^3.17.13",
@@ -220,6 +222,20 @@
     "packages/shared-data": {
       "name": "@hebo/shared-data",
       "version": "0.0.1",
+    },
+    "packages/shared-types": {
+      "name": "@hebo/shared-types",
+      "version": "0.0.1",
+      "dependencies": {
+        "@hebo/shared-data": "workspace:*",
+      },
+      "devDependencies": {
+        "bun-types": "^1.2.22",
+        "elysia": "^1.4.9",
+      },
+      "peerDependencies": {
+        "elysia": "^1.4.9",
+      },
     },
     "packages/shared-ui": {
       "name": "@hebo/shared-ui",
@@ -510,6 +526,8 @@
     "@hebo/shared-api": ["@hebo/shared-api@workspace:packages/shared-api"],
 
     "@hebo/shared-data": ["@hebo/shared-data@workspace:packages/shared-data"],
+
+    "@hebo/shared-types": ["@hebo/shared-types@workspace:packages/shared-types"],
 
     "@hebo/shared-ui": ["@hebo/shared-ui@workspace:packages/shared-ui"],
 

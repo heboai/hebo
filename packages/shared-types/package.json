@@ -1,0 +1,23 @@
+{
+  "name": "@hebo/shared-types",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./models": "./models.ts"
+  },
+  "scripts": {
+    "clean": "git clean -fdx -e '.env*' ."
+  },
+  "peerDependencies": {
+    "elysia": "^1.4.9"
+  },
+  "devDependencies": {
+    "bun-types": "^1.2.22",
+    "elysia": "^1.4.9"
+  },
+  "dependencies": {
+    "@hebo/shared-data": "workspace:*"
+  }
+}

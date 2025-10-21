@@ -1,5 +1,5 @@
 import type { createDbClient } from "@hebo/database/client";
-import type { Models } from "@hebo/shared-api/schemas/branch-models";
+import type { Models } from "@hebo/shared-types/models";
 
 export class ModelNotFoundError extends Error {}
 
