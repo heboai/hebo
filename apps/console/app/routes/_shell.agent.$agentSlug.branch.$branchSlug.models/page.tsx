@@ -24,7 +24,6 @@ import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToCli
 import { useActionDataErrorToast } from "~console/lib/errors";
 
 import {
-  EMPTY_MODEL,
   branchModelsFormSchema,
   supportedModels,
   type BranchModelsFormValues,
@@ -33,38 +32,21 @@ import {
 type BranchModelsPageProps = {
   agentSlug: string;
   branchSlug: string;
-  models?: BranchModelsFormValues["models"];
+  models: BranchModelsFormValues["models"];
 };
 
-export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: BranchModelsPageProps) {
+export default function BranchModelsPage({ agentSlug, branchSlug, models}: BranchModelsPageProps) {
   const lastResult = useActionData();
   const navigation = useNavigation();
 
   useActionDataErrorToast();
 
-  const cloneEmptyModel = () => ({
-    ...EMPTY_MODEL,
-    endpoint: EMPTY_MODEL.endpoint
-      ? { ...EMPTY_MODEL.endpoint }
-      : undefined,
-  });
-
-  const initialModels =
-    models.length > 0
-      ? models.map((model) => ({
-          ...model,
-          endpoint: model.endpoint
-            ? { ...model.endpoint }
-            : undefined,
-        }))
-      : [cloneEmptyModel()];
-
   const [form, fields] = useForm<BranchModelsFormValues>({
     lastResult,
     constraint: getValibotConstraint(branchModelsFormSchema),
     defaultValue: {
-      models: initialModels,
-    },
+      models: models
+    }
   });
 
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
@@ -112,12 +94,10 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: 
           const cardId = modelField.key ?? `index:${index}`;
           const isExpanded = expandedCardId === cardId;
 
-          const aliasPath = [agentSlug, branchSlug, cardFieldset.alias.value || "alias"]
-            .filter(Boolean)
-            .join("/");
+          const aliasPath = [agentSlug, branchSlug, cardFieldset.alias.value || "alias"].join("/");
 
           const modelType =
-            (cardFieldset.type.value as string | undefined) ?? EMPTY_MODEL.type;
+            (cardFieldset.type.value as string | undefined) ?? "";
           const endpointValue = endpointField.value as
             | { baseUrl: string; apiKey: string }
             | undefined;
@@ -317,8 +297,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models = []}: 
             setExpandedCardId(`index:${nextIndex}`);
             setPendingNewCardIndex(nextIndex);
             form.insert({
-              name: fields.models.name,
-              defaultValue: cloneEmptyModel(),
+              name: fields.models.name
             });
           }}
         >

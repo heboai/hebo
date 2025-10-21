@@ -44,10 +44,4 @@ export const branchModelsFormSchema = object({
 export type BranchModelsFormValues = InferOutput<typeof branchModelsFormSchema>;
 export type BranchModelFormValue = BranchModelsFormValues["models"][number];
 
-export const EMPTY_MODEL: BranchModelFormValue = {
-  alias: "",
-  type: supportedModels[0].name,
-  endpoint: undefined,
-};
-
 export { supportedModels };
