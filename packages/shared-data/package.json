@@ -1,9 +1,16 @@
 {
   "name": "@hebo/shared-data",
   "version": "0.0.1",
+  "devDependencies": {
+    "bun-types": "^1.2.22"
+  },
+  "exports": {
+    "./json/*": "./json/*.json",
+    "./types/*": "./types/*.ts"
+  },
   "private": true,
   "type": "module",
-  "exports": {
-    "./json/*": "./json/*.json"
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.41"
   }
 }
