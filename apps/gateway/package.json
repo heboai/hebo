@@ -17,11 +17,12 @@
     "start": "./dist/server"
   },
   "dependencies": {
+    "@ai-sdk/amazon-bedrock": "^3.0.45",
     "@ai-sdk/groq": "^2.0.11",
     "@ai-sdk/openai-compatible": "^1.0.19",
     "@bogeychan/elysia-logger": "^0.1.10",
-    "@elysiajs/openapi": "^1.4.11",
     "@elysiajs/cors": "^1.4.0",
+    "@elysiajs/openapi": "^1.4.11",
     "@hebo/database": "workspace:*",
     "@hebo/shared-api": "workspace:*",
     "@hebo/shared-data": "workspace:*",

@@ -130,6 +130,7 @@ Secrets to set:
 
 ##### LLM keys
 
+- `BedrockApiKey`
 - `GroqApiKey`
 - `VoyageApiKey`
 

@@ -1,3 +1,4 @@
+import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
 import { createGroq } from "@ai-sdk/groq";
 import Elysia from "elysia";
 import { Resource } from "sst";
@@ -7,7 +8,19 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import type { LanguageModel, EmbeddingModel } from "ai";
 
-export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
+export const SUPPORTED_MODELS = supportedModels.map((m) => m.name);
+
+const bedrock = createAmazonBedrock({
+  region: "us-east-1",
+  apiKey: (() => {
+    try {
+      // @ts-expect-error: GroqApiKey may not be defined
+      return Resource.BedrockApiKey.value;
+    } catch {
+      return process.env.BEDROCK_API_KEY;
+    }
+  })(),
+});
 
 const groq = createGroq({
   apiKey: (() => {
@@ -31,15 +44,6 @@ const voyage = createVoyage({
   })(),
 });
 
-// FUTURE more robust logic based on supported-models.json
-const isEmbedding = (id: string) => /^voyage-/i.test(id);
-
-// FUTURE support AWS Bedrock
-const pickChat = (id: string): LanguageModel => groq(id);
-
-const pickEmbedding = (id: string): EmbeddingModel<string> =>
-  voyage.textEmbeddingModel(id);
-
 const badRequest = (message: string, code = "model_mismatch") => {
   const err = new Error(message) as Error & {
     status: number;
@@ -50,6 +54,45 @@ const badRequest = (message: string, code = "model_mismatch") => {
   err.type = "invalid_request_error";
   err.code = code;
   return err;
+};
+
+const isEmbedding = (id: string) =>
+  supportedModels.find((m) => m.name === id)?.modality === "embedding";
+
+const pickChat = (id: string): LanguageModel => {
+  const provider = supportedModels.find((m) => m.name === id)?.provider;
+  switch (provider) {
+    case "groq": {
+      return groq(id);
+    }
+    case "bedrock": {
+      return bedrock(id);
+    }
+    default: {
+      throw badRequest(
+        `Unknown or unsupported provider "${provider}"`,
+        "provider_unsupported",
+      );
+    }
+  }
+};
+
+const pickEmbedding = (id: string): EmbeddingModel<string> => {
+  const provider = supportedModels.find((m) => m.name === id)?.provider;
+  switch (provider) {
+    case "voyage": {
+      return voyage.textEmbeddingModel(id);
+    }
+    case "bedrock": {
+      return bedrock.embedding(id);
+    }
+    default: {
+      throw badRequest(
+        `Unknown or unsupported provider "${provider}"`,
+        "provider_unsupported",
+      );
+    }
+  }
 };
 
 export const supportedOrThrow = (id: string) => {

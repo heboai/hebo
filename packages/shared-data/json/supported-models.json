@@ -2,26 +2,36 @@
   {
     "name": "meta-llama/llama-4-scout-17b-16e-instruct",
     "displayName": "LLaMA 4 Scout",
-    "rateLimit": 40000000
+    "rateLimit": 40000000,
+    "provider": "groq",
+    "modality": "text"
   },
   {
-    "name": "claude-3-5-sonnet-20241022",
-    "displayName": "Claude 3.5 Sonnet",
-    "rateLimit": 0
+    "name": "openai.gpt-oss-120b-1:0",
+    "displayName": "OpenAI GPT OSS 120B",
+    "rateLimit": 400000000,
+    "provider": "bedrock",
+    "modality": "text"
   },
   {
-    "name": "claude-3-haiku-20240307",
-    "displayName": "Claude 3 Haiku",
-    "rateLimit": 0
-  },
-  {
-    "name": "voyage-multimodal-3",
-    "displayName": "Voyage Multimodal 3",
-    "rateLimit": 0
+    "name": "openai.gpt-oss-20b-1:0",
+    "displayName": "OpenAI GPT OSS 20B",
+    "rateLimit": 400000000,
+    "provider": "bedrock",
+    "modality": "text"
   },
   {
     "name": "voyage-3-large",
     "displayName": "Voyage 3 Large",
-    "rateLimit": 400000000
+    "rateLimit": 400000000,
+    "provider": "voyage",
+    "modality": "embedding"
+  },
+  {
+    "name": "cohere.embed-multilingual-v3",
+    "displayName": "Cohere Embed Multilingual v3",
+    "rateLimit": 400000000,
+    "provider": "bedrock",
+    "modality": "embedding"
   }
 ]
