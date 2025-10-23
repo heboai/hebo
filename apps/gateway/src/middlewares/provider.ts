@@ -54,7 +54,7 @@ const defaults = {
     location: "us-central1",
     project: (() => {
       try {
-        // @ts-expect-error: VertexProjectId may not be defined
+        // @ts-expect-error: GoogleVertexProject may not be defined
         return Resource.GoogleVertexProject.value;
       } catch {
         return process.env.GOOGLE_VERTEX_PROJECT;
