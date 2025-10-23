@@ -99,6 +99,7 @@ const createProvider = (model: Models[number]): Provider => {
   const isCustom = !!customRouting;
   const baseURL = customRouting?.baseUrl;
 
+  // FUTURE: memoize provider instances to avoid re-instantiation on each request
   switch (provider) {
     case "bedrock": {
       return createAmazonBedrock({
