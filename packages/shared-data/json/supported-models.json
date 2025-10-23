@@ -4,21 +4,42 @@
     "displayName": "LLaMA 4 Scout",
     "rateLimit": 40000000,
     "provider": "groq",
-    "modality": "text"
+    "modality": "chat"
   },
   {
     "name": "openai.gpt-oss-120b-1:0",
     "displayName": "OpenAI GPT OSS 120B",
     "rateLimit": 400000000,
     "provider": "bedrock",
-    "modality": "text"
+    "modality": "chat"
   },
   {
     "name": "openai.gpt-oss-20b-1:0",
     "displayName": "OpenAI GPT OSS 20B",
     "rateLimit": 400000000,
     "provider": "bedrock",
-    "modality": "text"
+    "modality": "chat"
+  },
+  {
+    "name": "gemini-2.5-flash",
+    "displayName": "Gemini 2.5 Flash",
+    "rateLimit": 400000000,
+    "provider": "vertex",
+    "modality": "chat"
+  },
+  {
+    "name": "arn:aws:bedrock:us-east-1:160885286799:inference-profile/global.anthropic.claude-sonnet-4-20250514-v1:0",
+    "displayName": "Anthropic Sonnet 4",
+    "rateLimit": 400000000,
+    "provider": "bedrock",
+    "modality": "chat"
+  },
+  {
+    "name": "anthropic.claude-3-haiku-20240307-v1:0",
+    "displayName": "Anthropic Haiku 3",
+    "rateLimit": 400000000,
+    "provider": "bedrock",
+    "modality": "chat"
   },
   {
     "name": "voyage-3-large",
@@ -28,8 +49,8 @@
     "modality": "embedding"
   },
   {
-    "name": "cohere.embed-multilingual-v3",
-    "displayName": "Cohere Embed Multilingual v3",
+    "name": "amazon.titan-embed-text-v2:0",
+    "displayName": "Amazon Titan Embed Text v2",
     "rateLimit": 400000000,
     "provider": "bedrock",
     "modality": "embedding"

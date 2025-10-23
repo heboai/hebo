@@ -4,7 +4,7 @@ import { Elysia, t } from "elysia";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 import { provider } from "~gateway/middlewares/provider";
-import { getModelType } from "~gateway/utils/get-model-type";
+import { getModelObject } from "~gateway/utils/get-model-object";
 import { convertOpenAICompatibleMessagesToModelMessages } from "~gateway/utils/message-converter";
 
 export const completions = new Elysia({
@@ -18,9 +18,8 @@ export const completions = new Elysia({
     async ({ body, dbClient, provider }) => {
       const { model, messages, temperature = 1, stream = false } = body;
 
-      const modelType = await getModelType(dbClient, model);
-      const chatModel = provider.chat(modelType);
-
+      const modelObj = await getModelObject(dbClient, model);
+      const chatModel = provider.chat(modelObj);
       const modelMessages =
         convertOpenAICompatibleMessagesToModelMessages(messages);
 

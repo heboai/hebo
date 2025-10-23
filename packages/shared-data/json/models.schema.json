@@ -18,22 +18,79 @@
           "$data": "./__supportedTypes.schema.json"
         }
       },
-      "endpoint": {
+      "customRouting": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["baseUrl", "provider", "apiKey"],
+        "required": ["baseUrl", "provider"],
         "properties": {
           "baseUrl": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "minLength": 1
           },
           "provider": {
-            "enum": ["aws", "custom"]
-          },
-          "apiKey": {
             "type": "string",
-            "minLength": 1,
-            "writeOnly": true
+            "enum": ["bedrock", "groq", "vertex", "voyage"]
+          },
+          "bedrock": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["awsAccessKeyId", "awsSecretAccessKey", "region"],
+            "properties": {
+              "awsAccessKeyId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "awsSecretAccessKey": {
+                "type": "string",
+                "minLength": 1
+              },
+              "region": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "groq": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["apiKey"],
+            "properties": {
+              "apiKey": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "vertex": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["serviceAccount", "location", "project"],
+            "properties": {
+              "serviceAccount": {
+                "type": "string",
+                "minLength": 1
+              },
+              "location": {
+                "type": "string",
+                "minLength": 1
+              },
+              "project": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "voyage": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["apiKey"],
+            "properties": {
+              "apiKey": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         }
       }

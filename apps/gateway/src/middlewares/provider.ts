@@ -1,48 +1,70 @@
 import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
+import { createVertex } from "@ai-sdk/google-vertex";
 import { createGroq } from "@ai-sdk/groq";
 import Elysia from "elysia";
 import { Resource } from "sst";
 import { createVoyage } from "voyage-ai-provider";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
+import type { Models } from "@hebo/shared-data/types/models";
 
-import type { LanguageModel, EmbeddingModel } from "ai";
+import type { EmbeddingModel, LanguageModel, Provider } from "ai";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name);
 
-const bedrock = createAmazonBedrock({
-  region: "us-east-1",
-  apiKey: (() => {
-    try {
-      // @ts-expect-error: GroqApiKey may not be defined
-      return Resource.BedrockApiKey.value;
-    } catch {
-      return process.env.BEDROCK_API_KEY;
-    }
-  })(),
-});
+const defaultBedrockaccessKeyId = (() => {
+  try {
+    // @ts-expect-error: AWSAccessKeyId may not be defined
+    return Resource.AWSAccessKeyId.value;
+  } catch {
+    return process.env.AWS_ACCESS_KEY_ID;
+  }
+})();
 
-const groq = createGroq({
-  apiKey: (() => {
-    try {
-      // @ts-expect-error: GroqApiKey may not be defined
-      return Resource.GroqApiKey.value;
-    } catch {
-      return process.env.GROQ_API_KEY;
-    }
-  })(),
-});
+const defaultBedrockSecretAccessKey = (() => {
+  try {
+    // @ts-expect-error: AWSSecretAccessKey may not be defined
+    return Resource.AWSSecretAccessKey.value;
+  } catch {
+    return process.env.AWS_SECRET_ACCESS_KEY;
+  }
+})();
 
-const voyage = createVoyage({
-  apiKey: (() => {
-    try {
-      // @ts-expect-error: VoyageApiKey may not be defined
-      return Resource.VoyageApiKey.value;
-    } catch {
-      return process.env.VOYAGE_API_KEY;
-    }
-  })(),
-});
+const defaultGroqApiKey = (() => {
+  try {
+    // @ts-expect-error: GroqApiKey may not be defined
+    return Resource.GroqApiKey.value;
+  } catch {
+    return process.env.GROQ_API_KEY;
+  }
+})();
+
+const defaultVertexServiceAccount = (() => {
+  try {
+    // @ts-expect-error: GoogleVertexServiceAccount may not be defined
+    return Resource.GoogleVertexServiceAccount.value;
+  } catch {
+    return process.env.GOOGLE_VERTEX_SERVICE_ACCOUNT;
+  }
+})();
+
+const defaultVertexProject = (() => {
+  try {
+    // @ts-expect-error: VertexProjectId may not be defined
+    return Resource.GoogleVertexProject.value;
+  } catch {
+    return process.env.GOOGLE_VERTEX_PROJECT;
+  }
+})();
+
+const defaultVoyageApiKey = (() => {
+  try {
+    // @ts-expect-error: VoyageApiKey may not be defined
+    return Resource.VoyageApiKey.value;
+  } catch {
+    return process.env.VOYAGE_API_KEY;
+  }
+})();
 
 const badRequest = (message: string, code = "model_mismatch") => {
   const err = new Error(message) as Error & {
@@ -59,32 +81,46 @@ const badRequest = (message: string, code = "model_mismatch") => {
 const isEmbedding = (id: string) =>
   supportedModels.find((m) => m.name === id)?.modality === "embedding";
 
-const pickChat = (id: string): LanguageModel => {
-  const provider = supportedModels.find((m) => m.name === id)?.provider;
+const createProvider = (model: Models[number]): Provider => {
+  const provider =
+    model.customRouting?.provider ||
+    supportedModels.find((m) => m.name === model.type)?.provider;
   switch (provider) {
+    case "bedrock": {
+      return createAmazonBedrock({
+        accessKeyId:
+          model.customRouting?.bedrock?.accessKeyId ||
+          defaultBedrockaccessKeyId,
+        secretAccessKey:
+          model.customRouting?.bedrock?.secretAccessKey ||
+          defaultBedrockSecretAccessKey,
+        region: model.customRouting?.bedrock?.region || "us-east-1",
+        baseURL: model.customRouting?.baseUrl,
+      });
+    }
     case "groq": {
-      return groq(id);
+      return createGroq({
+        apiKey: model.customRouting?.groq?.apiKey || defaultGroqApiKey,
+        baseURL: model.customRouting?.baseUrl,
+      });
     }
-    case "bedrock": {
-      return bedrock(id);
+    case "vertex": {
+      return createVertex({
+        googleAuthOptions: {
+          credentials:
+            model.customRouting?.vertex?.serviceAccount ||
+            defaultVertexServiceAccount,
+        },
+        location: model.customRouting?.vertex?.location || "us-central1",
+        project: model.customRouting?.vertex?.project || defaultVertexProject,
+        baseURL: model.customRouting?.baseUrl,
+      });
     }
-    default: {
-      throw badRequest(
-        `Unknown or unsupported provider "${provider}"`,
-        "provider_unsupported",
-      );
-    }
-  }
-};
-
-const pickEmbedding = (id: string): EmbeddingModel<string> => {
-  const provider = supportedModels.find((m) => m.name === id)?.provider;
-  switch (provider) {
     case "voyage": {
-      return voyage.textEmbeddingModel(id);
-    }
-    case "bedrock": {
-      return bedrock.embedding(id);
+      return createVoyage({
+        apiKey: model.customRouting?.voyage?.apiKey || defaultVoyageApiKey,
+        baseURL: model.customRouting?.baseUrl,
+      });
     }
     default: {
       throw badRequest(
@@ -104,20 +140,18 @@ export const supportedOrThrow = (id: string) => {
   }
 };
 
-const chatOrThrow = (id: string): LanguageModel => {
-  supportedOrThrow(id);
-  if (isEmbedding(id)) {
-    throw badRequest(`Model "${id}" is an embedding model`);
+const chatOrThrow = (model: Models[number]): LanguageModel => {
+  if (isEmbedding(model.type)) {
+    throw badRequest(`Model "${model.type}" is an embedding model`);
   }
-  return pickChat(id);
+  return createProvider(model).languageModel(model.type);
 };
 
-const embeddingOrThrow = (id: string): EmbeddingModel<string> => {
-  supportedOrThrow(id);
-  if (!isEmbedding(id)) {
-    throw badRequest(`Model "${id}" is a chat model`);
+const embeddingOrThrow = (model: Models[number]): EmbeddingModel<string> => {
+  if (!isEmbedding(model.type)) {
+    throw badRequest(`Model "${model.type}" is a chat model`);
   }
-  return pickEmbedding(id);
+  return createProvider(model).textEmbeddingModel(model.type);
 };
 
 export const provider = new Elysia({ name: "provider" })

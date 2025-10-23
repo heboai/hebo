@@ -3,7 +3,7 @@ import type { Models } from "@hebo/shared-data/types/models";
 
 export class ModelNotFoundError extends Error {}
 
-export const getModelType = async (
+export const getModelObject = async (
   dbClient: ReturnType<typeof createDbClient>,
   modelString: string,
 ) => {
@@ -14,6 +14,6 @@ export const getModelType = async (
     select: { models: true },
   });
   const foundModel = (models as Models).find((m) => m?.alias === modelAlias);
-  if (!foundModel?.type) throw new ModelNotFoundError();
-  return foundModel.type;
+  if (!foundModel) throw new ModelNotFoundError();
+  return foundModel;
 };
