@@ -123,14 +123,11 @@ function ModelCard(props: {
   const modelFieldset = model.getFieldset();
   const endpointField = modelFieldset.endpoint;
   const endpointFieldset = endpointField.getFieldset();
-  const endpointValue = endpointField.value as
-    | { baseUrl: string; apiKey: string }
-    | undefined;
 
   const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
 
   const [isCustomEndpoint, setIsCustomEndpoint] = useState<boolean>(() =>
-    Boolean(endpointValue?.baseUrl?.trim() || endpointValue?.apiKey?.trim())
+    Boolean(endpointFieldset?.baseUrl?.value?.trim() || endpointFieldset?.apiKey?.value?.trim())
   );
 
   return (
