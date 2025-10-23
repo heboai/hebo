@@ -25,28 +25,28 @@ import { Badge } from "@hebo/shared-ui/components/Badge";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
 import {
-  branchModelsFormSchema,
+  modelsConfigFormSchema,
   supportedModels,
-  type BranchModelFormValue,
-  type BranchModelsFormValues,
+  type ModelConfigFormValue,
+  type ModelsConfigFormValues,
 } from "./schema";
 
 
-type BranchModelsPageProps = {
+type ModelsConfigProps = {
   agentSlug: string;
   branchSlug: string;
-  models?: BranchModelsFormValues["models"];
+  models?: ModelsConfigFormValues["models"];
 };
 
-export default function BranchModelsPage({ agentSlug, branchSlug, models }: BranchModelsPageProps) {
+export default function ModelsConfig({ agentSlug, branchSlug, models }: ModelsConfigProps) {
   const lastResult = useActionData();
   const navigation = useNavigation();
 
   useActionDataErrorToast();
 
-  const [form, fields] = useForm<BranchModelsFormValues>({
+  const [form, fields] = useForm<ModelsConfigFormValues>({
     lastResult,
-    constraint: getValibotConstraint(branchModelsFormSchema),
+    constraint: getValibotConstraint(modelsConfigFormSchema),
     defaultValue: { models },
   });
 
@@ -100,7 +100,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
 
 
 function ModelCard(props: {
-  model: FieldMetadata<BranchModelFormValue>;
+  model: FieldMetadata<ModelConfigFormValue>;
   agentSlug: string;
   branchSlug: string;
   isExpanded: boolean;

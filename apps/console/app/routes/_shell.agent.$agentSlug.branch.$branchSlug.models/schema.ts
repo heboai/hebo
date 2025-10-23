@@ -16,7 +16,7 @@ import {
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
 
-export const branchModelSchema = object({
+export const modelConfigSchema = object({
   alias: message(pipe(string(), trim(), nonEmpty()), "Please enter an alias name"),
   type: picklist(
     supportedModels.map((model) => model.name),
@@ -39,14 +39,14 @@ export const branchModelSchema = object({
   ),
 });
 
-export const branchModelsFormSchema = object({
+export const modelsConfigFormSchema = object({
   models: pipe(
-    array(branchModelSchema),
+    array(modelConfigSchema),
     minLength(1, "Add at least one model to the branch"),
   ),
 });
 
-export type BranchModelsFormValues = InferOutput<typeof branchModelsFormSchema>;
-export type BranchModelFormValue = BranchModelsFormValues["models"][number];
+export type ModelsConfigFormValues = InferOutput<typeof modelsConfigFormSchema>;
+export type ModelConfigFormValue = ModelsConfigFormValues["models"][number];
 
 export { supportedModels };

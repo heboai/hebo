@@ -6,13 +6,13 @@ import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
 import BranchModelsPage from "./form";
-import { branchModelsFormSchema, type BranchModelsFormValues } from "./schema";
+import { modelsConfigFormSchema, type ModelsConfigFormValues } from "./schema";
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   
   const formData = await request.formData();
   const submission = parseWithValibot(formData, {
-    schema: branchModelsFormSchema,
+    schema: modelsConfigFormSchema,
   });
 
   if (submission.status !== "success") {
@@ -45,7 +45,7 @@ type LoaderAgentData = {
     slug: string;
     branches?: Array<{
       slug: string;
-      models?: BranchModelsFormValues["models"];
+      models?: ModelsConfigFormValues["models"];
     }>;
   };
 };
