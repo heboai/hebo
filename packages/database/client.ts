@@ -94,26 +94,20 @@ export const createDbClient = (userId: string) => {
 // Redacts sensitive fields inside branches.models[].customRouting
 const redactModels = (models: Prisma.JsonValue[]): Prisma.JsonValue[] => {
   return (models as Models).map((model) => {
-    const clone = { ...model };
-    const crClone = clone.customRouting
-      ? { ...clone.customRouting }
-      : undefined;
+    const clone = structuredClone(model);
+    const crClone = clone.customRouting;
     if (!crClone) return clone;
     if (crClone.bedrock) {
-      crClone.bedrock = { ...crClone.bedrock };
       delete crClone.bedrock.accessKeyId;
       delete crClone.bedrock.secretAccessKey;
     }
     if (crClone.groq) {
-      crClone.groq = { ...crClone.groq };
       delete crClone.groq.apiKey;
     }
     if (crClone.vertex) {
-      crClone.vertex = { ...crClone.vertex };
       delete crClone.vertex.serviceAccount;
     }
     if (crClone.voyage) {
-      crClone.voyage = { ...crClone.voyage };
       delete crClone.voyage.apiKey;
     }
     clone.customRouting = crClone;
