@@ -50,7 +50,6 @@ export const createDbClient = (userId: string) => {
               updated_by: userId,
             };
           }
-
           return query(args);
         },
         async update({ args, query }) {
@@ -70,6 +69,21 @@ export const createDbClient = (userId: string) => {
           return await context.update({
             where,
             data: { deleted_by: userId, deleted_at: new Date() },
+          });
+        },
+      },
+      branches: {
+        async copy<T>(where: T, data: Partial<Prisma.branchesCreateInput>) {
+          const { models } = await _prisma.branches.findFirstOrThrow({
+            // eslint-disable-next-line unicorn/no-null
+            where: { ...where, created_by: userId, deleted_at: null },
+          });
+          const context = Prisma.getExtensionContext(this);
+          return await context.create({
+            data: {
+              ...data,
+              models: models,
+            } as any,
           });
         },
       },
