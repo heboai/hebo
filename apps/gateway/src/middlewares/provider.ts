@@ -88,72 +88,66 @@ const badRequest = (message: string, code = "model_mismatch") => {
 const isEmbedding = (id: string) =>
   supportedModels.find((m) => m.name === id)?.modality === "embedding";
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 const createProvider = (model: Models[number]): Provider => {
   const { customRouting } = model;
+  if (!customRouting) {
+    supportedOrThrow(model.type);
+  }
 
   const provider =
     customRouting?.provider ||
     supportedModels.find((m) => m.name === model.type)?.provider;
 
-  if (!provider) {
-    throw badRequest(
-      `Unknown or unsupported provider "${provider}"`,
-      "provider_unsupported",
-    );
-  }
-
   const isCustom = !!customRouting;
-
-  if (!isCustom) {
-    supportedOrThrow(model.type);
-  }
+  const baseURL = customRouting?.baseUrl;
 
   switch (provider) {
     case "bedrock": {
       return createAmazonBedrock({
-        accessKeyId:
-          (isCustom && customRouting?.bedrock?.accessKeyId) ||
-          defaults.bedrock.accessKeyId,
-        secretAccessKey:
-          (isCustom && customRouting?.bedrock?.secretAccessKey) ||
-          defaults.bedrock.secretAccessKey,
-        region:
-          (isCustom && customRouting?.bedrock?.region) ||
-          defaults.bedrock.region,
-        baseURL: customRouting?.baseUrl,
+        accessKeyId: isCustom
+          ? customRouting?.bedrock?.accessKeyId
+          : defaults.bedrock.accessKeyId,
+        secretAccessKey: isCustom
+          ? customRouting?.bedrock?.secretAccessKey
+          : defaults.bedrock.secretAccessKey,
+        region: isCustom
+          ? customRouting?.bedrock?.region
+          : defaults.bedrock.region,
+        baseURL,
       });
     }
 
     case "groq": {
       return createGroq({
-        apiKey:
-          (isCustom && customRouting?.groq?.apiKey) || defaults.groq.apiKey,
-        baseURL: customRouting?.baseUrl,
+        apiKey: isCustom ? customRouting?.groq?.apiKey : defaults.groq.apiKey,
+        baseURL,
       });
     }
 
     case "vertex": {
       return createVertex({
         googleAuthOptions: {
-          credentials:
-            (isCustom && customRouting?.vertex?.serviceAccount) ||
-            defaults.vertex.serviceAccount,
+          credentials: isCustom
+            ? customRouting?.vertex?.serviceAccount
+            : defaults.vertex.serviceAccount,
         },
-        location:
-          (isCustom && customRouting?.vertex?.location) ||
-          defaults.vertex.location,
-        project:
-          (isCustom && customRouting?.vertex?.project) ||
-          defaults.vertex.project,
-        baseURL: customRouting?.baseUrl,
+        location: isCustom
+          ? customRouting?.vertex?.location
+          : defaults.vertex.location,
+        project: isCustom
+          ? customRouting?.vertex?.project
+          : defaults.vertex.project,
+        baseURL,
       });
     }
 
     case "voyage": {
       return createVoyage({
-        apiKey:
-          (isCustom && customRouting?.voyage?.apiKey) || defaults.voyage.apiKey,
-        baseURL: customRouting?.baseUrl,
+        apiKey: isCustom
+          ? customRouting?.voyage?.apiKey
+          : defaults.voyage.apiKey,
+        baseURL,
       });
     }
 
