@@ -8,7 +8,8 @@ type SidebarNavProps = {
 
 export const SidebarNav = ({ activeAgent }: SidebarNavProps) => {
   // FUTURE: highlight selected menu item based on current route
-  // FUTURE: fix size of icons in collapseed mode
+  // FUTURE: fix size of icons in collapsed mode
+  // FUTURE: add keyboard shortcuts to navigate between menu items
   return activeAgent ? (
       <SidebarMenu>
         <SidebarMenuItem>
