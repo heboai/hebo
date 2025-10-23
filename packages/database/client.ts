@@ -82,7 +82,7 @@ export const createDbClient = (userId: string) => {
           return await context.create({
             data: {
               ...data,
-              models: models,
+              models,
             } as any,
           });
         },
