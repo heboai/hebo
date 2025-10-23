@@ -130,15 +130,15 @@ Secrets to set:
 
 ##### LLM keys
 
-*Bedrock*
+###### Bedrock
 - `AWSAccessKeyId`
 - `AWSSecretAccessKey`
 
-*Vertex*
+###### Vertex
 - `GoogleVertexServiceAccount`
 - `GoogleVertexProject`
 
-*Others*
+###### Others
 - `GroqApiKey`
 - `VoyageApiKey`
 
