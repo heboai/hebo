@@ -19,7 +19,7 @@ bun run format       # Prettier formatting
 TypeScript + React drive the codebase. Trust Prettier and ESLint for formatting. Use PascalCase for components, camelCase for functions and variables, and kebab-case file names (e.g., `billing-summary.tsx`). Follow the Shadcn design system inside `packages/*-ui`, and keep Tailwind utility-first unless a pattern graduates into shared UI.
 
 ## Key Technologies & Use Cases
-ElysiaJS powers `apps/api` and `apps/gateway`; call helpers from `packages/shared-api` for auth, CORS, and typing. Console features run on React Router 7 (Framwework mode) + Tailwind 4 (CSS) + ShadCN (Components) + Conform (Forms) + Valibot (Schema) + Valtio (Client State). Data access flows through `packages/database` (Prisma). SST manages infrastructure, so declare stacks in `infra/stacks` and ship secrets with `bun run sst secret set`.
+ElysiaJS powers `apps/api` and `apps/gateway`; call helpers from `packages/shared-api` for auth, CORS, and typing. Console features run on React Router 7 (Framework mode) + Tailwind 4 (CSS) + ShadCN (Components) + Conform (Forms) + Valibot (Schema) + Valtio (Client State). Data access flows through `packages/database` (Prisma). SST manages infrastructure, so declare stacks in `infra/stacks` and ship secrets with `bun run sst secret set`.
 
 ## Testing Guidelines
 Each workspace wires its own harness (Vitest or Bun); use the scripts rather than calling binaries directly. Add tests beside the feature (`conversation.test.ts`) and keep mocks in `__mocks__/` or MSW (`apps/console/app/mocks`). Run `bun run test` before submitting and note deliberate omissions in the PR.

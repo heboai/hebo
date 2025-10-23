@@ -1,6 +1,6 @@
 import { Form, useActionData, useNavigation } from "react-router";
 import { useEffect, useState } from "react";
-import { useForm, getFormProps } from "@conform-to/react";
+import { useForm, getFormProps, type FieldMetadata } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
 import { Brain, Edit, Split } from "lucide-react";
 
@@ -27,6 +27,7 @@ import { useActionDataErrorToast } from "~console/lib/errors";
 import {
   branchModelsFormSchema,
   supportedModels,
+  type BranchModelFormValue,
   type BranchModelsFormValues,
 } from "./schema";
 
@@ -99,7 +100,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
 
 
 function ModelCard(props: {
-  model: any;
+  model: FieldMetadata<BranchModelFormValue>;
   agentSlug: string;
   branchSlug: string;
   isExpanded: boolean;
