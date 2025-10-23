@@ -191,3 +191,13 @@
     @apply text-sm;
   }
 }
+
+@layer utilities {
+  .text-ellipsis-start {
+    direction: rtl;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}

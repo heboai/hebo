@@ -136,11 +136,11 @@ function ModelCard(props: {
   return (
     <Card className="gap-0">
       <CardHeader>
-        <div className="flex flex-col gap-2 sm:flex-row sm:gap-8 sm:items-center">
-          <div className="flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-2 min-w-0 sm:flex-row sm:gap-8 sm:items-center">
+          <div className="flex flex-1 min-w-0 flex-col gap-2">
             <span className="text-xs uppercase text-muted-foreground">Alias path</span>
-            <div className="flex gap-2">
-              <span className="text-sm font-medium">{aliasPath}</span>
+            <div className="inline-flex gap-2 items-center">
+              <span className="text-sm font-medium text-ellipsis-start">{aliasPath}</span>
               <CopyToClipboardButton textToCopy={aliasPath} />
             </div>
           </div>
