@@ -174,7 +174,7 @@ function ModelCard(props: {
 
           <CardContent className="flex flex-col gap-4 my-4">
 
-            {/* Future: follow layout pattern of new shadcn fields components */}
+            {/* FUTURE: follow layout pattern of new shadcn fields components */}
             <div className="grid gap-4 grid-cols-2">
               <FormField field={modelFieldset.alias} className="flex flex-col gap-2">
                 <FormLabel>Alias</FormLabel>
@@ -198,7 +198,7 @@ function ModelCard(props: {
               </FormField>
             </div>
 
-            {/* Future: follow layout pattern of new shadcn fields components, make whole field clickable */}
+            {/* FUTURE: follow layout pattern of new shadcn fields components, make whole field clickable */}
             <div className="flex gap-3 items-center rounded-md border px-3 py-2">
               <input
                 id={`${endpointField.id}-checkbox`}

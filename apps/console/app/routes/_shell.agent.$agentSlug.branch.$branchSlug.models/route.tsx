@@ -39,7 +39,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   return submission.reply();
 }
 
-// FUTURE: use new useRoute instead of useRouteLoaderData to avoid redefining types
+// FUTURE: try experimental useRoute instead of useRouteLoaderData to avoid redefining types
 type LoaderAgentData = {
   agent: {
     slug: string;
@@ -54,7 +54,7 @@ export default function BranchModelsRoute() {
   const params = useParams();
   const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug") as LoaderAgentData;
   
-  // FUTURE: do this in a separate loader
+  // FUTURE: do this in a separate loader as part of the branch switching feature
   const branch = agent.branches?.find((a) => a.slug === params.branchSlug);
 
   return (
