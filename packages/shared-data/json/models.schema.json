@@ -21,7 +21,7 @@
       "customRouting": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["baseUrl", "provider"],
+        "required": ["provider"],
         "properties": {
           "baseUrl": {
             "type": "string",
