@@ -35,13 +35,13 @@
           "bedrock": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["awsAccessKeyId", "awsSecretAccessKey", "region"],
+            "required": ["accessKeyId", "secretAccessKey", "region"],
             "properties": {
-              "awsAccessKeyId": {
+              "accessKeyId": {
                 "type": "string",
                 "minLength": 1
               },
-              "awsSecretAccessKey": {
+              "secretAccessKey": {
                 "type": "string",
                 "minLength": 1
               },

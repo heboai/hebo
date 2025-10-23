@@ -6,8 +6,8 @@ export const stackPublishableClientKey = new sst.Secret(
 export const stackProjectId = new sst.Secret("StackProjectId");
 
 // LLMs
-export const awsAccessKeyId = new sst.Secret("AWSAccessKeyId");
-export const awsSecretAccessKey = new sst.Secret("AWSSecretAccessKey");
+export const accessKeyId = new sst.Secret("AWSAccessKeyId");
+export const secretAccessKey = new sst.Secret("AWSSecretAccessKey");
 export const googleVertexServiceAccount = new sst.Secret(
   "GoogleVertexServiceAccount",
 );
@@ -19,8 +19,8 @@ export const allSecrets = [
   stackSecretServerKey,
   stackPublishableClientKey,
   stackProjectId,
-  awsAccessKeyId,
-  awsSecretAccessKey,
+  accessKeyId,
+  secretAccessKey,
   googleVertexServiceAccount,
   googleVertexProject,
   groqApiKey,
