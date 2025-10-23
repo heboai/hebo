@@ -192,6 +192,7 @@ function ModelCard(props: {
                       value: item.name,
                       name: item.displayName,
                     }))}
+                    placeholder="Select the model"
                   />
                 </FormControl>
                 <FormMessage />
