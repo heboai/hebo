@@ -1,6 +1,8 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
+import type { Models } from "@hebo/shared-data/types/models";
+
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 
 export const connectionString = (() => {
@@ -69,6 +71,56 @@ export const createDbClient = (userId: string) => {
             where,
             data: { deleted_by: userId, deleted_at: new Date() },
           });
+        },
+      },
+    },
+  });
+};
+
+// Redacts sensitive fields inside branches.models[].customRouting
+const redactModels = (models: Prisma.JsonValue[]): Prisma.JsonValue[] => {
+  return (models as Models).map((model) => {
+    const clone = { ...model };
+    const crClone = clone.customRouting
+      ? { ...clone.customRouting }
+      : undefined;
+    if (!crClone) return clone;
+    if (crClone.bedrock) {
+      crClone.bedrock = { ...crClone.bedrock };
+      delete crClone.bedrock.accessKeyId;
+      delete crClone.bedrock.secretAccessKey;
+    }
+    if (crClone.groq) {
+      crClone.groq = { ...crClone.groq };
+      delete crClone.groq.apiKey;
+    }
+    if (crClone.vertex) {
+      crClone.vertex = { ...crClone.vertex };
+      delete crClone.vertex.serviceAccount;
+    }
+    if (crClone.voyage) {
+      crClone.voyage = { ...crClone.voyage };
+      delete crClone.voyage.apiKey;
+    }
+    clone.customRouting = crClone;
+    return clone;
+  });
+};
+
+export const createDbClientPublic = (userId: string) => {
+  const client = createDbClient(userId);
+  return client.$extends({
+    result: {
+      branches: {
+        models: {
+          needs: { models: true },
+          compute({
+            models,
+          }: {
+            models: Prisma.JsonValue[];
+          }): Prisma.JsonValue[] {
+            return redactModels(models);
+          },
         },
       },
     },

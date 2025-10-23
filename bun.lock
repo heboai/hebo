@@ -188,6 +188,7 @@
       "name": "@hebo/database",
       "version": "0.0.1",
       "dependencies": {
+        "@hebo/shared-data": "workspace:*",
         "@prisma/adapter-pg": "^6.17.0",
         "@prisma/client": "^6.17.0",
         "crypto-random-string": "^5.0.0",

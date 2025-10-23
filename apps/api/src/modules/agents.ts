@@ -1,7 +1,7 @@
 import { Elysia, status, t } from "elysia";
 
 import { createSlug } from "@hebo/database/src/utils/create-slug";
-import { dbClient } from "@hebo/shared-api/middlewares/db-client";
+import { dbClientPublic } from "@hebo/shared-api/middlewares/db-client";
 import { supportedModelsEnum } from "@hebo/shared-data/types/models";
 
 import {
@@ -25,7 +25,7 @@ const agentInclude = (withBranches = false) =>
 export const agentsModule = new Elysia({
   prefix: "/agents",
 })
-  .use(dbClient)
+  .use(dbClientPublic)
   .get(
     "/",
     async ({ dbClient, query }) => {

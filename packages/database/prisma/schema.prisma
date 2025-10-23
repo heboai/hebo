@@ -53,7 +53,6 @@ model branches {
   /// @prismabox.input.hide
   agent_slug String
   name       String
-  // FUTURE: hide api_key from models
   models     Json[] @default([])
   /// @prismabox.hide
   agent      agents @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)

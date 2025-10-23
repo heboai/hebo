@@ -6,6 +6,7 @@ import { Resource } from "sst";
 
 export const projectId = (() => {
   try {
+    // @ts-expect-error: StackProjectId may not be defined
     return Resource.StackProjectId.value;
   } catch {
     return process.env.VITE_STACK_PROJECT_ID;
@@ -13,6 +14,7 @@ export const projectId = (() => {
 })() as string;
 export const secretServerKey = (() => {
   try {
+    // @ts-expect-error: StackSecretServerKey may not be defined
     return Resource.StackSecretServerKey.value;
   } catch {
     return process.env.STACK_SECRET_SERVER_KEY;
