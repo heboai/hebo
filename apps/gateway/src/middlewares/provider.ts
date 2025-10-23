@@ -10,7 +10,7 @@ import type { Models } from "@hebo/shared-data/types/models";
 
 import type { EmbeddingModel, LanguageModel, Provider } from "ai";
 
-export const SUPPORTED_MODELS = supportedModels.map((m) => m.name);
+export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
 const defaultBedrockaccessKeyId = (() => {
   try {
