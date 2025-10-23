@@ -24,11 +24,15 @@ export const branchModelSchema = object({
   ),
   endpoint: optional(
     object({
-      baseUrl: pipe(
-        string(),
-        trim(),
-        nonEmpty("Enter the endpoint base URL"),
-        urlRule("Enter a valid URL (https://example.com)"),
+      baseUrl: 
+        message(
+          pipe(
+            string(),
+            trim(),
+            nonEmpty(),
+            urlRule()
+          ), 
+          "Enter a valid URL (https://example.com)",
       ),
       apiKey: message(pipe(string(), trim(), nonEmpty()), "Provide the API key"),
     }),
