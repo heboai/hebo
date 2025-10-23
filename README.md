@@ -75,7 +75,7 @@ bun run -F @hebo/console dev
 bun run clean
 
 # Reset the database
-bun db migrate reset --force
+bun run db migrate reset --force
 ```
 
 ## Run modes
