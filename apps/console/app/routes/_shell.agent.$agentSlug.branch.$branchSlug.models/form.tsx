@@ -2,7 +2,7 @@ import { Form, useActionData, useNavigation } from "react-router";
 import { useEffect, useState } from "react";
 import { useForm, getFormProps } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
-import { Edit } from "lucide-react";
+import { Brain, Edit, Split } from "lucide-react";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import {
@@ -19,6 +19,7 @@ import {
 } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
+import { Separator } from "@hebo/shared-ui/components/Separator";
 import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
@@ -28,6 +29,7 @@ import {
   supportedModels,
   type BranchModelsFormValues,
 } from "./schema";
+import { Badge } from "@hebo/shared-ui/components/Badge";
 
 
 type BranchModelsPageProps = {
@@ -61,7 +63,8 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
   }, [form.status]);
 
   return (
-    <Form method="patch" {...getFormProps(form)} className="space-y-4">
+    // FUTURE: should this actually use a fetcher form (since no navigation on save?)
+    <Form method="post" {...getFormProps(form)} className="contents">
       {modelItems.map((model, index) => {
 
         const modelFieldset = model.getFieldset();
@@ -80,64 +83,59 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
         );
 
         return (
-          <Card
-            key={model.key}
-            className="border-border/60 bg-card/70 shadow-sm"
-          >
-            <CardHeader className="gap-3 border-b border-border/60 pb-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <Card key={model.key} className="gap-0">
+            <CardHeader>
+              <div className="flex flex-col gap-2 sm:flex-row sm:gap-8 sm:items-center">
                 <div className="flex flex-1 flex-col gap-2">
-                  <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                  <span className="text-xs uppercase text-muted-foreground">
                     Alias path
                   </span>
-                  <div className="flex flex-wrap items-center gap-2 text-sm">
-                    <span className="font-medium text-foreground">
+                  <div className="flex gap-2">
+                    <span className="text-sm font-medium">
                       {aliasPath}
                     </span>
-                    <CopyToClipboardButton
-                      className="h-7 w-7 rounded-md border border-border p-1 transition hover:bg-muted"
-                      textToCopy={aliasPath}
-                    />
+                    <CopyToClipboardButton textToCopy={aliasPath} />
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 text-sm">
-                  <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground">
-                    {
-                      supportedModels.find((model) => model.name === modelFieldset.type.value)?.displayName || ""
-                    }
-                  </span>
-                  <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground">
-                    {isCustomEndpoint ? "Custom Endpoint" : "Managed"}
-                  </span>
-                  {!isExpanded ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="h-8 gap-2 px-3"
-                      onClick={() => setExpandedCardId(index)}
-                    >
-                      <Edit className="h-4 w-4" />
-                      Edit
-                    </Button>
-                  ) : null}
-                </div>
+                <Badge variant="outline">
+                  <Brain />
+                  {
+                    supportedModels.find((model) => model.name === modelFieldset.type.value)?.displayName || ""
+                  }
+                </Badge>
+                <Badge variant="outline">
+                  <Split />
+                  {isCustomEndpoint ? "Custom Endpoint" : "Managed"}
+                </Badge>
+                <Button
+                  variant="outline"
+                  onClick={() => setExpandedCardId(index)}
+                  disabled={isExpanded}
+                >
+                  <Edit />
+                  Edit
+                </Button>
               </div>
             </CardHeader>
 
+            {/* FUTURE: use collapsible component for better accessibility */}
             <div
-              className={`grid overflow-hidden transition-all duration-200 ease-in-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "pointer-events-none grid-rows-[0fr] opacity-0"}`}
+              className={`grid overflow-hidden m-0 transition-all duration-200 ease-in-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
               aria-hidden={!isExpanded}
             >
               <div className="min-h-0">
-                <CardContent className="space-y-6 pt-6">
-                  <div className="grid gap-4 sm:grid-cols-2">
+                <Separator className="mt-4" />
+                <CardContent className="flex flex-col gap-4 my-4">
+
+                  {/* Future: follow layout pattern of new shadcn fields components */}
+                  <div className="grid gap-4 grid-cols-2">
                     <FormField
                       field={modelFieldset.alias}
                       className="flex flex-col gap-2"
                     >
                       <FormLabel>Alias</FormLabel>
                       <FormControl>
-                        <Input placeholder="embeddings" autoComplete="off" />
+                        <Input placeholder="Set alias name" autoComplete="off" />
                       </FormControl>
                       <FormMessage />
                     </FormField>
@@ -157,7 +155,8 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
                     </FormField>
                   </div>
 
-                  <div className="flex items-start gap-3 rounded-md border border-border/60 px-3 py-2">
+                  {/* Future: follow layout pattern of new shadcn fields components, make whole field clickable */}
+                  <div className="flex gap-3 items-center rounded-md border px-3 py-2">
                     <input
                       id={`${endpointField.id}-checkbox`}
                       type="checkbox"
@@ -175,11 +174,10 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
                           validated: false,
                         });
                       }}
-                      className="size-4 shrink-0 rounded border border-input"
                     />
                     <div className="flex flex-col gap-1">
                       <label
-                        className="text-sm font-medium text-foreground"
+                        className="text-sm font-medium"
                         htmlFor={`${endpointField.id}-checkbox`}
                       >
                         Use custom endpoint
@@ -221,11 +219,10 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
                   ) : null}
                 </CardContent>
 
-                <CardFooter className="flex flex-col gap-3 border-t border-border/50 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <CardFooter>
                   <Button
                     type="button"
-                    variant="ghost"
-                    className="self-start text-destructive hover:text-destructive"
+                    variant="destructive"
                     disabled={modelItems.length === 1}
                     onClick={() => {
                       form.remove({
@@ -237,7 +234,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
                   >
                     Remove
                   </Button>
-                  <div className="ml-auto flex items-center gap-2">
+                  <div className="ml-auto flex gap-2">
                     <Button
                       type="button"
                       variant="outline"
@@ -250,7 +247,7 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
                     </Button>
                     <Button
                       type="submit"
-                      isLoading={navigation.state !== "idle"}
+                      isLoading={navigation.state === "submitting"}
                     >
                       Save
                     </Button>
@@ -262,16 +259,18 @@ export default function BranchModelsPage({ agentSlug, branchSlug, models }: Bran
         );
       })}
 
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => {
-          form.insert({ name: fields.models.name });
-          setExpandedCardId(modelItems.length);
-        }}
-      >
-        + Add Model
-      </Button>
+      <div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            form.insert({ name: fields.models.name });
+            setExpandedCardId(modelItems.length);
+          }}
+        >
+          + Add Model
+        </Button>
+      </div>
     </Form>
   );
 }

@@ -5,7 +5,7 @@ import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
-import BranchModelsPage from "./page";
+import BranchModelsPage from "./form";
 import { branchModelsFormSchema, type BranchModelsFormValues } from "./schema";
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
@@ -54,21 +54,18 @@ export default function BranchModelsRoute() {
   const params = useParams();
   const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug") as LoaderAgentData;
   
-  // FUTURE: do this in a loader
+  // FUTURE: do this in a separate loader
   const branch = agent.branches?.find((a) => a.slug === params.branchSlug);
 
   return (
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Model Configuration
-          </h1>
-          <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed">
-            Configure access for agents to different models and their routing
-            behaviour. Connect existing inference endpoints or choose from our
-            managed providers.
-          </p>
-        </div>
+      <div className="flex flex-col gap-4">
+        <h1>Model Configuration</h1>
+        <p className="text-muted-foreground text-sm">
+          Configure access for agents to different models and their routing
+          behaviour. Connect existing inference endpoints or choose from our
+          managed providers.
+        </p>
+
         <BranchModelsPage
           agentSlug={agent.slug}
           branchSlug={branch!.slug}
