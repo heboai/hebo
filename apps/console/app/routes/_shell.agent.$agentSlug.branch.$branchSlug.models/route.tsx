@@ -4,9 +4,10 @@ import { parseWithValibot } from "@conform-to/valibot";
 import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
-import type { Route } from "./+types/route";
-import BranchModelsPage from "./form";
+import ModelsConfigForm from "./form";
 import { modelsConfigFormSchema, type ModelsConfigFormValues } from "./schema";
+
+import type { Route } from "./+types/route";
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   
@@ -50,7 +51,7 @@ type LoaderAgentData = {
   };
 };
 
-export default function BranchModelsRoute() {
+export default function ModelsConfigRoute() {
   const params = useParams();
   const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug") as LoaderAgentData;
   
@@ -66,7 +67,7 @@ export default function BranchModelsRoute() {
           managed providers.
         </p>
 
-        <BranchModelsPage
+        <ModelsConfigForm
           agentSlug={agent.slug}
           branchSlug={branch!.slug}
           models={branch!.models}

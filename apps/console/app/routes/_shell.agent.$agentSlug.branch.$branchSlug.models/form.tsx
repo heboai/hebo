@@ -38,7 +38,7 @@ type ModelsConfigProps = {
   models?: ModelsConfigFormValues["models"];
 };
 
-export default function ModelsConfig({ agentSlug, branchSlug, models }: ModelsConfigProps) {
+export default function ModelsConfigForm({ agentSlug, branchSlug, models }: ModelsConfigProps) {
   const lastResult = useActionData();
   const navigation = useNavigation();
 
