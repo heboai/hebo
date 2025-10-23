@@ -85,9 +85,6 @@ const badRequest = (message: string, code = "model_mismatch") => {
   return err;
 };
 
-const isEmbedding = (id: string) =>
-  supportedModels.find((m) => m.name === id)?.modality === "embedding";
-
 // eslint-disable-next-line sonarjs/cognitive-complexity
 const createProvider = (model: Models[number]): Provider => {
   const { customRouting } = model;
@@ -170,16 +167,10 @@ export const supportedOrThrow = (id: string) => {
 };
 
 const chatOrThrow = (model: Models[number]): LanguageModel => {
-  if (isEmbedding(model.type)) {
-    throw badRequest(`Model "${model.type}" is an embedding model`);
-  }
   return createProvider(model).languageModel(model.type);
 };
 
 const embeddingOrThrow = (model: Models[number]): EmbeddingModel<string> => {
-  if (!isEmbedding(model.type)) {
-    throw badRequest(`Model "${model.type}" is a chat model`);
-  }
   return createProvider(model).textEmbeddingModel(model.type);
 };
 
