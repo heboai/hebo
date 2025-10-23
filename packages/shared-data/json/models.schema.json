@@ -13,10 +13,7 @@
         "minLength": 1
       },
       "type": {
-        "type": "string",
-        "enum": {
-          "$data": "./__supportedTypes.schema.json"
-        }
+        "type": "string"
       },
       "customRouting": {
         "type": "object",
