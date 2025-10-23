@@ -36,6 +36,7 @@ export function CopyToClipboardButton({
         }
       }}
       className={clsx("group bg-inherit", className)}
+      type="button"
       {...props}
     >
       {showSuccess ? (
