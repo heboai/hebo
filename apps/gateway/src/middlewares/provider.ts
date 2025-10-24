@@ -41,7 +41,9 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
       serviceAccount: (() => {
         try {
           // @ts-expect-error: GoogleVertexServiceAccount may not be defined
-          return Resource.GoogleVertexServiceAccount.value;
+          return JSON.parse(
+            Resource.GoogleVertexServiceAccount.value as string,
+          );
         } catch {
           return process.env.GOOGLE_VERTEX_SERVICE_ACCOUNT;
         }
