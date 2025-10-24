@@ -5,60 +5,70 @@ import { Resource } from "sst";
 import { createVoyage } from "voyage-ai-provider";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
-import type { Models } from "@hebo/shared-data/types/models";
+import type { Models, ProviderConfig } from "@hebo/shared-data/types/models";
 
 import type { EmbeddingModel, LanguageModel, Provider } from "ai";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
-const defaults = {
+type ProviderName = ProviderConfig["provider"];
+const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   bedrock: {
-    accessKeyId: (() => {
-      try {
-        // @ts-expect-error: AWSAccessKeyId may not be defined
-        return Resource.AWSAccessKeyId.value;
-      } catch {
-        return process.env.AWS_ACCESS_KEY_ID;
-      }
-    })(),
-    secretAccessKey: (() => {
-      try {
-        // @ts-expect-error: AWSSecretAccessKey may not be defined
-        return Resource.AWSSecretAccessKey.value;
-      } catch {
-        return process.env.AWS_SECRET_ACCESS_KEY;
-      }
-    })(),
-    region: "us-east-1",
+    provider: "bedrock",
+    config: {
+      accessKeyId: (() => {
+        try {
+          // @ts-expect-error: AWSAccessKeyId may not be defined
+          return Resource.AWSAccessKeyId.value;
+        } catch {
+          return process.env.AWS_ACCESS_KEY_ID as string | undefined;
+        }
+      })() as string,
+      secretAccessKey: (() => {
+        try {
+          // @ts-expect-error: AWSSecretAccessKey may not be defined
+          return Resource.AWSSecretAccessKey.value;
+        } catch {
+          return process.env.AWS_SECRET_ACCESS_KEY as string | undefined;
+        }
+      })() as string,
+      region: "us-east-1",
+    },
   },
   vertex: {
-    serviceAccount: (() => {
-      try {
-        // @ts-expect-error: GoogleVertexServiceAccount may not be defined
-        return Resource.GoogleVertexServiceAccount.value;
-      } catch {
-        return process.env.GOOGLE_VERTEX_SERVICE_ACCOUNT;
-      }
-    })(),
-    location: "us-central1",
-    project: (() => {
-      try {
-        // @ts-expect-error: GoogleVertexProject may not be defined
-        return Resource.GoogleVertexProject.value;
-      } catch {
-        return process.env.GOOGLE_VERTEX_PROJECT;
-      }
-    })(),
+    provider: "vertex",
+    config: {
+      serviceAccount: (() => {
+        try {
+          // @ts-expect-error: GoogleVertexServiceAccount may not be defined
+          return Resource.GoogleVertexServiceAccount.value;
+        } catch {
+          return process.env.GOOGLE_VERTEX_SERVICE_ACCOUNT;
+        }
+      })(),
+      location: "us-central1",
+      project: (() => {
+        try {
+          // @ts-expect-error: GoogleVertexProject may not be defined
+          return Resource.GoogleVertexProject.value;
+        } catch {
+          return process.env.GOOGLE_VERTEX_PROJECT as string | undefined;
+        }
+      })() as string,
+    },
   },
   voyage: {
-    apiKey: (() => {
-      try {
-        // @ts-expect-error: VoyageApiKey may not be defined
-        return Resource.VoyageApiKey.value;
-      } catch {
-        return process.env.VOYAGE_API_KEY;
-      }
-    })(),
+    provider: "voyage",
+    config: {
+      apiKey: (() => {
+        try {
+          // @ts-expect-error: VoyageApiKey may not be defined
+          return Resource.VoyageApiKey.value;
+        } catch {
+          return process.env.VOYAGE_API_KEY as string | undefined;
+        }
+      })() as string,
+    },
   },
 };
 
@@ -74,61 +84,42 @@ const badRequest = (message: string, code = "model_mismatch") => {
   return err;
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
-const createProvider = (model: Models[number]): Provider => {
+const getProviderConfig = (model: Models[number]): ProviderConfig => {
   const { customRouting } = model;
-  if (!customRouting) {
-    supportedOrThrow(model.type);
+  if (customRouting) return customRouting;
+
+  const provider = supportedModels.find((m) => m.name === model.type)
+    ?.provider as ProviderName | undefined;
+  if (!provider) {
+    throw badRequest(
+      `Unknown or unsupported provider "${provider}"`,
+      "provider_unsupported",
+    );
   }
+  return DEFAULTS_BY_PROVIDER[provider];
+};
 
-  const provider =
-    customRouting?.provider ||
-    supportedModels.find((m) => m.name === model.type)?.provider;
-
-  const isCustom = !!customRouting;
-  const baseURL = customRouting?.baseUrl;
+const createProvider = (model: Models[number]): Provider => {
+  const cfg = getProviderConfig(model);
+  const { provider, baseUrl: baseURL, config } = cfg;
 
   // FUTURE: memoize provider instances to avoid re-instantiation on each request
   switch (provider) {
     case "bedrock": {
-      return createAmazonBedrock({
-        accessKeyId: isCustom
-          ? customRouting?.bedrock?.accessKeyId
-          : defaults.bedrock.accessKeyId,
-        secretAccessKey: isCustom
-          ? customRouting?.bedrock?.secretAccessKey
-          : defaults.bedrock.secretAccessKey,
-        region: isCustom
-          ? customRouting?.bedrock?.region
-          : defaults.bedrock.region,
-        baseURL,
-      });
+      return createAmazonBedrock({ ...config, baseURL });
     }
 
     case "vertex": {
       return createVertex({
-        googleAuthOptions: {
-          credentials: isCustom
-            ? customRouting?.vertex?.serviceAccount
-            : defaults.vertex.serviceAccount,
-        },
-        location: isCustom
-          ? customRouting?.vertex?.location
-          : defaults.vertex.location,
-        project: isCustom
-          ? customRouting?.vertex?.project
-          : defaults.vertex.project,
+        googleAuthOptions: { credentials: config.serviceAccount },
+        location: config.location,
+        project: config.project,
         baseURL,
       });
     }
 
     case "voyage": {
-      return createVoyage({
-        apiKey: isCustom
-          ? customRouting?.voyage?.apiKey
-          : defaults.voyage.apiKey,
-        baseURL,
-      });
+      return createVoyage({ ...config, baseURL });
     }
 
     default: {
