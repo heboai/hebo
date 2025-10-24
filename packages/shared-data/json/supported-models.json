@@ -46,6 +46,6 @@
     "displayName": "Amazon Titan Embed Text v2",
     "rateLimit": 400000000,
     "provider": "bedrock",
-    "modality": "chat"
+    "modality": "embedding"
   }
 ]
