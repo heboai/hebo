@@ -6,7 +6,8 @@
   },
   "exports": {
     "./json/*": "./json/*.json",
-    "./types/*": "./types/*.ts"
+    "./types/*": "./types/*.ts",
+    "./utils/*": "./utils/*.ts"
   },
   "private": true,
   "type": "module",

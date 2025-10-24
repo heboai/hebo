@@ -19,54 +19,91 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "baseUrl": { "type": "string", "format": "uri", "minLength": 1 },
+          "baseUrl": {
+            "type": "string",
+            "format": "uri",
+            "minLength": 1
+          },
           "provider": {
             "type": "string",
             "enum": ["bedrock", "vertex", "voyage"]
           },
-          "config": { "type": "object" }
+          "config": {
+            "type": "object"
+          }
         },
         "required": ["provider", "config"],
         "oneOf": [
           {
             "properties": {
-              "provider": { "const": "bedrock" },
+              "provider": {
+                "const": "bedrock"
+              },
               "config": {
                 "type": "object",
                 "additionalProperties": false,
                 "required": ["accessKeyId", "secretAccessKey", "region"],
                 "properties": {
-                  "accessKeyId": { "type": "string", "minLength": 1 },
-                  "secretAccessKey": { "type": "string", "minLength": 1 },
-                  "region": { "type": "string", "minLength": 1 }
+                  "accessKeyId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "x-redact": true
+                  },
+                  "secretAccessKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "x-redact": true
+                  },
+                  "region": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               }
             }
           },
           {
             "properties": {
-              "provider": { "const": "vertex" },
+              "provider": {
+                "const": "vertex"
+              },
               "config": {
                 "type": "object",
                 "additionalProperties": false,
                 "required": ["serviceAccount", "location", "project"],
                 "properties": {
-                  "serviceAccount": { "type": "string", "minLength": 1 },
-                  "location": { "type": "string", "minLength": 1 },
-                  "project": { "type": "string", "minLength": 1 }
+                  "serviceAccount": {
+                    "type": "string",
+                    "minLength": 1,
+                    "x-redact": true
+                  },
+                  "location": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "project": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               }
             }
           },
           {
             "properties": {
-              "provider": { "const": "voyage" },
+              "provider": {
+                "const": "voyage"
+              },
               "config": {
                 "type": "object",
                 "additionalProperties": false,
                 "required": ["apiKey"],
                 "properties": {
-                  "apiKey": { "type": "string", "minLength": 1 }
+                  "apiKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "x-redact": true
+                  }
                 }
               }
             }

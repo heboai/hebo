@@ -7,13 +7,13 @@ export const supportedModelsEnum = Type.Enum(
   { error: "Invalid model name" },
 );
 
-const providerConfigSchema = Type.Union([
+export const providerConfigSchema = Type.Union([
   Type.Object({
     baseUrl: Type.Optional(Type.String()),
     provider: Type.Literal("bedrock"),
     config: Type.Object({
-      accessKeyId: Type.String(),
-      secretAccessKey: Type.String(),
+      accessKeyId: Type.String({ "x-redact": true }),
+      secretAccessKey: Type.String({ "x-redact": true }),
       region: Type.String(),
     }),
   }),
@@ -21,7 +21,7 @@ const providerConfigSchema = Type.Union([
     baseUrl: Type.Optional(Type.String()),
     provider: Type.Literal("vertex"),
     config: Type.Object({
-      serviceAccount: Type.Any({ format: "json" }),
+      serviceAccount: Type.Any({ format: "json", "x-redact": true }),
       location: Type.String(),
       project: Type.String(),
     }),
@@ -30,7 +30,7 @@ const providerConfigSchema = Type.Union([
     baseUrl: Type.Optional(Type.String()),
     provider: Type.Literal("voyage"),
     config: Type.Object({
-      apiKey: Type.String(),
+      apiKey: Type.String({ "x-redact": true }),
     }),
   }),
 ]);

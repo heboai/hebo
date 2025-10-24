@@ -2,8 +2,10 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
 import type { Models } from "@hebo/shared-data/types/models";
+import { redactModels } from "@hebo/shared-data/utils/redact-models";
 
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
+
 
 export const connectionString = (() => {
   try {
@@ -91,27 +93,6 @@ export const createDbClient = (userId: string) => {
   });
 };
 
-// Redacts sensitive fields inside branches.models[].customRouting
-const redactModels = (models: Prisma.JsonValue[]): Prisma.JsonValue[] => {
-  return (models as Models).map((model) => {
-    const clone = structuredClone(model);
-    const crClone = clone.customRouting;
-    if (!crClone) return clone;
-    if (crClone.bedrock) {
-      delete crClone.bedrock.accessKeyId;
-      delete crClone.bedrock.secretAccessKey;
-    }
-    if (crClone.vertex) {
-      delete crClone.vertex.serviceAccount;
-    }
-    if (crClone.voyage) {
-      delete crClone.voyage.apiKey;
-    }
-    clone.customRouting = crClone;
-    return clone;
-  });
-};
-
 export const createDbClientPublic = (userId: string) => {
   const client = createDbClient(userId);
   return client.$extends({
@@ -119,11 +100,7 @@ export const createDbClientPublic = (userId: string) => {
       branches: {
         models: {
           needs: { models: true },
-          compute({
-            models,
-          }: {
-            models: Prisma.JsonValue[];
-          }): Prisma.JsonValue[] {
+          compute({ models }: { models: Models }) {
             return redactModels(models);
           },
         },
