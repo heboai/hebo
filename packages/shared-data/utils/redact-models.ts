@@ -18,7 +18,7 @@ export function redactModels(models: Models, mask = MASK): Models {
     if (props && cr.config && typeof cr.config === "object") {
       for (const key of Object.keys(props)) {
         if (props[key]?.["x-redact"] && key in cr.config) {
-          (cr.config as Record<string, string>)[key] = mask;
+          (cr.config as Record<string, unknown>)[key] = mask;
         }
       }
     }
