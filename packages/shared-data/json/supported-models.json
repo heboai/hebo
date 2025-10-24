@@ -22,14 +22,14 @@
   },
   {
     "name": "arn:aws:bedrock:us-east-1:160885286799:inference-profile/global.anthropic.claude-sonnet-4-20250514-v1:0",
-    "displayName": "Anthropic Sonnet 4",
+    "displayName": "Anthropic Claude Sonnet 4",
     "rateLimit": 400000000,
     "provider": "bedrock",
     "modality": "chat"
   },
   {
     "name": "anthropic.claude-3-haiku-20240307-v1:0",
-    "displayName": "Anthropic Haiku 3",
+    "displayName": "Anthropic Claude Haiku 3",
     "rateLimit": 400000000,
     "provider": "bedrock",
     "modality": "chat"

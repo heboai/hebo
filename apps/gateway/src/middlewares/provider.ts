@@ -43,7 +43,9 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
           // @ts-expect-error: GoogleVertexServiceAccount may not be defined
           return Resource.GoogleVertexServiceAccount.value;
         } catch {
-          return process.env.GOOGLE_VERTEX_SERVICE_ACCOUNT;
+          return JSON.parse(
+            process.env.GOOGLE_VERTEX_SERVICE_ACCOUNT as string,
+          );
         }
       })(),
       location: "us-central1",
