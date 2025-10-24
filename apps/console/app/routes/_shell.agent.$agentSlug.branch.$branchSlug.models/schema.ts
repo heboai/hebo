@@ -4,12 +4,10 @@ import {
   minLength,
   nonEmpty,
   object,
-  optional,
   picklist,
   pipe,
   string,
   trim,
-  url as urlRule,
   type InferOutput,
 } from "valibot";
 
@@ -21,22 +19,7 @@ export const modelConfigSchema = object({
   type: picklist(
     supportedModels.map((model) => model.name),
     "Select one of the supported models",
-  ),
-  endpoint: optional(
-    object({
-      baseUrl: 
-        message(
-          pipe(
-            string(),
-            trim(),
-            nonEmpty(),
-            urlRule()
-          ), 
-          "Enter a valid URL (https://example.com)",
-      ),
-      apiKey: message(pipe(string(), trim(), nonEmpty()), "Provide the API key"),
-    }),
-  ),
+  )
 });
 
 export const modelsConfigFormSchema = object({

@@ -2,7 +2,7 @@ import { Form, useActionData, useNavigation } from "react-router";
 import { useEffect, useState } from "react";
 import { useForm, getFormProps, type FieldMetadata } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
-import { Brain, Edit, Split } from "lucide-react";
+import { Brain, Edit } from "lucide-react";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import {
@@ -121,14 +121,8 @@ function ModelCard(props: {
   } = props;
 
   const modelFieldset = model.getFieldset();
-  const endpointField = modelFieldset.endpoint;
-  const endpointFieldset = endpointField.getFieldset();
 
   const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
-
-  const [isCustomEndpoint, setIsCustomEndpoint] = useState<boolean>(() =>
-    Boolean(endpointFieldset?.baseUrl?.value?.trim() || endpointFieldset?.apiKey?.value?.trim())
-  );
 
   return (
     <Card className="gap-0">
@@ -145,11 +139,6 @@ function ModelCard(props: {
           <Badge variant="outline">
             <Brain />
             {supportedModels.find((m) => m.name === modelFieldset.type.value)?.displayName || ""}
-          </Badge>
-
-          <Badge variant="outline">
-            <Split />
-            {isCustomEndpoint ? "Custom Endpoint" : "Managed"}
           </Badge>
 
           <Button variant="outline" onClick={onExpand} disabled={isExpanded}>
@@ -195,45 +184,6 @@ function ModelCard(props: {
                 <FormMessage />
               </FormField>
             </div>
-
-            {/* FUTURE: follow layout pattern of new shadcn fields components, make whole field clickable */}
-            <div className="flex gap-3 items-center rounded-md border px-3 py-2">
-              <input
-                id={`${endpointField.id}-checkbox`}
-                type="checkbox"
-                data-conform-ignore
-                checked={isCustomEndpoint}
-                onChange={(e) => setIsCustomEndpoint(e.target.checked)}
-              />
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-medium" htmlFor={`${endpointField.id}-checkbox`}>
-                  Use custom endpoint
-                </label>
-                <p className="text-muted-foreground text-xs">
-                  Route this alias to your own inference endpoint.
-                </p>
-              </div>
-            </div>
-
-            {isCustomEndpoint && (
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormField field={endpointFieldset.baseUrl} className="flex flex-col gap-2">
-                  <FormLabel>Base URL</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://" autoComplete="off" />
-                  </FormControl>
-                  <FormMessage />
-                </FormField>
-
-                <FormField field={endpointFieldset.apiKey} className="flex flex-col gap-2">
-                  <FormLabel>API Key</FormLabel>
-                  <FormControl>
-                    <Input placeholder="API key" type="password" autoComplete="off" />
-                  </FormControl>
-                  <FormMessage />
-                </FormField>
-              </div>
-            )}
           </CardContent>
 
           <CardFooter>
