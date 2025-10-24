@@ -7,7 +7,7 @@ import { createVoyage } from "voyage-ai-provider";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models, ProviderConfig } from "@hebo/shared-data/types/models";
 
-import type { EmbeddingModel, LanguageModel, Provider } from "ai";
+import type { Provider } from "ai";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
@@ -102,13 +102,10 @@ const getProviderConfig = (model: Models[number]): ProviderConfig => {
 const createProvider = (model: Models[number]): Provider => {
   const cfg = getProviderConfig(model);
   const { provider, baseUrl: baseURL, config } = cfg;
-
-  // FUTURE: memoize provider instances to avoid re-instantiation on each request
   switch (provider) {
     case "bedrock": {
       return createAmazonBedrock({ ...config, baseURL });
     }
-
     case "vertex": {
       return createVertex({
         googleAuthOptions: { credentials: config.serviceAccount },
@@ -117,11 +114,9 @@ const createProvider = (model: Models[number]): Provider => {
         baseURL,
       });
     }
-
     case "voyage": {
       return createVoyage({ ...config, baseURL });
     }
-
     default: {
       throw badRequest(
         `Unknown or unsupported provider "${provider}"`,
@@ -140,17 +135,28 @@ export const supportedOrThrow = (id: string) => {
   }
 };
 
-const chatOrThrow = (model: Models[number]): LanguageModel => {
-  return createProvider(model).languageModel(model.type);
-};
+const providerInstances = new Map<string, Provider>();
 
-const embeddingOrThrow = (model: Models[number]): EmbeddingModel<string> => {
-  return createProvider(model).textEmbeddingModel(model.type);
+const getOrCreateProvider = (model: Models[number]): Provider => {
+  const key =
+    model.type +
+    (model.customRouting ? JSON.stringify(model.customRouting) : "");
+  if (providerInstances.has(key)) {
+    return providerInstances.get(key)!;
+  }
+
+  const instance = createProvider(model);
+  providerInstances.set(key, instance);
+  return instance;
 };
 
 export const provider = new Elysia({ name: "provider" })
   .decorate("provider", {
-    chat: chatOrThrow,
-    embedding: embeddingOrThrow,
+    chat(model: Models[number]) {
+      return getOrCreateProvider(model).languageModel(model.type);
+    },
+    embedding(model: Models[number]) {
+      return getOrCreateProvider(model).textEmbeddingModel(model.type);
+    },
   } as const)
   .as("scoped");
