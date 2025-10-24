@@ -101,9 +101,6 @@ const redactModels = (models: Prisma.JsonValue[]): Prisma.JsonValue[] => {
       delete crClone.bedrock.accessKeyId;
       delete crClone.bedrock.secretAccessKey;
     }
-    if (crClone.groq) {
-      delete crClone.groq.apiKey;
-    }
     if (crClone.vertex) {
       delete crClone.vertex.serviceAccount;
     }

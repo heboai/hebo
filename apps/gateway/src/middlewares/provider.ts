@@ -1,6 +1,5 @@
 import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
 import { createVertex } from "@ai-sdk/google-vertex";
-import { createGroq } from "@ai-sdk/groq";
 import Elysia from "elysia";
 import { Resource } from "sst";
 import { createVoyage } from "voyage-ai-provider";
@@ -31,16 +30,6 @@ const defaults = {
       }
     })(),
     region: "us-east-1",
-  },
-  groq: {
-    apiKey: (() => {
-      try {
-        // @ts-expect-error: GroqApiKey may not be defined
-        return Resource.GroqApiKey.value;
-      } catch {
-        return process.env.GROQ_API_KEY;
-      }
-    })(),
   },
   vertex: {
     serviceAccount: (() => {
@@ -112,13 +101,6 @@ const createProvider = (model: Models[number]): Provider => {
         region: isCustom
           ? customRouting?.bedrock?.region
           : defaults.bedrock.region,
-        baseURL,
-      });
-    }
-
-    case "groq": {
-      return createGroq({
-        apiKey: isCustom ? customRouting?.groq?.apiKey : defaults.groq.apiKey,
         baseURL,
       });
     }

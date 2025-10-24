@@ -1,12 +1,5 @@
 [
   {
-    "name": "meta-llama/llama-4-scout-17b-16e-instruct",
-    "displayName": "LLaMA 4 Scout",
-    "rateLimit": 40000000,
-    "provider": "groq",
-    "modality": "chat"
-  },
-  {
     "name": "openai.gpt-oss-120b-1:0",
     "displayName": "OpenAI GPT OSS 120B",
     "rateLimit": 400000000,

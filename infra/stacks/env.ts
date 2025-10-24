@@ -12,7 +12,6 @@ export const googleVertexServiceAccount = new sst.Secret(
   "GoogleVertexServiceAccount",
 );
 export const googleVertexProject = new sst.Secret("GoogleVertexProject");
-export const groqApiKey = new sst.Secret("GroqApiKey");
 export const voyageApiKey = new sst.Secret("VoyageApiKey");
 
 export const allSecrets = [
@@ -23,7 +22,6 @@ export const allSecrets = [
   secretAccessKey,
   googleVertexServiceAccount,
   googleVertexProject,
-  groqApiKey,
   voyageApiKey,
 ];
 export const isProd = $app.stage === "production";

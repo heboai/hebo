@@ -28,11 +28,6 @@ export const modelsSchema = Type.Array(
             region: Type.String(),
           }),
         ),
-        groq: Type.Optional(
-          Type.Object({
-            apiKey: Type.String(),
-          }),
-        ),
         vertex: Type.Optional(
           Type.Object({
             serviceAccount: Type.Any({ format: "json" }),

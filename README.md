@@ -139,7 +139,6 @@ Secrets to set:
 - `GoogleVertexProject`
 
 ###### Others
-- `GroqApiKey`
 - `VoyageApiKey`
 
 ##### Auth secrets
@@ -155,7 +154,7 @@ Get these by creating a project on [Stack Auth](https://app.stack-auth.com).
 Replace `<value>`. Omit `--stage` for local development (defaults to your dev stage).
 
 ```bash
-bun run sst secret set GroqApiKey <value> --stage <stage>
+bun run sst secret set StackSecretServerKey <value> --stage <stage>
 ```
 
 #### Launch and Clean up
