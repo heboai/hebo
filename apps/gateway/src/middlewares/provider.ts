@@ -21,17 +21,17 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
           // @ts-expect-error: AWSAccessKeyId may not be defined
           return Resource.AWSAccessKeyId.value;
         } catch {
-          return process.env.AWS_ACCESS_KEY_ID as string | undefined;
+          return process.env.AWS_ACCESS_KEY_ID;
         }
-      })() as string,
+      })(),
       secretAccessKey: (() => {
         try {
           // @ts-expect-error: AWSSecretAccessKey may not be defined
           return Resource.AWSSecretAccessKey.value;
         } catch {
-          return process.env.AWS_SECRET_ACCESS_KEY as string | undefined;
+          return process.env.AWS_SECRET_ACCESS_KEY;
         }
-      })() as string,
+      })(),
       region: "us-east-1",
     },
   },
@@ -54,9 +54,9 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
           // @ts-expect-error: GoogleVertexProject may not be defined
           return Resource.GoogleVertexProject.value;
         } catch {
-          return process.env.GOOGLE_VERTEX_PROJECT as string | undefined;
+          return process.env.GOOGLE_VERTEX_PROJECT;
         }
-      })() as string,
+      })(),
     },
   },
   voyage: {
@@ -67,9 +67,9 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
           // @ts-expect-error: VoyageApiKey may not be defined
           return Resource.VoyageApiKey.value;
         } catch {
-          return process.env.VOYAGE_API_KEY as string | undefined;
+          return process.env.VOYAGE_API_KEY;
         }
-      })() as string,
+      })(),
     },
   },
 };
