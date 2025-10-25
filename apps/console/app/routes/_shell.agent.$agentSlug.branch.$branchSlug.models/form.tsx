@@ -73,6 +73,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           isExpanded={expandedCardId === index}
           onExpand={() => setExpandedCardId(index)}
           onRemove={() => {
+            // FUTURE: confirm removal as it is a irreversible action
             form.remove({ name: fields.models.name, index })
             // FUTURE: this is a quirk to work around a current Conform limitation. 
             // Remove once upgrade to future APIs in conform 1.9+

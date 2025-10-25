@@ -29,6 +29,7 @@ export function Button({
         children
       ) : (
         <>
+          {/* FUTURE: Only show spinner after short delay to avoid flicker on fast actions */}
           {isLoading && (
             <Loader2Icon className="h-4 w-4 animate-spin" aria-hidden="true" />
           )}
