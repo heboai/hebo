@@ -1,5 +1,5 @@
 import { Form, useActionData, useNavigation } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, getFormProps, type FieldMetadata } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
 import { Brain, Edit } from "lucide-react";
@@ -47,21 +47,23 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
   const [form, fields] = useForm<ModelsConfigFormValues>({
     lastResult,
     constraint: getValibotConstraint(modelsConfigFormSchema),
-    defaultValue: { models },
+    defaultValue: { models }
   });
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const modelItems = fields.models.getFieldList();
 
   // Close the active card on successful submit
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
-    if (form.status === "success") setExpandedCardId(null);
-  }, [form.status]);
+    if (navigation.state === "idle" && form.status === "success") {
+      setExpandedCardId(null);
+    }
+  }, [navigation.state, form.status]);
 
   return (
-
-    // FUTURE: should this actually use a fetcher form (since no navigation on save?)
-    <Form method="post" {...getFormProps(form)} className="contents">
+    <Form method="post" ref={formRef} {...getFormProps(form)} className="contents">
       {modelItems.map((model, index) => (
         <ModelCard
           key={model.key}
@@ -71,11 +73,14 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           isExpanded={expandedCardId === index}
           onExpand={() => setExpandedCardId(index)}
           onRemove={() => {
-            form.remove({ name: fields.models.name, index });
+            form.remove({ name: fields.models.name, index })
+            // FUTURE: this is a quirk to work around a current Conform limitation. 
+            // Remove once upgrade to future APIs in conform 1.9+
+            setTimeout(() => formRef.current?.requestSubmit(), 100);
             setExpandedCardId(null);
           }}
           onCancel={() => {
-            form.reset();
+            form.reset({ name: fields.models.name, index });
             setExpandedCardId(null);
           }}
           isSubmitting={navigation.state === "submitting"}

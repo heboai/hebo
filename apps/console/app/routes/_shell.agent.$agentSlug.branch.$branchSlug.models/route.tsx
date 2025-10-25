@@ -10,15 +10,20 @@ import { modelsConfigFormSchema, type ModelsConfigFormValues } from "./schema";
 import type { Route } from "./+types/route";
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
-  
+
   const formData = await request.formData();
+
   const submission = parseWithValibot(formData, {
     schema: modelsConfigFormSchema,
   });
 
+  console.log(submission);
+
   if (submission.status !== "success") {
     return submission.reply();
   }
+
+  console.log(submission.value.models);
 
   let result;
   try {
