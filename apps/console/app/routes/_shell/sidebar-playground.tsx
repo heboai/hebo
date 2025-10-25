@@ -1,13 +1,7 @@
 import { Chat } from "@hebo/aikit-ui/blocks/Chat";
 import { kyFetch } from "~console/lib/service";
 
-const VITE_GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL?.trim();
-
-if (!VITE_GATEWAY_URL) {
-  console.error(
-    "VITE_GATEWAY_URL environment variable is not set. Please configure it in your environment."
-  );
-}
+const VITE_GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL?.trim() || "http://localhost:3002";
 
 type Branch = {
   agent_slug: string;

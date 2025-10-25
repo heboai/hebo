@@ -11,7 +11,7 @@
     "build": "turbo run build",
     "clean": "git clean -fdx -e '.env*'",
     "db": "bun run --filter @hebo/database db",
-    "dev": "sh -c 'trap \"bun run postdev\" EXIT INT TERM; VITE_API_URL=http://localhost:3001 VITE_GATEWAY_URL=http://localhost:3002 turbo run dev --parallel'",
+    "dev": "sh -c 'trap \"bun run postdev\" EXIT INT TERM; turbo run dev --parallel'",
     "format": "prettier --write .",
     "format:staged": "prettier --write",
     "lint": "turbo run lint",
