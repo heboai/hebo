@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
       reactRouter(),
       ...(mode === "development" ? [devtoolsJson()] : []),
     ],
+    // Expose TURBO_HASH to enable local vs CI/build environment detection
     define: {
       "process.env.TURBO_HASH": JSON.stringify(
         process.env.TURBO_HASH ?? env.TURBO_HASH ?? "",
