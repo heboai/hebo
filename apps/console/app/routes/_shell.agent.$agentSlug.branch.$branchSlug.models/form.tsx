@@ -142,6 +142,7 @@ function ModelCard(props: {
             </div>
           </div>
 
+          {/* FUTURE: left-align badges across multiple cards */ }
           <Badge variant="outline">
             <Brain />
             {supportedModels.find((m) => m.name === modelFieldset.type.value)?.displayName || ""}
@@ -154,7 +155,7 @@ function ModelCard(props: {
         </div>
       </CardHeader>
 
-      {/* FUTURE: use collapsible component for better accessibility */}
+      {/* FUTURE: use Collapsible component for better accessibility */}
       <div
         className={`grid overflow-hidden m-0 transition-[grid-template-rows,opacity] duration-200 ease-in-out ${
           isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
