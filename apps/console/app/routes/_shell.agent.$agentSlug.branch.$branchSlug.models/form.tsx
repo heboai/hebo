@@ -148,7 +148,7 @@ function ModelCard(props: {
             {supportedModels.find((m) => m.name === modelFieldset.type.value)?.displayName || ""}
           </Badge>
 
-          <Button variant="outline" onClick={onExpand} disabled={isExpanded}>
+          <Button type="button" variant="outline" onClick={onExpand} disabled={isExpanded}>
             <Edit />
             Edit
           </Button>
