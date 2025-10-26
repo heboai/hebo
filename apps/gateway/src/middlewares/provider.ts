@@ -89,7 +89,6 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
 
 const getProviderConfig = (model: Models[number]): ProviderConfig => {
   const { customRouting } = model;
-  supportedOrThrow(model.type);
   if (customRouting) return customRouting;
 
   const provider = supportedModels.find((m) => m.name === model.type)
@@ -155,6 +154,7 @@ const getOrCreateProvider = (model: Models[number]): Provider => {
 };
 
 const isEmbeddingModel = (model_type: string) => {
+  supportedOrThrow(model_type);
   return (
     supportedModels.find((m) => m.name === model_type)?.modality === "embedding"
   );
