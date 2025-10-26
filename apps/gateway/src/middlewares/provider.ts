@@ -181,7 +181,7 @@ export const provider = new Elysia({ name: "provider" })
         providerCfg.provider === "bedrock" &&
         model.type === "anthropic.claude-sonnet-4-20250514-v1:0"
       ) {
-        modelId = providerCfg.config.inferenceProfile!;
+        modelId = `${providerCfg.config.inferenceProfile!}:${model.type}`;
       }
       return getOrCreateProvider(model).languageModel(modelId);
     },
