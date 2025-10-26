@@ -39,7 +39,7 @@ export const providerConfigSchema = Type.Union([
 export const modelsSchema = Type.Array(
   Type.Object({
     alias: Type.String(),
-    type: Type.Union([supportedModelsEnum, Type.String()]),
+    type: supportedModelsEnum,
     customRouting: Type.Optional(providerConfigSchema),
   }),
 );

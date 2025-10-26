@@ -11,6 +11,19 @@ import type { Provider } from "ai";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
+export class BadRequestError extends Error {
+  status: number;
+  type: string;
+  code: string;
+  constructor(message: string, code = "model_mismatch") {
+    super(message);
+    this.name = "BadRequestError";
+    this.status = 400;
+    this.type = "invalid_request_error";
+    this.code = code;
+  }
+}
+
 type ProviderName = ProviderConfig["provider"];
 const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   bedrock: {
@@ -40,8 +53,8 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
     config: {
       serviceAccount: (() => {
         try {
-          // @ts-expect-error: GoogleVertexServiceAccount may not be defined
           return JSON.parse(
+            // @ts-expect-error: GoogleVertexServiceAccount may not be defined
             Resource.GoogleVertexServiceAccount.value as string,
           );
         } catch {
@@ -74,26 +87,15 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   },
 };
 
-const badRequest = (message: string, code = "model_mismatch") => {
-  const err = new Error(message) as Error & {
-    status: number;
-    type: string;
-    code: string;
-  };
-  err.status = 400;
-  err.type = "invalid_request_error";
-  err.code = code;
-  return err;
-};
-
 const getProviderConfig = (model: Models[number]): ProviderConfig => {
   const { customRouting } = model;
+  supportedOrThrow(model.type);
   if (customRouting) return customRouting;
 
   const provider = supportedModels.find((m) => m.name === model.type)
     ?.provider as ProviderName | undefined;
   if (!provider) {
-    throw badRequest(
+    throw new BadRequestError(
       `Unknown or unsupported provider "${provider}"`,
       "provider_unsupported",
     );
@@ -120,8 +122,8 @@ const createProvider = (model: Models[number]): Provider => {
       return createVoyage({ ...config, baseURL });
     }
     default: {
-      throw badRequest(
-        `Unknown or unsupported provider "${provider}"`,
+      throw new BadRequestError(
+        `Unknown or unsupported provider '${provider}'`,
         "provider_unsupported",
       );
     }
@@ -130,8 +132,8 @@ const createProvider = (model: Models[number]): Provider => {
 
 export const supportedOrThrow = (id: string) => {
   if (!SUPPORTED_MODELS.includes(id)) {
-    throw badRequest(
-      `Unknown or unsupported model "${id}"`,
+    throw new BadRequestError(
+      `Unknown or unsupported model '${id}'`,
       "model_unsupported",
     );
   }
@@ -152,12 +154,24 @@ const getOrCreateProvider = (model: Models[number]): Provider => {
   return instance;
 };
 
+const isEmbeddingModel = (model_type: string) => {
+  return (
+    supportedModels.find((m) => m.name === model_type)?.modality === "embedding"
+  );
+};
+
 export const provider = new Elysia({ name: "provider" })
   .decorate("provider", {
     chat(model: Models[number]) {
+      if (isEmbeddingModel(model.type))
+        throw new BadRequestError(
+          `Model '${model.type}' is an embedding model`,
+        );
       return getOrCreateProvider(model).languageModel(model.type);
     },
     embedding(model: Models[number]) {
+      if (!isEmbeddingModel(model.type))
+        throw new BadRequestError(`Model '${model.type}' is a chat model`);
       return getOrCreateProvider(model).textEmbeddingModel(model.type);
     },
   } as const)

@@ -2,6 +2,8 @@ import { Elysia, status } from "elysia";
 
 import { ModelNotFoundError } from "~gateway/utils/get-model-object";
 
+import { BadRequestError } from "./provider";
+
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;
   return r instanceof Response ? r : undefined;
@@ -52,6 +54,17 @@ export const oaiErrors = new Elysia({ name: "oai-error" })
           type: "invalid_request_error",
           param: undefined,
           code: "not_found",
+        },
+      });
+    }
+
+    if (error instanceof BadRequestError) {
+      return status(400, {
+        error: {
+          message: error.message,
+          type: "invalid_request_error",
+          param: undefined,
+          code: error.code,
         },
       });
     }
