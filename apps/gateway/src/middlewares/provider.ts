@@ -7,7 +7,7 @@ import { createVoyage } from "voyage-ai-provider";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models, ProviderConfig } from "@hebo/shared-data/types/models";
 
-import type { Provider } from "ai";
+import type { LanguageModel, Provider, EmbeddingModel } from "ai";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
@@ -168,27 +168,33 @@ const isEmbeddingModel = (model_type: string) => {
   );
 };
 
+const pickChat = (model: Models[number]): LanguageModel => {
+  if (isEmbeddingModel(model.type))
+    throw new BadRequestError(`Model '${model.type}' is an embedding model`);
+  const providerCfg = getProviderConfig(model);
+  let modelId = model.type;
+  if (
+    providerCfg.provider === "bedrock" &&
+    model.type === "anthropic.claude-sonnet-4-20250514-v1:0"
+  ) {
+    modelId = `${providerCfg.config.inferenceProfile!}:${model.type}`;
+  }
+  return getOrCreateProvider(model).languageModel(modelId);
+};
+
+const pickEmbedding = (model: Models[number]): EmbeddingModel<string> => {
+  if (!isEmbeddingModel(model.type))
+    throw new BadRequestError(`Model '${model.type}' is a chat model`);
+  return getOrCreateProvider(model).textEmbeddingModel(model.type);
+};
+
 export const provider = new Elysia({ name: "provider" })
   .decorate("provider", {
     chat(model: Models[number]) {
-      if (isEmbeddingModel(model.type))
-        throw new BadRequestError(
-          `Model '${model.type}' is an embedding model`,
-        );
-      const providerCfg = getProviderConfig(model);
-      let modelId = model.type;
-      if (
-        providerCfg.provider === "bedrock" &&
-        model.type === "anthropic.claude-sonnet-4-20250514-v1:0"
-      ) {
-        modelId = `${providerCfg.config.inferenceProfile!}:${model.type}`;
-      }
-      return getOrCreateProvider(model).languageModel(modelId);
+      return pickChat(model);
     },
     embedding(model: Models[number]) {
-      if (!isEmbeddingModel(model.type))
-        throw new BadRequestError(`Model '${model.type}' is a chat model`);
-      return getOrCreateProvider(model).textEmbeddingModel(model.type);
+      return pickEmbedding(model);
     },
   } as const)
   .as("scoped");
