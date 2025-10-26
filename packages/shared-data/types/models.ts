@@ -36,7 +36,6 @@ export const providerConfigSchema = Type.Union([
   }),
 ]);
 
-// FUTURE: infer from models.schema.json
 export const modelsSchema = Type.Array(
   Type.Object({
     alias: Type.String(),

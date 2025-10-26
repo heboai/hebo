@@ -9,6 +9,9 @@
     "./types/*": "./types/*.ts",
     "./utils/*": "./utils/*.ts"
   },
+  "scripts": {
+    "build": "bun run scripts/generate-models-schema.ts"
+  },
   "private": true,
   "type": "module",
   "dependencies": {
