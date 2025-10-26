@@ -44,6 +44,7 @@ jobs:
           bun run sst secret set StackSecretServerKey ${{ secrets.STACK_SECRET_SERVER_KEY }} --stage production
           bun run sst secret set AWSAccessKeyId ${{ secrets.AWS_ACCESS_KEY_ID }} --stage production
           bun run sst secret set AWSSecretAccessKey ${{ secrets.AWS_SECRET_ACCESS_KEY }} --stage production
+          bun run sst secret set BedrockInferenceProfile ${{ secrets.BEDROCK_INFERENCE_PROFILE }} --stage production
           bun run sst secret set GoogleVertexServiceAccount ${{ secrets.GOOGLE_VERTEX_SERVICE_ACCOUNT }} --stage production
           bun run sst secret set GoogleVertexProject ${{ secrets.GOOGLE_VERTEX_PROJECT }} --stage production
           bun run sst secret set VoyageApiKey ${{ secrets.VOYAGE_API_KEY }} --stage production

@@ -13,6 +13,7 @@ export const providerConfigSchema = Type.Union([
     provider: Type.Literal("bedrock"),
     config: Type.Object({
       accessKeyId: Type.String({ "x-redact": true }),
+      inferenceProfile: Type.Optional(Type.String()),
       secretAccessKey: Type.String({ "x-redact": true }),
       region: Type.String(),
     }),

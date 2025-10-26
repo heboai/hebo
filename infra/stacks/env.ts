@@ -8,6 +8,9 @@ export const stackProjectId = new sst.Secret("StackProjectId");
 // LLMs
 export const accessKeyId = new sst.Secret("AWSAccessKeyId");
 export const secretAccessKey = new sst.Secret("AWSSecretAccessKey");
+export const bedrockInferenceProfile = new sst.Secret(
+  "BedrockInferenceProfile",
+);
 export const googleVertexServiceAccount = new sst.Secret(
   "GoogleVertexServiceAccount",
 );

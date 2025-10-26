@@ -45,6 +45,14 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
           return process.env.AWS_SECRET_ACCESS_KEY;
         }
       })(),
+      inferenceProfile: (() => {
+        try {
+          // @ts-expect-error: BedrockInferenceProfile may not be defined
+          return Resource.BedrockInferenceProfile.value;
+        } catch {
+          return process.env.BEDROCK_INFERENCE_PROFILE;
+        }
+      })(),
       region: "us-east-1",
     },
   },
@@ -167,7 +175,15 @@ export const provider = new Elysia({ name: "provider" })
         throw new BadRequestError(
           `Model '${model.type}' is an embedding model`,
         );
-      return getOrCreateProvider(model).languageModel(model.type);
+      const providerCfg = getProviderConfig(model);
+      let modelId = model.type;
+      if (
+        providerCfg.provider === "bedrock" &&
+        model.type === "anthropic.claude-sonnet-4-20250514-v1:0"
+      ) {
+        modelId = providerCfg.config.inferenceProfile!;
+      }
+      return getOrCreateProvider(model).languageModel(modelId);
     },
     embedding(model: Models[number]) {
       if (!isEmbeddingModel(model.type))
