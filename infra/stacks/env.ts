@@ -23,6 +23,7 @@ export const allSecrets = [
   stackProjectId,
   accessKeyId,
   secretAccessKey,
+  bedrockInferenceProfile,
   googleVertexServiceAccount,
   googleVertexProject,
   voyageApiKey,
