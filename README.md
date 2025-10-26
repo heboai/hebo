@@ -128,7 +128,9 @@ Set each secret individually.
 
 Secrets to set:
 
-##### LLM keys
+##### LLM secrets
+
+LLM secrets are optional and required only if you want to use the specific llm provider.
 
 ###### Bedrock
 - `AWSAccessKeyId`
