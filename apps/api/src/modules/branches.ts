@@ -38,11 +38,7 @@ export const branchesModule = new Elysia({
           {
             name: body.name,
             slug: createSlug(body.name),
-            agent: {
-              connect: {
-                slug: params.agentSlug,
-              },
-            },
+            agent: { connect: { slug: params.agentSlug } },
           },
         ),
       );
@@ -79,10 +75,7 @@ export const branchesModule = new Elysia({
         200,
         await dbClient.branches.update({
           where: { id },
-          data: {
-            name: body.name,
-            models: body.models,
-          },
+          data: { name: body.name, models: body.models },
         }),
       );
     },
