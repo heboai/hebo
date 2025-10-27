@@ -6,7 +6,6 @@ import { redactModels } from "@hebo/shared-data/utils/redact-models";
 
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 
-
 export const connectionString = (() => {
   try {
     // @ts-expect-error: HeboDatabase may not be defined
@@ -59,7 +58,6 @@ export const createDbClient = (userId: string) => {
             ...args.data,
             updated_by: userId,
           };
-
           return query(args);
         },
       },
@@ -68,20 +66,28 @@ export const createDbClient = (userId: string) => {
       $allModels: {
         async softDelete<T>(where: T) {
           const context = Prisma.getExtensionContext(this);
-          return await context.update({
+          return context.update({
             where,
             data: { deleted_by: userId, deleted_at: new Date() },
           });
         },
       },
       branches: {
-        async copy<T>(where: T, data: Partial<Prisma.branchesCreateInput>) {
-          const { models } = await _prisma.branches.findFirstOrThrow({
+        async getFullModels(where: Prisma.branchesWhereInput): Promise<Models> {
+          const result = await _prisma.branches.findFirstOrThrow({
             // eslint-disable-next-line unicorn/no-null
             where: { ...where, created_by: userId, deleted_at: null },
+            select: { models: true },
           });
+          return result.models as unknown as Models;
+        },
+        async copy(
+          where: Prisma.branchesWhereInput,
+          data: Partial<Prisma.branchesCreateInput>,
+        ) {
           const context = Prisma.getExtensionContext(this);
-          return await context.create({
+          const models = await context.getFullModels(where);
+          return context.create({
             data: {
               ...data,
               models,
@@ -90,12 +96,6 @@ export const createDbClient = (userId: string) => {
         },
       },
     },
-  });
-};
-
-export const createDbClientPublic = (userId: string) => {
-  const client = createDbClient(userId);
-  return client.$extends({
     result: {
       branches: {
         models: {

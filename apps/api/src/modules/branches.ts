@@ -1,7 +1,7 @@
 import { Elysia, status, t } from "elysia";
 
 import { createSlug } from "@hebo/database/src/utils/create-slug";
-import { dbClientPublic } from "@hebo/shared-api/middlewares/db-client";
+import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { modelsSchema } from "@hebo/shared-data/types/models";
 
 import {
@@ -13,7 +13,7 @@ import {
 export const branchesModule = new Elysia({
   prefix: "/:agentSlug/branches",
 })
-  .use(dbClientPublic)
+  .use(dbClient)
   .get(
     "/",
     async ({ dbClient, params }) => {
