@@ -6,9 +6,12 @@ import { isDevLocal } from "~console/lib/env";
 
 import type { Api } from "~api";
 
-const url = isDevLocal
+const apiUrl = isDevLocal
   ? "http://localhost:5173/api"
   : import.meta.env.VITE_API_URL || "http://localhost:3001";
+
+export const gatewayUrl =
+  import.meta.env.VITE_GATEWAY_URL || "http://localhost:3002";
 
 export const kyFetch = ky.extend({
   throwHttpErrors: false,
@@ -50,7 +53,7 @@ export const kyFetch = ky.extend({
   },
 });
 
-export const api = treaty<Api>(url, {
+export const api = treaty<Api>(apiUrl, {
   // Automatic auth header, retries, timeouts & error throwing
   fetcher: kyFetch,
 }).v1;
