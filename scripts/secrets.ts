@@ -19,6 +19,6 @@ switch (cmd) {
     break;
   }
   default: {
-    console.log("Usage: bun secrets <set|get|delete> <name> [value]");
+    console.log("Usage: bun secret <set|get|delete> <name> [value]");
   }
 }
