@@ -70,7 +70,7 @@ bun run -F @hebo/console dev
 
 ```bash
 cd apps/console
-touch .env
+cp .env.example .env
 ```
 
 ### Database
