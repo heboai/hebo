@@ -49,13 +49,8 @@ bun install
 ## Development
 
 ```bash
-# Run the entire stack locally
+# Start the database, run migrations, and run the entire stack locally
 bun run dev
-```
-
-```bash
-# Apply migrations once dev is running
-bun run db migrate dev
 ```
 
 ```bash
@@ -75,7 +70,12 @@ bun run -F @hebo/console dev
 bun run clean
 
 # Cleanup the database (and any other untracked files/directories)
-bun run -F @hebo/database clean
+bun run db:reset
+```
+
+```bash
+# Stop the database
+bun run db:stop
 ```
 
 ## Run modes
