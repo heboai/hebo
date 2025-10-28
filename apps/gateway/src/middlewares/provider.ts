@@ -1,9 +1,9 @@
 import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
 import { createVertex } from "@ai-sdk/google-vertex";
 import Elysia from "elysia";
-import { Resource } from "sst";
 import { createVoyage } from "voyage-ai-provider";
 
+import { getEnvValue } from "@hebo/shared-api/utils/get-env";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models, ProviderConfig } from "@hebo/shared-data/types/models";
 
@@ -29,70 +29,26 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   bedrock: {
     provider: "bedrock",
     config: {
-      accessKeyId: (() => {
-        try {
-          // @ts-expect-error: AWSAccessKeyId may not be defined
-          return Resource.AWSAccessKeyId.value;
-        } catch {
-          return process.env.AWS_ACCESS_KEY_ID;
-        }
-      })(),
-      secretAccessKey: (() => {
-        try {
-          // @ts-expect-error: AWSSecretAccessKey may not be defined
-          return Resource.AWSSecretAccessKey.value;
-        } catch {
-          return process.env.AWS_SECRET_ACCESS_KEY;
-        }
-      })(),
-      inferenceProfile: (() => {
-        try {
-          // @ts-expect-error: BedrockInferenceProfile may not be defined
-          return Resource.BedrockInferenceProfile.value;
-        } catch {
-          return process.env.BEDROCK_INFERENCE_PROFILE;
-        }
-      })(),
+      accessKeyId: await getEnvValue("AWSAccessKeyId"),
+      secretAccessKey: await getEnvValue("AWSSecretAccessKey"),
+      inferenceProfile: await getEnvValue("BedrockInferenceProfile"),
       region: "us-east-1",
     },
   },
   vertex: {
     provider: "vertex",
     config: {
-      serviceAccount: (() => {
-        try {
-          return JSON.parse(
-            // @ts-expect-error: GoogleVertexServiceAccount may not be defined
-            Resource.GoogleVertexServiceAccount.value as string,
-          );
-        } catch {
-          return JSON.parse(
-            process.env.GOOGLE_VERTEX_SERVICE_ACCOUNT as string,
-          );
-        }
-      })(),
+      serviceAccount: JSON.parse(
+        await getEnvValue("GoogleVertexServiceAccount"),
+      ),
       location: "us-central1",
-      project: (() => {
-        try {
-          // @ts-expect-error: GoogleVertexProject may not be defined
-          return Resource.GoogleVertexProject.value;
-        } catch {
-          return process.env.GOOGLE_VERTEX_PROJECT;
-        }
-      })(),
+      project: await getEnvValue("GoogleVertexProject"),
     },
   },
   voyage: {
     provider: "voyage",
     config: {
-      apiKey: (() => {
-        try {
-          // @ts-expect-error: VoyageApiKey may not be defined
-          return Resource.VoyageApiKey.value;
-        } catch {
-          return process.env.VOYAGE_API_KEY;
-        }
-      })(),
+      apiKey: await getEnvValue("VoyageApiKey"),
     },
   },
 };

@@ -1,24 +1,24 @@
 #!/usr/bin/env bun
 import { secrets } from "bun";
 
-const [cmd, service, name, value] = process.argv.slice(2);
+const [cmd, name, value] = process.argv.slice(2);
 
 switch (cmd) {
   case "set": {
-    await secrets.set({ service, name, value });
-    console.log(`✅ set ${service}:${name}`);
+    await secrets.set({ service: "hebo", name, value });
+    console.log(`✅ set ${name}`);
     break;
   }
   case "get": {
-    console.log((await secrets.get({ service, name })) ?? "");
+    console.log((await secrets.get({ service: "hebo", name })) ?? "");
     break;
   }
   case "delete": {
-    await secrets.delete({ service, name });
-    console.log(`🗑 deleted ${service}:${name}`);
+    await secrets.delete({ service: "hebo", name });
+    console.log(`🗑 deleted ${name}`);
     break;
   }
   default: {
-    console.log("Usage: bun secrets <set|get|delete> <service> <name> [value]");
+    console.log("Usage: bun secrets <set|get|delete> <name> [value]");
   }
 }

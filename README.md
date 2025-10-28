@@ -78,6 +78,35 @@ bun run clean
 bun run db migrate reset --force
 ```
 
+## Secrets (local and remote)
+
+We use Bun secrets for local development and SST secrets for remote deployments. Code reads values via `getEnvValue(name)` (see `packages/shared-api/utils/get-env.ts`), which resolves from SST first and falls back to Bun secrets locally.
+
+Secret names:
+
+- LLM:
+  - Bedrock: `AWSAccessKeyId`, `AWSSecretAccessKey`
+  - Vertex: `GoogleVertexServiceAccount`, `GoogleVertexProject`
+  - Others: `VoyageApiKey`
+- Auth (Stack Auth): `StackSecretServerKey`, `StackPublishableClientKey`, `StackProjectId`
+
+Local (Bun) examples:
+
+```bash
+# set / get / delete
+bun run secret set StackSecretServerKey <value>
+bun run secret get StackSecretServerKey
+bun run secret delete StackSecretServerKey
+```
+
+Remote (SST) examples:
+
+```bash
+# set / remove (choose your <stage>)
+bun run sst secret set StackSecretServerKey <value> --stage <stage>
+bun run sst secret remove StackSecretServerKey --stage <stage>
+```
+
 ## Run modes
 
 | #   | Mode                         | Command                          | Database              | API availability                        |
@@ -124,40 +153,7 @@ For deployments, we utilize the SST framework ([sst.dev](https://sst.dev/)).
 
 #### Secrets
 
-Set each secret individually.
-
-Secrets to set:
-
-##### LLM secrets
-
-LLM secrets are optional and required only if you want to use the specific llm provider.
-
-###### Bedrock
-- `AWSAccessKeyId`
-- `AWSSecretAccessKey`
-
-###### Vertex
-- `GoogleVertexServiceAccount`
-- `GoogleVertexProject`
-
-###### Others
-- `VoyageApiKey`
-
-##### Auth secrets
-
-Get these by creating a project on [Stack Auth](https://app.stack-auth.com).
-
-- `StackSecretServerKey`
-- `StackPublishableClientKey`
-- `StackProjectId`
-
-##### Examples usage:
-
-Replace `<value>`. Omit `--stage` for local development (defaults to your dev stage).
-
-```bash
-bun run sst secret set StackSecretServerKey <value> --stage <stage>
-```
+See the consolidated "Secrets (local and remote)" section above.
 
 #### Launch and Clean up
 
