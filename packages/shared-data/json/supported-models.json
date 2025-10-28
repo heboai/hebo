@@ -21,6 +21,13 @@
     "modality": "chat"
   },
   {
+    "name": "gemini-2.5-flash-lite",
+    "displayName": "Gemini 2.5 Flash Lite",
+    "rateLimit": 400000000,
+    "provider": "vertex",
+    "modality": "chat"
+  },
+  {
     "name": "anthropic.claude-sonnet-4-20250514-v1:0",
     "displayName": "Anthropic Claude Sonnet 4",
     "rateLimit": 400000000,
