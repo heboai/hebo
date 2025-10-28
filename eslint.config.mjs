@@ -27,12 +27,16 @@ const eslintConfig = [
       tailwindcss: {
         config: false, 
       },
+      react: {
+        version: 'detect',
+      },
       // Point to the correct tsconfig
       'import/resolver': {
         typescript: {
           project: ['**/tsconfig.json'], 
           noWarnOnMultipleProjects: true,
         },
+        'typescript-bun': {},
       },
     },
   },
