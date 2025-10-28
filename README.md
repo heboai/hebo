@@ -48,34 +48,51 @@ bun install
 
 ## Development
 
+### Quick start
+
 ```bash
-# Start the database, run migrations, and run the entire stack locally
+# 1) Start Postgres (Docker)
+bun run db:start
+
+# 2) Apply migrations
+bun run db:migrate
+
+# 3) Run all apps (API, Gateway, Console)
 bun run dev
-```
 
-```bash
-# configure env variables per each app
-cd apps/console
-cp .env.example .env
-# Fill with your values
-```
-
-```bash
-# Start only the console in dev from project root
+# Optional - console only (from repo root)
 bun run -F @hebo/console dev
 ```
 
-```bash
-# Cleanup
-bun run clean
+### Environment variables
 
-# Cleanup the database (and any other untracked files/directories)
+- Each app manages its own environment (e.g. `.env`, `.env.local`). Create a `.env` inside the app directory if you need to override defaults.
+
+```bash
+cd apps/console
+touch .env
+```
+
+### Database
+
+```bash
+# Start
+bun run db:start
+
+# Stop
+bun run db:stop
+
+# Migrate
+bun run db:migrate
+
+# Reset (drops data)
 bun run db:reset
 ```
 
+### Cleanup
+
 ```bash
-# Stop the database
-bun run db:stop
+bun run clean
 ```
 
 ## Run modes
