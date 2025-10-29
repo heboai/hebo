@@ -4,7 +4,7 @@ import Elysia from "elysia";
 import { createVoyage } from "voyage-ai-provider";
 
 import type { createDbClient } from "@hebo/database/client";
-import { dbClient as dbClientPlugin } from "@hebo/shared-api/middlewares/db-client";
+import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { getEnvValue } from "@hebo/shared-api/utils/get-env";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
@@ -157,8 +157,8 @@ const pickEmbedding = async (
 };
 
 export const provider = new Elysia({ name: "provider" })
-  .use(dbClientPlugin)
-  .derive(({ dbClient }) => ({
+  .use(dbClient)
+  .resolve(({ dbClient }) => ({
     provider: {
       async chat(model_alias: string) {
         const model = await getModelObject(dbClient, model_alias);
