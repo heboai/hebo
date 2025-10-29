@@ -1,12 +1,13 @@
 import { Elysia, status, t } from "elysia";
 
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-import { ProviderConfig } from "@hebo/shared-data/types/provider-config";
-
 import {
-  providers,
-  providersInputCreate,
-} from "~api/generated/prismabox/providers";
+  ProviderConfig,
+  ProviderConfigConfig,
+  ProviderNameEnum,
+} from "@hebo/shared-data/types/provider-config";
+
+import { providerConfigs as ProviderConfigResponse } from "~api/generated/prismabox/providerConfigs";
 
 export const providersModule = new Elysia({
   prefix: "/providers",
@@ -15,10 +16,10 @@ export const providersModule = new Elysia({
   .get(
     "/",
     async ({ dbClient }) => {
-      return status(200, await dbClient.providers.findMany());
+      return status(200, await dbClient.providerConfigs.findMany());
     },
     {
-      response: { 200: t.Array(providers) },
+      response: { 200: t.Array(ProviderConfigResponse) },
     },
   )
   .post(
@@ -26,7 +27,7 @@ export const providersModule = new Elysia({
     async ({ body, dbClient }) => {
       return status(
         201,
-        await dbClient.providers.create({
+        await dbClient.providerConfigs.create({
           data: {
             name: body.name,
             config: body.config,
@@ -35,11 +36,8 @@ export const providersModule = new Elysia({
       );
     },
     {
-      body: t.Object({
-        name: providersInputCreate.properties.name,
-        config: ProviderConfig,
-      }),
-      response: { 201: providers },
+      body: ProviderConfig,
+      response: { 201: ProviderConfigResponse },
     },
   )
   .get(
@@ -47,28 +45,49 @@ export const providersModule = new Elysia({
     async ({ dbClient, params }) => {
       return status(
         200,
-        await dbClient.providers.findFirstOrThrow({
+        await dbClient.providerConfigs.findFirstOrThrow({
           where: { name: params.providerName },
         }),
       );
     },
     {
-      params: t.Object({ providerName: t.String() }),
-      response: { 200: providers },
+      params: t.Object({ providerName: ProviderNameEnum }),
+      response: { 200: ProviderConfigResponse },
+    },
+  )
+  .patch(
+    "/:providerName",
+    async ({ body, dbClient, params }) => {
+      const { id } = await dbClient.providerConfigs.findFirstOrThrow({
+        where: { name: params.providerName },
+      });
+      return status(
+        200,
+        await dbClient.providerConfigs.update({
+          where: { id },
+          data: body,
+        }),
+      );
+    },
+    {
+      body: t.Object({
+        config: ProviderConfigConfig,
+      }),
+      params: t.Object({ providerName: ProviderNameEnum }),
+      response: { 200: ProviderConfigResponse },
     },
   )
   .delete(
     "/:providerName",
     async ({ dbClient, params }) => {
-      return status(
-        204,
-        await dbClient.providers.delete({
-          where: { name: params.providerName } as any,
-        }),
-      );
+      const { id } = await dbClient.providerConfigs.findFirstOrThrow({
+        where: { name: params.providerName },
+      });
+      await dbClient.providerConfigs.softDelete({ id });
+      return status(204);
     },
     {
-      params: t.Object({ providerName: t.String() }),
+      params: t.Object({ providerName: ProviderNameEnum }),
       response: { 204: t.Void() },
     },
   );

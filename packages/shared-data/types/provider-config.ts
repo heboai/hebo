@@ -1,32 +1,49 @@
 import { Type, type Static } from "@sinclair/typebox";
 
-export const ProviderConfig = Type.Union([
-  Type.Object({
-    provider: Type.Literal("bedrock"),
-    config: Type.Object({
-      accessKeyId: Type.String({ "x-redact": true }),
-      secretAccessKey: Type.String({ "x-redact": true }),
-      region: Type.String(),
-      inferenceProfile: Type.Optional(Type.String()),
-      baseURL: Type.Optional(Type.String()),
-    }),
-  }),
-  Type.Object({
-    provider: Type.Literal("vertex"),
-    config: Type.Object({
-      serviceAccount: Type.Any({ format: "json", "x-redact": true }),
-      location: Type.String(),
-      project: Type.String(),
-      baseURL: Type.Optional(Type.String()),
-    }),
-  }),
-  Type.Object({
-    provider: Type.Literal("voyage"),
-    config: Type.Object({
-      apiKey: Type.String({ "x-redact": true }),
-      baseURL: Type.Optional(Type.String()),
-    }),
-  }),
+import supportedModels from "../json/supported-models.json";
+
+export const ProviderNameEnum = Type.Enum(
+  Object.fromEntries(
+    supportedModels.map(({ provider }) => [provider, provider]),
+  ),
+  { error: "Invalid provider name" },
+);
+
+const AwsProviderConfigSchema = Type.Object({
+  accessKeyId: Type.String({ "x-redact": true }),
+  secretAccessKey: Type.String({ "x-redact": true }),
+  region: Type.String(),
+  inferenceProfile: Type.Optional(Type.String()),
+  baseURL: Type.Optional(Type.String()),
+});
+
+const GoogleProviderConfigSchema = Type.Object({
+  serviceAccount: Type.Any({ format: "json", "x-redact": true }),
+  location: Type.String(),
+  project: Type.String(),
+  baseURL: Type.Optional(Type.String()),
+});
+
+const ApiKeyProviderConfigSchema = Type.Object({
+  apiKey: Type.String({ "x-redact": true }),
+  baseURL: Type.Optional(Type.String()),
+});
+
+export const ProviderConfigConfig = Type.Union([
+  AwsProviderConfigSchema,
+  GoogleProviderConfigSchema,
+  ApiKeyProviderConfigSchema,
 ]);
 
+export const ProviderConfig = Type.Object({
+  name: ProviderNameEnum,
+  config: ProviderConfigConfig,
+});
+
+export type AwsProviderConfig = Static<typeof AwsProviderConfigSchema>;
+export type GoogleProviderConfig = Static<typeof GoogleProviderConfigSchema>;
+export type ApiKeyProviderConfig = Static<typeof ApiKeyProviderConfigSchema>;
+
+export type ProviderConfigConfig = Static<typeof ProviderConfigConfig>;
 export type ProviderConfig = Static<typeof ProviderConfig>;
+export type ProviderName = Static<typeof ProviderNameEnum>;

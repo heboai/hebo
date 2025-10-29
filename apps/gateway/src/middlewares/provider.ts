@@ -8,7 +8,12 @@ import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { getEnvValue } from "@hebo/shared-api/utils/get-env";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
-import type { ProviderConfig } from "@hebo/shared-data/types/provider-config";
+import type {
+  AwsProviderConfig,
+  GoogleProviderConfig,
+  ProviderConfig,
+  ProviderName,
+} from "@hebo/shared-data/types/provider-config";
 
 import { getModelObject } from "~gateway/utils/get-model-object";
 
@@ -29,10 +34,9 @@ export class BadRequestError extends Error {
   }
 }
 
-type ProviderName = ProviderConfig["provider"];
 const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   bedrock: {
-    provider: "bedrock",
+    name: "bedrock",
     config: {
       accessKeyId: await getEnvValue("AWSAccessKeyId"),
       secretAccessKey: await getEnvValue("AWSSecretAccessKey"),
@@ -41,7 +45,7 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
     },
   },
   vertex: {
-    provider: "vertex",
+    name: "vertex",
     config: {
       serviceAccount: JSON.parse(
         await getEnvValue("GoogleVertexServiceAccount"),
@@ -51,7 +55,7 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
     },
   },
   voyage: {
-    provider: "voyage",
+    name: "voyage",
     config: {
       apiKey: await getEnvValue("VoyageApiKey"),
     },
@@ -62,28 +66,29 @@ const getProviderConfig = async (
   model: Models[number],
   dbClient: ReturnType<typeof createDbClient>,
 ): Promise<ProviderConfig> => {
-  const provider = (supportedModels.find((m) => m.name === model.type)
-    ?.provider || model.customRouting) as ProviderName;
+  const name = (supportedModels.find((m) => m.name === model.type)?.provider ||
+    model.customRouting) as ProviderName;
   if (model.customRouting) {
-    const found = await dbClient.providers.getUnredacted(provider);
-    if (found?.config)
-      return { provider, config: found.config } as ProviderConfig;
+    const { config } = await dbClient.providerConfigs.getUnredacted(name);
+    if (config) return { name, config } as ProviderConfig;
   }
-  return DEFAULTS_BY_PROVIDER[provider];
+  return DEFAULTS_BY_PROVIDER[name];
 };
 
 const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
-  const { provider, config } = cfg;
-  switch (provider) {
+  const { name, config } = cfg;
+  switch (name) {
     case "bedrock": {
       return createAmazonBedrock({ ...config });
     }
     case "vertex": {
+      const { serviceAccount, location, project, baseURL } =
+        config as GoogleProviderConfig;
       return createVertex({
-        googleAuthOptions: { credentials: config.serviceAccount },
-        location: config.location,
-        project: config.project,
-        baseURL: config.baseURL,
+        googleAuthOptions: { credentials: serviceAccount },
+        location,
+        project,
+        baseURL,
       });
     }
     case "voyage": {
@@ -113,7 +118,7 @@ const getOrCreateProvider = async (
   model: Models[number],
   cfg: ProviderConfig,
 ): Promise<Provider> => {
-  const key = model.type + cfg.provider;
+  const key = model.type + cfg.config;
   if (providerInstances.has(key)) {
     return providerInstances.get(key)!;
   }
@@ -137,10 +142,10 @@ const pickChat = async (
     throw new BadRequestError(`Model '${model.type}' is an embedding model`);
   let modelId = model.type;
   if (
-    providerCfg.provider === "bedrock" &&
+    providerCfg.name === "bedrock" &&
     model.type === "anthropic.claude-sonnet-4-20250514-v1:0"
   ) {
-    modelId = `${providerCfg.config.inferenceProfile!}:${model.type}`;
+    modelId = `${(providerCfg.config as AwsProviderConfig).inferenceProfile!}:${model.type}`;
   }
   const provider = await getOrCreateProvider(model, providerCfg);
   return provider.languageModel(modelId);
@@ -162,14 +167,14 @@ export const provider = new Elysia({ name: "provider" })
     provider: {
       async chat(model_alias: string) {
         const model = await getModelObject(dbClient, model_alias);
-        const cfg = await getProviderConfig(model, dbClient);
-        return pickChat(model, cfg);
+        const provider = await getProviderConfig(model, dbClient);
+        return pickChat(model, provider);
       },
       async embedding(model_alias: string) {
         const model = await getModelObject(dbClient, model_alias);
-        const cfg = await getProviderConfig(model, dbClient);
-        return pickEmbedding(model, cfg);
+        const provider = await getProviderConfig(model, dbClient);
+        return pickEmbedding(model, provider);
       },
-    } as const,
+    },
   }))
   .as("scoped");

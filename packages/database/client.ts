@@ -1,8 +1,8 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
-import { ProviderConfig } from "@hebo/shared-data/types/provider-config";
-import { redactProviderConfig } from "@hebo/shared-data/utils/redact-models";
+import type { ProviderConfigConfig } from "@hebo/shared-data/types/provider-config";
+import { redactProviderConfig } from "@hebo/shared-data/utils/redact-provider-config";
 
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 
@@ -17,6 +17,9 @@ export const connectionString = (() => {
   }
 })();
 
+// eslint-disable-next-line unicorn/no-null
+const dbNull = null;
+
 const _prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString, max: 25 }),
 });
@@ -30,9 +33,8 @@ export const createDbClient = (userId: string) => {
       $allModels: {
         async $allOperations({ args, query, operation }) {
           if (operation !== "create") {
-            const a = args as unknown as { where?: Record<string, unknown> };
-            // eslint-disable-next-line unicorn/no-null
-            a.where = { ...a.where, created_by: userId, deleted_at: null };
+            const a = args as { where?: Record<string, unknown> };
+            a.where = { ...a.where, created_by: userId, deleted_at: dbNull };
           }
 
           return query(args);
@@ -87,19 +89,19 @@ export const createDbClient = (userId: string) => {
           });
         },
       },
-      providers: {
+      providerConfigs: {
         async getUnredacted(name: string) {
-          return _prisma.providers.findUnique({
-            where: { name_created_by: { name, created_by: userId } },
+          return _prisma.providerConfigs.findFirstOrThrow({
+            where: { name, created_by: userId, deleted_at: dbNull },
           });
         },
       },
     },
     result: {
-      providers: {
+      providerConfigs: {
         config: {
           needs: { config: true },
-          compute({ config }: { config: ProviderConfig }) {
+          compute({ config }: { config: ProviderConfigConfig }) {
             return redactProviderConfig(config);
           },
         },

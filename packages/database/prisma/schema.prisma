@@ -74,7 +74,7 @@ model branches {
   @@unique([agent_slug, slug])
 }
 
-model providers {
+model providerConfigs {
   /// @prismabox.hide
   id         String @id @default(uuid(7)) @db.Uuid
   name       String
@@ -89,6 +89,9 @@ model providers {
   updated_by String
   /// @prismabox.hide
   updated_at DateTime  @updatedAt
+  /// @prismabox.hide
+  deleted_by String?
+  /// @prismabox.hide
+  deleted_at DateTime?
 
-  @@unique([name, created_by])
 }
