@@ -23,8 +23,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "git clean -fdx -e '.env*' .",
-    "lint": "eslint .",
-    "dev": "tsc -w"
+    "lint": "eslint ."
   },
   "type": "module",
   "dependencies": {
@@ -33,6 +32,6 @@
   },
   "devDependencies": {
     "bun-types": "^1.2.22",
-    "typescript": "^5.4.5"
+    "typescript": "^5.9.2"
   }
 }

@@ -48,34 +48,51 @@ bun install
 
 ## Development
 
+### Quick start
+
 ```bash
-# Run the entire stack locally
+# 1) Start local infrastructure (Docker Compose)
+bun run infra:up
+
+# 2) Apply migrations
+bun run db:migrate
+
+# 3) Run all apps (API, Gateway, Console)
 bun run dev
-```
 
-```bash
-# Apply migrations once dev is running
-bun run db migrate dev
-```
-
-```bash
-# configure env variables per each app
-cd apps/console
-cp .env.example .env
-# Fill with your values
-```
-
-```bash
-# Start only the console in dev from project root
+# Optional - console only (from repo root)
 bun run -F @hebo/console dev
 ```
 
-```bash
-# Cleanup
-bun run clean
+### Environment variables
 
-# Cleanup the database (and any other untracked files/directories)
-bun run -F @hebo/database clean
+- Each app manages its own environment (e.g. `.env`, `.env.local`). Create a `.env` inside the app directory if you need to override defaults.
+
+```bash
+cd apps/console
+cp .env.example .env
+```
+
+### Database
+
+```bash
+# Start local infrastructure
+bun run infra:up
+
+# Stop local infrastructure
+bun run infra:down
+
+# Migrate
+bun run db:migrate
+
+# Reset (drops data)
+bun run db:reset
+```
+
+### Cleanup
+
+```bash
+bun run clean
 ```
 
 ## Run modes

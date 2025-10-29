@@ -10,16 +10,17 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "git clean -fdx -e '.env*'",
-    "db": "bun run --filter @hebo/database db",
+    "db:migrate": "bun run -F @hebo/database db migrate dev",
+    "db:reset": "bun run -F @hebo/database db migrate reset --force",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
     "dev": "turbo run dev --parallel",
     "format": "prettier --write .",
     "format:staged": "prettier --write",
     "lint": "turbo run lint",
     "lint:deps": "check-dependency-version-consistency .",
     "lint:staged": "eslint --cache --fix",
-    "postinstall": "lefthook install && bun run db generate",
-    "predev": "docker start hebo-postgres 2>/dev/null || docker run -d --name hebo-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=password -e POSTGRES_DB=local -p 5432:5432 -v \"$(pwd)/packages/database/.local-storage/postgres:/var/lib/postgresql/data\" postgres:17.5",
-    "postdev": "docker stop hebo-postgres 2>/dev/null || true",
+    "postinstall": "lefthook install && bun run -F @hebo/database db generate",
     "test": "turbo run test"
   },
   "devDependencies": {
