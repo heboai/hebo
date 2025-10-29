@@ -48,34 +48,51 @@ bun install
 
 ## Development
 
+### Quick start
+
 ```bash
-# Run the entire stack locally
+# 1) Start local infrastructure (Docker Compose)
+bun run infra:up
+
+# 2) Apply migrations
+bun run db:migrate
+
+# 3) Run all apps (API, Gateway, Console)
 bun run dev
-```
 
-```bash
-# Apply migrations once dev is running
-bun run db migrate dev
-```
-
-```bash
-# configure env variables per each app
-cd apps/console
-cp .env.example .env
-# Fill with your values
-```
-
-```bash
-# Start only the console in dev from project root
+# Optional - console only (from repo root)
 bun run -F @hebo/console dev
 ```
 
-```bash
-# Cleanup
-bun run clean
+### Environment variables
 
-# Reset the database
-bun run db migrate reset --force
+- Each app manages its own environment (e.g. `.env`, `.env.local`). Create a `.env` inside the app directory if you need to override defaults.
+
+```bash
+cd apps/console
+cp .env.example .env
+```
+
+### Database
+
+```bash
+# Start local infrastructure
+bun run infra:up
+
+# Stop local infrastructure
+bun run infra:down
+
+# Migrate
+bun run db:migrate
+
+# Reset (drops data)
+bun run db:reset
+```
+
+### Cleanup
+
+```bash
+bun run clean
 ```
 
 ## Secrets (local and remote)
@@ -111,8 +128,8 @@ bun run sst secret remove StackSecretServerKey --stage <stage>
 
 | #   | Mode                         | Command                          | Database              | API availability                        |
 |-----|------------------------------|----------------------------------|-----------------------|-----------------------------------------|
-| 1   | **Frontend-only** (offline)  | `bun run -F @hebo/console dev`    | —                     | none – UI relies on MSW / MSW data       |
-| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | URLs from env              |
+| 1   | **Frontend-only** (offline)  | `bun run -F @hebo/console dev`   | —                     | none – UI relies on MSW / MSW data      |
+| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | URLs from env                           |
 | 3   | **Remote full-stack**        | `bun run sst deploy`             | Aurora PostgreSQL     | HTTPS URLs exported by SST              |
 
 ## Building
