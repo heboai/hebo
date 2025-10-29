@@ -51,8 +51,8 @@ bun install
 ### Quick start
 
 ```bash
-# 1) Start Postgres (Docker)
-bun run db:start
+# 1) Start local infrastructure (Docker Compose)
+bun run infra:up
 
 # 2) Apply migrations
 bun run db:migrate
@@ -76,11 +76,11 @@ cp .env.example .env
 ### Database
 
 ```bash
-# Start
-bun run db:start
+# Start local infrastructure
+bun run infra:up
 
-# Stop
-bun run db:stop
+# Stop local infrastructure
+bun run infra:down
 
 # Migrate
 bun run db:migrate

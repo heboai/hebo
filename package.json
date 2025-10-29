@@ -10,17 +10,17 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "git clean -fdx -e '.env*'",
-    "db:migrate": "bun run --filter @hebo/database db migrate dev",
-    "db:reset": "bun run --filter @hebo/database db migrate reset --force",
-    "db:start": "docker compose up -d postgres",
-    "db:stop": "docker compose stop postgres",
+    "db:migrate": "bun run -F @hebo/database db migrate dev",
+    "db:reset": "bun run -F @hebo/database db migrate reset --force",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
     "dev": "turbo run dev --parallel",
     "format": "prettier --write .",
     "format:staged": "prettier --write",
     "lint": "turbo run lint",
     "lint:deps": "check-dependency-version-consistency .",
     "lint:staged": "eslint --cache --fix",
-    "postinstall": "lefthook install && bun run db generate",
+    "postinstall": "lefthook install && bun run -F @hebo/database db generate",
     "test": "turbo run test"
   },
   "devDependencies": {
