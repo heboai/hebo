@@ -5,9 +5,6 @@ export const getEnvValue = async (name: string) => {
   try {
     return (Resource as any)[name].value;
   } catch {
-    return await secrets.get({
-      service: "hebo",
-      name,
-    });
+    return await secrets.get({ service: "hebo", name });
   }
 };
