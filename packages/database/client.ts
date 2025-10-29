@@ -2,7 +2,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
 import type { Models } from "@hebo/shared-data/types/models";
-import { redactModels } from "@hebo/shared-data/utils/redact-models";
+import { ProviderConfig } from "@hebo/shared-data/types/provider-config";
+import { redactProviderConfig } from "@hebo/shared-data/utils/redact-models";
 
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 
@@ -97,11 +98,11 @@ export const createDbClient = (userId: string) => {
       },
     },
     result: {
-      branches: {
+      providers: {
         models: {
-          needs: { models: true },
-          compute({ models }: { models: Models }) {
-            return redactModels(models);
+          needs: { config: true },
+          compute({ config }: { config: ProviderConfig }) {
+            return redactProviderConfig(config);
           },
         },
       },

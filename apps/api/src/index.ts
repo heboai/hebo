@@ -9,6 +9,7 @@ import { prismaErrors } from "@hebo/shared-api/middlewares/prisma-errors";
 
 import { agentsModule } from "./modules/agents";
 import { branchesModule } from "./modules/branches";
+import { providersModule } from "./modules/providers";
 
 const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
 const PORT = Number(process.env.PORT ?? 3001);
@@ -37,7 +38,7 @@ const createApi = () =>
       {
         isSignedIn: true,
       },
-      (app) => app.use(agentsModule.use(branchesModule)),
+      (app) => app.use(agentsModule.use(branchesModule)).use(providersModule),
     );
 
 if (import.meta.main) {

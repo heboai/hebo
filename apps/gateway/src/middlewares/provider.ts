@@ -5,7 +5,8 @@ import { createVoyage } from "voyage-ai-provider";
 
 import { getEnvValue } from "@hebo/shared-api/utils/get-env";
 import supportedModels from "@hebo/shared-data/json/supported-models";
-import type { Models, ProviderConfig } from "@hebo/shared-data/types/models";
+import type { Models } from "@hebo/shared-data/types/models";
+import type { ProviderConfig } from "@hebo/shared-data/types/provider-config";
 
 import type { LanguageModel, Provider, EmbeddingModel } from "ai";
 
@@ -70,21 +71,21 @@ const getProviderConfig = (model: Models[number]): ProviderConfig => {
 
 const createProvider = (model: Models[number]): Provider => {
   const cfg = getProviderConfig(model);
-  const { provider, baseUrl: baseURL, config } = cfg;
+  const { provider, config } = cfg;
   switch (provider) {
     case "bedrock": {
-      return createAmazonBedrock({ ...config, baseURL });
+      return createAmazonBedrock({ ...config });
     }
     case "vertex": {
       return createVertex({
         googleAuthOptions: { credentials: config.serviceAccount },
         location: config.location,
         project: config.project,
-        baseURL,
+        baseURL: config.baseURL,
       });
     }
     case "voyage": {
-      return createVoyage({ ...config, baseURL });
+      return createVoyage({ ...config });
     }
     default: {
       throw new BadRequestError(
