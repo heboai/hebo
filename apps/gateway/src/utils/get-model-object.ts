@@ -8,6 +8,7 @@ export const getModelObject = async (
   modelString: string,
 ) => {
   const [agentSlug, branchSlug, modelAlias] = modelString.split("/");
+  // FUTURE: use cache to avoid multiple database calls
   const result = await dbClient.branches.findFirstOrThrow({
     where: { agent_slug: agentSlug, slug: branchSlug },
     select: { models: true },
