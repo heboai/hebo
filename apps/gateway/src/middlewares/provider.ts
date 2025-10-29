@@ -96,7 +96,7 @@ const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
     }
     default: {
       throw new BadRequestError(
-        `Unknown or unsupported provider '${provider}'`,
+        `Unknown or unsupported provider '${name}'`,
         "provider_unsupported",
       );
     }
