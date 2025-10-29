@@ -118,7 +118,7 @@ const getOrCreateProvider = async (
   model: Models[number],
   cfg: ProviderConfig,
 ): Promise<Provider> => {
-  const key = model.type + cfg.config;
+  const key = `${model.type}:${JSON.stringify(cfg.config)}`;
   if (providerInstances.has(key)) {
     return providerInstances.get(key)!;
   }
