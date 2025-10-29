@@ -12,3 +12,6 @@ CREATE TABLE "providers" (
 
     CONSTRAINT "providers_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "providers_name_created_by_key" ON "providers"("name", "created_by");
