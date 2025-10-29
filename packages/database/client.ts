@@ -97,7 +97,7 @@ export const createDbClient = (userId: string) => {
     },
     result: {
       providers: {
-        models: {
+        config: {
           needs: { config: true },
           compute({ config }: { config: ProviderConfig }) {
             return redactProviderConfig(config);
