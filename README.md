@@ -52,7 +52,7 @@ bun install
 
 ```bash
 # 1) Start local infrastructure (Docker Compose)
-bun run infra:up
+bun run dev:infra:up
 
 # 2) Apply migrations
 bun run db:migrate
@@ -77,10 +77,10 @@ cp .env.example .env
 
 ```bash
 # Start local infrastructure
-bun run infra:up
+bun run dev:infra:up
 
 # Stop local infrastructure
-bun run infra:down
+bun run dev:infra:down
 
 # Migrate
 bun run db:migrate
