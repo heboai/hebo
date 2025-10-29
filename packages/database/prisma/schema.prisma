@@ -89,10 +89,6 @@ model providers {
   updated_by String
   /// @prismabox.hide
   updated_at DateTime  @updatedAt
-  /// @prismabox.hide
-  deleted_by String?
-  /// @prismabox.hide
-  deleted_at DateTime?
 
   @@unique([name, created_by])
 }

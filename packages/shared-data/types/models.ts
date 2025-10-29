@@ -11,11 +11,13 @@ export const modelsSchema = Type.Array(
   Type.Object({
     alias: Type.String(),
     type: supportedModelsEnum,
-    customRouting: Type.Union([
-      Type.Literal("bedrock"),
-      Type.Literal("vertex"),
-      Type.Literal("voyage"),
-    ]),
+    customRouting: Type.Optional(
+      Type.Union([
+        Type.Literal("bedrock"),
+        Type.Literal("vertex"),
+        Type.Literal("voyage"),
+      ]),
+    ),
   }),
 );
 

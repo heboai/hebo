@@ -7,8 +7,6 @@ CREATE TABLE "providers" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_by" TEXT NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_by" TEXT,
-    "deleted_at" TIMESTAMP(3),
 
     CONSTRAINT "providers_pkey" PRIMARY KEY ("id")
 );

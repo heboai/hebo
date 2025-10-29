@@ -1,7 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
-import type { Models } from "@hebo/shared-data/types/models";
 import { ProviderConfig } from "@hebo/shared-data/types/provider-config";
 import { redactProviderConfig } from "@hebo/shared-data/utils/redact-models";
 
@@ -74,25 +73,24 @@ export const createDbClient = (userId: string) => {
         },
       },
       branches: {
-        async getFullModels(where: Prisma.branchesWhereInput): Promise<Models> {
-          const result = await _prisma.branches.findFirstOrThrow({
-            // eslint-disable-next-line unicorn/no-null
-            where: { ...where, created_by: userId, deleted_at: null },
-            select: { models: true },
-          });
-          return result.models as unknown as Models;
-        },
         async copy(
           where: Prisma.branchesWhereInput,
           data: Partial<Prisma.branchesCreateInput>,
         ) {
           const context = Prisma.getExtensionContext(this);
-          const models = await context.getFullModels(where);
+          const { models } = await context.findFirstOrThrow({
+            where,
+            select: { models: true },
+          });
           return context.create({
-            data: {
-              ...data,
-              models,
-            } as any,
+            data: { ...data, models } as any,
+          });
+        },
+      },
+      providers: {
+        async getUnredacted(name: string) {
+          return _prisma.providers.findUnique({
+            where: { name_created_by: { name, created_by: userId } },
           });
         },
       },
