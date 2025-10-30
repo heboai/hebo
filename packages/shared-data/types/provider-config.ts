@@ -4,7 +4,13 @@ import supportedModels from "../json/supported-models.json";
 
 export const ProviderNameEnum = Type.Enum(
   Object.fromEntries(
-    supportedModels.map(({ provider }) => [provider, provider]),
+    [...new Set(
+        supportedModels.flatMap((model) =>
+          (model.providers ?? []).flatMap((providerObj) =>
+            Object.keys(providerObj),
+          ),
+        ),
+      )].map((providerName) => [providerName, providerName]),
   ),
   { error: "Invalid provider name" },
 );

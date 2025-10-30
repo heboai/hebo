@@ -1,8 +1,9 @@
 import { Elysia, status } from "elysia";
 
-import { ModelNotFoundError } from "~gateway/utils/get-model-object";
-
-import { BadRequestError } from "./provider";
+import {
+  BadRequestError,
+  ModelNotFoundError,
+} from "~gateway/middlewares/provider/service";
 
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;

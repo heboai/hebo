@@ -1,10 +1,8 @@
 import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
 import { createVertex } from "@ai-sdk/google-vertex";
-import Elysia from "elysia";
 import { createVoyage } from "voyage-ai-provider";
 
 import type { createDbClient } from "@hebo/database/client";
-import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { getEnvValue } from "@hebo/shared-api/utils/get-env";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
@@ -15,24 +13,9 @@ import type {
   ProviderName,
 } from "@hebo/shared-data/types/provider-config";
 
-import { getModelObject } from "~gateway/utils/get-model-object";
-
 import type { LanguageModel, Provider, EmbeddingModel } from "ai";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
-
-export class BadRequestError extends Error {
-  status: number;
-  type: string;
-  code: string;
-  constructor(message: string, code = "model_mismatch") {
-    super(message);
-    this.name = "BadRequestError";
-    this.status = 400;
-    this.type = "invalid_request_error";
-    this.code = code;
-  }
-}
 
 const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   bedrock: {
@@ -62,17 +45,28 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   },
 };
 
-const getProviderConfig = async (
-  model: Models[number],
-  dbClient: ReturnType<typeof createDbClient>,
-): Promise<ProviderConfig> => {
-  const name = (supportedModels.find((m) => m.name === model.type)?.provider ||
-    model.customRouting) as ProviderName;
-  if (model.customRouting) {
-    const { config } = await dbClient.providerConfigs.getUnredacted(name);
-    if (config) return { name, config } as ProviderConfig;
+export class BadRequestError extends Error {
+  status: number;
+  type: string;
+  code: string;
+  constructor(message: string, code = "model_mismatch") {
+    super(message);
+    this.name = "BadRequestError";
+    this.status = 400;
+    this.type = "invalid_request_error";
+    this.code = code;
   }
-  return DEFAULTS_BY_PROVIDER[name];
+}
+
+export class ModelNotFoundError extends Error {}
+
+export const supportedOrThrow = (type: string) => {
+  if (!SUPPORTED_MODELS.includes(type)) {
+    throw new BadRequestError(
+      `Unknown or unsupported model '${type}'`,
+      "model_unsupported",
+    );
+  }
 };
 
 const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
@@ -103,28 +97,51 @@ const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
   }
 };
 
-export const supportedOrThrow = (type: string) => {
-  if (!SUPPORTED_MODELS.includes(type)) {
-    throw new BadRequestError(
-      `Unknown or unsupported model '${type}'`,
-      "model_unsupported",
-    );
+export const getProviderConfig = async (
+  model: Models[number],
+  db: ReturnType<typeof createDbClient>,
+): Promise<ProviderConfig> => {
+  const supported = supportedModels.find((m) => m.name === model.type);
+  const defaultProviderName = supported?.providers?.length
+    ? (Object.keys(supported.providers[0] ?? {})[0] as ProviderName)
+    : undefined;
+  const providerName = (model.customRouting ??
+    defaultProviderName) as ProviderName;
+  if (model.customRouting) {
+    const { config } = await db.providerConfigs.getUnredacted(providerName);
+    if (config) return { name: providerName, config } as ProviderConfig;
   }
+  return DEFAULTS_BY_PROVIDER[providerName];
 };
 
 const providerInstances = new Map<string, Provider>();
-
-const getOrCreateProvider = async (
-  model: Models[number],
-  cfg: ProviderConfig,
-): Promise<Provider> => {
-  const key = `${model.type}:${JSON.stringify(cfg.config)}`;
+const getOrCreateProvider = async (cfg: ProviderConfig): Promise<Provider> => {
+  const key = `${cfg.name}:${JSON.stringify(cfg.config)}`;
   if (providerInstances.has(key)) {
     return providerInstances.get(key)!;
   }
   const instance = await createProvider(cfg);
   providerInstances.set(key, instance);
   return instance;
+};
+
+const resolveModelId = (
+  modelType: string,
+  providerCfg: ProviderConfig,
+): string => {
+  const supported = supportedModels.find((m) => m.name === modelType);
+  const providerEntry = supported?.providers?.find(
+    (p) => providerCfg.name in p,
+  ) as Record<string, { id: string }>;
+  let modelId = providerEntry[providerCfg.name]?.id;
+  if (
+    providerCfg.name === "bedrock" &&
+    modelId === "anthropic.claude-sonnet-4-20250514-v1:0"
+  ) {
+    const { inferenceProfile } = providerCfg.config as AwsProviderConfig;
+    if (inferenceProfile) modelId = `${inferenceProfile}:${modelId}`;
+  }
+  return modelId;
 };
 
 const isEmbeddingModel = (model_type: string) => {
@@ -134,47 +151,42 @@ const isEmbeddingModel = (model_type: string) => {
   );
 };
 
-const pickChat = async (
+export const getModelObject = async (
+  dbClient: ReturnType<typeof createDbClient>,
+  modelString: string,
+) => {
+  const [agentSlug, branchSlug, modelAlias] = modelString.split("/");
+  const result = await dbClient.branches.findFirstOrThrow({
+    where: { agent_slug: agentSlug, slug: branchSlug },
+    select: { models: true },
+  });
+  const foundModel = (result.models as Models)?.find(
+    (m) => m?.alias === modelAlias,
+  );
+  if (!foundModel) throw new ModelNotFoundError();
+  return foundModel;
+};
+
+export const pickChat = async (
   model: Models[number],
   providerCfg: ProviderConfig,
 ): Promise<LanguageModel> => {
-  if (isEmbeddingModel(model.type))
+  if (isEmbeddingModel(model.type)) {
     throw new BadRequestError(`Model '${model.type}' is an embedding model`);
-  let modelId = model.type;
-  if (
-    providerCfg.name === "bedrock" &&
-    model.type === "anthropic.claude-sonnet-4-20250514-v1:0"
-  ) {
-    modelId = `${(providerCfg.config as AwsProviderConfig).inferenceProfile!}:${model.type}`;
   }
-  const provider = await getOrCreateProvider(model, providerCfg);
+  const modelId = resolveModelId(model.type, providerCfg);
+  const provider = await getOrCreateProvider(providerCfg);
   return provider.languageModel(modelId);
 };
 
-const pickEmbedding = async (
+export const pickEmbedding = async (
   model: Models[number],
   providerCfg: ProviderConfig,
 ): Promise<EmbeddingModel<string>> => {
-  if (!isEmbeddingModel(model.type))
+  if (!isEmbeddingModel(model.type)) {
     throw new BadRequestError(`Model '${model.type}' is a chat model`);
-  const provider = await getOrCreateProvider(model, providerCfg);
-  return provider.textEmbeddingModel(model.type);
+  }
+  const modelId = resolveModelId(model.type, providerCfg);
+  const provider = await getOrCreateProvider(providerCfg);
+  return provider.textEmbeddingModel(modelId);
 };
-
-export const provider = new Elysia({ name: "provider" })
-  .use(dbClient)
-  .resolve(({ dbClient }) => ({
-    provider: {
-      async chat(model_alias: string) {
-        const model = await getModelObject(dbClient, model_alias);
-        const provider = await getProviderConfig(model, dbClient);
-        return pickChat(model, provider);
-      },
-      async embedding(model_alias: string) {
-        const model = await getModelObject(dbClient, model_alias);
-        const provider = await getProviderConfig(model, dbClient);
-        return pickEmbedding(model, provider);
-      },
-    },
-  }))
-  .as("scoped");

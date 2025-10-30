@@ -1,58 +1,106 @@
 [
   {
-    "name": "openai.gpt-oss-120b-1:0",
+    "name": "openai/gpt-oss-120b",
     "displayName": "OpenAI GPT OSS 120B",
     "rateLimit": 400000000,
-    "provider": "bedrock",
+    "providers": [
+      {
+        "bedrock": {
+          "id": "openai.gpt-oss-120b-1:0"
+        }
+      }
+    ],
     "modality": "chat"
   },
   {
-    "name": "openai.gpt-oss-20b-1:0",
+    "name": "openai/gpt-oss-20b",
     "displayName": "OpenAI GPT OSS 20B",
     "rateLimit": 400000000,
-    "provider": "bedrock",
+    "providers": [
+      {
+        "bedrock": {
+          "id": "openai.gpt-oss-20b-1:0"
+        }
+      }
+    ],
     "modality": "chat"
   },
   {
-    "name": "gemini-2.5-flash",
+    "name": "google/gemini-2.5-flash",
     "displayName": "Gemini 2.5 Flash",
     "rateLimit": 400000000,
-    "provider": "vertex",
+    "providers": [
+      {
+        "vertex": {
+          "id": "gemini-2.5-flash"
+        }
+      }
+    ],
     "modality": "chat"
   },
   {
-    "name": "gemini-2.5-flash-lite",
+    "name": "google/gemini-2.5-flash-lite",
     "displayName": "Gemini 2.5 Flash Lite",
     "rateLimit": 400000000,
-    "provider": "vertex",
+    "providers": [
+      {
+        "vertex": {
+          "id": "gemini-2.5-flash-lite"
+        }
+      }
+    ],
     "modality": "chat"
   },
   {
-    "name": "anthropic.claude-sonnet-4-20250514-v1:0",
-    "displayName": "Anthropic Claude Sonnet 4",
+    "name": "anthropic/claude-sonnet-4-20250514-v1",
+    "displayName": "Anthropic Claude Sonnet 4 (20250514)",
     "rateLimit": 400000000,
-    "provider": "bedrock",
+    "providers": [
+      {
+        "bedrock": {
+          "id": "anthropic.claude-sonnet-4-20250514-v1:0"
+        }
+      }
+    ],
     "modality": "chat"
   },
   {
-    "name": "anthropic.claude-3-haiku-20240307-v1:0",
-    "displayName": "Anthropic Claude Haiku 3",
+    "name": "anthropic/claude-3-haiku-20240307-v1",
+    "displayName": "Anthropic Claude Haiku 3 (20240307)",
     "rateLimit": 400000000,
-    "provider": "bedrock",
+    "providers": [
+      {
+        "bedrock": {
+          "id": "anthropic.claude-3-haiku-20240307-v1:0"
+        }
+      }
+    ],
     "modality": "chat"
   },
   {
-    "name": "voyage-3-large",
+    "name": "voyage/voyage-3-large",
     "displayName": "Voyage 3 Large",
     "rateLimit": 400000000,
-    "provider": "voyage",
+    "providers": [
+      {
+        "voyage": {
+          "id": "voyage-3-large"
+        }
+      }
+    ],
     "modality": "embedding"
   },
   {
-    "name": "amazon.titan-embed-text-v2:0",
+    "name": "amazon/titan-embed-text-v2",
     "displayName": "Amazon Titan Embed Text v2",
     "rateLimit": 400000000,
-    "provider": "bedrock",
+    "providers": [
+      {
+        "bedrock": {
+          "id": "amazon.titan-embed-text-v2:0"
+        }
+      }
+    ],
     "modality": "embedding"
   }
 ]
