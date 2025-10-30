@@ -109,7 +109,7 @@ export const getProviderConfig = async (
     defaultProviderName) as ProviderName;
   if (model.customRouting) {
     const { config } = await db.providerConfigs.getUnredacted(providerName);
-    if (config) return { name: providerName, config } as ProviderConfig;
+    return { name: providerName, config } as ProviderConfig;
   }
   return DEFAULTS_BY_PROVIDER[providerName];
 };
