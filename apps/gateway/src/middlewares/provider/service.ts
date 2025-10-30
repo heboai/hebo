@@ -13,6 +13,8 @@ import type {
   ProviderName,
 } from "@hebo/shared-data/types/provider-config";
 
+import { getInferenceProfileArn } from "./bedrock";
+
 import type { LanguageModel, Provider, EmbeddingModel } from "ai";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
@@ -23,7 +25,6 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
     config: {
       accessKeyId: await getEnvValue("AWSAccessKeyId"),
       secretAccessKey: await getEnvValue("AWSSecretAccessKey"),
-      inferenceProfile: await getEnvValue("BedrockInferenceProfile"),
       region: "us-east-1",
     },
   },
@@ -125,21 +126,24 @@ const getOrCreateProvider = async (cfg: ProviderConfig): Promise<Provider> => {
   return instance;
 };
 
-const resolveModelId = (
+const resolveModelId = async (
   modelType: string,
   providerCfg: ProviderConfig,
-): string => {
+): Promise<string> => {
   const supported = supportedModels.find((m) => m.name === modelType);
   const providerEntry = supported?.providers?.find(
     (p) => providerCfg.name in p,
   ) as Record<string, { id: string }>;
-  let modelId = providerEntry[providerCfg.name]?.id;
-  if (
-    providerCfg.name === "bedrock" &&
-    modelId === "anthropic.claude-sonnet-4-20250514-v1:0"
-  ) {
-    const { inferenceProfile } = providerCfg.config as AwsProviderConfig;
-    if (inferenceProfile) modelId = `${inferenceProfile}:${modelId}`;
+  const modelId = providerEntry[providerCfg.name]?.id;
+  if (providerCfg.name === "bedrock") {
+    const { accessKeyId, secretAccessKey, region } =
+      providerCfg.config as AwsProviderConfig;
+    return await getInferenceProfileArn(
+      accessKeyId,
+      secretAccessKey,
+      region,
+      modelId,
+    );
   }
   return modelId;
 };
@@ -174,7 +178,7 @@ export const pickChat = async (
   if (isEmbeddingModel(model.type)) {
     throw new BadRequestError(`Model '${model.type}' is an embedding model`);
   }
-  const modelId = resolveModelId(model.type, providerCfg);
+  const modelId = await resolveModelId(model.type, providerCfg);
   const provider = await getOrCreateProvider(providerCfg);
   return provider.languageModel(modelId);
 };
@@ -186,7 +190,7 @@ export const pickEmbedding = async (
   if (!isEmbeddingModel(model.type)) {
     throw new BadRequestError(`Model '${model.type}' is a chat model`);
   }
-  const modelId = resolveModelId(model.type, providerCfg);
+  const modelId = await resolveModelId(model.type, providerCfg);
   const provider = await getOrCreateProvider(providerCfg);
   return provider.textEmbeddingModel(modelId);
 };

@@ -4,13 +4,15 @@ import supportedModels from "../json/supported-models.json";
 
 export const ProviderNameEnum = Type.Enum(
   Object.fromEntries(
-    [...new Set(
+    [
+      ...new Set(
         supportedModels.flatMap((model) =>
           (model.providers ?? []).flatMap((providerObj) =>
             Object.keys(providerObj),
           ),
         ),
-      )].map((providerName) => [providerName, providerName]),
+      ),
+    ].map((providerName) => [providerName, providerName]),
   ),
   { error: "Invalid provider name" },
 );
@@ -19,7 +21,6 @@ const AwsProviderConfigSchema = Type.Object({
   accessKeyId: Type.String({ "x-redact": true }),
   secretAccessKey: Type.String({ "x-redact": true }),
   region: Type.String(),
-  inferenceProfile: Type.Optional(Type.String()),
   baseURL: Type.Optional(Type.String()),
 });
 
