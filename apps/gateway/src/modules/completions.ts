@@ -6,6 +6,7 @@ import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { provider } from "~gateway/middlewares/provider";
 import { getModelType } from "~gateway/utils/get-model-type";
 import { convertOpenAICompatibleMessagesToModelMessages } from "~gateway/utils/message-converter";
+import { convertOpenAICompatibleToolsToToolSet } from "~gateway/utils/tool-converter";
 
 export const completions = new Elysia({
   name: "completions",
@@ -16,7 +17,16 @@ export const completions = new Elysia({
   .post(
     "/",
     async ({ body, dbClient, provider }) => {
-      const { model, messages, temperature = 1, stream = false } = body;
+      const {
+        model,
+        messages,
+        tools,
+        toolChoice,
+        temperature = 1,
+        stream = false,
+      } = body;
+
+      const toolSet = convertOpenAICompatibleToolsToToolSet(tools);
 
       const modelType = await getModelType(dbClient, model);
       const chatModel = provider.chat(modelType);
@@ -28,6 +38,8 @@ export const completions = new Elysia({
         const result = streamText({
           model: chatModel,
           messages: modelMessages as ModelMessage[],
+          tools: toolSet,
+          toolChoice,
           temperature,
         });
         return result.toTextStreamResponse();
@@ -36,8 +48,15 @@ export const completions = new Elysia({
       const result = await generateText({
         model: chatModel,
         messages: modelMessages as ModelMessage[],
+        tools: toolSet,
+        toolChoice,
         temperature,
       });
+
+      const finish_reason =
+        result.finishReason === "stop" || result.finishReason === "length"
+          ? "stop"
+          : "tool_calls";
 
       return {
         id: "chatcmpl-" + crypto.randomUUID(),
@@ -47,8 +66,22 @@ export const completions = new Elysia({
         choices: [
           {
             index: 0,
-            message: { role: "assistant", content: result.text },
-            finish_reason: "stop",
+            message:
+              result.toolCalls && result.toolCalls.length > 0
+                ? {
+                    role: "assistant",
+                    content: result.text,
+                    tool_calls: result.toolCalls.map((toolCall) => ({
+                      id: toolCall.toolCallId,
+                      type: "function",
+                      function: {
+                        name: toolCall.toolName,
+                        arguments: JSON.stringify(toolCall.input),
+                      },
+                    })),
+                  }
+                : { role: "assistant", content: result.text },
+            finish_reason,
           },
         ],
         usage: result.usage && {
@@ -64,38 +97,81 @@ export const completions = new Elysia({
       body: t.Object({
         model: t.String(),
         messages: t.Array(
-          t.Object({
-            role: t.Union([
-              t.Literal("system"),
-              t.Literal("user"),
-              t.Literal("assistant"),
-              t.Literal("tool"),
-            ]),
-            content: t.Union([
-              t.String(),
-              t.Array(
-                t.Union([
+          t.Union([
+            t.Object({
+              role: t.Literal("system"),
+              content: t.String(),
+            }),
+            t.Object({
+              role: t.Literal("user"),
+              content: t.Union([
+                t.String(),
+                t.Array(
+                  t.Union([
+                    t.Object({
+                      type: t.Literal("text"),
+                      text: t.String(),
+                    }),
+                    t.Object({
+                      type: t.Literal("image_url"),
+                      image_url: t.Object({
+                        url: t.String(),
+                      }),
+                    }),
+                  ]),
+                ),
+              ]),
+            }),
+            t.Object({
+              role: t.Literal("assistant"),
+              content: t.Union([t.String(), t.Null()]),
+              tool_calls: t.Optional(
+                t.Array(
                   t.Object({
-                    type: t.Literal("text"),
-                    text: t.String(),
-                  }),
-                  t.Object({
-                    type: t.Literal("image_url"),
-                    image_url: t.Object({
-                      url: t.String(),
+                    id: t.String(),
+                    type: t.Literal("function"),
+                    function: t.Object({
+                      name: t.String(),
+                      arguments: t.String(),
                     }),
                   }),
-                ]),
-                { minItems: 1 },
+                ),
               ),
-            ]),
-            name: t.Optional(t.String()),
-            tool_call_id: t.Optional(t.String()),
-          }),
-          { minItems: 1 },
+            }),
+            t.Object({
+              role: t.Literal("tool"),
+              tool_call_id: t.String(),
+              content: t.String(),
+            }),
+          ]),
         ),
         temperature: t.Optional(t.Number({ minimum: 0, maximum: 2 })),
         stream: t.Optional(t.Boolean()),
+        tools: t.Optional(
+          t.Array(
+            t.Object({
+              type: t.Literal("function"),
+              function: t.Object({
+                name: t.String(),
+                description: t.Optional(t.String()),
+                parameters: t.Object({}, { additionalProperties: true }),
+              }),
+            }),
+          ),
+        ),
+        toolChoice: t.Optional(
+          t.Union([
+            t.Literal("none"),
+            t.Literal("auto"),
+            t.Literal("required"),
+            t.Object({
+              type: t.Literal("function"),
+              function: t.Object({
+                name: t.String(),
+              }),
+            }),
+          ]),
+        ),
       }),
     },
   );
