@@ -36,7 +36,7 @@ const googleVertexAwsProvider = new gcp.iam.WorkloadIdentityPoolProvider(
       "attribute.aws_role": "assertion.arn.extract('assumed-role/{role}/')",
       "attribute.account": "assertion.account",
     },
-    attributeCondition: $interpolate`assertion.arn.startsWith(${heboGateway.nodes.taskRole.arn})`,
+    attributeCondition: $interpolate`assertion.arn.startsWith('${heboGateway.nodes.taskRole.arn}')`,
   },
 );
 
