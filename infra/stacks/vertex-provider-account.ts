@@ -36,7 +36,7 @@ const googleVertexAwsProvider = new gcp.iam.WorkloadIdentityPoolProvider(
       "attribute.aws_role": "assertion.arn.extract('assumed-role/{role}/')",
       "attribute.account": "assertion.account",
     },
-    attributeCondition: `assertion.arn.startsWith(${heboGateway.nodes.taskRole.arn})`,
+    attributeCondition: $interpolate`assertion.arn.startsWith(${heboGateway.nodes.taskRole.arn})`,
   },
 );
 
@@ -44,7 +44,7 @@ const googleVertexAwsProvider = new gcp.iam.WorkloadIdentityPoolProvider(
 new gcp.serviceaccount.IAMMember("google-vertex-service-account-binding", {
   serviceAccountId: googleVertexServiceAccount.name,
   role: "roles/iam.workloadIdentityUser",
-  member: `principalSet://iam.googleapis.com/projects/${GOOGLE_PROJECT_NUMBER}/locations/global/workloadIdentityPools/${googleVertexWorkloadIdentityPool.workloadIdentityPoolId}/attribute.aws_role/${heboGateway.nodes.taskRole.name}`,
+  member: $interpolate`principalSet://iam.googleapis.com/projects/${GOOGLE_PROJECT_NUMBER}/locations/global/workloadIdentityPools/${googleVertexWorkloadIdentityPool.workloadIdentityPoolId}/attribute.aws_role/${heboGateway.nodes.taskRole.name}`,
 });
 
 export default googleVertexAwsProvider;
