@@ -74,10 +74,7 @@ const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
     case "vertex": {
       const { serviceAccountEmail, audience, location, project, baseURL } =
         config as GoogleProviderConfig;
-      const awsWifOptions = buildAwsWifOptions({
-        serviceAccountEmail,
-        audience,
-      });
+      const awsWifOptions = buildAwsWifOptions(audience, serviceAccountEmail);
       return createVertex({
         googleAuthOptions: {
           credentials: awsWifOptions as any,

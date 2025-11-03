@@ -1,12 +1,12 @@
-export function buildAwsWifOptions(params: {
-  audience: string;
-  serviceAccountEmail: string;
-}) {
+export function buildAwsWifOptions(
+  audience: string,
+  serviceAccountEmail: string,
+) {
   return {
     type: "external_account",
-    audience: params.audience,
+    audience,
     subject_token_type: "urn:ietf:params:aws:token-type:aws4_request",
-    service_account_impersonation_url: `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${params.serviceAccountEmail}:generateAccessToken`,
+    service_account_impersonation_url: `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${serviceAccountEmail}:generateAccessToken`,
     scopes: ["https://www.googleapis.com/auth/cloud-platform"],
     credential_source: {
       environment_id: "aws1",
