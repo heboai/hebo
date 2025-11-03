@@ -6,10 +6,12 @@ export const stackPublishableClientKey = new sst.Secret(
 export const stackProjectId = new sst.Secret("StackProjectId");
 
 // LLMs
-export const accessKeyId = new sst.Secret("AWSAccessKeyId");
-export const secretAccessKey = new sst.Secret("AWSSecretAccessKey");
-export const googleVertexServiceAccount = new sst.Secret(
-  "GoogleVertexServiceAccount",
+export const bedrockRoleArn = new sst.Secret("BedrockRoleArn");
+export const googleVertexServiceAccountEmail = new sst.Secret(
+  "GoogleVertexServiceAccountEmail",
+);
+export const googleVertexAwsProviderAudience = new sst.Secret(
+  "GoogleVertexAwsProviderAudience",
 );
 export const googleVertexProject = new sst.Secret("GoogleVertexProject");
 export const voyageApiKey = new sst.Secret("VoyageApiKey");
@@ -18,9 +20,9 @@ export const allSecrets = [
   stackSecretServerKey,
   stackPublishableClientKey,
   stackProjectId,
-  accessKeyId,
-  secretAccessKey,
-  googleVertexServiceAccount,
+  bedrockRoleArn,
+  googleVertexServiceAccountEmail,
+  googleVertexAwsProviderAudience,
   googleVertexProject,
   voyageApiKey,
 ];

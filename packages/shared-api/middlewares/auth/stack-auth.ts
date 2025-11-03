@@ -49,6 +49,7 @@ const checkApiKey = async (
   } else log.info(res, "API Key check failed");
 };
 
+// FUTURE: Cache the user id lookup
 export const authServiceStackAuth = new Elysia({
   name: "authenticate-user-stack-auth",
 })

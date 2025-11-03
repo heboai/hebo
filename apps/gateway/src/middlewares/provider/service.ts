@@ -13,7 +13,9 @@ import type {
   ProviderName,
 } from "@hebo/shared-data/types/provider-config";
 
-import { getInferenceProfileArn } from "./bedrock";
+import { getInferenceProfileArn, getAwsCreds } from "./bedrock";
+import { BadRequestError, ModelNotFoundError } from "./errors";
+import { buildAwsWifOptions } from "./vertex";
 
 import type { LanguageModel, Provider, EmbeddingModel } from "ai";
 
@@ -23,17 +25,15 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   bedrock: {
     name: "bedrock",
     config: {
-      accessKeyId: await getEnvValue("AWSAccessKeyId"),
-      secretAccessKey: await getEnvValue("AWSSecretAccessKey"),
+      bedrockRoleArn: await getEnvValue("BedrockRoleArn"),
       region: "us-east-1",
     },
   },
   vertex: {
     name: "vertex",
     config: {
-      serviceAccount: JSON.parse(
-        await getEnvValue("GoogleVertexServiceAccount"),
-      ),
+      serviceAccountEmail: await getEnvValue("GoogleVertexServiceAccountEmail"),
+      audience: await getEnvValue("GoogleVertexAwsProviderAudience"),
       location: "us-central1",
       project: await getEnvValue("GoogleVertexProject"),
     },
@@ -45,21 +45,6 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
     },
   },
 };
-
-export class BadRequestError extends Error {
-  status: number;
-  type: string;
-  code: string;
-  constructor(message: string, code = "model_mismatch") {
-    super(message);
-    this.name = "BadRequestError";
-    this.status = 400;
-    this.type = "invalid_request_error";
-    this.code = code;
-  }
-}
-
-export class ModelNotFoundError extends Error {}
 
 export const supportedOrThrow = (type: string) => {
   if (!SUPPORTED_MODELS.includes(type)) {
@@ -74,13 +59,30 @@ const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
   const { name, config } = cfg;
   switch (name) {
     case "bedrock": {
-      return createAmazonBedrock({ ...config });
+      const { bedrockRoleArn, region } = config as AwsProviderConfig;
+      const { accessKeyId, secretAccessKey, sessionToken } = await getAwsCreds(
+        bedrockRoleArn,
+        region,
+      );
+      return createAmazonBedrock({
+        accessKeyId,
+        secretAccessKey,
+        sessionToken,
+        region,
+      });
     }
     case "vertex": {
-      const { serviceAccount, location, project, baseURL } =
+      const { serviceAccountEmail, audience, location, project, baseURL } =
         config as GoogleProviderConfig;
+      const awsWifOptions = buildAwsWifOptions({
+        serviceAccountEmail,
+        audience,
+      });
       return createVertex({
-        googleAuthOptions: { credentials: serviceAccount },
+        googleAuthOptions: {
+          credentials: awsWifOptions as any,
+          scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+        },
         location,
         project,
         baseURL,
@@ -115,6 +117,7 @@ export const getProviderConfig = async (
   return DEFAULTS_BY_PROVIDER[providerName];
 };
 
+// FUTURE: Use a more sophisticated cache mechanism
 const providerInstances = new Map<string, Provider>();
 const getOrCreateProvider = async (cfg: ProviderConfig): Promise<Provider> => {
   const key = `${cfg.name}:${JSON.stringify(cfg.config)}`;
@@ -136,14 +139,9 @@ const resolveModelId = async (
   ) as Record<string, { id: string }>;
   const modelId = providerEntry[providerCfg.name]?.id;
   if (providerCfg.name === "bedrock") {
-    const { accessKeyId, secretAccessKey, region } =
-      providerCfg.config as AwsProviderConfig;
-    return await getInferenceProfileArn(
-      accessKeyId,
-      secretAccessKey,
-      region,
-      modelId,
-    );
+    const { bedrockRoleArn, region } = providerCfg.config as AwsProviderConfig;
+    const credentials = await getAwsCreds(bedrockRoleArn, region);
+    return await getInferenceProfileArn(credentials, region, modelId);
   }
   return modelId;
 };

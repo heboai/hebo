@@ -18,14 +18,14 @@ export const ProviderNameEnum = Type.Enum(
 );
 
 const AwsProviderConfigSchema = Type.Object({
-  accessKeyId: Type.String({ "x-redact": true }),
-  secretAccessKey: Type.String({ "x-redact": true }),
+  bedrockRoleArn: Type.String(),
   region: Type.String(),
   baseURL: Type.Optional(Type.String()),
 });
 
 const GoogleProviderConfigSchema = Type.Object({
-  serviceAccount: Type.Any({ format: "json", "x-redact": true }),
+  serviceAccountEmail: Type.String(),
+  audience: Type.String(),
   location: Type.String(),
   project: Type.String(),
   baseURL: Type.Optional(Type.String()),

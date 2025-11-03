@@ -3,7 +3,8 @@ import { Elysia, status } from "elysia";
 import {
   BadRequestError,
   ModelNotFoundError,
-} from "~gateway/middlewares/provider/service";
+  UpstreamAuthFailedError,
+} from "./provider/errors";
 
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;
@@ -63,7 +64,18 @@ export const oaiErrors = new Elysia({ name: "oai-error" })
       return status(400, {
         error: {
           message: error.message,
-          type: "invalid_request_error",
+          type: error.type,
+          param: undefined,
+          code: error.code,
+        },
+      });
+    }
+
+    if (error instanceof UpstreamAuthFailedError) {
+      return status(502, {
+        error: {
+          message: error.message,
+          type: error.type,
           param: undefined,
           code: error.code,
         },

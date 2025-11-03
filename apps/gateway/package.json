@@ -21,6 +21,7 @@
     "@ai-sdk/google-vertex": "^3.0.51",
     "@ai-sdk/openai-compatible": "^1.0.19",
     "@aws-sdk/client-bedrock": "^3.920.0",
+    "@aws-sdk/client-sts": "^3.921.0",
     "@bogeychan/elysia-logger": "^0.1.10",
     "@elysiajs/cors": "^1.4.0",
     "@elysiajs/openapi": "^1.4.11",

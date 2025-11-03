@@ -9,10 +9,12 @@ export default $config({
       protect: ["production"].includes(input?.stage),
       home: "aws",
       region: "us-east-1",
-      providers: { docker: "4.8.2" },
+      providers: { docker: "4.8.2", gcp: "9.3.0" },
     };
   },
   async run() {
     await import("./infra/stacks/console");
+    await import("./infra/stacks/bedrock-provider-role");
+    await import("./infra/stacks/vertex-provider-account");
   },
 });
