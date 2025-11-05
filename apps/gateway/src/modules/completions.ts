@@ -64,10 +64,20 @@ export const completions = new Elysia({
         temperature,
       });
 
-      const finish_reason =
-        result.finishReason === "stop" || result.finishReason === "length"
-          ? "stop"
-          : "tool_calls";
+      const finish_reason = (() => {
+        switch (result.finishReason) {
+          case "stop":
+            return "stop";
+          case "length":
+            return "length";
+          case "content-filter":
+            return "content_filter";
+          case "tool-calls":
+            return "tool_calls";
+          default:
+            return "stop";
+        }
+      })();
 
       return {
         id: "chatcmpl-" + crypto.randomUUID(),
