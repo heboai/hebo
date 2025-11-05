@@ -1,122 +1,96 @@
-export type OpenAICompatibleMessage =
-  | OpenAICompatibleSystemMessage
-  | OpenAICompatibleUserMessage
-  | OpenAICompatibleAssistantMessage
-  | OpenAICompatibleToolMessage;
+import { type Static } from "elysia";
 
-export interface OpenAICompatibleSystemMessage {
-  role: "system";
-  content: string;
-}
+import {
+  OpenAICompatibleAssistantMessage as OpenAICompatibleAssistantMessageSchema,
+  OpenAICompatibleMessage as OpenAICompatibleMessageSchema,
+} from "./openai-compatible-api-schemas";
 
-export interface OpenAICompatibleUserMessage {
-  role: "user";
-  content: string | Array<OpenAICompatibleContentPart>;
-}
+import type { ModelMessage } from "ai";
 
-export type OpenAICompatibleContentPart =
-  | OpenAICompatibleContentPartText
-  | OpenAICompatibleContentPartImage;
-
-export interface OpenAICompatibleContentPartImage {
-  type: "image_url";
-  image_url: { url: string };
-}
-
-export interface OpenAICompatibleContentPartText {
-  type: "text";
-  text: string;
-}
-
-export interface OpenAICompatibleAssistantMessage {
-  role: "assistant";
-  content?: string | null;
-  tool_calls?: Array<OpenAICompatibleMessageToolCall>;
-}
-
-export interface OpenAICompatibleMessageToolCall {
-  type: "function";
-  id: string;
-  function: {
-    arguments: string;
-    name: string;
-  };
-}
-
-export interface OpenAICompatibleToolMessage {
-  role: "tool";
-  content: string;
-  tool_call_id: string;
-}
+type OpenAICompatibleMessage = Static<typeof OpenAICompatibleMessageSchema>;
+type OpenAICompatibleAssistantMessage = Static<
+  typeof OpenAICompatibleAssistantMessageSchema
+>;
 
 export function convertOpenAICompatibleMessagesToModelMessages(
   messages: OpenAICompatibleMessage[],
 ) {
-  const modelMessages = [];
+  const modelMessages: ModelMessage[] = [];
 
   for (const message of messages) {
-    // Assistant message with tool calls
-    if (message.role === "assistant" && message.tool_calls) {
-      modelMessages.push({
-        role: "assistant",
-        content: message.tool_calls.map((toolCall) => ({
-          type: "tool-call",
-          toolCallId: toolCall.id,
-          toolName: toolCall.function.name,
-          input: JSON.parse(toolCall.function.arguments),
-        })),
-      });
-      continue;
-    }
-
-    // Tool message
-    if (message.role === "tool" && message.tool_call_id) {
-      const toolCall = messages
-        .filter((m) => m.role === "assistant" && m.tool_calls != undefined)
-        .flatMap((m) => m.tool_calls ?? [])
-        .find((tc) => tc.id === message.tool_call_id);
-
-      let output;
-      try {
-        const parsedContent = JSON.parse(message.content as string);
-        output = { type: "json", value: parsedContent };
-      } catch {
-        output = { type: "text", value: message.content as string };
+    switch (message.role) {
+      case "system": {
+        modelMessages.push(message);
+        break;
       }
+      case "user": {
+        if (Array.isArray(message.content)) {
+          modelMessages.push({
+            role: "user",
+            content: message.content.map((part) => {
+              if (part.type === "image_url") {
+                return {
+                  type: "image",
+                  image: new URL(part.image_url.url),
+                };
+              }
+              return part;
+            }),
+          });
+        } else {
+          modelMessages.push(message as ModelMessage);
+        }
+        break;
+      }
+      case "assistant": {
+        if (message.tool_calls) {
+          modelMessages.push({
+            role: "assistant",
+            content: message.tool_calls.map((toolCall) => ({
+              type: "tool-call",
+              toolCallId: toolCall.id,
+              toolName: toolCall.function.name,
+              input: JSON.parse(toolCall.function.arguments),
+            })),
+          });
+        } else {
+          modelMessages.push(message as ModelMessage);
+        }
+        break;
+      }
+      case "tool": {
+        const toolCall = messages
+          .filter(
+            (m): m is OpenAICompatibleAssistantMessage =>
+              m.role === "assistant" && m.tool_calls != undefined,
+          )
+          .flatMap((m) => m.tool_calls ?? [])
+          .find((tc) => tc.id === message.tool_call_id);
 
-      modelMessages.push({
-        role: "tool",
-        content: [
-          {
-            type: "tool-result",
-            toolCallId: message.tool_call_id,
-            toolName: toolCall?.function.name ?? "",
-            output,
-          },
-        ],
-      });
-      continue;
+        let output:
+          | { type: "json"; value: any }
+          | { type: "text"; value: string };
+        try {
+          const parsedContent = JSON.parse(message.content as string);
+          output = { type: "json", value: parsedContent };
+        } catch {
+          output = { type: "text", value: message.content as string };
+        }
+
+        modelMessages.push({
+          role: "tool",
+          content: [
+            {
+              type: "tool-result",
+              toolCallId: message.tool_call_id,
+              toolName: toolCall?.function.name ?? "",
+              output,
+            },
+          ],
+        });
+        break;
+      }
     }
-
-    // User message with multiple parts (e.g., text and image)
-    if (Array.isArray(message.content)) {
-      modelMessages.push({
-        ...message,
-        content: message.content.map((part: any) => {
-          if (part.type === "image_url") {
-            return {
-              type: "image",
-              image: part.image_url.url,
-            };
-          }
-          return part;
-        }),
-      });
-      continue;
-    }
-
-    // Other messages
-    modelMessages.push(message);
   }
 
   return modelMessages;

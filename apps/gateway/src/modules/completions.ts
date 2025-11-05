@@ -6,7 +6,15 @@ import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { provider } from "~gateway/middlewares/provider";
 import { getModelType } from "~gateway/utils/get-model-type";
 import { convertOpenAICompatibleMessagesToModelMessages } from "~gateway/utils/message-converter";
-import { convertOpenAICompatibleToolsToToolSet } from "~gateway/utils/tool-converter";
+import {
+  OpenAICompatibleMessage,
+  OpenAICompatibleTool,
+  OpenAICompatibleToolChoice,
+} from "~gateway/utils/openai-compatible-api-schemas";
+import {
+  convertOpenAICompatibleToolsToToolSet,
+  convertOpenAICompatibleToolChoiceToCoreToolChoice,
+} from "~gateway/utils/tool-converter";
 
 export const completions = new Elysia({
   name: "completions",
@@ -34,12 +42,15 @@ export const completions = new Elysia({
       const modelMessages =
         convertOpenAICompatibleMessagesToModelMessages(messages);
 
+      const coreToolChoice =
+        convertOpenAICompatibleToolChoiceToCoreToolChoice(toolChoice);
+
       if (stream) {
         const result = streamText({
           model: chatModel,
           messages: modelMessages as ModelMessage[],
           tools: toolSet,
-          toolChoice,
+          toolChoice: coreToolChoice,
           temperature,
         });
         return result.toTextStreamResponse();
@@ -49,7 +60,7 @@ export const completions = new Elysia({
         model: chatModel,
         messages: modelMessages as ModelMessage[],
         tools: toolSet,
-        toolChoice,
+        toolChoice: coreToolChoice,
         temperature,
       });
 
@@ -96,82 +107,11 @@ export const completions = new Elysia({
     {
       body: t.Object({
         model: t.String(),
-        messages: t.Array(
-          t.Union([
-            t.Object({
-              role: t.Literal("system"),
-              content: t.String(),
-            }),
-            t.Object({
-              role: t.Literal("user"),
-              content: t.Union([
-                t.String(),
-                t.Array(
-                  t.Union([
-                    t.Object({
-                      type: t.Literal("text"),
-                      text: t.String(),
-                    }),
-                    t.Object({
-                      type: t.Literal("image_url"),
-                      image_url: t.Object({
-                        url: t.String(),
-                      }),
-                    }),
-                  ]),
-                ),
-              ]),
-            }),
-            t.Object({
-              role: t.Literal("assistant"),
-              content: t.Union([t.String(), t.Null()]),
-              tool_calls: t.Optional(
-                t.Array(
-                  t.Object({
-                    id: t.String(),
-                    type: t.Literal("function"),
-                    function: t.Object({
-                      name: t.String(),
-                      arguments: t.String(),
-                    }),
-                  }),
-                ),
-              ),
-            }),
-            t.Object({
-              role: t.Literal("tool"),
-              tool_call_id: t.String(),
-              content: t.String(),
-            }),
-          ]),
-        ),
+        messages: t.Array(OpenAICompatibleMessage),
         temperature: t.Optional(t.Number({ minimum: 0, maximum: 2 })),
         stream: t.Optional(t.Boolean()),
-        tools: t.Optional(
-          t.Array(
-            t.Object({
-              type: t.Literal("function"),
-              function: t.Object({
-                name: t.String(),
-                description: t.Optional(t.String()),
-                parameters: t.Object({}, { additionalProperties: true }),
-              }),
-            }),
-          ),
-        ),
-        toolChoice: t.Optional(
-          t.Union([
-            t.Literal("none"),
-            t.Literal("auto"),
-            t.Literal("required"),
-            t.Object({
-              type: t.Literal("function"),
-              function: t.Object({
-                name: t.String(),
-              }),
-            }),
-          ]),
-        ),
+        tools: t.Optional(t.Array(OpenAICompatibleTool)),
+        toolChoice: t.Optional(OpenAICompatibleToolChoice),
       }),
     },
   );
