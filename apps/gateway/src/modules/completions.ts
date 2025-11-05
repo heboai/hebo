@@ -66,16 +66,21 @@ export const completions = new Elysia({
 
       const finish_reason = (() => {
         switch (result.finishReason) {
-          case "stop":
+          case "stop": {
             return "stop";
-          case "length":
+          }
+          case "length": {
             return "length";
-          case "content-filter":
+          }
+          case "content-filter": {
             return "content_filter";
-          case "tool-calls":
+          }
+          case "tool-calls": {
             return "tool_calls";
-          default:
+          }
+          default: {
             return "stop";
+          }
         }
       })();
 
