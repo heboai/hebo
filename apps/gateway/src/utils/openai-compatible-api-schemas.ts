@@ -78,3 +78,10 @@ export const OpenAICompatibleToolChoice = t.Union([
     }),
   }),
 ]);
+
+export const OpenAICompatibleFinishReason = t.Union([
+  t.Literal("stop"),
+  t.Literal("length"),
+  t.Literal("content_filter"),
+  t.Literal("tool_calls"),
+]);

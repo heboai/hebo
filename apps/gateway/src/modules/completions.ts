@@ -12,6 +12,10 @@ import {
   OpenAICompatibleToolChoice,
 } from "~gateway/utils/openai-compatible-api-schemas";
 import {
+  convertToOpenAICompatibleFinishReason,
+  convertToOpenAICompatibleMessage,
+} from "~gateway/utils/openai-compatible-converter";
+import {
   convertOpenAICompatibleToolsToToolSet,
   convertOpenAICompatibleToolChoiceToCoreToolChoice,
 } from "~gateway/utils/tool-converter";
@@ -64,25 +68,9 @@ export const completions = new Elysia({
         temperature,
       });
 
-      const finish_reason = (() => {
-        switch (result.finishReason) {
-          case "stop": {
-            return "stop";
-          }
-          case "length": {
-            return "length";
-          }
-          case "content-filter": {
-            return "content_filter";
-          }
-          case "tool-calls": {
-            return "tool_calls";
-          }
-          default: {
-            return "stop";
-          }
-        }
-      })();
+      const finish_reason = convertToOpenAICompatibleFinishReason(
+        result.finishReason,
+      );
 
       return {
         id: "chatcmpl-" + crypto.randomUUID(),
@@ -92,21 +80,7 @@ export const completions = new Elysia({
         choices: [
           {
             index: 0,
-            message:
-              result.toolCalls && result.toolCalls.length > 0
-                ? {
-                    role: "assistant",
-                    content: result.text,
-                    tool_calls: result.toolCalls.map((toolCall) => ({
-                      id: toolCall.toolCallId,
-                      type: "function",
-                      function: {
-                        name: toolCall.toolName,
-                        arguments: JSON.stringify(toolCall.input),
-                      },
-                    })),
-                  }
-                : { role: "assistant", content: result.text },
+            message: convertToOpenAICompatibleMessage(result),
             finish_reason,
           },
         ],
