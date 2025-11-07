@@ -14,21 +14,20 @@ export const completions = new Elysia({
     async ({ body, provider }) => {
       const { model, messages, temperature = 1, stream = false } = body;
       const chatModel = await provider.chat(model);
-      const modelMessages =
-        convertOpenAICompatibleMessagesToModelMessages(messages);
+      const converted = convertOpenAICompatibleMessagesToModelMessages(
+        messages,
+      ) as ModelMessage[];
 
-      if (stream) {
-        const result = streamText({
+      if (stream)
+        return streamText({
           model: chatModel,
-          messages: modelMessages as ModelMessage[],
+          messages: converted,
           temperature,
-        });
-        return result.toTextStreamResponse();
-      }
+        }).toTextStreamResponse();
 
       const result = await generateText({
         model: chatModel,
-        messages: modelMessages as ModelMessage[],
+        messages: converted,
         temperature,
       });
 

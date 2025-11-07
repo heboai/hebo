@@ -21,7 +21,7 @@ export const embeddings = new Elysia({
         });
         return {
           object: "list",
-          data: embeddings.map((e: number[], i: number) => ({
+          data: embeddings.map((e, i) => ({
             object: "embedding",
             embedding: e,
             index: i,

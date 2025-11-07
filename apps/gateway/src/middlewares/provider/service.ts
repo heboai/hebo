@@ -46,56 +46,50 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   },
 };
 
-export const supportedOrThrow = (type: string) => {
-  if (!SUPPORTED_MODELS.includes(type)) {
+export const getModalityOrThrow = (type: string) => {
+  const entry = supportedModels.find((m) => m.name === type);
+  if (!entry)
     throw new BadRequestError(
       `Unknown or unsupported model '${type}'`,
       "model_unsupported",
     );
-  }
+  return entry.modality;
 };
 
-const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
-  const { name, config } = cfg;
-  switch (name) {
-    case "bedrock": {
-      const { bedrockRoleArn, region } = config as AwsProviderConfig;
-      const { accessKeyId, secretAccessKey, sessionToken } = await getAwsCreds(
-        bedrockRoleArn,
-        region,
-      );
-      return createAmazonBedrock({
-        accessKeyId,
-        secretAccessKey,
-        sessionToken,
-        region,
-      });
-    }
-    case "vertex": {
-      const { serviceAccountEmail, audience, location, project, baseURL } =
-        config as GoogleProviderConfig;
-      const awsWifOptions = buildAwsWifOptions(audience, serviceAccountEmail);
-      return createVertex({
-        googleAuthOptions: {
-          credentials: awsWifOptions as any,
-          scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-        },
-        location,
-        project,
-        baseURL,
-      });
-    }
-    case "voyage": {
-      return createVoyage({ ...config });
-    }
-    default: {
-      throw new BadRequestError(
-        `Unknown or unsupported provider '${name}'`,
-        "provider_unsupported",
-      );
-    }
-  }
+type Creator = (config: ProviderConfig["config"]) => Promise<Provider>;
+const PROVIDER_CREATORS: Record<ProviderName, Creator> = {
+  bedrock: async (config) => {
+    const { bedrockRoleArn, region } = config as AwsProviderConfig;
+    const creds = await getAwsCreds(bedrockRoleArn, region);
+    return createAmazonBedrock({ ...creds, region });
+  },
+  vertex: async (config) => {
+    const { serviceAccountEmail, audience, location, project, baseURL } =
+      config as GoogleProviderConfig;
+    const credentials = buildAwsWifOptions(
+      audience,
+      serviceAccountEmail,
+    ) as any;
+    return createVertex({
+      googleAuthOptions: {
+        credentials,
+        scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+      },
+      location,
+      project,
+      baseURL,
+    });
+  },
+  voyage: async (config) => createVoyage({ ...(config as any) }),
 };
+const createProvider = async (cfg: ProviderConfig): Promise<Provider> =>
+  (await PROVIDER_CREATORS[cfg.name]?.(cfg.config)) ??
+  Promise.reject(
+    new BadRequestError(
+      `Unknown or unsupported provider '${cfg.name}'`,
+      "provider_unsupported",
+    ),
+  );
 
 export const getProviderConfig = async (
   model: Models[number],
@@ -118,9 +112,8 @@ export const getProviderConfig = async (
 const providerInstances = new Map<string, Provider>();
 const getOrCreateProvider = async (cfg: ProviderConfig): Promise<Provider> => {
   const key = `${cfg.name}:${JSON.stringify(cfg.config)}`;
-  if (providerInstances.has(key)) {
-    return providerInstances.get(key)!;
-  }
+  const cached = providerInstances.get(key);
+  if (cached) return cached;
   const instance = await createProvider(cfg);
   providerInstances.set(key, instance);
   return instance;
@@ -131,23 +124,15 @@ const resolveModelId = async (
   providerCfg: ProviderConfig,
 ): Promise<string> => {
   const supported = supportedModels.find((m) => m.name === modelType);
-  const providerEntry = supported?.providers?.find(
-    (p) => providerCfg.name in p,
-  ) as Record<string, { id: string }>;
-  const modelId = providerEntry[providerCfg.name]?.id;
-  if (providerCfg.name === "bedrock") {
-    const { bedrockRoleArn, region } = providerCfg.config as AwsProviderConfig;
-    const credentials = await getAwsCreds(bedrockRoleArn, region);
-    return await getInferenceProfileArn(credentials, region, modelId);
-  }
-  return modelId;
-};
-
-const isEmbeddingModel = (model_type: string) => {
-  supportedOrThrow(model_type);
-  return (
-    supportedModels.find((m) => m.name === model_type)?.modality === "embedding"
-  );
+  const modelId = (
+    supported?.providers?.find((p) => providerCfg.name in p) as
+      | Record<string, { id: string }>
+      | undefined
+  )?.[providerCfg.name]?.id as string;
+  if (providerCfg.name !== "bedrock") return modelId;
+  const { bedrockRoleArn, region } = providerCfg.config as AwsProviderConfig;
+  const credentials = await getAwsCreds(bedrockRoleArn, region);
+  return getInferenceProfileArn(credentials, region, modelId);
 };
 
 export const getModelObject = async (
@@ -166,26 +151,30 @@ export const getModelObject = async (
   return foundModel;
 };
 
-export const pickChat = async (
+export function pickModel(
   model: Models[number],
   providerCfg: ProviderConfig,
-): Promise<LanguageModel> => {
-  if (isEmbeddingModel(model.type)) {
-    throw new BadRequestError(`Model '${model.type}' is an embedding model`);
-  }
-  const modelId = await resolveModelId(model.type, providerCfg);
-  const provider = await getOrCreateProvider(providerCfg);
-  return provider.languageModel(modelId);
-};
-
-export const pickEmbedding = async (
+  expect: "chat",
+): Promise<LanguageModel>;
+export function pickModel(
   model: Models[number],
   providerCfg: ProviderConfig,
-): Promise<EmbeddingModel<string>> => {
-  if (!isEmbeddingModel(model.type)) {
-    throw new BadRequestError(`Model '${model.type}' is a chat model`);
-  }
+  expect: "embedding",
+): Promise<EmbeddingModel<string>>;
+export async function pickModel(
+  model: Models[number],
+  providerCfg: ProviderConfig,
+  expect: "chat" | "embedding",
+) {
+  const modality = getModalityOrThrow(model.type);
+  if (modality !== expect)
+    throw new BadRequestError(
+      `Model '${model.type}' is a ${modality} model`,
+      "model_mismatch",
+    );
   const modelId = await resolveModelId(model.type, providerCfg);
   const provider = await getOrCreateProvider(providerCfg);
-  return provider.textEmbeddingModel(modelId);
-};
+  return expect === "chat"
+    ? provider.languageModel(modelId)
+    : provider.textEmbeddingModel(modelId);
+}

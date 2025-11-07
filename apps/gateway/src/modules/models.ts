@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 
 import {
   SUPPORTED_MODELS,
-  supportedOrThrow,
+  getModalityOrThrow,
 } from "~gateway/middlewares/provider/service";
 
 export const models = new Elysia({
@@ -43,7 +43,7 @@ export const models = new Elysia({
     ({ params }) => {
       const { id } = params;
 
-      supportedOrThrow(id);
+      getModalityOrThrow(id);
 
       return {
         id,
