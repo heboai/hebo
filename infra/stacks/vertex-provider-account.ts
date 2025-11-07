@@ -1,7 +1,6 @@
 import heboGateway from "./gateway";
 
 const AWS_ACCOUNT_ID = "160885286799";
-const GOOGLE_PROJECT_NUMBER = "111566845594034750701";
 
 const googleVertexServiceAccount = new gcp.serviceaccount.Account(
   "GoogleVertexServiceAccount",
@@ -14,8 +13,8 @@ const googleVertexServiceAccount = new gcp.serviceaccount.Account(
 const googleVertexWorkloadIdentityPool = new gcp.iam.WorkloadIdentityPool(
   "GoogleVertexWorkloadIdentityPool",
   {
-    workloadIdentityPoolId: "google-vertex-workload-identity-pool",
-    displayName: "Google Vertex workload identity pool",
+    workloadIdentityPoolId: "vertex-aws-pool",
+    displayName: "Vertex AWS pool",
     description: "Pool for Google Vertex → AWS federation",
   },
 );
@@ -44,7 +43,7 @@ const googleVertexAwsProvider = new gcp.iam.WorkloadIdentityPoolProvider(
 new gcp.serviceaccount.IAMMember("google-vertex-service-account-binding", {
   serviceAccountId: googleVertexServiceAccount.name,
   role: "roles/iam.workloadIdentityUser",
-  member: $interpolate`principalSet://iam.googleapis.com/projects/${GOOGLE_PROJECT_NUMBER}/locations/global/workloadIdentityPools/${googleVertexWorkloadIdentityPool.workloadIdentityPoolId}/attribute.aws_role/${heboGateway.nodes.taskRole.name}`,
+  member: $interpolate`principalSet://iam.googleapis.com/${googleVertexWorkloadIdentityPool.name}/attribute.aws_role/${heboGateway.nodes.taskRole.arn}`,
 });
 
 export default googleVertexAwsProvider;
