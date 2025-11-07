@@ -8,6 +8,7 @@ import { getModelType } from "~gateway/utils/get-model-type";
 import { convertOpenAICompatibleMessagesToModelMessages } from "~gateway/utils/message-converter";
 import {
   OpenAICompatibleMessage,
+  OpenAICompatibleReasoning,
   OpenAICompatibleTool,
   OpenAICompatibleToolChoice,
 } from "~gateway/utils/openai-compatible-api-schemas";
@@ -36,6 +37,7 @@ export const completions = new Elysia({
         toolChoice,
         temperature = 1,
         stream = false,
+        reasoning,
       } = body;
 
       const toolSet = convertOpenAICompatibleToolsToToolSet(tools);
@@ -56,6 +58,12 @@ export const completions = new Elysia({
           tools: toolSet,
           toolChoice: coreToolChoice,
           temperature,
+          providerOptions: reasoning &&
+            reasoning.effort && {
+              groq: {
+                reasoningEffort: reasoning.effort,
+              },
+            },
         });
         return result.toTextStreamResponse();
       }
@@ -66,6 +74,12 @@ export const completions = new Elysia({
         tools: toolSet,
         toolChoice: coreToolChoice,
         temperature,
+        providerOptions: reasoning &&
+          reasoning.effort && {
+            groq: {
+              reasoningEffort: reasoning.effort,
+            },
+          },
       });
 
       const finish_reason = convertToOpenAICompatibleFinishReason(
@@ -90,6 +104,9 @@ export const completions = new Elysia({
           total_tokens:
             result.usage.totalTokens ??
             (result.usage.inputTokens ?? 0) + (result.usage.outputTokens ?? 0),
+          completion_tokens_details: {
+            reasoning_tokens: result.usage.reasoningTokens ?? 0,
+          },
         },
       };
     },
@@ -101,6 +118,7 @@ export const completions = new Elysia({
         stream: t.Optional(t.Boolean()),
         tools: t.Optional(t.Array(OpenAICompatibleTool)),
         toolChoice: t.Optional(OpenAICompatibleToolChoice),
+        reasoning: t.Optional(OpenAICompatibleReasoning),
       }),
     },
   );

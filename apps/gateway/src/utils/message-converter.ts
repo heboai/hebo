@@ -1,16 +1,85 @@
 import { type Static } from "elysia";
 
 import {
-  OpenAICompatibleAssistantMessage as OpenAICompatibleAssistantMessageSchema,
   OpenAICompatibleMessage as OpenAICompatibleMessageSchema,
+  OpenAICompatibleContentPartFile,
+  OpenAICompatibleContentPartImage,
+  OpenAICompatibleContentPartText,
 } from "./openai-compatible-api-schemas";
 
 import type { ModelMessage } from "ai";
 
 type OpenAICompatibleMessage = Static<typeof OpenAICompatibleMessageSchema>;
-type OpenAICompatibleAssistantMessage = Static<
-  typeof OpenAICompatibleAssistantMessageSchema
->;
+
+type OpenAICompatibleContentPart =
+  | Static<typeof OpenAICompatibleContentPartText>
+  | Static<typeof OpenAICompatibleContentPartImage>
+  | Static<typeof OpenAICompatibleContentPartFile>;
+
+function convertOpenAICompatibleContentToModelContent(
+  content: OpenAICompatibleContentPart[],
+) {
+  return content.map((part) => {
+    if (part.type === "image_url") {
+      const url = part.image_url.url;
+      if (url.startsWith("data:")) {
+        const [metadata, base64Data] = url.split(",");
+        const mimeType = metadata.split(":")[1].split(";")[0];
+
+        return mimeType.startsWith("image/")
+          ? {
+              type: "image" as const,
+              image: Buffer.from(base64Data, "base64"),
+              mediaType: mimeType,
+            }
+          : {
+              type: "file" as const,
+              data: Buffer.from(base64Data, "base64"),
+              mediaType: mimeType,
+            };
+      }
+      // It's a regular URL, we assume it's an image
+      return {
+        type: "image" as const,
+        image: new URL(url),
+      };
+    }
+    if (part.type === "file") {
+      const { data, media_type } = part.file;
+      return media_type.startsWith("image/")
+        ? {
+            type: "image" as const,
+            image: Buffer.from(data, "base64"),
+            mediaType: media_type,
+          }
+        : {
+            type: "file" as const,
+            data: Buffer.from(data, "base64"),
+            mediaType: media_type,
+          };
+    }
+    return part;
+  });
+}
+
+function findToolCall(messages: OpenAICompatibleMessage[], toolCallId: string) {
+  for (const message of messages) {
+    if (message.role === "assistant" && message.tool_calls) {
+      const toolCall = message.tool_calls.find((tc) => tc.id === toolCallId);
+      if (toolCall) {
+        return toolCall;
+      }
+    }
+  }
+}
+
+function parseToolOutput(content: string) {
+  try {
+    return { type: "json" as const, value: JSON.parse(content) };
+  } catch {
+    return { type: "text" as const, value: content };
+  }
+}
 
 export function convertOpenAICompatibleMessagesToModelMessages(
   messages: OpenAICompatibleMessage[],
@@ -27,15 +96,9 @@ export function convertOpenAICompatibleMessagesToModelMessages(
         if (Array.isArray(message.content)) {
           modelMessages.push({
             role: "user",
-            content: message.content.map((part) => {
-              if (part.type === "image_url") {
-                return {
-                  type: "image",
-                  image: new URL(part.image_url.url),
-                };
-              }
-              return part;
-            }),
+            content: convertOpenAICompatibleContentToModelContent(
+              message.content,
+            ),
           });
         } else {
           modelMessages.push(message as ModelMessage);
@@ -59,22 +122,14 @@ export function convertOpenAICompatibleMessagesToModelMessages(
         break;
       }
       case "tool": {
-        const toolCall = messages
-          .filter(
-            (m): m is OpenAICompatibleAssistantMessage =>
-              m.role === "assistant" && m.tool_calls != undefined,
-          )
-          .flatMap((m) => m.tool_calls ?? [])
-          .find((tc) => tc.id === message.tool_call_id);
+        const toolCall = findToolCall(messages, message.tool_call_id);
 
-        let output:
-          | { type: "json"; value: any }
-          | { type: "text"; value: string };
-        try {
-          const parsedContent = JSON.parse(message.content as string);
-          output = { type: "json", value: parsedContent };
-        } catch {
-          output = { type: "text", value: message.content as string };
+        if (!toolCall) {
+          throw new Error(
+            `Tool call with id '${
+              message.tool_call_id
+            }' not found in assistant messages.`,
+          );
         }
 
         modelMessages.push({
@@ -83,8 +138,8 @@ export function convertOpenAICompatibleMessagesToModelMessages(
             {
               type: "tool-result",
               toolCallId: message.tool_call_id,
-              toolName: toolCall?.function.name ?? "",
-              output,
+              toolName: toolCall.function.name,
+              output: parseToolOutput(message.content as string),
             },
           ],
         });

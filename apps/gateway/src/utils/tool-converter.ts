@@ -1,4 +1,4 @@
-import { jsonSchema, tool } from "ai";
+import { jsonSchema, tool, type ToolChoice } from "ai";
 import { type Static } from "elysia";
 
 import {
@@ -30,12 +30,7 @@ export const convertOpenAICompatibleToolsToToolSet = (
 
 export const convertOpenAICompatibleToolChoiceToCoreToolChoice = (
   toolChoice: OpenAICompatibleToolChoice | undefined,
-):
-  | "none"
-  | "auto"
-  | "required"
-  | { type: "tool"; toolName: string }
-  | undefined => {
+): ToolChoice<any> | undefined => {
   if (!toolChoice) {
     return undefined;
   }

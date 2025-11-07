@@ -4,12 +4,24 @@ export const OpenAICompatibleContentPartImage = t.Object({
   type: t.Literal("image_url"),
   image_url: t.Object({
     url: t.String(),
+    detail: t.Optional(
+      t.Union([t.Literal("low"), t.Literal("high"), t.Literal("auto")]),
+    ),
   }),
 });
 
 export const OpenAICompatibleContentPartText = t.Object({
   type: t.Literal("text"),
   text: t.String(),
+});
+
+export const OpenAICompatibleContentPartFile = t.Object({
+  type: t.Literal("file"),
+  file: t.Object({
+    data: t.String(),
+    media_type: t.String(),
+    filename: t.String(),
+  }),
 });
 
 export const OpenAICompatibleMessageToolCall = t.Object({
@@ -34,6 +46,7 @@ export const OpenAICompatibleUserMessage = t.Object({
       t.Union([
         OpenAICompatibleContentPartText,
         OpenAICompatibleContentPartImage,
+        OpenAICompatibleContentPartFile,
       ]),
     ),
   ]),
@@ -43,6 +56,8 @@ export const OpenAICompatibleAssistantMessage = t.Object({
   role: t.Literal("assistant"),
   content: t.Union([t.String(), t.Null()]),
   tool_calls: t.Optional(t.Array(OpenAICompatibleMessageToolCall)),
+  reasoning: t.Optional(t.String()),
+  reasoning_content: t.Optional(t.String()),
 });
 
 export const OpenAICompatibleToolMessage = t.Object({
@@ -78,6 +93,15 @@ export const OpenAICompatibleToolChoice = t.Union([
     }),
   }),
 ]);
+
+export const OpenAICompatibleReasoning = t.Object({
+  enabled: t.Boolean(),
+  max_tokens: t.Optional(t.Number()),
+  effort: t.Optional(
+    t.Union([t.Literal("low"), t.Literal("medium"), t.Literal("high")]),
+  ),
+  exclude: t.Optional(t.Boolean()),
+});
 
 export const OpenAICompatibleFinishReason = t.Union([
   t.Literal("stop"),
