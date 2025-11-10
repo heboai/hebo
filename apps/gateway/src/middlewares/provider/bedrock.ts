@@ -9,7 +9,7 @@ import {
   GetCallerIdentityCommand,
 } from "@aws-sdk/client-sts";
 
-import { getEnvValue } from "@hebo/shared-api/utils/get-env";
+import { getSecret } from "@hebo/shared-api/utils/get-env";
 import type { AwsProviderConfig } from "@hebo/shared-data/types/provider-config";
 
 import { UpstreamAuthFailedError } from "./errors";
@@ -75,7 +75,7 @@ export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
 
 export const getBedrockDefaultConfig =
   async (): Promise<AwsProviderConfig> => ({
-    bedrockRoleArn: await getEnvValue("BedrockRoleArn"),
+    bedrockRoleArn: await getSecret("BedrockRoleArn"),
     region: process.env.BEDROCK_REGION ?? "us-east-1",
   });
 

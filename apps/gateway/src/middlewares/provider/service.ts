@@ -2,7 +2,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { createVoyage } from "voyage-ai-provider";
 
 import type { createDbClient } from "@hebo/database/client";
-import { getEnvValue } from "@hebo/shared-api/utils/get-env";
+import { getSecret } from "@hebo/shared-api/utils/get-env";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 import type {
@@ -42,13 +42,13 @@ const ADAPTERS: Record<ProviderName, ProviderAdapter> = {
     transformModelId: async (id: string) => id,
   },
   groq: {
-    getDefaultConfig: async () => ({ apiKey: await getEnvValue("GroqApiKey") }),
+    getDefaultConfig: async () => ({ apiKey: await getSecret("GroqApiKey") }),
     create: async (config: any) => createGroq({ ...config }),
     transformModelId: async (id: string) => id,
   },
   voyage: {
     getDefaultConfig: async () => ({
-      apiKey: await getEnvValue("VoyageApiKey"),
+      apiKey: await getSecret("VoyageApiKey"),
     }),
     create: async (config: any) => createVoyage({ ...config }),
     transformModelId: async (id: string) => id,

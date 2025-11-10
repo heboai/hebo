@@ -3,10 +3,10 @@ import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-import { getEnvValue } from "../../utils/get-env";
+import { getSecret } from "../../utils/get-env";
 
-export const projectId = await getEnvValue("StackProjectId");
-export const secretServerKey = await getEnvValue("StackSecretServerKey");
+export const projectId = await getSecret("StackProjectId");
+export const secretServerKey = await getSecret("StackSecretServerKey");
 
 const jwks = createRemoteJWKSet(
   new URL(
