@@ -27,7 +27,7 @@ export const getVertexDefaultConfig =
   async (): Promise<GoogleProviderConfig> => ({
     serviceAccountEmail: await getEnvValue("VertexServiceAccountEmail"),
     audience: await getEnvValue("VertexAwsProviderAudience"),
-    location: "us-central1",
+    location: process.env.VERTEX_LOCATION ?? "us-central1",
     project: await getEnvValue("VertexProject"),
   });
 
