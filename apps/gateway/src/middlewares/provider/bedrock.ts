@@ -1,3 +1,4 @@
+import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
 import {
   BedrockClient,
   ListInferenceProfilesCommand,
@@ -8,7 +9,12 @@ import {
   GetCallerIdentityCommand,
 } from "@aws-sdk/client-sts";
 
+import { getEnvValue } from "@hebo/shared-api/utils/get-env";
+import type { AwsProviderConfig } from "@hebo/shared-data/types/provider-config";
+
 import { UpstreamAuthFailedError } from "./errors";
+
+import type { Provider } from "ai";
 
 // FUTURE: Cache the inference profile ARN
 // FUTURE: try to achieve the same using @aws-sdk/client-sts
@@ -65,4 +71,26 @@ export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
     secretAccessKey: resp.Credentials.SecretAccessKey!,
     sessionToken: resp.Credentials.SessionToken!,
   };
+};
+
+export const getBedrockDefaultConfig =
+  async (): Promise<AwsProviderConfig> => ({
+    bedrockRoleArn: await getEnvValue("BedrockRoleArn"),
+    region: "us-east-1",
+  });
+
+export const createBedrockProvider = async (
+  config: AwsProviderConfig,
+): Promise<Provider> => {
+  const { bedrockRoleArn, region } = config;
+  const creds = await getAwsCreds(bedrockRoleArn, region);
+  return createAmazonBedrock({ ...creds, region });
+};
+
+export const transformBedrockModelId = async (
+  modelId: string,
+  config: AwsProviderConfig,
+): Promise<string> => {
+  const creds = await getAwsCreds(config.bedrockRoleArn, config.region);
+  return getInferenceProfileArn(creds, config.region, modelId);
 };

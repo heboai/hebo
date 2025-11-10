@@ -1,5 +1,3 @@
-import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
-import { createVertex } from "@ai-sdk/google-vertex";
 import { createGroq } from "@ai-sdk/groq";
 import { createVoyage } from "voyage-ai-provider";
 
@@ -9,86 +7,63 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 import type {
   AwsProviderConfig,
-  GoogleProviderConfig,
   ProviderConfig,
   ProviderName,
 } from "@hebo/shared-data/types/provider-config";
 
 import { getModalityOrThrow } from "~gateway/utils/model-support";
 
-import { getInferenceProfileArn, getAwsCreds } from "./bedrock";
+import {
+  createBedrockProvider,
+  getBedrockDefaultConfig,
+  transformBedrockModelId,
+} from "./bedrock";
 import { BadRequestError, ModelNotFoundError } from "./errors";
-import { buildAwsWifOptions } from "./vertex";
+import { createVertexProvider, getVertexDefaultConfig } from "./vertex";
 
 import type { LanguageModel, Provider, EmbeddingModel } from "ai";
 
+type ProviderAdapter = {
+  getDefaultConfig: () => Promise<any>;
+  create: (config: any) => Promise<Provider>;
+  transformModelId: (id: string, config?: any) => Promise<string>;
+};
 
-const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
+const ADAPTERS: Record<ProviderName, ProviderAdapter> = {
   bedrock: {
-    name: "bedrock",
-    config: {
-      bedrockRoleArn: await getEnvValue("BedrockRoleArn"),
-      region: "us-east-1",
-    },
+    getDefaultConfig: getBedrockDefaultConfig,
+    create: (config: any) => createBedrockProvider(config as AwsProviderConfig),
+    transformModelId: (id: string, cfg?: any) =>
+      transformBedrockModelId(id, cfg),
   },
   vertex: {
-    name: "vertex",
-    config: {
-      serviceAccountEmail: await getEnvValue("VertexServiceAccountEmail"),
-      audience: await getEnvValue("VertexAwsProviderAudience"),
-      location: "us-central1",
-      project: await getEnvValue("VertexProject"),
-    },
+    getDefaultConfig: getVertexDefaultConfig,
+    create: (config: any) => createVertexProvider(config),
+    transformModelId: async (id: string) => id,
   },
   groq: {
-    name: "groq",
-    config: {
-      apiKey: await getEnvValue("GroqApiKey"),
-    },
+    getDefaultConfig: async () => ({ apiKey: await getEnvValue("GroqApiKey") }),
+    create: async (config: any) => createGroq({ ...config }),
+    transformModelId: async (id: string) => id,
   },
   voyage: {
-    name: "voyage",
-    config: {
+    getDefaultConfig: async () => ({
       apiKey: await getEnvValue("VoyageApiKey"),
-    },
+    }),
+    create: async (config: any) => createVoyage({ ...config }),
+    transformModelId: async (id: string) => id,
   },
 };
 
-type Creator = (config: ProviderConfig["config"]) => Promise<Provider>;
-const PROVIDER_CREATORS: Record<ProviderName, Creator> = {
-  bedrock: async (config) => {
-    const { bedrockRoleArn, region } = config as AwsProviderConfig;
-    const creds = await getAwsCreds(bedrockRoleArn, region);
-    return createAmazonBedrock({ ...creds, region });
-  },
-  vertex: async (config) => {
-    const { serviceAccountEmail, audience, location, project, baseURL } =
-      config as GoogleProviderConfig;
-    const credentials = buildAwsWifOptions(
-      audience,
-      serviceAccountEmail,
-    ) as any;
-    return createVertex({
-      googleAuthOptions: {
-        credentials,
-        scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-      },
-      location,
-      project,
-      baseURL,
-    });
-  },
-  voyage: async (config) => createVoyage({ ...config }),
-  groq: async (config) => createGroq({ ...config }),
-};
-const createProvider = async (cfg: ProviderConfig): Promise<Provider> =>
-  (await PROVIDER_CREATORS[cfg.name]?.(cfg.config)) ??
-  Promise.reject(
-    new BadRequestError(
+const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
+  const adapter = ADAPTERS[cfg.name];
+  if (!adapter)
+    throw new BadRequestError(
       `Unknown or unsupported provider '${cfg.name}'`,
       "provider_unsupported",
-    ),
-  );
+    );
+  return adapter.create(cfg.config);
+};
 
 export const getProviderConfig = async (
   model: Models[number],
@@ -104,7 +79,9 @@ export const getProviderConfig = async (
     const { config } = await db.providerConfigs.getUnredacted(providerName);
     return { name: providerName, config } as ProviderConfig;
   }
-  return DEFAULTS_BY_PROVIDER[providerName];
+  const adapter = ADAPTERS[providerName];
+  const config = await adapter.getDefaultConfig();
+  return { name: providerName, config } as ProviderConfig;
 };
 
 // FUTURE: Use a more sophisticated cache mechanism
@@ -128,10 +105,10 @@ const resolveModelId = async (
       | Record<string, { id: string }>
       | undefined
   )?.[providerCfg.name]?.id as string;
-  if (providerCfg.name !== "bedrock") return modelId;
-  const { bedrockRoleArn, region } = providerCfg.config as AwsProviderConfig;
-  const credentials = await getAwsCreds(bedrockRoleArn, region);
-  return getInferenceProfileArn(credentials, region, modelId);
+  const adapter = ADAPTERS[providerCfg.name];
+  if (!adapter) return modelId;
+  // For bedrock we need to upgrade to inference profile ARN; others are passthrough
+  return adapter.transformModelId(modelId, providerCfg.config);
 };
 
 export const getModelObject = async (

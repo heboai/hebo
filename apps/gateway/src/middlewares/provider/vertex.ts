@@ -1,3 +1,10 @@
+import { createVertex } from "@ai-sdk/google-vertex";
+
+import { getEnvValue } from "@hebo/shared-api/utils/get-env";
+import type { GoogleProviderConfig } from "@hebo/shared-data/types/provider-config";
+
+import type { Provider } from "ai";
+
 export function buildAwsWifOptions(
   audience: string,
   serviceAccountEmail: string,
@@ -15,3 +22,27 @@ export function buildAwsWifOptions(
     },
   };
 }
+
+export const getVertexDefaultConfig =
+  async (): Promise<GoogleProviderConfig> => ({
+    serviceAccountEmail: await getEnvValue("VertexServiceAccountEmail"),
+    audience: await getEnvValue("VertexAwsProviderAudience"),
+    location: "us-central1",
+    project: await getEnvValue("VertexProject"),
+  });
+
+export const createVertexProvider = async (
+  config: GoogleProviderConfig,
+): Promise<Provider> => {
+  const { serviceAccountEmail, audience, location, project, baseURL } = config;
+  const credentials = buildAwsWifOptions(audience, serviceAccountEmail) as any;
+  return createVertex({
+    googleAuthOptions: {
+      credentials,
+      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+    },
+    location,
+    project,
+    baseURL,
+  });
+};
