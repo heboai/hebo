@@ -31,16 +31,19 @@ export const branchesModule = new Elysia({
   .post(
     "/",
     async ({ body, dbClient, params }) => {
+      const { models } = await dbClient.branches.findFirstOrThrow({
+        where: { agent_slug: params.agentSlug, slug: body.sourceBranchSlug },
+      });
       return status(
         201,
-        await dbClient.branches.copy(
-          { agent_slug: params.agentSlug, slug: body.sourceBranchSlug },
-          {
+        await dbClient.branches.create({
+          data: {
+            agent_slug: params.agentSlug,
             name: body.name,
             slug: createSlug(body.name),
-            agent: { connect: { slug: params.agentSlug } },
-          },
-        ),
+            models,
+          } as any,
+        }),
       );
     },
     {

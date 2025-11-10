@@ -74,21 +74,6 @@ export const createDbClient = (userId: string) => {
           });
         },
       },
-      branches: {
-        async copy(
-          where: Prisma.branchesWhereInput,
-          data: Partial<Prisma.branchesCreateInput>,
-        ) {
-          const context = Prisma.getExtensionContext(this);
-          const { models } = await context.findFirstOrThrow({
-            where,
-            select: { models: true },
-          });
-          return context.create({
-            data: { ...data, models } as any,
-          });
-        },
-      },
       providerConfigs: {
         async getUnredacted(name: string) {
           return _prisma.providerConfigs.findFirstOrThrow({
