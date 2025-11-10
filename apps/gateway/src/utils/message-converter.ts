@@ -1,20 +1,9 @@
-import { type Static } from "elysia";
-
 import {
-  OpenAICompatibleMessage as OpenAICompatibleMessageSchema,
-  OpenAICompatibleContentPartFile,
-  OpenAICompatibleContentPartImage,
-  OpenAICompatibleContentPartText,
+  type OpenAICompatibleMessage,
+  type OpenAICompatibleContentPart,
 } from "./openai-compatible-api-schemas";
 
 import type { ModelMessage } from "ai";
-
-type OpenAICompatibleMessage = Static<typeof OpenAICompatibleMessageSchema>;
-
-type OpenAICompatibleContentPart =
-  | Static<typeof OpenAICompatibleContentPartText>
-  | Static<typeof OpenAICompatibleContentPartImage>
-  | Static<typeof OpenAICompatibleContentPartFile>;
 
 function convertOpenAICompatibleContentToModelContent(
   content: OpenAICompatibleContentPart[],

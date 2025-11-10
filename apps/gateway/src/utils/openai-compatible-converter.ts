@@ -1,18 +1,9 @@
-import { type Static } from "elysia";
-
 import {
-  OpenAICompatibleAssistantMessage as OpenAICompatibleAssistantMessageSchema,
-  OpenAICompatibleFinishReason as OpenAICompatibleFinishReasonSchema,
+  OpenAICompatibleAssistantMessage,
+  OpenAICompatibleFinishReason,
 } from "./openai-compatible-api-schemas";
 
 import type { FinishReason, GenerateTextResult } from "ai";
-
-type OpenAICompatibleFinishReason = Static<
-  typeof OpenAICompatibleFinishReasonSchema
->;
-type OpenAICompatibleAssistantMessage = Static<
-  typeof OpenAICompatibleAssistantMessageSchema
->;
 
 export const convertToOpenAICompatibleFinishReason = (
   finishReason: FinishReason,

@@ -1,4 +1,4 @@
-import { t } from "elysia";
+import { t, type Static } from "elysia";
 
 export const OpenAICompatibleContentPartImage = t.Object({
   type: t.Literal("image_url"),
@@ -109,3 +109,20 @@ export const OpenAICompatibleFinishReason = t.Union([
   t.Literal("content_filter"),
   t.Literal("tool_calls"),
 ]);
+
+// New type exports
+export type OpenAICompatibleMessage = Static<typeof OpenAICompatibleMessage>;
+export type OpenAICompatibleContentPart =
+  | Static<typeof OpenAICompatibleContentPartText>
+  | Static<typeof OpenAICompatibleContentPartImage>
+  | Static<typeof OpenAICompatibleContentPartFile>;
+export type OpenAICompatibleFinishReason = Static<
+  typeof OpenAICompatibleFinishReason
+>;
+export type OpenAICompatibleAssistantMessage = Static<
+  typeof OpenAICompatibleAssistantMessage
+>;
+export type OpenAICompatibleTool = Static<typeof OpenAICompatibleTool>;
+export type OpenAICompatibleToolChoice = Static<
+  typeof OpenAICompatibleToolChoice
+>;

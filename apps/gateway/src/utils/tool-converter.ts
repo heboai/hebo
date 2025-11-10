@@ -1,15 +1,9 @@
 import { jsonSchema, tool, type ToolChoice } from "ai";
-import { type Static } from "elysia";
 
 import {
-  OpenAICompatibleTool as OpenAICompatibleToolSchema,
-  OpenAICompatibleToolChoice as OpenAICompatibleToolChoiceSchema,
+  OpenAICompatibleTool,
+  OpenAICompatibleToolChoice,
 } from "./openai-compatible-api-schemas";
-
-type OpenAICompatibleTool = Static<typeof OpenAICompatibleToolSchema>;
-type OpenAICompatibleToolChoice = Static<
-  typeof OpenAICompatibleToolChoiceSchema
->;
 
 export const convertOpenAICompatibleToolsToToolSet = (
   tools: OpenAICompatibleTool[] | undefined,
