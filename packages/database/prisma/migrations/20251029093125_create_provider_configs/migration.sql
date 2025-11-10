@@ -13,4 +13,5 @@ CREATE TABLE "providerConfigs" (
     CONSTRAINT "providerConfigs_pkey" PRIMARY KEY ("id")
 );
 
+-- Partial indexes are not supported by Prisma, so we need to create them manually.
 CREATE UNIQUE INDEX "providerConfigs_name_created_by_key" ON "providerConfigs"("name", "created_by") WHERE "deleted_at" IS NULL;
