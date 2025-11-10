@@ -5,9 +5,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": {
-          "id": "openai.gpt-oss-120b-1:0"
-        }
+        "bedrock": "openai.gpt-oss-120b-1:0"
       }
     ],
     "modality": "chat"
@@ -18,9 +16,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": {
-          "id": "openai.gpt-oss-20b-1:0"
-        }
+        "bedrock": "openai.gpt-oss-20b-1:0"
       }
     ],
     "modality": "chat"
@@ -31,9 +27,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "vertex": {
-          "id": "gemini-2.5-flash"
-        }
+        "vertex": "gemini-2.5-flash"
       }
     ],
     "modality": "chat"
@@ -44,9 +38,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "vertex": {
-          "id": "gemini-2.5-flash-lite"
-        }
+        "vertex": "gemini-2.5-flash-lite"
       }
     ],
     "modality": "chat"
@@ -57,9 +49,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": {
-          "id": "anthropic.claude-sonnet-4-20250514-v1:0"
-        }
+        "bedrock": "anthropic.claude-sonnet-4-20250514-v1:0"
       }
     ],
     "modality": "chat"
@@ -70,9 +60,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": {
-          "id": "anthropic.claude-3-haiku-20240307-v1:0"
-        }
+        "bedrock": "anthropic.claude-3-haiku-20240307-v1:0"
       }
     ],
     "modality": "chat"
@@ -83,9 +71,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "groq": {
-          "id": "meta-llama/llama-4-scout-17b-16e-instruct"
-        }
+        "groq": "meta-llama/llama-4-scout-17b-16e-instruct"
       }
     ],
     "modality": "chat"
@@ -96,9 +82,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "voyage": {
-          "id": "voyage-3-large"
-        }
+        "voyage": "voyage-3-large"
       }
     ],
     "modality": "embedding"
@@ -109,9 +93,7 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": {
-          "id": "amazon.titan-embed-text-v2:0"
-        }
+        "bedrock": "amazon.titan-embed-text-v2:0"
       }
     ],
     "modality": "embedding"

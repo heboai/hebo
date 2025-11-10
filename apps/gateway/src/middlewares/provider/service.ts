@@ -102,9 +102,14 @@ const resolveModelId = async (
   const supported = supportedModels.find((m) => m.name === modelType);
   const modelId = (
     supported?.providers?.find((p) => providerCfg.name in p) as
-      | Record<string, { id: string }>
+      | Record<ProviderName, string>
       | undefined
-  )?.[providerCfg.name]?.id as string;
+  )?.[providerCfg.name];
+  if (!modelId)
+    throw new BadRequestError(
+      `Model '${modelType}' is not supported by provider '${providerCfg.name}'`,
+      "model_unsupported",
+    );
   const adapter = ADAPTERS[providerCfg.name];
   if (!adapter) return modelId;
   // For bedrock we need to upgrade to inference profile ARN; others are passthrough
