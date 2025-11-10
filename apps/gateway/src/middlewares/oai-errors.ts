@@ -1,10 +1,6 @@
 import { Elysia, status } from "elysia";
 
-import {
-  BadRequestError,
-  ModelNotFoundError,
-  UpstreamAuthFailedError,
-} from "./provider/errors";
+import { ProviderHttpError } from "./provider/errors";
 
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;
@@ -43,12 +39,15 @@ export const oaiErrors = new Elysia({ name: "oai-error" })
       }
     }
 
+    if (error instanceof ProviderHttpError) {
+      return status(error.status, { error });
+    }
+
     if (
-      error instanceof ModelNotFoundError ||
-      (error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "P2025")
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      (error as any).code === "P2025"
     ) {
       return status(404, {
         error: {
@@ -56,28 +55,6 @@ export const oaiErrors = new Elysia({ name: "oai-error" })
           type: "invalid_request_error",
           param: undefined,
           code: "not_found",
-        },
-      });
-    }
-
-    if (error instanceof BadRequestError) {
-      return status(400, {
-        error: {
-          message: error.message,
-          type: error.type,
-          param: undefined,
-          code: error.code,
-        },
-      });
-    }
-
-    if (error instanceof UpstreamAuthFailedError) {
-      return status(502, {
-        error: {
-          message: error.message,
-          type: error.type,
-          param: undefined,
-          code: error.code,
         },
       });
     }
