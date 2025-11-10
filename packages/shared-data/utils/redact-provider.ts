@@ -1,13 +1,12 @@
-import { ProviderConfigConfig } from "../types/provider-config";
+import { ProviderConfig } from "../types/providers";
 
 const MASK = "***" as const;
 
 export function redactProviderConfig(
-  config: ProviderConfigConfig,
+  config: ProviderConfig,
   mask = MASK,
-): ProviderConfigConfig {
-  const variants =
-    ProviderConfigConfig.anyOf ?? ProviderConfigConfig.oneOf ?? [];
+): ProviderConfig {
+  const variants = ProviderConfig.anyOf ?? ProviderConfig.oneOf ?? [];
   const clone = structuredClone(config) as Record<string, unknown>;
   for (const variant of variants) {
     const props = (variant?.properties ?? {}) as Record<string, any>;
@@ -17,5 +16,5 @@ export function redactProviderConfig(
       }
     }
   }
-  return clone as ProviderConfigConfig;
+  return clone as ProviderConfig;
 }

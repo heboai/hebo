@@ -1,15 +1,14 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
-import type { ProviderConfigConfig } from "@hebo/shared-data/types/provider-config";
-import { redactProviderConfig } from "@hebo/shared-data/utils/redact-provider-config";
+import type { ProviderConfig } from "@hebo/shared-data/types/providers";
+import { redactProviderConfig } from "@hebo/shared-data/utils/redact-provider";
 
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 
 export const connectionString = (() => {
   try {
-    // @ts-expect-error: HeboDatabase may not be defined
-    const db = Resource.HeboDatabase;
+    const db = (Resource as any).HeboDatabase;
     return `postgresql://${db.username}:${db.password}@${db.host}:${db.port}/${db.database}?sslmode=verify-full`;
   } catch {
     // FUTURE: remember to update this and the db script after updating the predev script at root
@@ -74,19 +73,19 @@ export const createDbClient = (userId: string) => {
           });
         },
       },
-      providerConfigs: {
+      providers: {
         async getUnredacted(name: string) {
-          return _prisma.providerConfigs.findFirstOrThrow({
+          return _prisma.providers.findFirstOrThrow({
             where: { name, created_by: userId, deleted_at: dbNull },
           });
         },
       },
     },
     result: {
-      providerConfigs: {
+      providers: {
         config: {
           needs: { config: true },
-          compute({ config }: { config: ProviderConfigConfig }) {
+          compute({ config }: { config: ProviderConfig }) {
             return redactProviderConfig(config);
           },
         },

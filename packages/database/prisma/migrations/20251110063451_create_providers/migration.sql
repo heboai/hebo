@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "providerConfigs" (
+CREATE TABLE "providers" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "config" JSONB NOT NULL,
@@ -10,8 +10,8 @@ CREATE TABLE "providerConfigs" (
     "deleted_by" TEXT,
     "deleted_at" TIMESTAMP(3),
 
-    CONSTRAINT "providerConfigs_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "providers_pkey" PRIMARY KEY ("id")
 );
 
 -- Partial indexes are not supported by Prisma, so we need to create them manually.
-CREATE UNIQUE INDEX "providerConfigs_name_created_by_key" ON "providerConfigs"("name", "created_by") WHERE "deleted_at" IS NULL;
+CREATE UNIQUE INDEX "providers_name_created_by_key" ON "providers"("name", "created_by") WHERE "deleted_at" IS NULL;

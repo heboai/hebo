@@ -1,7 +1,7 @@
 import { createVertex } from "@ai-sdk/google-vertex";
 
 import { getSecret } from "@hebo/shared-api/utils/get-env";
-import type { GoogleProviderConfig } from "@hebo/shared-data/types/provider-config";
+import type { GoogleProviderConfig } from "@hebo/shared-data/types/providers";
 
 import type { Provider } from "ai";
 

@@ -7,9 +7,9 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 import type {
   AwsProviderConfig,
-  ProviderConfig,
+  Provider as ProviderConfig,
   ProviderName,
-} from "@hebo/shared-data/types/provider-config";
+} from "@hebo/shared-data/types/providers";
 
 import { getModalityOrThrow } from "~gateway/utils/model-support";
 
@@ -76,7 +76,7 @@ export const getProviderConfig = async (
   const providerName = (model.customRouting ??
     defaultProviderName) as ProviderName;
   if (model.customRouting) {
-    const { config } = await db.providerConfigs.getUnredacted(providerName);
+    const { config } = await db.providers.getUnredacted(providerName);
     return { name: providerName, config } as ProviderConfig;
   }
   const adapter = ADAPTERS[providerName];

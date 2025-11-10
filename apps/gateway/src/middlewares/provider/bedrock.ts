@@ -10,7 +10,7 @@ import {
 } from "@aws-sdk/client-sts";
 
 import { getSecret } from "@hebo/shared-api/utils/get-env";
-import type { AwsProviderConfig } from "@hebo/shared-data/types/provider-config";
+import type { AwsProviderConfig } from "@hebo/shared-data/types/providers";
 
 import { UpstreamAuthFailedError } from "./errors";
 

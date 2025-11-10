@@ -2,12 +2,10 @@ import { Elysia, status, t } from "elysia";
 
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import {
+  Provider,
   ProviderConfig,
-  ProviderConfigConfig,
   ProviderNameEnum,
-} from "@hebo/shared-data/types/provider-config";
-
-import { providerConfigs as ProviderConfigResponse } from "~api/generated/prismabox/providerConfigs";
+} from "@hebo/shared-data/types/providers";
 
 export const providersModule = new Elysia({
   prefix: "/providers",
@@ -16,10 +14,10 @@ export const providersModule = new Elysia({
   .get(
     "/",
     async ({ dbClient }) => {
-      return status(200, await dbClient.providerConfigs.findMany());
+      return status(200, await dbClient.providers.findMany());
     },
     {
-      response: { 200: t.Array(ProviderConfigResponse) },
+      response: { 200: t.Array(Provider) },
     },
   )
   .post(
@@ -27,7 +25,7 @@ export const providersModule = new Elysia({
     async ({ body, dbClient }) => {
       return status(
         201,
-        await dbClient.providerConfigs.create({
+        await dbClient.providers.create({
           data: {
             name: body.name,
             config: body.config,
@@ -36,8 +34,8 @@ export const providersModule = new Elysia({
       );
     },
     {
-      body: ProviderConfig,
-      response: { 201: ProviderConfigResponse },
+      body: Provider,
+      response: { 201: Provider },
     },
   )
   .get(
@@ -45,25 +43,25 @@ export const providersModule = new Elysia({
     async ({ dbClient, params }) => {
       return status(
         200,
-        await dbClient.providerConfigs.findFirstOrThrow({
+        await dbClient.providers.findFirstOrThrow({
           where: { name: params.providerName },
         }),
       );
     },
     {
       params: t.Object({ providerName: ProviderNameEnum }),
-      response: { 200: ProviderConfigResponse },
+      response: { 200: Provider },
     },
   )
   .patch(
     "/:providerName",
     async ({ body, dbClient, params }) => {
-      const { id } = await dbClient.providerConfigs.findFirstOrThrow({
+      const { id } = await dbClient.providers.findFirstOrThrow({
         where: { name: params.providerName },
       });
       return status(
         200,
-        await dbClient.providerConfigs.update({
+        await dbClient.providers.update({
           where: { id },
           data: body,
         }),
@@ -71,19 +69,19 @@ export const providersModule = new Elysia({
     },
     {
       body: t.Object({
-        config: ProviderConfigConfig,
+        config: ProviderConfig,
       }),
       params: t.Object({ providerName: ProviderNameEnum }),
-      response: { 200: ProviderConfigResponse },
+      response: { 200: Provider },
     },
   )
   .delete(
     "/:providerName",
     async ({ dbClient, params }) => {
-      const { id } = await dbClient.providerConfigs.findFirstOrThrow({
+      const { id } = await dbClient.providers.findFirstOrThrow({
         where: { name: params.providerName },
       });
-      await dbClient.providerConfigs.softDelete({ id });
+      await dbClient.providers.softDelete({ id });
       return status(204);
     },
     {

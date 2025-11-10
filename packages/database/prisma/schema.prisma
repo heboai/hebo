@@ -74,11 +74,11 @@ model branches {
   @@unique([agent_slug, slug])
 }
 
-model providerConfigs {
+model providers {
   /// @prismabox.hide
-  id         String @id @default(uuid(7)) @db.Uuid
-  name       String
-  config     Json
+  id     String @id @default(uuid(7)) @db.Uuid
+  name   String
+  config Json
 
   // Common audit fields across entities
   /// @prismabox.hide
@@ -93,5 +93,4 @@ model providerConfigs {
   deleted_by String?
   /// @prismabox.hide
   deleted_at DateTime?
-
 }

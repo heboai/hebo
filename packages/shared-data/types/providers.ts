@@ -36,21 +36,21 @@ const ApiKeyProviderConfigSchema = Type.Object({
   baseURL: Type.Optional(Type.String()),
 });
 
-export const ProviderConfigConfig = Type.Union([
+export const ProviderConfig = Type.Union([
   AwsProviderConfigSchema,
   GoogleProviderConfigSchema,
   ApiKeyProviderConfigSchema,
 ]);
 
-export const ProviderConfig = Type.Object({
+export const Provider = Type.Object({
   name: ProviderNameEnum,
-  config: ProviderConfigConfig,
+  config: ProviderConfig,
 });
 
 export type AwsProviderConfig = Static<typeof AwsProviderConfigSchema>;
 export type GoogleProviderConfig = Static<typeof GoogleProviderConfigSchema>;
 export type ApiKeyProviderConfig = Static<typeof ApiKeyProviderConfigSchema>;
 
-export type ProviderConfigConfig = Static<typeof ProviderConfigConfig>;
+export type Provider = Static<typeof Provider>;
 export type ProviderConfig = Static<typeof ProviderConfig>;
 export type ProviderName = Static<typeof ProviderNameEnum>;

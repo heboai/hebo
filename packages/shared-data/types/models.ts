@@ -1,6 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 
-import { ProviderNameEnum } from "./provider-config";
+import { ProviderNameEnum } from "./providers";
 import supportedModels from "../json/supported-models.json";
 
 export const SupportedModelsEnum = Type.Enum(
