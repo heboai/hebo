@@ -14,13 +14,14 @@ import type {
   ProviderName,
 } from "@hebo/shared-data/types/provider-config";
 
+import { getModalityOrThrow } from "~gateway/utils/model-support";
+
 import { getInferenceProfileArn, getAwsCreds } from "./bedrock";
 import { BadRequestError, ModelNotFoundError } from "./errors";
 import { buildAwsWifOptions } from "./vertex";
 
 import type { LanguageModel, Provider, EmbeddingModel } from "ai";
 
-export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
 const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   bedrock: {
@@ -51,16 +52,6 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
       apiKey: await getEnvValue("VoyageApiKey"),
     },
   },
-};
-
-export const getModalityOrThrow = (type: string) => {
-  const entry = supportedModels.find((m) => m.name === type);
-  if (!entry)
-    throw new BadRequestError(
-      `Unknown or unsupported model '${type}'`,
-      "model_unsupported",
-    );
-  return entry.modality;
 };
 
 type Creator = (config: ProviderConfig["config"]) => Promise<Provider>;

@@ -3,7 +3,7 @@ import { Elysia, t } from "elysia";
 import {
   SUPPORTED_MODELS,
   getModalityOrThrow,
-} from "~gateway/middlewares/provider/service";
+} from "~gateway/utils/model-support";
 
 export const models = new Elysia({
   name: "models",
