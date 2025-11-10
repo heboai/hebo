@@ -76,7 +76,7 @@ export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
 export const getBedrockDefaultConfig =
   async (): Promise<AwsProviderConfig> => ({
     bedrockRoleArn: await getEnvValue("BedrockRoleArn"),
-    region: process.env.AWS_REGION ?? "us-east-1",
+    region: process.env.BEDROCK_REGION ?? "us-east-1",
   });
 
 export const createBedrockProvider = async (
