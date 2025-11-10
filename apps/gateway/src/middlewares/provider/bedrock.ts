@@ -16,6 +16,8 @@ import { UpstreamAuthFailedError } from "./errors";
 
 import type { Provider } from "ai";
 
+const BEDROCK_REGION = process.env.BEDROCK_REGION ?? "us-east-1";
+
 // FUTURE: Cache the inference profile ARN
 // FUTURE: try to achieve the same using @aws-sdk/client-sts
 export const getInferenceProfileArn = async (
@@ -46,7 +48,7 @@ export const getInferenceProfileArn = async (
 
 // FUTURE: Cache the account id
 const getAwsAccountId = async (): Promise<string> => {
-  const stsClient = new STSClient({ region: "us-east-1" });
+  const stsClient = new STSClient({ region: BEDROCK_REGION });
   const response = await stsClient.send(new GetCallerIdentityCommand({}));
   if (!response.Account)
     throw new UpstreamAuthFailedError("Could not retrieve AWS account id");
@@ -76,7 +78,7 @@ export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
 export const getBedrockDefaultConfig =
   async (): Promise<AwsProviderConfig> => ({
     bedrockRoleArn: await getSecret("BedrockRoleArn"),
-    region: process.env.BEDROCK_REGION ?? "us-east-1",
+    region: BEDROCK_REGION,
   });
 
 export const createBedrockProvider = async (
