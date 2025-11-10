@@ -103,7 +103,7 @@ Secret names:
 
 - LLM:
   - Bedrock: `BedrockRoleArn`
-  - Vertex: `googleVertexServiceAccountEmail`, `googleVertexAwsProviderAudience`, `GoogleVertexProject`
+  - Vertex: `VertexServiceAccountEmail`, `VertexAwsProviderAudience`, `VertexProject`
   - Others: `VoyageApiKey`
 - Auth (Stack Auth): `StackSecretServerKey`, `StackPublishableClientKey`, `StackProjectId`
 

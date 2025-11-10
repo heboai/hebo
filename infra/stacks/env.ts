@@ -7,13 +7,13 @@ export const stackProjectId = new sst.Secret("StackProjectId");
 
 // LLMs
 export const bedrockRoleArn = new sst.Secret("BedrockRoleArn");
-export const googleVertexServiceAccountEmail = new sst.Secret(
-  "GoogleVertexServiceAccountEmail",
+export const vertexServiceAccountEmail = new sst.Secret(
+  "VertexServiceAccountEmail",
 );
-export const googleVertexAwsProviderAudience = new sst.Secret(
-  "GoogleVertexAwsProviderAudience",
+export const vertexAwsProviderAudience = new sst.Secret(
+  "VertexAwsProviderAudience",
 );
-export const googleVertexProject = new sst.Secret("GoogleVertexProject");
+export const vertexProject = new sst.Secret("VertexProject");
 export const voyageApiKey = new sst.Secret("VoyageApiKey");
 
 export const allSecrets = [
@@ -21,9 +21,9 @@ export const allSecrets = [
   stackPublishableClientKey,
   stackProjectId,
   bedrockRoleArn,
-  googleVertexServiceAccountEmail,
-  googleVertexAwsProviderAudience,
-  googleVertexProject,
+  vertexServiceAccountEmail,
+  vertexAwsProviderAudience,
+  vertexProject,
   voyageApiKey,
 ];
 export const isProd = $app.stage === "production";

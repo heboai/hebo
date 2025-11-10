@@ -32,10 +32,10 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
   vertex: {
     name: "vertex",
     config: {
-      serviceAccountEmail: await getEnvValue("GoogleVertexServiceAccountEmail"),
-      audience: await getEnvValue("GoogleVertexAwsProviderAudience"),
+      serviceAccountEmail: await getEnvValue("VertexServiceAccountEmail"),
+      audience: await getEnvValue("VertexAwsProviderAudience"),
       location: "us-central1",
-      project: await getEnvValue("GoogleVertexProject"),
+      project: await getEnvValue("VertexProject"),
     },
   },
   voyage: {
