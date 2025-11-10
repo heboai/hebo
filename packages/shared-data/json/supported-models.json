@@ -78,6 +78,19 @@
     "modality": "chat"
   },
   {
+    "name": "meta/llama-4-scout-17b-16e-instruct",
+    "displayName": "Meta Llama 4 Scout 17B 16E Instruct",
+    "rateLimit": 400000000,
+    "providers": [
+      {
+        "groq": {
+          "id": "meta-llama/llama-4-scout-17b-16e-instruct"
+        }
+      }
+    ],
+    "modality": "chat"
+  },
+  {
     "name": "voyage/voyage-3-large",
     "displayName": "Voyage 3 Large",
     "rateLimit": 400000000,

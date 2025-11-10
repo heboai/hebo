@@ -1,5 +1,6 @@
 import { createAmazonBedrock } from "@ai-sdk/amazon-bedrock";
 import { createVertex } from "@ai-sdk/google-vertex";
+import { createGroq } from "@ai-sdk/groq";
 import { createVoyage } from "voyage-ai-provider";
 
 import type { createDbClient } from "@hebo/database/client";
@@ -36,6 +37,12 @@ const DEFAULTS_BY_PROVIDER: Record<ProviderName, ProviderConfig> = {
       audience: await getEnvValue("VertexAwsProviderAudience"),
       location: "us-central1",
       project: await getEnvValue("VertexProject"),
+    },
+  },
+  groq: {
+    name: "groq",
+    config: {
+      apiKey: await getEnvValue("GroqApiKey"),
     },
   },
   voyage: {
@@ -80,7 +87,8 @@ const PROVIDER_CREATORS: Record<ProviderName, Creator> = {
       baseURL,
     });
   },
-  voyage: async (config) => createVoyage({ ...(config as any) }),
+  voyage: async (config) => createVoyage({ ...config }),
+  groq: async (config) => createGroq({ ...config }),
 };
 const createProvider = async (cfg: ProviderConfig): Promise<Provider> =>
   (await PROVIDER_CREATORS[cfg.name]?.(cfg.config)) ??

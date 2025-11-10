@@ -104,7 +104,7 @@ Secret names:
 - LLM:
   - Bedrock: `BedrockRoleArn`
   - Vertex: `VertexServiceAccountEmail`, `VertexAwsProviderAudience`, `VertexProject`
-  - Others: `VoyageApiKey`
+  - Others: `GroqApiKey`, `VoyageApiKey`
 - Auth (Stack Auth): `StackSecretServerKey`, `StackPublishableClientKey`, `StackProjectId`
 
 Local (Bun) examples:
