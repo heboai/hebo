@@ -38,7 +38,12 @@ const createApi = () =>
       {
         isSignedIn: true,
       },
-      (app) => app.use(agentsModule.use(branchesModule)).use(providersModule),
+      (app) =>
+        app
+          // /agents and /agents/:agentSlug/branches
+          .use(agentsModule.use(branchesModule))
+          // /providers
+          .use(providersModule),
     );
 
 if (import.meta.main) {
