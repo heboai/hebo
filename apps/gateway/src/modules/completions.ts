@@ -4,22 +4,19 @@ import { Elysia, t } from "elysia";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 import { provider } from "~gateway/middlewares/provider";
+import {
+  toModelMessages,
+  toOpenAICompatibleFinishReason,
+  toOpenAICompatibleMessage,
+  toToolSet,
+  toToolChoice,
+} from "~gateway/utils/converters";
 import { getModelType } from "~gateway/utils/get-model-type";
-import { convertOpenAICompatibleMessagesToModelMessages } from "~gateway/utils/message-converter";
 import {
   OpenAICompatibleMessage,
-  OpenAICompatibleReasoning,
   OpenAICompatibleTool,
   OpenAICompatibleToolChoice,
 } from "~gateway/utils/openai-compatible-api-schemas";
-import {
-  convertToOpenAICompatibleFinishReason,
-  convertToOpenAICompatibleMessage,
-} from "~gateway/utils/openai-compatible-converter";
-import {
-  convertOpenAICompatibleToolsToToolSet,
-  convertOpenAICompatibleToolChoiceToCoreToolChoice,
-} from "~gateway/utils/tool-converter";
 
 export const completions = new Elysia({
   name: "completions",
@@ -37,19 +34,16 @@ export const completions = new Elysia({
         toolChoice,
         temperature = 1,
         stream = false,
-        reasoning,
       } = body;
 
-      const toolSet = convertOpenAICompatibleToolsToToolSet(tools);
+      const toolSet = toToolSet(tools);
 
       const modelType = await getModelType(dbClient, model);
       const chatModel = provider.chat(modelType);
 
-      const modelMessages =
-        convertOpenAICompatibleMessagesToModelMessages(messages);
+      const modelMessages = toModelMessages(messages);
 
-      const coreToolChoice =
-        convertOpenAICompatibleToolChoiceToCoreToolChoice(toolChoice);
+      const coreToolChoice = toToolChoice(toolChoice);
 
       if (stream) {
         const result = streamText({
@@ -58,12 +52,6 @@ export const completions = new Elysia({
           tools: toolSet,
           toolChoice: coreToolChoice,
           temperature,
-          providerOptions: reasoning &&
-            reasoning.effort && {
-              groq: {
-                reasoningEffort: reasoning.effort,
-              },
-            },
         });
         return result.toTextStreamResponse();
       }
@@ -74,17 +62,9 @@ export const completions = new Elysia({
         tools: toolSet,
         toolChoice: coreToolChoice,
         temperature,
-        providerOptions: reasoning &&
-          reasoning.effort && {
-            groq: {
-              reasoningEffort: reasoning.effort,
-            },
-          },
       });
 
-      const finish_reason = convertToOpenAICompatibleFinishReason(
-        result.finishReason,
-      );
+      const finish_reason = toOpenAICompatibleFinishReason(result.finishReason);
 
       return {
         id: "chatcmpl-" + crypto.randomUUID(),
@@ -94,7 +74,7 @@ export const completions = new Elysia({
         choices: [
           {
             index: 0,
-            message: convertToOpenAICompatibleMessage(result),
+            message: toOpenAICompatibleMessage(result),
             finish_reason,
           },
         ],
@@ -118,7 +98,6 @@ export const completions = new Elysia({
         stream: t.Optional(t.Boolean()),
         tools: t.Optional(t.Array(OpenAICompatibleTool)),
         toolChoice: t.Optional(OpenAICompatibleToolChoice),
-        reasoning: t.Optional(OpenAICompatibleReasoning),
       }),
     },
   );

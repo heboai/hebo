@@ -94,15 +94,6 @@ export const OpenAICompatibleToolChoice = t.Union([
   }),
 ]);
 
-export const OpenAICompatibleReasoning = t.Object({
-  enabled: t.Boolean(),
-  max_tokens: t.Optional(t.Number()),
-  effort: t.Optional(
-    t.Union([t.Literal("low"), t.Literal("medium"), t.Literal("high")]),
-  ),
-  exclude: t.Optional(t.Boolean()),
-});
-
 export const OpenAICompatibleFinishReason = t.Union([
   t.Literal("stop"),
   t.Literal("length"),
