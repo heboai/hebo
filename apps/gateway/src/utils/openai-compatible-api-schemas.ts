@@ -101,7 +101,6 @@ export const OpenAICompatibleFinishReason = t.Union([
   t.Literal("tool_calls"),
 ]);
 
-// New type exports
 export type OpenAICompatibleMessage = Static<typeof OpenAICompatibleMessage>;
 export type OpenAICompatibleContentPart =
   | Static<typeof OpenAICompatibleContentPartText>
