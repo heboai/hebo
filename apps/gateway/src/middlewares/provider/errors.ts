@@ -16,7 +16,7 @@ export abstract class ProviderHttpError extends Error {
     return {
       message: this.message,
       type: this.type,
-      param: undefined as unknown,
+      param: undefined,
       code: this.code,
     };
   }
