@@ -10,7 +10,8 @@ switch (cmd) {
     break;
   }
   case "get": {
-    console.log((await secrets.get({ service: "hebo", name })) ?? "");
+    const secret = await secrets.get({ service: "hebo", name });
+    console.log(secret ?? "");
     break;
   }
   case "delete": {
