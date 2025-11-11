@@ -1,12 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 
-import { ProviderNameEnum } from "./providers";
-import supportedModels from "../json/supported-models.json";
-
-export const SupportedModelsEnum = Type.Enum(
-  Object.fromEntries(supportedModels.map(({ name }) => [name, name])),
-  { error: "Invalid model name" },
-);
+import { ProviderNameEnum, SupportedModelsEnum } from "./enums";
 
 export const ModelsSchema = Type.Array(
   Type.Object({

@@ -1,21 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 
-import supportedModels from "../json/supported-models.json";
-
-export const ProviderNameEnum = Type.Enum(
-  Object.fromEntries(
-    [
-      ...new Set(
-        supportedModels.flatMap((model) =>
-          (model.providers ?? []).flatMap((providerObj) =>
-            Object.keys(providerObj),
-          ),
-        ),
-      ),
-    ].map((providerName) => [providerName, providerName]),
-  ),
-  { error: "Invalid provider name" },
-);
+import { ProviderNameEnum } from "./enums";
 
 const AwsProviderConfigSchema = Type.Object({
   bedrockRoleArn: Type.String(),

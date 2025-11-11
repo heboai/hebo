@@ -2,7 +2,7 @@ import { Elysia, status, t } from "elysia";
 
 import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-import { SupportedModelsEnum } from "@hebo/shared-data/types/models";
+import { SupportedModelsEnum } from "@hebo/shared-data/types/enums";
 
 import {
   agentsInputCreate,
