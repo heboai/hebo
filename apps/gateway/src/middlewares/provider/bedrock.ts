@@ -3,11 +3,7 @@ import {
   BedrockClient,
   ListInferenceProfilesCommand,
 } from "@aws-sdk/client-bedrock";
-import {
-  STSClient,
-  AssumeRoleCommand,
-  GetCallerIdentityCommand,
-} from "@aws-sdk/client-sts";
+import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 
 import { getSecret } from "@hebo/shared-api/utils/get-env";
 import type { AwsProviderConfig } from "@hebo/shared-data/types/providers";
@@ -46,23 +42,12 @@ export const getInferenceProfileArn = async (
   return modelId;
 };
 
-// FUTURE: Cache the account id
-const getAwsAccountId = async (): Promise<string> => {
-  const stsClient = new STSClient({ region: BEDROCK_REGION });
-  const response = await stsClient.send(new GetCallerIdentityCommand({}));
-  if (!response.Account)
-    throw new UpstreamAuthFailedError("Could not retrieve AWS account id");
-  return response.Account;
-};
-
 // FUTURE: Cache the credentials
 export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
-  const accountId = await getAwsAccountId();
-  const fullRoleArn = `arn:aws:iam::${accountId}:role/${bedrockRoleArn}`;
   const sts = new STSClient({ region });
   const resp = await sts.send(
     new AssumeRoleCommand({
-      RoleArn: fullRoleArn,
+      RoleArn: bedrockRoleArn,
       RoleSessionName: "HeboBedrockSession",
     }),
   );
