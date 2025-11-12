@@ -8,7 +8,18 @@ import {
   getProviderConfig,
   pickModel,
 } from "~gateway/middlewares/provider/service";
-import { convertOpenAICompatibleMessagesToModelMessages } from "~gateway/utils/message-converter";
+import {
+  toModelMessages,
+  toOpenAICompatibleFinishReason,
+  toOpenAICompatibleMessage,
+  toToolSet,
+  toToolChoice,
+} from "~gateway/utils/converters";
+import {
+  OpenAICompatibleMessage,
+  OpenAICompatibleTool,
+  OpenAICompatibleToolChoice,
+} from "~gateway/utils/openai-compatible-api-schemas";
 
 export const completions = new Elysia({
   name: "completions",
@@ -18,29 +29,43 @@ export const completions = new Elysia({
   .post(
     "/",
     async ({ body, dbClient }) => {
-      const { model, messages, temperature = 1, stream = false } = body;
+      const {
+        model,
+        messages,
+        tools,
+        toolChoice,
+        temperature = 1,
+        stream = false,
+      } = body;
+    
       const foundModel = await getModelObject(dbClient, model);
       const chatModel = await pickModel(
         foundModel,
         await getProviderConfig(foundModel, dbClient),
         "chat",
       );
-      const converted = convertOpenAICompatibleMessagesToModelMessages(
-        messages,
-      ) as ModelMessage[];
+      const toolSet = toToolSet(tools);
+      const modelMessages = toModelMessages(messages);
+      const coreToolChoice = toToolChoice(toolChoice);
 
-      if (stream)
-        return streamText({
+      if (stream) {
+        const result = streamText({
           model: chatModel,
-          messages: converted,
+          messages: modelMessages as ModelMessage[],
+          tools: toolSet,
+          toolChoice: coreToolChoice,
           temperature,
         }).toTextStreamResponse();
 
       const result = await generateText({
         model: chatModel,
-        messages: converted,
+        messages: modelMessages as ModelMessage[],
+        tools: toolSet,
+        toolChoice: coreToolChoice,
         temperature,
       });
+
+      const finish_reason = toOpenAICompatibleFinishReason(result.finishReason);
 
       return {
         id: "chatcmpl-" + crypto.randomUUID(),
@@ -50,8 +75,8 @@ export const completions = new Elysia({
         choices: [
           {
             index: 0,
-            message: { role: "assistant", content: result.text },
-            finish_reason: "stop",
+            message: toOpenAICompatibleMessage(result),
+            finish_reason,
           },
         ],
         usage: result.usage && {
@@ -60,45 +85,20 @@ export const completions = new Elysia({
           total_tokens:
             result.usage.totalTokens ??
             (result.usage.inputTokens ?? 0) + (result.usage.outputTokens ?? 0),
+          completion_tokens_details: {
+            reasoning_tokens: result.usage.reasoningTokens ?? 0,
+          },
         },
       };
     },
     {
       body: t.Object({
         model: t.String(),
-        messages: t.Array(
-          t.Object({
-            role: t.Union([
-              t.Literal("system"),
-              t.Literal("user"),
-              t.Literal("assistant"),
-              t.Literal("tool"),
-            ]),
-            content: t.Union([
-              t.String(),
-              t.Array(
-                t.Union([
-                  t.Object({
-                    type: t.Literal("text"),
-                    text: t.String(),
-                  }),
-                  t.Object({
-                    type: t.Literal("image_url"),
-                    image_url: t.Object({
-                      url: t.String(),
-                    }),
-                  }),
-                ]),
-                { minItems: 1 },
-              ),
-            ]),
-            name: t.Optional(t.String()),
-            tool_call_id: t.Optional(t.String()),
-          }),
-          { minItems: 1 },
-        ),
+        messages: t.Array(OpenAICompatibleMessage),
         temperature: t.Optional(t.Number({ minimum: 0, maximum: 2 })),
         stream: t.Optional(t.Boolean()),
+        tools: t.Optional(t.Array(OpenAICompatibleTool)),
+        toolChoice: t.Optional(OpenAICompatibleToolChoice),
       }),
     },
   );
