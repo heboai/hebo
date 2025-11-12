@@ -13,7 +13,6 @@ import { UpstreamAuthFailedError } from "./errors";
 import type { Provider } from "ai";
 
 // FUTURE: Cache the inference profile ARN
-// FUTURE: try to achieve the same using @aws-sdk/client-sts
 export const getInferenceProfileArn = async (
   credentials: {
     accessKeyId: string;
