@@ -60,11 +60,10 @@ const resolveProviderName = (modelConfig: ModelConfig): ProviderName => {
   if (modelConfig.customRouting) {
     return modelConfig.customRouting as ProviderName;
   }
-
-  const supportedModel = getSupportedModelOrThrow(modelConfig.type);
-  // Curently, we just pick the first provider for a model
-  const providerEntry = supportedModel?.providers?.[0];
-  return Object.keys(providerEntry!)[0] as ProviderName;
+  // Currently, we just pick the first provider for a model
+  const supportedProvider = getSupportedModelOrThrow(modelConfig.type)
+    .providers[0];
+  return Object.keys(supportedProvider)[0] as ProviderName;
 };
 
 const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
@@ -107,7 +106,7 @@ const getModelIdForProvider = (
   supportedModel: ReturnType<typeof getSupportedModelOrThrow>,
   providerName: ProviderName,
 ): string => {
-  const entry = supportedModel.providers!.find(
+  const entry = supportedModel.providers.find(
     (provider) => providerName in provider,
   ) as Record<ProviderName, string>;
   return entry[providerName];
