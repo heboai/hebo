@@ -7,7 +7,7 @@ import {
   getModelObject,
   getProviderConfig,
   pickModel,
-} from "~gateway/middlewares/provider/service";
+} from "~gateway/middlewares/providers/service";
 import {
   toModelMessages,
   toOpenAICompatibleFinishReason,

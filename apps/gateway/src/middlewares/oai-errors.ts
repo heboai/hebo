@@ -1,6 +1,6 @@
 import { Elysia, status } from "elysia";
 
-import { ProviderHttpError } from "./provider/errors";
+import { ProviderHttpError } from "./providers/errors";
 
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;

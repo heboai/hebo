@@ -7,7 +7,7 @@ import {
   getModelObject,
   getProviderConfig,
   pickModel,
-} from "~gateway/middlewares/provider/service";
+} from "~gateway/middlewares/providers/service";
 
 export const embeddings = new Elysia({
   name: "embeddings",
