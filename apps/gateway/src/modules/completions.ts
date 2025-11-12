@@ -4,9 +4,9 @@ import { Elysia, t } from "elysia";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 import {
-  getModelObject,
+  createAIModel,
+  getModelConfig,
   getProviderConfig,
-  pickModel,
 } from "~gateway/middlewares/providers/service";
 import {
   toModelMessages,
@@ -30,7 +30,7 @@ export const completions = new Elysia({
     "/",
     async ({ body, dbClient }) => {
       const {
-        model,
+        model: fullModelAlias,
         messages,
         tools,
         toolChoice,
@@ -38,12 +38,14 @@ export const completions = new Elysia({
         stream = false,
       } = body;
 
-      const foundModel = await getModelObject(dbClient, model);
-      const chatModel = await pickModel(
-        foundModel,
-        await getProviderConfig(foundModel, dbClient),
+      const modelConfig = await getModelConfig(dbClient, fullModelAlias);
+      const providerConfig = await getProviderConfig(dbClient, modelConfig);
+      const chatModel = await createAIModel(
+        modelConfig,
+        providerConfig,
         "chat",
       );
+
       const toolSet = toToolSet(tools);
       const modelMessages = toModelMessages(messages);
       const coreToolChoice = toToolChoice(toolChoice);
@@ -72,7 +74,7 @@ export const completions = new Elysia({
         id: "chatcmpl-" + crypto.randomUUID(),
         object: "chat.completion",
         created: Math.floor(Date.now() / 1000),
-        model,
+        model: fullModelAlias,
         choices: [
           {
             index: 0,

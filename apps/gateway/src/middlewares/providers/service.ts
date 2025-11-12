@@ -23,6 +23,8 @@ import { createVertexProvider, getVertexDefaultConfig } from "./vertex";
 
 import type { LanguageModel, Provider, EmbeddingModel } from "ai";
 
+type ModelConfig = Models[number];
+
 type ProviderAdapter = {
   getDefaultConfig: () => Promise<any>;
   create: (config: any) => Promise<Provider>;
@@ -55,6 +57,19 @@ const ADAPTERS: Record<ProviderName, ProviderAdapter> = {
   },
 };
 
+const resolveProviderName = (modelConfig: ModelConfig): ProviderName => {
+  if (modelConfig.customRouting) {
+    return modelConfig.customRouting as ProviderName;
+  }
+
+  const supportedModel = supportedModels.find(
+    (model) => model.name === modelConfig.type,
+  );
+  // Curently, we just pick the first provider for a model
+  const providerEntry = supportedModel?.providers?.[0];
+  return Object.keys(providerEntry!)[0] as ProviderName;
+};
+
 const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
   const adapter = ADAPTERS[cfg.name];
   if (!adapter)
@@ -66,17 +81,13 @@ const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
 };
 
 export const getProviderConfig = async (
-  model: Models[number],
-  db: ReturnType<typeof createDbClient>,
+  dbClient: ReturnType<typeof createDbClient>,
+  modelConfig: ModelConfig,
 ): Promise<ProviderConfig> => {
-  const supported = supportedModels.find((m) => m.name === model.type);
-  const defaultProviderName = supported?.providers?.length
-    ? (Object.keys(supported.providers[0] ?? {})[0] as ProviderName)
-    : undefined;
-  const providerName = (model.customRouting ??
-    defaultProviderName) as ProviderName;
-  if (model.customRouting) {
-    const { config } = await db.providers.getUnredacted(providerName);
+  const providerName = resolveProviderName(modelConfig);
+
+  if (modelConfig.customRouting) {
+    const { config } = await dbClient.providers.getUnredacted(providerName);
     return { name: providerName, config } as ProviderConfig;
   }
   const adapter = ADAPTERS[providerName];
@@ -95,66 +106,66 @@ const getOrCreateProvider = async (cfg: ProviderConfig): Promise<Provider> => {
   return instance;
 };
 
+const getModelIdForProvider = (
+  modelType: string,
+  providerName: ProviderName,
+): string => {
+  const supportedModel = supportedModels.find((m) => m.name === modelType)!;
+  const entry = supportedModel.providers!.find(
+    (provider) => providerName in provider,
+  ) as Record<ProviderName, string>;
+  return entry[providerName];
+};
+
 const resolveModelId = async (
   modelType: string,
   providerCfg: ProviderConfig,
 ): Promise<string> => {
-  const supported = supportedModels.find((m) => m.name === modelType);
-  const modelId = (
-    supported?.providers?.find((p) => providerCfg.name in p) as
-      | Record<ProviderName, string>
-      | undefined
-  )?.[providerCfg.name];
-  if (!modelId)
-    throw new BadRequestError(
-      `Model '${modelType}' is not supported by provider '${providerCfg.name}'`,
-      "model_unsupported",
-    );
+  const modelId = getModelIdForProvider(modelType, providerCfg.name);
   const adapter = ADAPTERS[providerCfg.name];
-  if (!adapter) return modelId;
   // For bedrock we need to upgrade to inference profile ARN; others are passthrough
   return adapter.transformModelId(modelId, providerCfg.config);
 };
 
-export const getModelObject = async (
+export const getModelConfig = async (
   dbClient: ReturnType<typeof createDbClient>,
-  modelString: string,
-) => {
-  const [agentSlug, branchSlug, modelAlias] = modelString.split("/");
-  const result = await dbClient.branches.findFirstOrThrow({
+  fullModelAlias: string,
+): Promise<ModelConfig> => {
+  const [agentSlug, branchSlug, modelAlias] = fullModelAlias.split("/");
+  const branch = await dbClient.branches.findFirstOrThrow({
     where: { agent_slug: agentSlug, slug: branchSlug },
     select: { models: true },
   });
-  const foundModel = (result.models as Models)?.find(
-    (m) => m?.alias === modelAlias,
+  const modelConfig = (branch.models as Models)?.find(
+    (model) => model?.alias === modelAlias,
   );
-  if (!foundModel) throw new ModelNotFoundError();
-  return foundModel;
+  if (!modelConfig) throw new ModelNotFoundError();
+  return modelConfig;
 };
 
-export function pickModel(
-  model: Models[number],
+export function createAIModel(
+  modelConfig: ModelConfig,
   providerCfg: ProviderConfig,
   expect: "chat",
 ): Promise<LanguageModel>;
-export function pickModel(
-  model: Models[number],
+export function createAIModel(
+  modelConfig: ModelConfig,
   providerCfg: ProviderConfig,
   expect: "embedding",
 ): Promise<EmbeddingModel<string>>;
-export async function pickModel(
-  model: Models[number],
+export async function createAIModel(
+  modelConfig: ModelConfig,
   providerCfg: ProviderConfig,
   expect: "chat" | "embedding",
 ) {
-  const modality = getModalityOrThrow(model.type);
+  const modality = getModalityOrThrow(modelConfig.type);
   if (modality !== expect)
     throw new BadRequestError(
-      `Model '${model.type}' is a ${modality} model`,
+      `Model '${modelConfig.type}' is a ${modality} model`,
       "model_mismatch",
     );
-  const modelId = await resolveModelId(model.type, providerCfg);
   const provider = await getOrCreateProvider(providerCfg);
+  const modelId = await resolveModelId(modelConfig.type, providerCfg);
   return expect === "chat"
     ? provider.languageModel(modelId)
     : provider.textEmbeddingModel(modelId);

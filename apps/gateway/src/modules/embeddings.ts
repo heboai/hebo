@@ -4,9 +4,9 @@ import { Elysia, t } from "elysia";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 import {
-  getModelObject,
+  createAIModel,
+  getModelConfig,
   getProviderConfig,
-  pickModel,
 } from "~gateway/middlewares/providers/service";
 
 export const embeddings = new Elysia({
@@ -17,11 +17,13 @@ export const embeddings = new Elysia({
   .post(
     "/",
     async ({ body, dbClient }) => {
-      const { model, input } = body;
-      const foundModel = await getModelObject(dbClient, model);
-      const embeddingModel = await pickModel(
-        foundModel,
-        await getProviderConfig(foundModel, dbClient),
+      const { model: fullModelAlias, input } = body;
+
+      const modelConfig = await getModelConfig(dbClient, fullModelAlias);
+      const providerConfig = await getProviderConfig(dbClient, modelConfig);
+      const embeddingModel = await createAIModel(
+        modelConfig,
+        providerConfig,
         "embedding",
       );
 
@@ -37,7 +39,7 @@ export const embeddings = new Elysia({
             embedding: e,
             index: i,
           })),
-          model,
+          model: fullModelAlias,
           usage: usage && {
             prompt_tokens: usage.tokens ?? 0,
             total_tokens: usage.tokens ?? 0,
@@ -52,7 +54,7 @@ export const embeddings = new Elysia({
       return {
         object: "list",
         data: [{ object: "embedding", embedding, index: 0 }],
-        model,
+        model: fullModelAlias,
         usage: usage && {
           prompt_tokens: usage.tokens ?? 0,
           total_tokens: usage.tokens ?? 0,
