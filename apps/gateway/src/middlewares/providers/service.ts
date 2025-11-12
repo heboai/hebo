@@ -3,7 +3,6 @@ import { createVoyage } from "voyage-ai-provider";
 
 import type { createDbClient } from "@hebo/database/client";
 import { getSecret } from "@hebo/shared-api/utils/get-env";
-import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 import type {
   AwsProviderConfig,
@@ -11,7 +10,7 @@ import type {
   ProviderName,
 } from "@hebo/shared-data/types/providers";
 
-import { getModalityOrThrow } from "~gateway/utils/model-support";
+import { getSupportedModelOrThrow } from "~gateway/utils/get-supported-model";
 
 import {
   createBedrockProvider,
@@ -62,9 +61,7 @@ const resolveProviderName = (modelConfig: ModelConfig): ProviderName => {
     return modelConfig.customRouting as ProviderName;
   }
 
-  const supportedModel = supportedModels.find(
-    (model) => model.name === modelConfig.type,
-  );
+  const supportedModel = getSupportedModelOrThrow(modelConfig.type);
   // Curently, we just pick the first provider for a model
   const providerEntry = supportedModel?.providers?.[0];
   return Object.keys(providerEntry!)[0] as ProviderName;
@@ -107,10 +104,9 @@ const getOrCreateProvider = async (cfg: ProviderConfig): Promise<Provider> => {
 };
 
 const getModelIdForProvider = (
-  modelType: string,
+  supportedModel: ReturnType<typeof getSupportedModelOrThrow>,
   providerName: ProviderName,
 ): string => {
-  const supportedModel = supportedModels.find((m) => m.name === modelType)!;
   const entry = supportedModel.providers!.find(
     (provider) => providerName in provider,
   ) as Record<ProviderName, string>;
@@ -118,10 +114,10 @@ const getModelIdForProvider = (
 };
 
 const resolveModelId = async (
-  modelType: string,
+  supportedModel: ReturnType<typeof getSupportedModelOrThrow>,
   providerCfg: ProviderConfig,
 ): Promise<string> => {
-  const modelId = getModelIdForProvider(modelType, providerCfg.name);
+  const modelId = getModelIdForProvider(supportedModel, providerCfg.name);
   const adapter = ADAPTERS[providerCfg.name];
   // For bedrock we need to upgrade to inference profile ARN; others are passthrough
   return adapter.transformModelId(modelId, providerCfg.config);
@@ -146,27 +142,22 @@ export const getModelConfig = async (
 export function createAIModel(
   modelConfig: ModelConfig,
   providerCfg: ProviderConfig,
-  expect: "chat",
+  modality: "chat",
 ): Promise<LanguageModel>;
 export function createAIModel(
   modelConfig: ModelConfig,
   providerCfg: ProviderConfig,
-  expect: "embedding",
+  modality: "embedding",
 ): Promise<EmbeddingModel<string>>;
 export async function createAIModel(
   modelConfig: ModelConfig,
   providerCfg: ProviderConfig,
-  expect: "chat" | "embedding",
+  modality: "chat" | "embedding",
 ) {
-  const modality = getModalityOrThrow(modelConfig.type);
-  if (modality !== expect)
-    throw new BadRequestError(
-      `Model '${modelConfig.type}' is a ${modality} model`,
-      "model_mismatch",
-    );
+  const supportedModel = getSupportedModelOrThrow(modelConfig.type, modality);
   const provider = await getOrCreateProvider(providerCfg);
-  const modelId = await resolveModelId(modelConfig.type, providerCfg);
-  return expect === "chat"
+  const modelId = await resolveModelId(supportedModel, providerCfg);
+  return modality === "chat"
     ? provider.languageModel(modelId)
     : provider.textEmbeddingModel(modelId);
 }
