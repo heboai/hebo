@@ -8,7 +8,8 @@ import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 
 export const connectionString = (() => {
   try {
-    const db = (Resource as any).HeboDatabase;
+    // @ts-expect-error: HeboDatabase may not be defined
+    const db = Resource.HeboDatabase;
     return `postgresql://${db.username}:${db.password}@${db.host}:${db.port}/${db.database}?sslmode=verify-full`;
   } catch {
     // FUTURE: remember to update this and the db script after updating the predev script at root

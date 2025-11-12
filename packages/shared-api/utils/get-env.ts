@@ -3,7 +3,8 @@ import { Resource } from "sst";
 
 export const getSecret = async (name: string) => {
   try {
-    return (Resource as any)[name].value;
+    // @ts-expect-error: Resource may not be defined
+    return Resource[name].value;
   } catch {
     return await secrets.get({ service: "hebo", name });
   }
