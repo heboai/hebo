@@ -37,7 +37,7 @@ export const completions = new Elysia({
         temperature = 1,
         stream = false,
       } = body;
-    
+
       const foundModel = await getModelObject(dbClient, model);
       const chatModel = await pickModel(
         foundModel,
@@ -49,13 +49,14 @@ export const completions = new Elysia({
       const coreToolChoice = toToolChoice(toolChoice);
 
       if (stream) {
-        const result = streamText({
+        return streamText({
           model: chatModel,
           messages: modelMessages as ModelMessage[],
           tools: toolSet,
           toolChoice: coreToolChoice,
           temperature,
         }).toTextStreamResponse();
+      }
 
       const result = await generateText({
         model: chatModel,
