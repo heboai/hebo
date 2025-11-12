@@ -102,7 +102,7 @@ We use Bun secrets for local development and SST secrets for remote deployments.
 Secret names:
 
 - LLM:
-  - Bedrock: `BedrockRoleArn`
+  - Bedrock: `BedrockRoleArn`, `BedrockRegion`
   - Vertex: `VertexServiceAccountEmail`, `VertexAwsProviderAudience`, `VertexProject`
   - Others: `GroqApiKey`, `VoyageApiKey`
 - Auth (Stack Auth): `StackSecretServerKey`, `StackPublishableClientKey`, `StackProjectId`

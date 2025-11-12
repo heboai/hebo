@@ -7,6 +7,7 @@ export const stackProjectId = new sst.Secret("StackProjectId");
 
 // LLMs
 export const bedrockRoleArn = new sst.Secret("BedrockRoleArn");
+export const bedrockRegion = new sst.Secret("BedrockRegion");
 export const groqApiKey = new sst.Secret("GroqApiKey");
 export const vertexServiceAccountEmail = new sst.Secret(
   "VertexServiceAccountEmail",
@@ -22,6 +23,7 @@ export const allSecrets = [
   stackPublishableClientKey,
   stackProjectId,
   bedrockRoleArn,
+  bedrockRegion,
   groqApiKey,
   vertexServiceAccountEmail,
   vertexAwsProviderAudience,

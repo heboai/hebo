@@ -12,8 +12,6 @@ import { UpstreamAuthFailedError } from "./errors";
 
 import type { Provider } from "ai";
 
-const BEDROCK_REGION = process.env.BEDROCK_REGION ?? "us-east-1";
-
 // FUTURE: Cache the inference profile ARN
 // FUTURE: try to achieve the same using @aws-sdk/client-sts
 export const getInferenceProfileArn = async (
@@ -63,7 +61,7 @@ export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
 export const getBedrockDefaultConfig =
   async (): Promise<AwsProviderConfig> => ({
     bedrockRoleArn: await getSecret("BedrockRoleArn"),
-    region: BEDROCK_REGION,
+    region: await getSecret("BedrockRegion"),
   });
 
 export const createBedrockProvider = async (
