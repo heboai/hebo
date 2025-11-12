@@ -6,7 +6,7 @@ export const ModelsSchema = Type.Array(
   Type.Object({
     alias: Type.String({ minLength: 1 }),
     type: SupportedModelsEnum,
-    customRouting: Type.Optional(ProviderNameEnum),
+    customProvider: Type.Optional(ProviderNameEnum),
   }),
 );
 

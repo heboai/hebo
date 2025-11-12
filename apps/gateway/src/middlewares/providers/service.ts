@@ -57,8 +57,8 @@ const ADAPTERS: Record<ProviderName, ProviderAdapter> = {
 };
 
 const resolveProviderName = (modelConfig: ModelConfig): ProviderName => {
-  if (modelConfig.customRouting) {
-    return modelConfig.customRouting as ProviderName;
+  if (modelConfig.customProvider) {
+    return modelConfig.customProvider as ProviderName;
   }
   // Currently, we just pick the first provider for a model
   const supportedProvider = getSupportedModelOrThrow(modelConfig.type)
@@ -82,7 +82,7 @@ export const getProviderConfig = async (
 ): Promise<ProviderConfig> => {
   const providerName = resolveProviderName(modelConfig);
 
-  if (modelConfig.customRouting) {
+  if (modelConfig.customProvider) {
     const { config } = await dbClient.providers.getUnredacted(providerName);
     return { name: providerName, config } as ProviderConfig;
   }
