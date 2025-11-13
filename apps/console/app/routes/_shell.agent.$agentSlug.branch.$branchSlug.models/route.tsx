@@ -62,9 +62,7 @@ export default function ModelsConfigRoute() {
       <div className="flex flex-col gap-4">
         <h1>Model Configuration</h1>
         <p className="text-muted-foreground text-sm">
-          Configure access for agents to different models and their routing
-          behaviour. Connect existing inference endpoints or choose from our
-          managed providers.
+          Configure access for the agent to different models. Use our managed providers or connect your existing inference endpoints.
         </p>
 
         <ModelsConfigForm

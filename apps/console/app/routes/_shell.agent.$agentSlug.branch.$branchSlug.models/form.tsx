@@ -144,7 +144,6 @@ function ModelCard(props: {
             </div>
           </div>
 
-          {/* FUTURE: left-align badges across multiple cards */ }
           <Badge variant="outline">
             <Brain />
             {supportedModels.find((m) => m.name === modelFieldset.type.value)?.displayName || ""}
