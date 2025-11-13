@@ -194,12 +194,12 @@ function ModelCard(props: {
           </CardContent>
 
           <CardFooter className="pb-1">
-            <Button type="button" variant="destructive" onClick={onRemove}>
+            <Button type="button" variant="destructive" onClick={onRemove} disabled={isSubmitting}>
               Remove
             </Button>
 
             <div className="ml-auto flex gap-2">
-              <Button type="button" variant="outline" onClick={onCancel}>
+              <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
                 Cancel
               </Button>
               <Button type="submit" isLoading={isSubmitting}>
