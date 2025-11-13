@@ -168,10 +168,6 @@ The repository uses GitHub Actions for CI/CD:
 
 For deployments, we utilize the SST framework ([sst.dev](https://sst.dev/)).
 
-#### Secrets
-
-See the consolidated "Secrets (local and remote)" section above.
-
 #### Launch and Clean up
 
 ```bash
