@@ -22,6 +22,11 @@ import { Select } from "@hebo/shared-ui/components/Select";
 import { Separator } from "@hebo/shared-ui/components/Separator";
 import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 import { Badge } from "@hebo/shared-ui/components/Badge";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@hebo/shared-ui/components/Collapsible";
 
 import { useActionDataErrorToast } from "~console/lib/errors";
 import {
@@ -71,7 +76,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           agentSlug={agentSlug}
           branchSlug={branchSlug}
           isExpanded={expandedCardId === index}
-          onExpand={() => setExpandedCardId(index)}
+          onOpenChange={(open) => open && setExpandedCardId(index)}
           onRemove={() => {
             // FUTURE: confirm removal as it is a irreversible action
             form.remove({ name: fields.models.name, index })
@@ -112,7 +117,7 @@ function ModelCard(props: {
   agentSlug: string;
   branchSlug: string;
   isExpanded: boolean;
-  onExpand: () => void;
+  onOpenChange: (open: boolean) => void;
   onRemove: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
@@ -122,7 +127,7 @@ function ModelCard(props: {
     agentSlug,
     branchSlug,
     isExpanded,
-    onExpand,
+    onOpenChange,
     onRemove,
     onCancel,
     isSubmitting,
@@ -133,83 +138,87 @@ function ModelCard(props: {
   const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
 
   return (
-    <Card className="gap-0">
-      <CardHeader>
-        <div className="flex flex-col gap-2 min-w-0 sm:flex-row sm:gap-8 sm:items-center">
-          <div className="flex flex-1 min-w-0 flex-col gap-2">
-            <span className="text-xs uppercase text-muted-foreground">Alias path</span>
-            <div className="inline-flex gap-2 items-center">
-              <span className="text-sm font-medium text-ellipsis-start">{aliasPath}</span>
-              <CopyToClipboardButton textToCopy={aliasPath} />
+    <Collapsible open={isExpanded} onOpenChange={onOpenChange}>
+      <Card className="gap-0">
+        <CardHeader>
+          <div className="grid gap-4 min-w-0 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
+            <div className="flex min-w-0 flex-col gap-2">
+              <span className="text-xs uppercase text-muted-foreground">Alias path</span>
+              <div className="inline-flex gap-2 items-center">
+                <span className="text-sm font-medium text-ellipsis-start">{aliasPath}</span>
+                <CopyToClipboardButton textToCopy={aliasPath} />
+              </div>
             </div>
+
+            <Badge variant="outline">
+              <Brain />
+              {supportedModels.find((m) => m.name === modelFieldset.type.value)?.displayName || "undefined"}
+            </Badge>
+
+            <CollapsibleTrigger asChild>
+              <Button type="button" variant="outline" disabled={isExpanded}>
+                <Edit />
+                Edit
+              </Button>
+            </CollapsibleTrigger>
           </div>
+        </CardHeader>
 
-          <Badge variant="outline">
-            <Brain />
-            {supportedModels.find((m) => m.name === modelFieldset.type.value)?.displayName || ""}
-          </Badge>
+        <CollapsibleContent 
+          forceMount
+          inert={!isExpanded}
+          className="
+            overflow-hidden
+            data-[state=closed]:[animation:collapsible-up_300ms_ease-in]
+            data-[state=closed]:h-0
+            "
+          >
+            <Separator className="mt-4" />
 
-          <Button type="button" variant="outline" onClick={onExpand} disabled={isExpanded}>
-            <Edit />
-            Edit
-          </Button>
-        </div>
-      </CardHeader>
+            <CardContent className="flex flex-col gap-4 my-4">
 
-      {/* FUTURE: use Collapsible component for better accessibility */}
-      <div
-        className={`grid overflow-hidden m-0 transition-[grid-template-rows,opacity] duration-200 ease-in-out ${
-          isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-        }`}
-        aria-hidden={!isExpanded}
-      >
-        <div className="min-h-0">
-          <Separator className="mt-4" />
+              {/* FUTURE: follow layout pattern of new shadcn fields components */}
+              <div className="grid gap-4 grid-cols-2">
+                <FormField field={modelFieldset.alias} className="flex flex-col gap-2">
+                  <FormLabel>Alias</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Set alias name" autoComplete="off" />
+                  </FormControl>
+                  <FormMessage />
+                </FormField>
 
-          <CardContent className="flex flex-col gap-4 my-4">
+                <FormField field={modelFieldset.type} className="flex flex-col gap-2">
+                  <FormLabel>Type</FormLabel>
+                  <FormControl>
+                    <Select
+                      items={supportedModels.map((item) => ({
+                        value: item.name,
+                        name: item.displayName,
+                      }))}
+                      placeholder="Select the model"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormField>
+              </div>
+            </CardContent>
 
-            {/* FUTURE: follow layout pattern of new shadcn fields components */}
-            <div className="grid gap-4 grid-cols-2">
-              <FormField field={modelFieldset.alias} className="flex flex-col gap-2">
-                <FormLabel>Alias</FormLabel>
-                <FormControl>
-                  <Input placeholder="Set alias name" autoComplete="off" />
-                </FormControl>
-                <FormMessage />
-              </FormField>
-
-              <FormField field={modelFieldset.type} className="flex flex-col gap-2">
-                <FormLabel>Type</FormLabel>
-                <FormControl>
-                  <Select
-                    items={supportedModels.map((item) => ({
-                      value: item.name,
-                      name: item.displayName,
-                    }))}
-                    placeholder="Select the model"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormField>
-            </div>
-          </CardContent>
-
-          <CardFooter className="pb-1">
-            <Button type="button" variant="destructive" onClick={onRemove} disabled={isSubmitting}>
-              Remove
-            </Button>
-
-            <div className="ml-auto flex gap-2">
-              <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-                Cancel
+            <CardFooter className="pb-1">
+              <Button type="button" variant="destructive" onClick={onRemove} disabled={isSubmitting}>
+                Remove
               </Button>
-              <Button type="submit" isLoading={isSubmitting}>
-                Save
-              </Button>
-            </div>
-          </CardFooter>
-        </div>
-      </div>
-    </Card>
+
+              <div className="ml-auto flex gap-2">
+                <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={!model.dirty} isLoading={isSubmitting}>
+                  Save
+                </Button>
+              </div>
+            </CardFooter>
+        </CollapsibleContent>
+      </Card>
+    </Collapsible>
   );
 }
