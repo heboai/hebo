@@ -2,13 +2,13 @@
 
 set -euo pipefail
 
-readonly DEFAULT_SERVICE_ACCOUNT_ID="google-vertex-service-account"
-readonly DEFAULT_WORKLOAD_IDENTITY_POOL_ID="vertex-aws-pool"
-readonly DEFAULT_PROVIDER_ID="google-vertex-aws-provider"
+readonly DEFAULT_SERVICE_ACCOUNT_ID="hebo-vertex-sa"
+readonly DEFAULT_WORKLOAD_IDENTITY_POOL_ID="hebo-vertex-aws-pool"
+readonly DEFAULT_PROVIDER_ID="hebo-vertex-aws-provider"
 
 usage() {
   cat <<'EOF'
-Usage: provision-vertex-provider.sh --project-id <gcp-project-id> --aws-account-id <id> [options]
+Usage: provision-vertex-sa.sh --project-id <gcp-project-id> --aws-account-id <id> [options]
 
 Provision or update the Google Cloud resources required for Hebo's Vertex provider integration.
 
@@ -27,12 +27,12 @@ Optional flags:
   --help                        Show this message and exit.
 
 Examples:
-  ./provision-vertex-provider.sh \
+  ./provision-vertex-sa.sh \
     --project-id hebo-production \
     --aws-account-id <aws-account-id> \
     --gateway-task-role-arn arn:aws:iam::<aws-account-id>:role/HeboGatewayTaskRole
 
-  ./provision-vertex-provider.sh \
+  ./provision-vertex-sa.sh \
     --environment nonprod \
     --project-id hebo-preview \
     --aws-account-id <aws-account-id>
@@ -141,19 +141,19 @@ main() {
     fi
 
     attribute_condition="assertion.arn.startsWith('${gateway_task_role_arn}')"
-    service_account_display_name="Service account for Google Vertex"
+    service_account_display_name="Service account for Vertex"
     pool_display_name="Vertex AWS pool"
-    pool_description="Pool for Google Vertex → AWS federation"
-    provider_display_name="Google Vertex AWS provider"
-    provider_description="Provider for Google Vertex → AWS federation"
+    pool_description="Pool for Vertex → AWS federation"
+    provider_display_name="Vertex AWS provider"
+    provider_description="Provider for Vertex → AWS federation"
     completion_label="production"
   else
     attribute_condition="assertion.account == '${aws_account_id}'"
-    service_account_display_name="Service account for Google Vertex (non-prod)"
+    service_account_display_name="Service account for Vertex (non-prod)"
     pool_display_name="Vertex AWS pool (non-prod)"
-    pool_description="Pool for Google Vertex → AWS federation (non-prod)"
-    provider_display_name="Google Vertex AWS provider (non-prod)"
-    provider_description="Provider for Google Vertex → AWS federation (non-prod)"
+    pool_description="Pool for Vertex → AWS federation (non-prod)"
+    provider_display_name="Vertex AWS provider (nonprod)"
+    provider_description="Provider for Vertex → AWS federation (non-prod)"
     completion_label="non-production"
   fi
 
@@ -212,6 +212,11 @@ main() {
     --project="$project_id" \
     --role="roles/iam.workloadIdentityUser" \
     --member="$member" >/dev/null
+
+  echo "Ensuring Vertex AI permissions on project ${project_id}..."
+  gcloud projects add-iam-policy-binding "$project_id" \
+    --member="serviceAccount:${service_account_email}" \
+    --role="roles/aiplatform.user" >/dev/null
 
   echo "Provisioning complete. Service account ${service_account_email} is configured for ${completion_label} Vertex use."
 }
