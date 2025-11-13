@@ -81,7 +81,9 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
             setExpandedCardId(null);
           }}
           onCancel={() => {
-            form.reset({ name: fields.models.name });
+            if (form.dirty) {
+              form.reset({ name: fields.models.name });
+            }
             setExpandedCardId(null);
           }}
           isSubmitting={navigation.state === "submitting"}
