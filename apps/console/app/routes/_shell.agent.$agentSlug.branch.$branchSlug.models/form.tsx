@@ -47,7 +47,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
   const [form, fields] = useForm<ModelsConfigFormValues>({
     lastResult,
     constraint: getValibotConstraint(modelsConfigFormSchema),
-    defaultValue: { models }
+    defaultValue: { models: models }
   });
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -81,7 +81,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
             setExpandedCardId(null);
           }}
           onCancel={() => {
-            form.reset({ name: fields.models.name, index });
+            form.reset({ name: fields.models.name });
             setExpandedCardId(null);
           }}
           isSubmitting={navigation.state === "submitting"}
@@ -193,7 +193,7 @@ function ModelCard(props: {
             </div>
           </CardContent>
 
-          <CardFooter>
+          <CardFooter className="pb-1">
             <Button type="button" variant="destructive" onClick={onRemove}>
               Remove
             </Button>
@@ -212,4 +212,3 @@ function ModelCard(props: {
     </Card>
   );
 }
-
