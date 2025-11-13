@@ -1,40 +1,44 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
-
-readonly ROOT_AWS_ACCOUNT_ID="160885286799"
-readonly INLINE_POLICY_NAME="HeboBedrockPolicy4CrossAccountAssumption"
+readonly INLINE_POLICY_NAME="HeboBedrockPolicy4CrossAccountAssumptionPolicy"
+readonly DEFAULT_ROLE_NAME="HeboBedrockRole4CrossAccountAssumptionRole"
 
 usage() {
   cat <<'EOF'
-Usage: provision-bedrock-role-nonprod.sh [options]
+Usage: provision-bedrock-role.sh [options]
 
-Provision or update the Hebo Bedrock cross-account IAM role for non-production environments.
-The trust relationship allows any role from the root AWS account to assume the role, which is
-useful for shared dev/preview stages.
+Provision or update the Hebo Bedrock cross-account IAM role.
 
 Optional flags:
-  --stage <stage>                Stage name to prefix the IAM role (default: preview).
-  --role-name <name>             Explicit IAM role name (overrides --stage).
+  --environment <prod|nonprod>   Target environment (default: prod).
+  --role-name <name>             Explicit IAM role name (overrides derived defaults).
   --region <region>              AWS region for API calls (default: us-east-1).
   --profile <profile>            AWS CLI profile to use.
   --help                         Show this message and exit.
 
-Example:
-  ./provision-bedrock-role-nonprod.sh --stage dev
+Environment-specific requirements:
+  prod:    --gateway-task-role-arn <arn>   ARN of the Hebo gateway ECS task role allowed to assume this role.
+  nonprod: --root-account-id <id>          AWS account ID whose roles should be trusted.
+
+Examples:
+  ./provision-bedrock-role.sh --gateway-task-role-arn arn:aws:iam::<aws-account-id>:role/HeboGatewayTaskRole
+  ./provision-bedrock-role.sh --environment nonprod --root-account-id <aws-account-id>
 EOF
 }
 
 main() {
-  local stage="preview"
-  local role_name=""
+  local environment="prod"
+  local role_name="$DEFAULT_ROLE_NAME"
   local aws_region="us-east-1"
   local aws_profile=""
+  local root_aws_account_id=""
+  local gateway_task_role_arn=""
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --stage)
-        stage="$2"
+      --environment|--env)
+        environment="$2"
         shift 2
         ;;
       --role-name)
@@ -49,6 +53,14 @@ main() {
         aws_profile="$2"
         shift 2
         ;;
+      --gateway-task-role-arn)
+        gateway_task_role_arn="$2"
+        shift 2
+        ;;
+      --root-account-id)
+        root_aws_account_id="$2"
+        shift 2
+        ;;
       --help|-h)
         usage
         exit 0
@@ -61,8 +73,41 @@ main() {
     esac
   done
 
-  if [[ -z "$role_name" ]]; then
-    role_name="${stage}-hebo-bedrock-role-4-cross-account-assumption"
+  case "$environment" in
+    nonprod|prod)
+      ;;
+    *)
+      echo "Error: --environment must be either 'prod' or 'nonprod'." >&2
+      usage
+      exit 1
+      ;;
+  esac
+
+  local principal_aws=""
+  local role_description=""
+  local usage_label=""
+
+  if [[ "$environment" == "nonprod" ]]; then
+
+    if [[ -z "$root_aws_account_id" ]]; then
+      echo "Error: --root-account-id is required when --environment is nonprod." >&2
+      usage
+      exit 1
+    fi
+
+    principal_aws="arn:aws:iam::${root_aws_account_id}:root"
+    role_description="Allows Hebo gateway (non-prod) to invoke Bedrock foundation models."
+    usage_label="non-production"
+  else
+    if [[ -z "$gateway_task_role_arn" ]]; then
+      echo "Error: --gateway-task-role-arn is required when --environment is prod." >&2
+      usage
+      exit 1
+    fi
+
+    principal_aws="$gateway_task_role_arn"
+    role_description="Allows Hebo gateway to invoke Bedrock foundation models."
+    usage_label="production"
   fi
 
   if ! command -v aws >/dev/null 2>&1; then
@@ -89,7 +134,7 @@ main() {
     {
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::${ROOT_AWS_ACCOUNT_ID}:root"
+        "AWS": "${principal_aws}"
       },
       "Action": "sts:AssumeRole"
     }
@@ -123,7 +168,7 @@ EOF
     echo "Creating IAM role ${role_name}..."
     aws "${aws_cli_opts[@]}" iam create-role \
       --role-name "$role_name" \
-      --description "Allows Hebo gateway (non-prod) to invoke Bedrock foundation models." \
+      --description "${role_description}" \
       --assume-role-policy-document "file://$trust_policy_file"
   fi
 
@@ -133,7 +178,7 @@ EOF
     --policy-name "$INLINE_POLICY_NAME" \
     --policy-document "file://$inline_policy_file"
 
-  echo "Provisioning complete. IAM role ${role_name} is ready for non-production use."
+  echo "Provisioning complete. IAM role ${role_name} is ready for ${usage_label} use."
 }
 
 main "$@"
