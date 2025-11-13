@@ -39,7 +39,7 @@ export const getInferenceProfileArn = async (
   return modelId;
 };
 
-// FUTURE: Cache the credentials
+// FUTURE: Cache credentials
 export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
   const sts = new STSClient({ region });
   const resp = await sts.send(

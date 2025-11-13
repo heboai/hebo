@@ -5,7 +5,6 @@ import type { createDbClient } from "@hebo/database/client";
 import { getSecret } from "@hebo/shared-api/utils/get-env";
 import type { Models } from "@hebo/shared-data/types/models";
 import type {
-  AwsProviderConfig,
   Provider as ProviderConfig,
   ProviderName,
 } from "@hebo/shared-data/types/providers";
@@ -33,7 +32,7 @@ type ProviderAdapter = {
 const ADAPTERS: Record<ProviderName, ProviderAdapter> = {
   bedrock: {
     getDefaultConfig: getBedrockDefaultConfig,
-    create: (config: any) => createBedrockProvider(config as AwsProviderConfig),
+    create: (config: any) => createBedrockProvider(config),
     transformModelId: (id: string, cfg?: any) =>
       transformBedrockModelId(id, cfg),
   },
@@ -57,10 +56,7 @@ const ADAPTERS: Record<ProviderName, ProviderAdapter> = {
 };
 
 const resolveProviderName = (modelConfig: ModelConfig): ProviderName => {
-  if (modelConfig.customProvider) {
-    return modelConfig.customProvider as ProviderName;
-  }
-  // Currently, we just pick the first provider for a model
+  // Currently, we just pick the first provider for a model, in future this will be more sophisticated
   const supportedProvider = getSupportedModelOrThrow(modelConfig.type)
     .providers[0];
   return Object.keys(supportedProvider)[0] as ProviderName;
@@ -82,10 +78,13 @@ export const getProviderConfig = async (
 ): Promise<ProviderConfig> => {
   const providerName = resolveProviderName(modelConfig);
 
+  // 1. If the model has a custom provider, use it
   if (modelConfig.customProvider) {
     const { config } = await dbClient.providers.getUnredacted(providerName);
     return { name: providerName, config } as ProviderConfig;
   }
+
+  // 2. Otherwise, use the default provider for the model
   const adapter = ADAPTERS[providerName];
   const config = await adapter.getDefaultConfig();
   return { name: providerName, config } as ProviderConfig;
@@ -118,7 +117,6 @@ const resolveModelId = async (
 ): Promise<string> => {
   const modelId = getModelIdForProvider(supportedModel, providerCfg.name);
   const adapter = ADAPTERS[providerCfg.name];
-  // For bedrock we need to upgrade to inference profile ARN; others are passthrough
   return adapter.transformModelId(modelId, providerCfg.config);
 };
 
