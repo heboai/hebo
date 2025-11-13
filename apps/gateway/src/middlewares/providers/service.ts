@@ -2,7 +2,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { createVoyage } from "voyage-ai-provider";
 
 import type { createDbClient } from "@hebo/database/client";
-import { getSecret } from "@hebo/shared-api/utils/get-env";
+import { getSecret } from "@hebo/shared-api/utils/get-secret";
 import type { Models } from "@hebo/shared-data/types/models";
 import type {
   Provider as ProviderConfig,

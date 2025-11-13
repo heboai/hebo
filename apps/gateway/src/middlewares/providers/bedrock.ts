@@ -5,7 +5,7 @@ import {
 } from "@aws-sdk/client-bedrock";
 import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 
-import { getSecret } from "@hebo/shared-api/utils/get-env";
+import { getSecret } from "@hebo/shared-api/utils/get-secret";
 import type { AwsProviderConfig } from "@hebo/shared-data/types/providers";
 
 import { UpstreamAuthFailedError } from "./errors";

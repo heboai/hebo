@@ -97,7 +97,7 @@ bun run clean
 
 ## Secrets (local and remote)
 
-We use Bun secrets for local development and SST secrets for remote deployments. Code reads values via `getSecret(name)` (see `packages/shared-api/utils/get-env.ts`), which resolves from SST first and falls back to Bun secrets locally.
+We use Bun secrets for local development and SST secrets for remote deployments. Code reads values via `getSecret(name)` (see `packages/shared-api/utils/get-secret.ts`), which resolves from SST first and falls back to Bun secrets locally.
 
 Secret names:
 
