@@ -1,4 +1,4 @@
-export abstract class ProviderHttpError extends Error {
+export abstract class ProvidersHttpError extends Error {
   status: number;
   type: string;
   code: string;
@@ -22,7 +22,7 @@ export abstract class ProviderHttpError extends Error {
   }
 }
 
-export class BadRequestError extends ProviderHttpError {
+export class BadRequestError extends ProvidersHttpError {
   constructor(message: string, code = "model_mismatch") {
     super(message, {
       status: 400,
@@ -32,7 +32,7 @@ export class BadRequestError extends ProviderHttpError {
   }
 }
 
-export class ModelNotFoundError extends ProviderHttpError {
+export class ModelNotFoundError extends ProvidersHttpError {
   constructor(message = "Resource not found") {
     super(message, {
       status: 404,
@@ -42,7 +42,7 @@ export class ModelNotFoundError extends ProviderHttpError {
   }
 }
 
-export class UpstreamAuthFailedError extends ProviderHttpError {
+export class UpstreamAuthFailedError extends ProvidersHttpError {
   constructor(message: string, code = "upstream_auth_failed") {
     super(message, {
       status: 502,
