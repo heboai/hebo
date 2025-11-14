@@ -1,4 +1,4 @@
-import { lazy, useLayoutEffect, useState, Suspense } from "react";
+import { lazy, useState, Suspense } from "react";
 import { useLocation, Navigate } from "react-router";
 
 const StackHandler = lazy(() =>
