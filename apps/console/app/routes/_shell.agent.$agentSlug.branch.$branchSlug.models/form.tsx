@@ -114,6 +114,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
             form.insert({ name: fields.models.name });
             setExpandedCardId(modelItems.length);
           }}
+          disabled={expandedCardId !== null}
         >
           + Add Model
         </Button>

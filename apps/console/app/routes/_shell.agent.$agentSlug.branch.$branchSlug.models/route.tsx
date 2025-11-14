@@ -26,7 +26,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
       .agents({ agentSlug: params.agentSlug })
       .branches({ branchSlug: params.branchSlug })
       .patch({
-        models: submission.value.models,
+        models: submission.value.models ?? [],
       });
 
   } catch (error) {

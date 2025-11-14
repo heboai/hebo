@@ -7,7 +7,6 @@ import {
   picklist,
   pipe,
   string,
-  transform,
   trim,
   type InferOutput,
 } from "valibot";
@@ -26,7 +25,6 @@ export const modelConfigSchema = object({
 export const modelsConfigFormSchema = object({
   models: pipe(
     optional(array(modelConfigSchema)),
-    transform((value) => value ?? []),
   ),
 });
 
