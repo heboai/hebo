@@ -4,16 +4,11 @@ import {
   ListInferenceProfilesCommand,
 } from "@aws-sdk/client-bedrock";
 import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
-import { createPinoLogger } from "@bogeychan/elysia-logger";
 
 import { getSecret } from "@hebo/shared-api/utils/get-secret";
 import type { AwsProviderConfig } from "@hebo/shared-data/types/providers";
 
-import { UpstreamAuthFailedError } from "./errors";
-
 import type { Provider } from "ai";
-
-const log = createPinoLogger();
 
 // FUTURE: Cache the inference profile ARN
 export const getInferenceProfileArn = async (
@@ -45,23 +40,18 @@ export const getInferenceProfileArn = async (
 // FUTURE: Cache credentials
 export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
   const sts = new STSClient({ region });
-  try {
-    const resp = await sts.send(
-      new AssumeRoleCommand({
-        RoleArn: bedrockRoleArn,
-        RoleSessionName: "HeboBedrockSession",
-      }),
-    );
-    if (!resp.Credentials) throw new Error("Missing AWS credentials");
-    return {
-      accessKeyId: resp.Credentials.AccessKeyId!,
-      secretAccessKey: resp.Credentials.SecretAccessKey!,
-      sessionToken: resp.Credentials.SessionToken!,
-    };
-  } catch (error) {
-    log.error({ error: (error as Error).message }, "Failed to assume AWS role");
-    throw new UpstreamAuthFailedError("Failed to assume AWS role");
-  }
+  const resp = await sts.send(
+    new AssumeRoleCommand({
+      RoleArn: bedrockRoleArn,
+      RoleSessionName: "HeboBedrockSession",
+    }),
+  );
+  if (!resp.Credentials) throw new Error("Missing AWS credentials");
+  return {
+    accessKeyId: resp.Credentials.AccessKeyId!,
+    secretAccessKey: resp.Credentials.SecretAccessKey!,
+    sessionToken: resp.Credentials.SessionToken!,
+  };
 };
 
 export const getBedrockDefaultConfig =

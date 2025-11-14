@@ -41,13 +41,3 @@ export class ModelNotFoundError extends ProvidersHttpError {
     });
   }
 }
-
-export class UpstreamAuthFailedError extends ProvidersHttpError {
-  constructor(message: string, code = "upstream_auth_failed") {
-    super(message, {
-      status: 502,
-      type: "upstream_auth_failed",
-      code,
-    });
-  }
-}
