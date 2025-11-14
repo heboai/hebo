@@ -23,6 +23,16 @@ import { Separator } from "@hebo/shared-ui/components/Separator";
 import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 import { Badge } from "@hebo/shared-ui/components/Badge";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@hebo/shared-ui/components/Dialog";
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -77,14 +87,17 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           agentSlug={agentSlug}
           branchSlug={branchSlug}
           isExpanded={expandedCardId === index}
-          onOpenChange={(open) => { open && setExpandedCardId(index)}}
+          onOpenChange={(open) => { 
+            form.dirty && form.reset({ name: fields.models.name, index  });
+            open && setExpandedCardId(index);
+          }}
           onRemove={() => {
-            setExpandedCardId(null);
             // FUTURE: confirm removal as it is a irreversible action
             form.remove({ name: fields.models.name, index })
             // FUTURE: this is a quirk to work around a current Conform limitation. 
             // Remove once upgrade to future APIs in conform 1.9+
             setTimeout(() => formRef.current?.requestSubmit(), 250);
+            setExpandedCardId(null);
           }}
           onCancel={() => {
             form.dirty && form.reset({ name: fields.models.name, index });
@@ -203,9 +216,42 @@ function ModelCard(props: {
             </CardContent>
 
             <CardFooter className="pb-1">
-              <Button type="button" variant="destructive" onClick={onRemove} disabled={isSubmitting}>
-                Remove
-              </Button>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={isSubmitting}
+                  >
+                    Remove
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Remove model</DialogTitle>
+                    <DialogDescription>
+                      This action permanently removes the model and cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button type="button" variant="outline">
+                        Cancel
+                      </Button>
+                    </DialogClose>
+
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={onRemove}
+                      isLoading={isSubmitting}
+                    >
+                      Remove
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
               <div className="ml-auto flex gap-2">
                 <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
