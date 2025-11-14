@@ -6,14 +6,9 @@ import * as React from "react";
 
 import { styles, type CodeBlockProps } from "./CodeBlock";
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
-import { type CopyToClipboardResult } from "./utils/copyToClipboard";
 import { getNodeText } from "./utils/getNodeText";
 
 export type CodeGroupPropsBase = {
-  /**
-   * The callback function when a user clicks on the copied to clipboard button
-   */
-  onCopied?: (result: CopyToClipboardResult, textToCopy?: string) => void;
   children?:
     | React.ReactElement<CodeBlockProps>[]
     | React.ReactElement<CodeBlockProps>;
@@ -30,7 +25,7 @@ export type CodeGroupProps = CodeGroupPropsBase &
  * @param {CodeBlock[]} - children
  */
 export const CodeGroup = React.forwardRef(function CodeGroup(
-  { onCopied, children, className }: CodeGroupProps,
+  { children, className }: CodeGroupProps,
   ref: React.ForwardedRef<HTMLDivElement> | undefined,
 ) {
   const [activeTab, setActiveTab] = React.useState("0");
@@ -71,7 +66,6 @@ export const CodeGroup = React.forwardRef(function CodeGroup(
             textToCopy={getNodeText(
               childArr[Number.parseInt(activeTab)]?.props?.children,
             )}
-            onCopied={onCopied}
             className={clsx("relative p-2")}
           />
         </div>

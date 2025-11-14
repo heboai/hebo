@@ -20,18 +20,13 @@ export function Button({
   const [showSpinner, setShowSpinner] = useState(false);
 
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout> | undefined;
-
-    if (isLoading) {
-      timeout = setTimeout(() => setShowSpinner(true), 250);
-    } else {
-      setShowSpinner(false);
-    }
+    const timeout = setTimeout(
+      () => setShowSpinner(isLoading ? true : false),
+      isLoading ? 250 : 0,
+    );
 
     return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
+      timeout && clearTimeout(timeout);
     };
   }, [isLoading]);
 
