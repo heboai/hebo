@@ -39,6 +39,8 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 - Docker >= 28
 - AWS CLI (only required for deployment)
 
+We recommend to use [mise](https://mise.jdx.dev) to manage your bun version if you work on multiple projects in parallel.
+
 ## Installation
 
 ```bash
