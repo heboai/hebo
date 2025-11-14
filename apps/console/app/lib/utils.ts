@@ -16,12 +16,12 @@ export const kbs = (shortcut: string): string => {
   const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
 
   const map: Record<string, string> = isMac
-    ? { cmd: "⌘", option: "⌥", ctrl: "⌃", shift: "⇧" }
-    : { cmd: "Ctrl", option: "Alt", ctrl: "Ctrl", shift: "Shift" };
+    ? { mod: "⌘", option: "⌥", ctrl: "⌃", shift: "⇧" }
+    : { mod: "Ctrl", option: "Alt", ctrl: "Ctrl", shift: "Shift" };
 
   return shortcut
-    .replaceAll('+', "")
-    .replaceAll(/(cmd|option|ctrl|shift)/gi, (match) => {
+    .replaceAll("+", "")
+    .replaceAll(/(mod|option|ctrl|shift)/gi, (match) => {
       const lower = match.toLowerCase();
       return map[lower] ?? match.toUpperCase();
     });
