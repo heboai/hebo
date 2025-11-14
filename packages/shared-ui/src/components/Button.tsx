@@ -21,12 +21,12 @@ export function Button({
 
   useEffect(() => {
     const timeout = setTimeout(
-      () => setShowSpinner(isLoading ? true : false),
+      () => setShowSpinner(isLoading),
       isLoading ? 250 : 0,
     );
 
     return () => {
-      timeout && clearTimeout(timeout);
+      clearTimeout(timeout);
     };
   }, [isLoading]);
 
