@@ -49,6 +49,5 @@ jobs:
           bun run sst secret set VertexAwsProviderAudience ${{ secrets.GOOGLE_VERTEX_AWS_PROVIDER_AUDIENCE }} --stage production
           bun run sst secret set VertexProject ${{ secrets.GOOGLE_VERTEX_PROJECT }} --stage production
           bun run sst secret set VertexLocation ${{ secrets.GOOGLE_VERTEX_LOCATION }} --stage production
-          bun run sst secret set VoyageApiKey ${{ secrets.VOYAGE_API_KEY }} --stage production
 
           bun run sst deploy --stage production

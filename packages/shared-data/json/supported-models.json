@@ -77,12 +77,12 @@
     "modality": "chat"
   },
   {
-    "name": "voyage/voyage-3-large",
-    "displayName": "Voyage 3 Large",
+    "name": "amazon/nova-2-multimodal-embeddings-v1",
+    "displayName": "Amazon Nova 2 Multimodal Embeddings v1",
     "rateLimit": 400000000,
     "providers": [
       {
-        "voyage": "voyage-3-large"
+        "bedrock": "amazon.nova-2-multimodal-embeddings-v1:0"
       }
     ],
     "modality": "embedding"

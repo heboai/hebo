@@ -17,7 +17,6 @@ export const vertexAwsProviderAudience = new sst.Secret(
 );
 export const vertexProject = new sst.Secret("VertexProject");
 export const vertexLocation = new sst.Secret("VertexLocation");
-export const voyageApiKey = new sst.Secret("VoyageApiKey");
 
 export const allSecrets = [
   stackSecretServerKey,
@@ -30,6 +29,5 @@ export const allSecrets = [
   vertexAwsProviderAudience,
   vertexProject,
   vertexLocation,
-  voyageApiKey,
 ];
 export const isProd = $app.stage === "production";
