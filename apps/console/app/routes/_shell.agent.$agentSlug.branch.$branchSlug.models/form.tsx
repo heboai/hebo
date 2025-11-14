@@ -88,18 +88,18 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           branchSlug={branchSlug}
           isExpanded={expandedCardId === index}
           onOpenChange={(open) => { 
-            form.dirty && form.reset({ name: fields.models.name, index  });
+            form.dirty && form.reset({ name: fields.models.name  });
             open && setExpandedCardId(index);
           }}
           onRemove={() => {
+            setExpandedCardId(null);
             form.remove({ name: fields.models.name, index })
             // FUTURE: this is a quirk to work around a current Conform limitation. 
             // Remove once upgrade to future APIs in conform 1.9+
             setTimeout(() => formRef.current?.requestSubmit(), 250);
-            setExpandedCardId(null);
           }}
           onCancel={() => {
-            form.dirty && form.reset({ name: fields.models.name, index });
+            form.dirty && form.reset({ name: fields.models.name  });
             setExpandedCardId(null);
           }}
           isSubmitting={navigation.state === "submitting"}
