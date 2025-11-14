@@ -39,7 +39,7 @@ export function AgentSelect({
 
   // Keyboard shortcuts
   const navigate = useNavigate();
-  useHotkeys("shift+mod+o", () =>
+  useHotkeys("mod+shift+o", () =>
     navigate("/agent/create", { viewTransition: true })
   , { preventDefault: true }, [navigate]);
 
@@ -120,7 +120,7 @@ export function AgentSelect({
                   Create Agent
                 </div>
                 <DropdownMenuShortcut>
-                  {kbs("cmd+shift+O")}
+                  {kbs("mod+shift+O")}
                 </DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>

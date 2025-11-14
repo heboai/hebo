@@ -10,7 +10,7 @@ import { getNodeText } from "./utils/getNodeText";
 export const styles = {
   frame: "overflow-hidden bg-background border rounded-md shadow-xs not-prose",
   code: "pl-3 py-2 overflow-x-auto",
-  header: "flex pl-3 space-x-4 bg-slate-200",
+  header: "flex pl-3 space-x-4 bg-secondary",
 };
 
 export interface CodeBlockPropsBase {

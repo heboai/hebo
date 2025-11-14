@@ -124,7 +124,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
               <SquareChevronRight size={16} />
               <span>Playground</span>
               <span className="text-muted-foreground">
-                {kbs("cmd+P")}
+                {kbs("mod+P")}
               </span>
             </div>} 
           />
