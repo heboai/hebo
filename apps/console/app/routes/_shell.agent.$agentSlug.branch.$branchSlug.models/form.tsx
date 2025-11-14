@@ -50,6 +50,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
   useActionDataErrorToast();
 
   const [form, fields] = useForm<ModelsConfigFormValues>({
+    id: JSON.stringify(models),
     lastResult,
     constraint: getValibotConstraint(modelsConfigFormSchema),
     defaultValue: { models: models }
@@ -62,10 +63,10 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
   // Close the active card on successful submit
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
-    if (navigation.state === "idle" && form.status === "success") {
+    if (navigation.state === "idle" && lastResult?.status === "success") {
       setExpandedCardId(null);
     }
-  }, [navigation.state, form.status]);
+  }, [navigation.state, lastResult?.status]);
 
   return (
     <Form method="post" ref={formRef} {...getFormProps(form)} className="contents">
@@ -76,19 +77,17 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           agentSlug={agentSlug}
           branchSlug={branchSlug}
           isExpanded={expandedCardId === index}
-          onOpenChange={(open) => open && setExpandedCardId(index)}
+          onOpenChange={(open) => { open && setExpandedCardId(index)}}
           onRemove={() => {
+            setExpandedCardId(null);
             // FUTURE: confirm removal as it is a irreversible action
             form.remove({ name: fields.models.name, index })
             // FUTURE: this is a quirk to work around a current Conform limitation. 
             // Remove once upgrade to future APIs in conform 1.9+
-            setTimeout(() => formRef.current?.requestSubmit(), 100);
-            setExpandedCardId(null);
+            setTimeout(() => formRef.current?.requestSubmit(), 250);
           }}
           onCancel={() => {
-            if (form.dirty) {
-              form.reset({ name: fields.models.name });
-            }
+            form.dirty && form.reset({ name: fields.models.name, index });
             setExpandedCardId(null);
           }}
           isSubmitting={navigation.state === "submitting"}
