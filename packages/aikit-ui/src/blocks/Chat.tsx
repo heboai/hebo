@@ -2,7 +2,7 @@
 
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
-import { Bot, IterationCcw } from "lucide-react";
+import { Bot, Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -145,7 +145,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
           aria-label="Clear conversation"
           title="Clear conversation"
         >
-          <IterationCcw />
+          <Edit />
         </Button>
       </div>
 

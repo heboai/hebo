@@ -58,7 +58,7 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: theme("colors.amber.300");
   --primary-foreground: theme("colors.neutral.700");
-  --secondary: theme("colors.slate.200");
+  --secondary: theme("colors.blue.100");
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -77,7 +77,7 @@
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: theme("colors.slate.200");
+  --sidebar-accent: theme("colors.blue.100");
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
@@ -189,5 +189,15 @@
   .mdx p,
   .mdx pre {
     @apply text-sm;
+  }
+}
+
+@layer utilities {
+  .text-ellipsis-start {
+    direction: rtl;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 }
