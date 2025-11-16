@@ -25,7 +25,7 @@ export const branchesModule = new Elysia({
       );
     },
     {
-      response: { 200: t.Array(branches) },
+      response: { 200: t.Array(branches), 404: t.String() },
     },
   )
   .post(
@@ -51,7 +51,7 @@ export const branchesModule = new Elysia({
         name: branchesInputCreate.properties.name,
         sourceBranchSlug: t.String(),
       }),
-      response: { 201: branches },
+      response: { 201: branches, 404: t.String(), 409: t.String() },
     },
   )
   .get(
@@ -65,7 +65,7 @@ export const branchesModule = new Elysia({
       );
     },
     {
-      response: { 200: branches },
+      response: { 200: branches, 404: t.String() },
     },
   )
   .patch(
@@ -90,7 +90,7 @@ export const branchesModule = new Elysia({
         name: branchesInputUpdate.properties.name,
         models: t.Optional(modelsSchema),
       }),
-      response: { 200: branches },
+      response: { 200: branches, 404: t.String() },
     },
   )
   .delete(
@@ -103,6 +103,6 @@ export const branchesModule = new Elysia({
       return status(204);
     },
     {
-      response: { 204: t.Void() },
+      response: { 204: t.Void(), 404: t.String() },
     },
   );

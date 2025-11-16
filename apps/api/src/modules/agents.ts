@@ -62,7 +62,7 @@ export const agentsModule = new Elysia({
         ...agentsInputCreate.properties,
         defaultModel: supportedModelsEnum,
       }),
-      response: { 201: agents },
+      response: { 201: agents, 409: t.String() },
     },
   )
   .get(
@@ -78,7 +78,7 @@ export const agentsModule = new Elysia({
     },
     {
       query: agentsInclude,
-      response: { 200: agents },
+      response: { 200: agents, 404: t.String() },
     },
   )
   .patch(
@@ -96,7 +96,7 @@ export const agentsModule = new Elysia({
     {
       query: agentsInclude,
       body: agentsInputUpdate,
-      response: { 200: agents },
+      response: { 200: agents, 404: t.String() },
     },
   )
   .delete(
@@ -106,6 +106,6 @@ export const agentsModule = new Elysia({
       return status(204);
     },
     {
-      response: { 204: t.Void() },
+      response: { 204: t.Void(), 404: t.String() },
     },
   );
