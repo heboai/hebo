@@ -1,11 +1,11 @@
-import { useParams, useRouteLoaderData } from "react-router";
+import { unstable_useRoute, useParams } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
 import ModelsConfigForm from "./form";
-import { modelsConfigFormSchema, type ModelsConfigFormValues } from "./schema";
+import { modelsConfigFormSchema } from "./schema";
 
 import type { Route } from "./+types/route";
 
@@ -40,23 +40,14 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   return submission.reply();
 }
 
-// FUTURE: try experimental useRoute instead of useRouteLoaderData to avoid redefining types
-type LoaderAgentData = {
-  agent: {
-    slug: string;
-    branches?: Array<{
-      slug: string;
-      models?: ModelsConfigFormValues["models"];
-    }>;
-  };
-};
 
 export default function ModelsConfigRoute() {
   const params = useParams();
-  const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug") as LoaderAgentData;
   
+  const agent = unstable_useRoute("routes/_shell.agent.$agentSlug")!.loaderData!.agent!;
+
   // FUTURE: do this in a separate loader as part of the branch switching feature
-  const branch = agent.branches?.find((a) => a.slug === params.branchSlug);
+  const branch = agent!.branches?.find((a) => a.slug === params.branchSlug);
 
   return (
       <div className="flex flex-col gap-4">

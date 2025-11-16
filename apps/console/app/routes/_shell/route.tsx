@@ -1,5 +1,5 @@
 import { XCircle, SquareChevronRight } from "lucide-react";
-import { Outlet, useLocation, useRouteLoaderData } from "react-router";
+import { Outlet, unstable_useRoute, useLocation } from "react-router";
 import { useRef, useEffect } from "react";
 import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
@@ -47,7 +47,7 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
 
   const { user } = useSnapshot(authStore);
-  const { agent: activeAgent = null } = useRouteLoaderData("routes/_shell.agent.$agentSlug") ?? {};
+  const activeAgent = unstable_useRoute("routes/_shell.agent.$agentSlug")?.loaderData!.agent || undefined;
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
