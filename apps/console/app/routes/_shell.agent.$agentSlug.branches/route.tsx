@@ -1,7 +1,4 @@
 import { unstable_useRoute } from "react-router";
-import { toast } from "sonner";
-
-import { Button } from "@hebo/shared-ui/components/Button";
 
 import BranchesTable from "./table";
 
@@ -21,18 +18,6 @@ export default function AgentBranchesRoute() {
 
       <BranchesTable agent={agent} />
 
-      <div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={(event) => {
-            event.preventDefault();
-            toast.info("Create coming soon");
-          }}
-        >
-          + Create Branch
-        </Button>
-      </div>
     </div>
   );
 }
