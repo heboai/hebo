@@ -48,7 +48,8 @@ export function AgentSelect({
       <SidebarMenuItem>
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" aria-label="Select agent">
+            {/* FUTURE: smoothen animation when opening / closing sidebar */}
+            <SidebarMenuButton size="lg" className="p-1 mt-1 h-auto" aria-label="Select agent">
               <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <AgentLogo />
               </div>

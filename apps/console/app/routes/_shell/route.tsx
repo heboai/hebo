@@ -23,6 +23,7 @@ import { getCookie, kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
 
 import { AgentSelect } from "./sidebar-agent";
+import { BranchSelect } from "./sidebar-branch";
 import { PlaygroundSidebar } from "./sidebar-playground";
 import { UserMenu } from "./sidebar-user";
 import { SidebarNav } from "./sidebar-nav";
@@ -78,6 +79,12 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
         <div className="h-full flex flex-col transition-[padding] group-data-[state=collapsed]:p-2">
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
+            {activeAgent && (
+              <BranchSelect
+                activeAgent={activeAgent}
+                activeBranch={activeBranch}
+              />
+            )}
           </SidebarHeader>
           <SidebarContent>
             {activeAgent && activeBranch && (
