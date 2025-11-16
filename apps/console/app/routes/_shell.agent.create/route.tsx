@@ -30,7 +30,7 @@ export async function clientAction({ request }: Route.ClientActionArgs ) {
   if (result.error?.status === 409) 
     return submission.reply({ fieldErrors: { agentName: [String(result.error.value)] }});
 
-  return redirect(`/agent/${result.data!.slug}/branch/main`);
+  return redirect(`/agent/${result.data!.slug}/branch/${result.data!.branches![0].slug}`);
 }
 
 

@@ -47,7 +47,7 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
 
   const { user } = useSnapshot(authStore);
-  const activeAgent = unstable_useRoute("routes/_shell.agent.$agentSlug")!.loaderData?.agent;
+  const { agent: activeAgent, branch: activeBranch } = unstable_useRoute("routes/_shell.agent.$agentSlug")?.loaderData ?? {};
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
@@ -80,9 +80,11 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
             <AgentSelect agents={agents} activeAgent={activeAgent} />
           </SidebarHeader>
           <SidebarContent>
+            {activeAgent && activeBranch && (
             <SidebarGroup>
-              <SidebarNav activeAgent={activeAgent} />
+              <SidebarNav activeAgent={activeAgent} activeBranch={activeBranch} />
             </SidebarGroup>
+            )}
           </SidebarContent>
           <SidebarFooter>
               <StaticContent />
@@ -130,7 +132,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           />
         <Sidebar side="right" collapsible="offcanvas">
           <SidebarContent>
-            <PlaygroundSidebar activeBranch={activeAgent?.branches?.[0]} />
+            <PlaygroundSidebar activeBranch={activeBranch} />
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>

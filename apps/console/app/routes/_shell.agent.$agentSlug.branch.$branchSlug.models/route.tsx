@@ -42,12 +42,8 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 
 
 export default function ModelsConfigRoute() {
-  const params = useParams();
-  
-  const agent = unstable_useRoute("routes/_shell.agent.$agentSlug")!.loaderData!.agent;
 
-  // FUTURE: do this in a separate loader as part of the branch switching feature
-  const branch = agent!.branches?.find((a) => a.slug === params.branchSlug);
+  const { agent, branch } = unstable_useRoute("routes/_shell.agent.$agentSlug")!.loaderData!;
 
   return (
       <div className="flex flex-col gap-4">

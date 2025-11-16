@@ -8,24 +8,25 @@ const navItems = [
   {
     label: "Overview",
     icon: Home,
-    getPath: (slug: string) => `/agent/${slug}/branch/main`,
-    isActive: (pathname: string, slug: string) => pathname === `/agent/${slug}/branch/main`,
+    getPath: (agentSlug: string, branchSlug: string) => `/agent/${agentSlug}/branch/${branchSlug}`,
+    isActive: (pathname: string, agentSlug: string, branchSlug: string) => pathname === `/agent/${agentSlug}/branch/${branchSlug}`,
     shortcut: "mod+O",
   },
   {
     label: "Models",
     icon: BrainCog,
-    getPath: (slug: string) => `/agent/${slug}/branch/main/models`,
-    isActive: (pathname: string, slug: string) => pathname === `/agent/${slug}/branch/main/models`,
+    getPath: (agentSlug: string, branchSlug: string) => `/agent/${agentSlug}/branch/${branchSlug}/models`,
+    isActive: (pathname: string, agentSlug: string, branchSlug: string) => pathname === `/agent/${agentSlug}/branch/${branchSlug}/models`,
     shortcut: "mod+M",
   },
 ];
 
 type SidebarNavProps = {
-  activeAgent?: { slug: string };
+  activeAgent: { slug: string };
+  activeBranch: { slug: string }
 };
 
-export const SidebarNav = ({ activeAgent }: SidebarNavProps) => {
+export const SidebarNav = ({ activeAgent, activeBranch }: SidebarNavProps) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -34,45 +35,43 @@ export const SidebarNav = ({ activeAgent }: SidebarNavProps) => {
       shortcut,
       () => {
         if (!activeAgent) return;
-        navigate(getPath(activeAgent.slug), { viewTransition: true });
+        navigate(getPath(activeAgent.slug, activeBranch.slug), { viewTransition: true });
       },
       { preventDefault: true },
-      [activeAgent?.slug, navigate],
+      [activeAgent.slug, activeBranch.slug, navigate],
     );
   });
 
-  return activeAgent ? (
-      <SidebarMenu>
-        {navItems.map(({ label, icon: Icon, getPath, isActive, shortcut }) => {
-          const path = getPath(activeAgent.slug);
-          const active = isActive ? isActive(pathname, activeAgent.slug) : pathname === path;
+  return (
+    <SidebarMenu>
+      {navItems.map(({ label, icon: Icon, getPath, isActive, shortcut }) => {
+        const path = getPath(activeAgent.slug, activeBranch.slug);
+        const active = isActive ? isActive(pathname, activeAgent.slug, activeBranch.slug) : pathname === path;
 
-          return (
-            <SidebarMenuItem key={label}>
-              <SidebarMenuButton 
-                asChild 
-                isActive={active}
-                tooltip={{
-                  children: (
-                    <span>
-                      {label}{" "}
-                      <span className="text-muted-foreground">
-                        ({kbs(shortcut)})
-                      </span>
+        return (
+          <SidebarMenuItem key={label}>
+            <SidebarMenuButton 
+              asChild 
+              isActive={active}
+              tooltip={{
+                children: (
+                  <span>
+                    {label}{" "}
+                    <span className="text-muted-foreground">
+                      ({kbs(shortcut)})
                     </span>
-                  )
-                }}
-                >
-                <Link to={path}>
-                  <Icon />
-                  {label}
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          );
-        })}
-      </SidebarMenu>
-    ) : (
-        <></>
-    )
+                  </span>
+                )
+              }}
+              >
+              <Link to={path}>
+                <Icon />
+                {label}
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      })}
+    </SidebarMenu>
+  );
 };
