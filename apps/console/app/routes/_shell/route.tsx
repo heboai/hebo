@@ -48,7 +48,10 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
 
   const { user } = useSnapshot(authStore);
-  const { agent: activeAgent, branch: activeBranch } = unstable_useRoute("routes/_shell.agent.$agentSlug")?.loaderData ?? {};
+  let { agent: activeAgent, branch: activeBranch } = unstable_useRoute("routes/_shell.agent.$agentSlug")?.loaderData ?? {};
+
+  if (!activeBranch && (!!activeAgent?.branches?.length))
+    activeBranch = activeAgent.branches[0]
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
