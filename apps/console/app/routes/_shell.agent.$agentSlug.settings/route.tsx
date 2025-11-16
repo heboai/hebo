@@ -35,7 +35,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
 
 
 export default function Settings() {
-  const agent = unstable_useRoute("routes/_shell.agent.$agentSlug")!.loaderData!.agent!;
+  const agent = unstable_useRoute("routes/_shell.agent.$agentSlug")!.loaderData!.agent;
  
   return (
     <>

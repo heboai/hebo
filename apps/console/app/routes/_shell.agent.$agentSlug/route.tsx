@@ -17,7 +17,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
       status: 404, statusText: "Not Found"
     });
 
-  return { agent: result.data };
+  return { agent: result.data! };
 }
 
 export { dontRevalidateOnFormErrors as shouldRevalidate }
