@@ -12,9 +12,8 @@ import {
   agentsRelations,
 } from "~api/generated/prismabox/agents";
 
-const agents = t.Object({
-  ...agentsPlain.properties,
-  branches: t.Optional(t.Array(agentsRelations.properties.branches.items)),
+export const agents = t.Composite([agentsPlain, t.Partial(agentsRelations)], {
+  additionalProperties: false,
 });
 
 export const agentsModule = new Elysia({
