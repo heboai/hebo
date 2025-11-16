@@ -5,6 +5,7 @@ import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { supportedModelsEnum } from "@hebo/shared-data/types/models";
 
 import {
+  agentsInclude,
   agentsInputCreate,
   agentsInputUpdate,
   agentsPlain,
@@ -13,14 +14,10 @@ import {
 
 const agents = t.Object({
   ...agentsPlain.properties,
-  branches: t.Array(t.Partial(agentsRelations.properties.branches.items)),
+  branches: t.Optional(
+    t.Array(t.Partial(agentsRelations.properties.branches.items)),
+  ),
 });
-const branchesExpandParam = t.Object({
-  expand: t.Optional(t.Literal("branches")),
-});
-
-const agentInclude = (withBranches = false) =>
-  withBranches ? { branches: true } : { branches: { select: { slug: true } } };
 
 export const agentsModule = new Elysia({
   prefix: "/agents",
@@ -32,12 +29,12 @@ export const agentsModule = new Elysia({
       return status(
         200,
         await dbClient.agents.findMany({
-          include: agentInclude(query.expand === "branches"),
+          include: query,
         }),
       );
     },
     {
-      query: branchesExpandParam,
+      query: agentsInclude,
       response: { 200: t.Array(agents) },
     },
   )
@@ -58,7 +55,7 @@ export const agentsModule = new Elysia({
               },
             },
           } as any,
-          include: agentInclude(true),
+          include: { branches: true },
         }),
       );
     },
@@ -77,12 +74,12 @@ export const agentsModule = new Elysia({
         200,
         await dbClient.agents.findFirstOrThrow({
           where: { slug: params.agentSlug },
-          include: agentInclude(query.expand === "branches"),
+          include: query,
         }),
       );
     },
     {
-      query: branchesExpandParam,
+      query: agentsInclude,
       response: { 200: agents },
     },
   )
@@ -94,12 +91,12 @@ export const agentsModule = new Elysia({
         await dbClient.agents.update({
           where: { slug: params.agentSlug },
           data: { name: body.name },
-          include: agentInclude(query.expand === "branches"),
+          include: query,
         }),
       );
     },
     {
-      query: branchesExpandParam,
+      query: agentsInclude,
       body: agentsInputUpdate,
       response: { 200: agents },
     },
