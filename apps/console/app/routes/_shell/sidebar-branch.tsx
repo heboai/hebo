@@ -43,7 +43,7 @@ export function BranchSelect({
   
   // Keyboard shortcuts
   useHotkeys(
-    "mod+M",
+    "mod+J",
     () => {
       setOpen((prev) => !prev);
     },
@@ -62,7 +62,7 @@ export function BranchSelect({
                   {activeBranch?.name ?? activeBranch?.slug ?? "Select branch"}
               </span>
               <span className="text-muted-foreground">
-                  {kbs("mod+M")}
+                  {kbs("mod+J")}
               </span>
               <ChevronDown aria-hidden="true" />
             </SidebarMenuButton>
