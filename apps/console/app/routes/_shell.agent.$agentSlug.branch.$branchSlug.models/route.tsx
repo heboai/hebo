@@ -1,4 +1,4 @@
-import { unstable_useRoute, useParams } from "react-router";
+import { unstable_useRoute } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/service";

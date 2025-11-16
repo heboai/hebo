@@ -96,11 +96,13 @@ export function BranchSelect({
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <div className="text-muted-foreground">
-                <Plus className="size-4" aria-hidden="true" />
-                New Branch
-              </div>
+            <DropdownMenuItem className="text-muted-foreground" asChild>
+              <Link
+                  to={`/agent/${activeAgent.slug}/branches`}
+                  viewTransition
+                >
+                View all branches
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
