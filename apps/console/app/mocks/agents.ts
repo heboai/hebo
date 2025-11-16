@@ -50,7 +50,7 @@ export const agentHandlers = [
     "/api/v1/agents/:agentSlug",
     async ({ params, request }) => {
       const url = new URL(request.url);
-      const expand = url.searchParams.get("expand");
+      const branchesInclude = url.searchParams.get("branches");
 
       let agent;
       try {
@@ -66,7 +66,7 @@ export const agentHandlers = [
 
       await delay(500);
 
-      return expand === "branches"
+      return branchesInclude === "true"
         ? HttpResponse.json(agent)
         : HttpResponse.json({ ...agent, branches: [] });
     },
