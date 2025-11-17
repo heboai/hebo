@@ -15,7 +15,7 @@ import {
   type OpenAICompatibleMessage,
   type OpenAICompatibleTool,
   type OpenAICompatibleToolChoice,
-  type OpenAICompatibleToolCallDelta, // Added this line
+  type OpenAICompatibleToolCallDelta,
 } from "./openai-compatible-api-schemas";
 
 function convertToModelContent(content: OpenAICompatibleContentPart[]) {
