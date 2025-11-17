@@ -4,7 +4,6 @@ import { clsx } from "clsx";
 import * as React from "react";
 
 import { CopyToClipboardButton } from "./CopyToClipboardButton";
-import { type CopyToClipboardResult } from "./utils/copyToClipboard";
 import { getNodeText } from "./utils/getNodeText";
 
 export const styles = {
@@ -15,32 +14,16 @@ export const styles = {
 
 export interface CodeBlockPropsBase {
   title: string;
-  /**
-   * The callback function when a user clicks on the copied to clipboard button
-   */
-  onCopied?: (result: CopyToClipboardResult, textToCopy?: string) => void;
 }
 
 export type CodeBlockProps = CodeBlockPropsBase &
   Omit<React.ComponentPropsWithoutRef<"div">, keyof CodeBlockPropsBase>;
 
 export const CodeBlock = React.forwardRef(function CodeBlock(
-  { title, onCopied, children, className, ...props }: CodeBlockProps,
+  { title, children, className, ...props }: CodeBlockProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  function Button(
-    props: Partial<
-      React.ComponentPropsWithoutRef<typeof CopyToClipboardButton>
-    >,
-  ) {
-    return (
-      <CopyToClipboardButton
-        textToCopy={getNodeText(children)}
-        onCopied={onCopied}
-        {...props}
-      />
-    );
-  }
+  const textToCopy = getNodeText(children);
 
   return (
     <div
@@ -52,10 +35,16 @@ export const CodeBlock = React.forwardRef(function CodeBlock(
     >
       {title ? (
         <CodeTitleBar title={title}>
-          <Button className="relative p-2" />
+          <CopyToClipboardButton
+            className="relative p-2"
+            textToCopy={textToCopy}
+          />
         </CodeTitleBar>
       ) : (
-        <Button className="absolute top-0 right-0 p-2" />
+        <CopyToClipboardButton
+          className="absolute top-0 right-0 p-2"
+          textToCopy={textToCopy}
+        />
       )}
       <pre className={styles.code}>{children}</pre>
     </div>
