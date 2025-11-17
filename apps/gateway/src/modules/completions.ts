@@ -47,7 +47,7 @@ export const completions = new Elysia({
 
       const coreToolChoice = toToolChoice(toolChoice);
 
-      const providerOptions = provider.options(reasoning);
+      const providerOptions = provider.options(reasoning, modelId);
 
       if (stream) {
         const result = streamText({
@@ -56,7 +56,7 @@ export const completions = new Elysia({
           tools: toolSet,
           toolChoice: coreToolChoice,
           temperature,
-          ...providerOptions,
+          providerOptions,
         });
 
         const responseStream = toOpenAICompatibleStream(result, model);
@@ -76,7 +76,7 @@ export const completions = new Elysia({
         tools: toolSet,
         toolChoice: coreToolChoice,
         temperature,
-        ...providerOptions,
+        providerOptions,
       });
 
       return toOpenAICompatibleNonStreamResponse(result, model);

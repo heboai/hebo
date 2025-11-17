@@ -8,11 +8,11 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { OpenAICompatibleReasoning } from "../utils/openai-compatible-api-schemas";
 import type { LanguageModel, EmbeddingModel } from "ai";
 
-
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
 const toProviderOptions = (
   reasoning: OpenAICompatibleReasoning | undefined,
+  modelId: string,
 ) => {
   if (reasoning === undefined) {
     return;
@@ -29,12 +29,16 @@ const toProviderOptions = (
   } = {};
 
   if (reasoning.effort) {
-    groqOptions.reasoningEffort = reasoning.effort;
+    if (/gpt-oss/i.test(modelId)) {
+      groqOptions.reasoningEffort = reasoning.effort;
+    }
+  } else {
+    groqOptions.reasoningEffort = "default";
   }
 
   groqOptions.reasoningFormat = reasoning.exclude ? "hidden" : "parsed";
 
-  // Note: OpenAICompatibleReasoning's 'max_tokens' does not have a direct mapping in Groq.
+  // Note: 'max_tokens' does not have a direct mapping in Groq.
 
   return { groq: groqOptions };
 };
