@@ -10,7 +10,7 @@ import type { Route } from "./+types/route";
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const result = await api
     .agents({ agentSlug: params.agentSlug })
-    .get({ query: { expand: "branches" } });
+    .get({ query: { branches: true } });
 
   if (result.error?.status === 404)
     throw new Response(`Agent '${params.agentSlug}' does not exist`, {

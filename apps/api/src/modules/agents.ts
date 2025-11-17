@@ -5,22 +5,16 @@ import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { SupportedModelsEnum } from "@hebo/shared-data/types/enums";
 
 import {
+  agentsInclude,
   agentsInputCreate,
   agentsInputUpdate,
   agentsPlain,
   agentsRelations,
 } from "~api/generated/prismabox/agents";
 
-const agents = t.Object({
-  ...agentsPlain.properties,
-  branches: t.Array(t.Partial(agentsRelations.properties.branches.items)),
+export const agents = t.Composite([agentsPlain, t.Partial(agentsRelations)], {
+  additionalProperties: false,
 });
-const branchesExpandParam = t.Object({
-  expand: t.Optional(t.Literal("branches")),
-});
-
-const agentInclude = (withBranches = false) =>
-  withBranches ? { branches: true } : { branches: { select: { slug: true } } };
 
 export const agentsModule = new Elysia({
   prefix: "/agents",
@@ -32,12 +26,12 @@ export const agentsModule = new Elysia({
       return status(
         200,
         await dbClient.agents.findMany({
-          include: agentInclude(query.expand === "branches"),
+          include: query,
         }),
       );
     },
     {
-      query: branchesExpandParam,
+      query: agentsInclude,
       response: { 200: t.Array(agents) },
     },
   )
@@ -58,7 +52,7 @@ export const agentsModule = new Elysia({
               },
             },
           } as any,
-          include: agentInclude(true),
+          include: { branches: true },
         }),
       );
     },
@@ -67,7 +61,7 @@ export const agentsModule = new Elysia({
         ...agentsInputCreate.properties,
         defaultModel: SupportedModelsEnum,
       }),
-      response: { 201: agents },
+      response: { 201: agents, 409: t.String() },
     },
   )
   .get(
@@ -77,13 +71,13 @@ export const agentsModule = new Elysia({
         200,
         await dbClient.agents.findFirstOrThrow({
           where: { slug: params.agentSlug },
-          include: agentInclude(query.expand === "branches"),
+          include: query,
         }),
       );
     },
     {
-      query: branchesExpandParam,
-      response: { 200: agents },
+      query: agentsInclude,
+      response: { 200: agents, 404: t.String() },
     },
   )
   .patch(
@@ -94,14 +88,14 @@ export const agentsModule = new Elysia({
         await dbClient.agents.update({
           where: { slug: params.agentSlug },
           data: { name: body.name },
-          include: agentInclude(query.expand === "branches"),
+          include: query,
         }),
       );
     },
     {
-      query: branchesExpandParam,
+      query: agentsInclude,
       body: agentsInputUpdate,
-      response: { 200: agents },
+      response: { 200: agents, 404: t.String() },
     },
   )
   .delete(
@@ -111,6 +105,6 @@ export const agentsModule = new Elysia({
       return status(204);
     },
     {
-      response: { 204: t.Void() },
+      response: { 204: t.Void(), 404: t.String() },
     },
   );
