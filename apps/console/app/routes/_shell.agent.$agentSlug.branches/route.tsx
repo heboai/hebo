@@ -1,36 +1,69 @@
 import { unstable_useRoute } from "react-router";
 
-import BranchesTable from "./table";
-import CreateBranch, { BranchCreateSchema } from "./create";
-import type { Route } from "./+types/route";
 import { parseWithValibot } from "@conform-to/valibot";
-import { createBranchDeleteSchema } from "./delete";
 
-export async function clientAction({ request }: Route.ClientActionArgs ) {
+import CreateBranch, { BranchCreateSchema } from "./create";
+import { createBranchDeleteSchema } from "./delete";
+import BranchesTable from "./table";
+
+import type { Route } from "./+types/route";
+import { api } from "~console/lib/service";
+import { parseError } from "~console/lib/errors";
+
+
+export async function clientAction({ request, params }: Route.ClientActionArgs ) {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
-  let submission;
+  let submission, result;
 
   switch (intent) {
-    case "create": {
+    case "create":
       submission = parseWithValibot(formData, {
         schema: BranchCreateSchema
       });
-    }
 
-    case "delete": {
+      if (submission!.status !== 'success')
+        return submission!.reply();
+
+      try {
+        result = await api.agents({
+          agentSlug: params.agentSlug,
+        }).branches.post({
+          name: submission.value.branchName,
+          sourceBranchSlug: submission.value.sourceBranchSlug,
+        });
+      } catch (error) {
+        return submission.reply({ formErrors: [ parseError(error).message ] });
+      }
+      
+      if (result.error?.status === 409) 
+        return submission.reply({ fieldErrors: { branchName: [String(result.error.value)] }});
+
+      break;
+
+    case "delete": 
       const branchSlug = formData.get("branchSlug") as string;
 
       submission = parseWithValibot(formData, {
         schema: createBranchDeleteSchema(branchSlug)
       });
-    }
+
+      if (submission!.status !== 'success')
+        return submission!.reply();
+
+      try {
+        result = await api.agents({ agentSlug: params.agentSlug }).branches({ branchSlug: submission.value.slugConfirm}).delete();
+      } catch (error) {
+        return submission.reply({ formErrors: [ parseError(error).message ] });
+      }
+
+      if (result.error)
+        return submission.reply({ formErrors: [String(result.error?.value)] });
+
+      break;
   }
   
-  if (submission!.status !== 'success')
-    return submission!.reply();
-
   return submission!.reply();
 }
 

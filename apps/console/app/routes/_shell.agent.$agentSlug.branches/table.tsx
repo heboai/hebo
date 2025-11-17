@@ -3,6 +3,7 @@ import { MoreVertical, Trash } from "lucide-react";
 
 import { Badge } from "@hebo/shared-ui/components/Badge";
 import { Button } from "@hebo/shared-ui/components/Button";
+import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from "@hebo/shared-ui/components/Table";
-import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 
 import DeleteBranchDialog from "./delete";
+
 
 type BranchesTableProps = {
   agent: {
@@ -84,7 +85,7 @@ export default function BranchesTable({ agent }: BranchesTableProps) {
                             setDeleteOpen(true);
                           }}
                         >
-                          <Trash />
+                          <Trash aria-hidden="true" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>

@@ -1,12 +1,16 @@
+import { useEffect } from "react";
+import { Form, useActionData, useNavigation } from "react-router";
+import { literal, object, type InferOutput } from "valibot";
+
 import { getFormProps, useForm } from "@conform-to/react";
 import { getValibotConstraint } from "@conform-to/valibot";
+
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@hebo/shared-ui/components/Dialog";
 import { Alert, AlertTitle } from "@hebo/shared-ui/components/Alert";
-import { Form, useActionData, useNavigation } from "react-router";
 import { Button } from "@hebo/shared-ui/components/Button";
 import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
-import { literal, object, type InferOutput } from "valibot";
+
 import { useActionDataErrorToast } from "~console/lib/errors";
 
 
@@ -35,6 +39,12 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
   });
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    if (navigation.state === "idle" && lastResult?.status === "success") {
+      onOpenChange(false);
+    }
+  }, [navigation.state, lastResult?.status]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

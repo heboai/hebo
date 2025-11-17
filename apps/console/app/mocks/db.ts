@@ -5,12 +5,10 @@ const createDb = () =>
     agent: {
       slug: primaryKey(String),
       name: String,
-      defaultModel: String,
       branches: manyOf("branch"),
     },
     branch: {
       id: primaryKey(() => crypto.randomUUID()),
-      agent_slug: String,
       slug: String,
       name: String,
       models: Array,

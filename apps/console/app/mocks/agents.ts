@@ -5,14 +5,15 @@ import { db } from "~console/mocks/db";
 
 export const agentHandlers = [
   http.post("/api/v1/agents", async ({ request }) => {
-    const body = (await request.json()) as ReturnType<typeof db.agent.create>;
-    const agentSlug = slugify(body.name, { lower: true, strict: true });
+    const body = (await request.json()) as {
+      name: string;
+      defaultModel: string;
+    };
 
     // always create main branch by default
-    const branch = db.branch.create({
+    const defaultBranch = db.branch.create({
+      name: "Main",
       slug: "main",
-      agent_slug: agentSlug,
-      name: "main",
       models: [
         {
           alias: "default",
@@ -23,8 +24,8 @@ export const agentHandlers = [
 
     const agent = {
       name: body.name,
-      slug: agentSlug,
-      branches: [branch],
+      slug: slugify(body.name, { lower: true, strict: true }),
+      branches: [defaultBranch],
     };
 
     try {
@@ -52,17 +53,14 @@ export const agentHandlers = [
       const url = new URL(request.url);
       const branchesInclude = url.searchParams.get("branches");
 
-      let agent;
-      try {
-        agent = db.agent.findFirst({
-          where: { slug: { equals: params.agentSlug } },
-          strict: true,
-        });
-      } catch {
+      const agent = db.agent.findFirst({
+        where: { slug: { equals: params.agentSlug } },
+      });
+
+      if (!agent)
         return new HttpResponse("Agent with the slug not found", {
           status: 404,
         });
-      }
 
       await delay(500);
 
