@@ -31,13 +31,13 @@ model agents {
   branches branches[]
 
   // Common audit fields across entities
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   created_by String
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   created_at DateTime  @default(now())
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   updated_by String
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   updated_at DateTime  @updatedAt
   /// @prismabox.hide
   deleted_by String?
@@ -59,13 +59,13 @@ model branches {
   agent      agents @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
 
   // Common audit fields across entities
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   created_by String
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   created_at DateTime  @default(now())
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   updated_by String
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   updated_at DateTime  @updatedAt
   /// @prismabox.hide
   deleted_by String?
