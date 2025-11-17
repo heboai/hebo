@@ -96,13 +96,30 @@ export const branchesModule = new Elysia({
   .delete(
     "/:branchSlug",
     async ({ dbClient, params }) => {
-      const { id } = await dbClient.branches.findFirstOrThrow({
-        where: { agent_slug: params.agentSlug, slug: params.branchSlug },
-      });
+      const [totalBranches, { id }] = await dbClient.$transaction([
+        dbClient.branches.count({
+          where: { agent_slug: params.agentSlug },
+        }),
+        dbClient.branches.findFirstOrThrow({
+          where: {
+            agent_slug: params.agentSlug,
+            slug: params.branchSlug,
+          },
+          select: { id: true },
+        }),
+      ]);
+
+      if (totalBranches <= 1) {
+        return status(
+          409,
+          "Each agent must keep at least one branch. Create a new branch before deleting this one.",
+        );
+      }
+
       await dbClient.branches.softDelete({ id });
       return status(204);
     },
     {
-      response: { 204: t.Void(), 404: t.String() },
+      response: { 204: t.Void(), 404: t.String(), 409: t.String() },
     },
   );
