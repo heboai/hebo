@@ -5,10 +5,39 @@ import { createVoyage } from "voyage-ai-provider";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
+import type { OpenAICompatibleReasoning } from "../utils/openai-compatible-api-schemas";
 import type { LanguageModel, EmbeddingModel } from "ai";
+
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 
+const toProviderOptions = (
+  reasoning: OpenAICompatibleReasoning | undefined,
+) => {
+  if (reasoning === undefined) {
+    return;
+  }
+
+  if (reasoning.enabled === false) {
+    return { groq: { reasoningEffort: "none" } };
+  }
+
+  // FUTURE support AWS Bedrock and Vertex AI
+  const groqOptions: {
+    reasoningEffort?: "low" | "medium" | "high" | "none" | "default";
+    reasoningFormat?: "parsed" | "raw" | "hidden";
+  } = {};
+
+  if (reasoning.effort) {
+    groqOptions.reasoningEffort = reasoning.effort;
+  }
+
+  groqOptions.reasoningFormat = reasoning.exclude ? "hidden" : "parsed";
+
+  // Note: OpenAICompatibleReasoning's 'max_tokens' does not have a direct mapping in Groq.
+
+  return { groq: groqOptions };
+};
 const groq = createGroq({
   apiKey: (() => {
     try {
@@ -81,5 +110,6 @@ export const provider = new Elysia({ name: "provider" })
   .decorate("provider", {
     chat: chatOrThrow,
     embedding: embeddingOrThrow,
+    options: toProviderOptions,
   } as const)
   .as("scoped");
