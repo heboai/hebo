@@ -1,6 +1,7 @@
 import { unstable_useRoute } from "react-router";
 
 import BranchesTable from "./table";
+import CreateBranch from "./create";
 
 
 export default function AgentBranchesRoute() {
@@ -17,6 +18,8 @@ export default function AgentBranchesRoute() {
       </div>
 
       <BranchesTable agent={agent} />
+
+      <CreateBranch branches={agent.branches} />
 
     </div>
   );

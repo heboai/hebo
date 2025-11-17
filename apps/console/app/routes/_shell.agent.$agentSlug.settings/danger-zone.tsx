@@ -59,7 +59,7 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
       <Card className="border-destructive border-dashed">
         <CardHeader>
-          <CardTitle>Delete this agent</CardTitle>
+          <CardTitle>Delete agent</CardTitle>
           <CardDescription>
             Once you delete an agent, there is no going back. Be certain.
           </CardDescription>
