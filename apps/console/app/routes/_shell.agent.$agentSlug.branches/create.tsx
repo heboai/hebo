@@ -105,6 +105,8 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
                     </DialogClose>
                     <Button
                         type="submit"
+                        name="intent"
+                        value="create"
                         isLoading={navigation.state !== "idle"}
                         >
                         Create

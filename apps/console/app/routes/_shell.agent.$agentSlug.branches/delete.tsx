@@ -78,6 +78,8 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
             <Button
               type="submit"
               variant="destructive"
+              name="intent"
+              value="delete"
               isLoading={navigation.state !== "idle"}
             >
               Delete
