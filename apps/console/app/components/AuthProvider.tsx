@@ -1,4 +1,4 @@
-import { lazy, useLayoutEffect, useState } from "react";
+import { lazy, useState } from "react";
 
 import { getStackApp } from "~console/lib/auth/stack-auth";
 import { isStackAuthEnabled } from "~console/lib/env";
@@ -14,13 +14,8 @@ const StackTheme = lazy(() =>
 export function AuthProvider({
   children,
 }: Readonly<{ children?: React.ReactNode }>) {
-  // Prevent rendering during static export
-  const [isClient, setIsClient] = useState(false);
-  useLayoutEffect(() => {
-    if (globalThis.window !== undefined) {
-      setIsClient(true);
-    }
-  }, []);
+  // Prevent rendering during redirect & static export
+  const [isClient] = useState(() => globalThis.window !== undefined);
   if (!isClient) return <></>;
 
   if (isStackAuthEnabled) {

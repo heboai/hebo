@@ -36,6 +36,8 @@ function Select({
     <>
       <input name={name} ref={control.register} type="hidden" />
       <ShadcnSelect
+        // Conform's docs show using control.value directly; this is safe.
+        // eslint-disable-next-line react-hooks/refs
         value={control.value}
         onValueChange={(value) => {
           control.change(value);

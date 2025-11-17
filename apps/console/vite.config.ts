@@ -3,6 +3,7 @@ import { reactRouter } from "@react-router/dev/vite";
 import rehypeShiki from "@shikijs/rehype";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, loadEnv } from "vite";
+import babel from "vite-plugin-babel";
 import devtoolsJson from "vite-plugin-devtools-json";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -30,6 +31,13 @@ export default defineConfig(({ mode }) => {
       }),
       tailwindcss(),
       reactRouter(),
+      babel({
+        filter: (id) => /\.[jt]sx?$/.test(id) && !id.includes("node_modules"),
+        babelConfig: {
+          presets: ["@babel/preset-typescript"],
+          plugins: [["babel-plugin-react-compiler"]],
+        },
+      }),
       ...(mode === "development" ? [devtoolsJson()] : []),
     ],
     // Expose TURBO_HASH to enable local vs CI/build environment detection
