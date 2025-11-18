@@ -36,7 +36,7 @@ export function BranchSelect({
   activeBranch?: Branch;
 }) {
 
-  const branches = activeAgent?.branches ?? [];
+  const branches = activeAgent.branches ?? [];
 
   // Dropdown open / closed
   const [open, setOpen] = useState(false);
@@ -48,7 +48,7 @@ export function BranchSelect({
       setOpen((prev) => !prev);
     },
     { preventDefault: true },
-    [activeAgent],
+    [],
   );
 
   return (

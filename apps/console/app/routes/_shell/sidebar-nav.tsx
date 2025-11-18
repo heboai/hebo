@@ -34,7 +34,6 @@ export const SidebarNav = ({ activeAgent, activeBranch }: SidebarNavProps) => {
     useHotkeys(
       shortcut,
       () => {
-        if (!activeAgent) return;
         navigate(getPath(activeAgent.slug, activeBranch.slug), { viewTransition: true });
       },
       { preventDefault: true },

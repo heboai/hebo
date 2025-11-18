@@ -27,8 +27,7 @@ type BranchesTableProps = {
     slug: string;
     branches?: {
       slug: string;
-      name?: string;
-      updated_by?: String,
+      updated_by?: string,
       updated_at?: Date;
     }[];
   };

@@ -37,7 +37,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
         return submission.reply({ formErrors: [ parseError(error).message ] });
       }
       
-      if (result.error?.status === 409) 
+      if (result.error?.status === 409 || result.error?.status === 404 ) 
         return submission.reply({ fieldErrors: { branchName: [String(result.error.value)] }});
 
       break;

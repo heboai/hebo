@@ -50,7 +50,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
     lastResult,
     constraint: getValibotConstraint(BranchCreateSchema),
     defaultValue: {
-      sourceBranchSlug: branches?.[0]?.slug || "",
+      sourceBranchSlug: branches?.[0]?.slug,
     },
   });
 

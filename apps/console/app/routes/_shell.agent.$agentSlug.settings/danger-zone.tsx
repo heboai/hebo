@@ -67,7 +67,7 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="destructive">Delete Agent</Button>
+                <Button variant="destructive">Delete agent</Button>
               </DialogTrigger>
 
               <DialogContent className="sm:max-w-md bg-sidebar">
