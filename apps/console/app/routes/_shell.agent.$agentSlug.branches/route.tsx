@@ -37,7 +37,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
         return submission.reply({ formErrors: [ parseError(error).message ] });
       }
       
-      if (result.error?.status === 409 || result.error?.status === 404 ) 
+      if (result.error?.status === 409 || result.error?.status === 404) 
         return submission.reply({ fieldErrors: { branchName: [String(result.error.value)] }});
 
       break;
@@ -58,8 +58,8 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
         return submission.reply({ formErrors: [ parseError(error).message ] });
       }
 
-      if (result.error)
-        return submission.reply({ formErrors: [String(result.error?.value)] });
+      if (result.error) 
+        return submission.reply({ fieldErrors: { slugConfirm: [String(result.error.value)] }});
 
       break;
   }
@@ -83,7 +83,7 @@ export default function Branches() {
 
       <BranchesTable agent={agent} />
 
-      <CreateBranch branches={agent.branches} />
+      <CreateBranch branches={agent.branches!} />
 
     </div>
   );

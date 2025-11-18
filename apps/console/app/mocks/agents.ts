@@ -1,4 +1,4 @@
-import { http, HttpResponse, delay } from "msw";
+import { http, HttpResponse } from "msw";
 import slugify from "slugify";
 
 import { db } from "~console/mocks/db";
@@ -9,41 +9,40 @@ export const agentHandlers = [
       name: string;
       defaultModel: string;
     };
+    const agentSlug = slugify(body.name, { lower: true, strict: true });
 
-    // always create main branch by default
-    const defaultBranch = db.branch.create({
-      name: "Main",
-      slug: "main",
-      models: [
-        {
-          alias: "default",
-          type: body.defaultModel,
-        },
+    const existingAgent = db.agents.findFirst((q) =>
+      q.where({ slug: agentSlug }),
+    );
+    if (existingAgent)
+      return new HttpResponse("Agent with the same slug already exists", {
+        status: 409,
+      });
+
+    const agent = await db.agents.create({
+      slug: slugify(body.name, { lower: true, strict: true }),
+      name: body.name,
+      branches: [
+        await db.branches.create({
+          agent_slug: agentSlug,
+          slug: "main",
+          name: "Main",
+          models: [
+            {
+              alias: "default",
+              type: body.defaultModel,
+            },
+          ],
+        }),
       ],
     });
 
-    const agent = {
-      name: body.name,
-      slug: slugify(body.name, { lower: true, strict: true }),
-      branches: [defaultBranch],
-    };
-
-    try {
-      db.agent.create(agent);
-    } catch {
-      return new HttpResponse("Agent with the same name already exists", {
-        status: 409,
-      });
-    }
-
-    await delay(2000);
     return HttpResponse.json(agent, { status: 201 });
   }),
 
   http.get("/api/v1/agents", async () => {
-    const agents = db.agent.getAll();
+    const agents = db.agents.findMany();
 
-    await delay(1000);
     return HttpResponse.json(agents);
   }),
 
@@ -53,16 +52,13 @@ export const agentHandlers = [
       const url = new URL(request.url);
       const branchesInclude = url.searchParams.get("branches");
 
-      const agent = db.agent.findFirst({
-        where: { slug: { equals: params.agentSlug } },
-      });
-
+      const agent = db.agents.findFirst((q) =>
+        q.where({ slug: params.agentSlug }),
+      );
       if (!agent)
         return new HttpResponse("Agent with the slug not found", {
           status: 404,
         });
-
-      await delay(500);
 
       return branchesInclude === "true"
         ? HttpResponse.json(agent)
@@ -73,18 +69,8 @@ export const agentHandlers = [
   http.delete<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug",
     async ({ params }) => {
-      try {
-        db.agent.delete({
-          where: { slug: { equals: params.agentSlug } },
-          strict: true,
-        });
-      } catch {
-        return new HttpResponse("Agent with the slug not found", {
-          status: 404,
-        });
-      }
+      db.agents.delete((q) => q.where({ slug: params.agentSlug }));
 
-      await delay(500);
       return new HttpResponse(undefined, { status: 200 });
     },
   ),

@@ -32,7 +32,7 @@ export type BranchCreateFormValues = InferOutput<typeof BranchCreateSchema>;
 
 
 type CreateBranchProps = {
-    branches?: 
+    branches: 
     {
         slug: string,
         name: string,
@@ -50,7 +50,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
     lastResult,
     constraint: getValibotConstraint(BranchCreateSchema),
     defaultValue: {
-      sourceBranchSlug: branches?.[0]?.slug,
+      sourceBranchSlug: branches[0].slug,
     },
   });
 
