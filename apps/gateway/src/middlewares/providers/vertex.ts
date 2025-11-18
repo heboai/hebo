@@ -24,10 +24,7 @@ const injectAwsMetadataCredentials = async () => {
   process.env.AWS_SESSION_TOKEN = credentials.Token;
 };
 
-export const buildAwsWifOptions = (
-  audience: string,
-  serviceAccountEmail: string,
-) => {
+const buildAwsWifOptions = (audience: string, serviceAccountEmail: string) => {
   return {
     type: "external_account",
     audience,
