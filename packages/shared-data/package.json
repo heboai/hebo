@@ -10,7 +10,7 @@
     "./utils/*": "./utils/*.ts"
   },
   "scripts": {
-    "generate": "bun run scripts/generate-models-schema.ts"
+    "generate": "bun run scripts/generate-schemas.ts"
   },
   "private": true,
   "type": "module",
