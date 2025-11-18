@@ -1,7 +1,7 @@
 export abstract class ProvidersHttpError extends Error {
-  status: number;
-  type: string;
-  code: string;
+  readonly status: number;
+  readonly type: string;
+  readonly code: string;
   constructor(
     message: string,
     opts: { status: number; type: string; code: string },
