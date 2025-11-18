@@ -70,7 +70,7 @@ export default function BranchesTable({ agent }: BranchesTableProps) {
                     </div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-muted-foreground">
-                    {`${branch.updated_by ?? "Dummy User"} (${(branch.updated_at ?? new Date(0)).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })})`}
+                    {`${branch.updated_by ?? "Dummy User"} (${(branch.updated_at ?? new Date(0)).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })})`}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
