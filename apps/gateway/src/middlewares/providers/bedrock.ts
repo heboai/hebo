@@ -11,7 +11,7 @@ import type { AwsProviderConfig } from "@hebo/shared-data/types/providers";
 import type { Provider } from "ai";
 
 // FUTURE: Cache the inference profile ARN
-export const getInferenceProfileArn = async (
+const getInferenceProfileArn = async (
   credentials: {
     accessKeyId: string;
     secretAccessKey: string;
@@ -38,7 +38,7 @@ export const getInferenceProfileArn = async (
 };
 
 // FUTURE: Cache credentials
-export const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
+const getAwsCreds = async (bedrockRoleArn: string, region: string) => {
   const sts = new STSClient({ region });
   const resp = await sts.send(
     new AssumeRoleCommand({
