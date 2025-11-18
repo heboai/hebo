@@ -23,11 +23,10 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   if (params.branchSlug) {
     branch = agent.branches?.find((a) => a.slug === params.branchSlug);
 
-      if (branch === undefined) {
-        throw new Response(`Branch '${params.branchSlug}' does not exist`, {
+    if (branch === undefined) 
+      throw new Response(`Branch '${params.branchSlug}' does not exist`, {
         status: 404, statusText: "Not Found"
-      });
-    }
+      })
   }
 
   return { agent, branch };
