@@ -63,7 +63,7 @@ export const SidebarNav = ({ activeAgent, activeBranch }: SidebarNavProps) => {
                 )
               }}
               >
-              <Link to={path}>
+              <Link to={path} viewTransition>
                 <Icon aria-hidden="true" />
                 {label}
               </Link>
