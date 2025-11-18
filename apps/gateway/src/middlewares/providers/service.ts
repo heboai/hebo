@@ -1,7 +1,7 @@
 import { createGroq } from "@ai-sdk/groq";
 
 import type { createDbClient } from "@hebo/database/client";
-import { getSecret } from "@hebo/shared-api/utils/get-secret";
+import { getSecret } from "@hebo/shared-api/utils/secrets";
 import type { Models } from "@hebo/shared-data/types/models";
 import type {
   Provider as ProviderConfig,

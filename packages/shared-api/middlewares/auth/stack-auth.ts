@@ -3,7 +3,7 @@ import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-import { getSecret } from "../../utils/get-secret";
+import { getSecret } from "../../utils/secrets";
 
 export const projectId = await getSecret("StackProjectId");
 export const secretServerKey = await getSecret("StackSecretServerKey");
