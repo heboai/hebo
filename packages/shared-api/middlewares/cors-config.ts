@@ -7,4 +7,5 @@ export const corsConfig =
       }
     : {
         origin: true,
+        maxAge: 3600, // reduces noise of OPTION calls without compromising security
       };
