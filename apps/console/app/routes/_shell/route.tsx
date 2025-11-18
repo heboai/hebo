@@ -79,7 +79,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
     >
 
       <Sidebar collapsible="icon">
-        <div className="h-full flex flex-col transition-[padding] group-data-[state=collapsed]:p-2">
+        <div className="h-full flex flex-col group-data-[state=collapsed]:px-2 transition-[padding]">
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
             {activeAgent && (

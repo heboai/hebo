@@ -39,16 +39,15 @@ export default function BranchesTable({ agent }: BranchesTableProps) {
 
   return (
     <div>
-      {/* FUTURE: Generalize table styles */}
-      <Table className="rounded-lg overflow-hidden [&_td]:px-4 [&_th]:px-4">
-        <TableHeader className="bg-secondary">
+      <Table>
+        <TableHeader>
           <TableRow className="">
             <TableHead className="w-1/3">Branch</TableHead>
             <TableHead className="hidden sm:table-cell">Updated</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="bg-background">
+        <TableBody>
           {agent.branches!.length === 0 ? (
             <TableRow>
               <TableCell colSpan={3} className="text-center text-muted-foreground">

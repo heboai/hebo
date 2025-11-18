@@ -48,7 +48,7 @@ export const SidebarNav = ({ activeAgent, activeBranch }: SidebarNavProps) => {
         const active = isActive ? isActive(pathname, activeAgent.slug, activeBranch.slug) : pathname === path;
 
         return (
-          <SidebarMenuItem key={label}>
+          <SidebarMenuItem key={label} className="group-data-[state=expanded]:mx-0.5 transition-[margin]">
             <SidebarMenuButton 
               asChild 
               isActive={active}

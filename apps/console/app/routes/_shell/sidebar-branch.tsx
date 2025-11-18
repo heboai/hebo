@@ -52,8 +52,8 @@ export function BranchSelect({
   );
 
   return (
-    <SidebarMenu className="pt-1 pb-2 group-data-[state=expanded]:px-0.5">
-      <SidebarMenuItem>
+    <SidebarMenu>
+      <SidebarMenuItem className="group-data-[state=expanded]:mx-1.5 transition-[margin]">
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="bg-background border-input border-1" aria-label="Select branch">
