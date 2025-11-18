@@ -49,14 +49,10 @@ export function AgentSelect({
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg" aria-label="Select agent">
-              <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <AgentLogo />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate text-lg font-medium">
-                  {activeAgent?.name ?? "hebo.ai"}
-                </span>
-              </div>
+              <AgentLogo />
+              <span className="truncate text-lg font-medium">
+                {activeAgent?.name ?? "hebo.ai"}
+              </span>
               <ChevronsUpDown className="ml-auto" aria-hidden="true" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -100,7 +96,7 @@ export function AgentSelect({
               agents.map((agent) => (
                 <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
                   <Link to={`/agent/${agent.slug}/branch/main`} viewTransition>
-                    {agent.name}
+                    <span className="truncate">{agent.name}</span>
                     {agent.slug === activeAgent?.slug && (
                       <Check size={12} className="ml-auto" aria-hidden="true" />
                     )}

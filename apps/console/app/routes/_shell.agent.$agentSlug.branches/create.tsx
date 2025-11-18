@@ -64,16 +64,16 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <div>
+      <div>
+        <DialogTrigger asChild>
           <Button
             type="button"
             variant="outline"
           >
             + Create Branch
           </Button>
-        </div>
-      </DialogTrigger>
+        </DialogTrigger>
+      </div>
       <DialogContent>
         <Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>

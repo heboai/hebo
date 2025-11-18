@@ -41,7 +41,7 @@ export default function BranchesTable({ agent }: BranchesTableProps) {
     <div>
       <Table>
         <TableHeader>
-          <TableRow className="">
+          <TableRow>
             <TableHead className="w-1/3">Branch</TableHead>
             <TableHead className="hidden sm:table-cell">Updated</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -62,7 +62,9 @@ export default function BranchesTable({ agent }: BranchesTableProps) {
                   <TableCell className="align-middle">
                     <div className="flex gap-2">
                       <Badge variant="outline">
-                        {agent.slug} / {branch.slug}
+                        <span className="text-ellipsis-start">
+                          {branch.slug}
+                        </span>
                       </Badge>
                       <CopyToClipboardButton textToCopy={copyValue} />
                     </div>

@@ -57,11 +57,11 @@ export function BranchSelect({
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="bg-background border-input border-1" aria-label="Select branch">
-              <GitBranch className="size-4" aria-hidden="true" />
-              <span className="flex flex-1 truncate">
+              <GitBranch aria-hidden="true" />
+              <span className="truncate">
                   {activeBranch?.name ?? activeBranch?.slug ?? "Select branch"}
               </span>
-              <span className="text-muted-foreground">
+              <span className="ml-auto text-muted-foreground">
                   {kbs("mod+J")}
               </span>
               <ChevronDown aria-hidden="true" />
@@ -80,7 +80,7 @@ export function BranchSelect({
                     to={`/agent/${activeAgent.slug}/branch/${branch.slug}`}
                     viewTransition
                   >
-                    {branch.name}
+                    <span className="truncate">{branch.name}</span>
                     {branch.slug === activeBranch?.slug && (
                       <Check size={12} className="ml-auto" aria-hidden="true" />
                     )}
