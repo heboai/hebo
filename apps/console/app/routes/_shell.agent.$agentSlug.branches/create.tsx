@@ -32,11 +32,10 @@ export type BranchCreateFormValues = InferOutput<typeof BranchCreateSchema>;
 
 
 type CreateBranchProps = {
-    branches: 
-    {
-        slug: string,
-        name: string,
-    }[]
+  branches: {
+    slug: string,
+    name: string,
+  }[]
 };
 
 export default function CreateBranch({ branches }: CreateBranchProps) {
