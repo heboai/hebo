@@ -1,5 +1,5 @@
 import { XCircle, SquareChevronRight } from "lucide-react";
-import { Outlet, unstable_useRoute, useLocation } from "react-router";
+import { Outlet, unstable_useRoute as useRoute, useLocation } from "react-router";
 import { useRef, useEffect } from "react";
 import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
@@ -46,23 +46,25 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
-
   const { user } = useSnapshot(authStore);
-  let { agent: activeAgent, branch: activeBranch } = unstable_useRoute("routes/_shell.agent.$agentSlug")?.loaderData ?? {};
-
-  if (!activeBranch && (!!activeAgent?.branches?.length))
-    activeBranch = activeAgent.branches[0]
-
-  // FUTURE replace with session storage
-  const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
-  const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
-
+  const agentRoute = useRoute("routes/_shell.agent.$agentSlug");
+  
   // Focus main element on route change for keyboard nav
   const location = useLocation();
   const mainRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     mainRef.current?.focus();
   }, [location]);
+
+  const activeAgent = agentRoute?.loaderData?.agent ?? undefined;
+  const activeBranch =
+    agentRoute?.loaderData?.branch ??
+    activeAgent?.branches?.[0] ??
+    undefined;
+
+  // FUTURE replace with session storage
+  const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
+  const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
 
   return (
     <SidebarProvider

@@ -1,4 +1,4 @@
-import { unstable_useRoute } from "react-router";
+import { unstable_useRoute as useRoute } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/service";
@@ -43,7 +43,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 
 export default function ModelsConfigRoute() {
 
-  const { agent, branch } = unstable_useRoute("routes/_shell.agent.$agentSlug")!.loaderData!;
+  const { agent, branch } = useRoute("routes/_shell.agent.$agentSlug")!.loaderData!;
 
   return (
       <div className="flex flex-col gap-4">
