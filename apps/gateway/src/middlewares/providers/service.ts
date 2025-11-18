@@ -54,6 +54,7 @@ const resolveProviderName = (modelConfig: ModelConfig): ProviderName => {
   return Object.keys(supportedProvider)[0] as ProviderName;
 };
 
+// FUTURE: Use memoization with TTL to allow refresh of temporary credentials
 const createProvider = async (cfg: ProviderConfig): Promise<Provider> => {
   const adapter = ADAPTERS[cfg.name];
   if (!adapter)
@@ -80,17 +81,6 @@ export const getProviderConfig = async (
   const adapter = ADAPTERS[providerName];
   const config = await adapter.getDefaultConfig();
   return { name: providerName, config } as ProviderConfig;
-};
-
-// FUTURE: Use a more sophisticated cache mechanism
-const providerInstances = new Map<string, Provider>();
-const getOrCreateProvider = async (cfg: ProviderConfig): Promise<Provider> => {
-  const key = `${cfg.name}:${JSON.stringify(cfg.config)}`;
-  const cached = providerInstances.get(key);
-  if (cached) return cached;
-  const instance = await createProvider(cfg);
-  providerInstances.set(key, instance);
-  return instance;
 };
 
 const getModelIdForProvider = (
@@ -144,7 +134,7 @@ export async function createAIModel(
   modality: "chat" | "embedding",
 ) {
   const supportedModel = getSupportedModelOrThrow(modelConfig.type, modality);
-  const provider = await getOrCreateProvider(providerCfg);
+  const provider = await createProvider(providerCfg);
   const modelId = await resolveModelId(supportedModel, providerCfg);
   return modality === "chat"
     ? provider.languageModel(modelId)
