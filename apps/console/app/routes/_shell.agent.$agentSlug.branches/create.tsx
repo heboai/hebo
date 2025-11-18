@@ -50,7 +50,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
     lastResult,
     constraint: getValibotConstraint(BranchCreateSchema),
     defaultValue: {
-      sourceBranchSlug: branches?.[0]?.slug || "empty",
+      sourceBranchSlug: branches?.[0]?.slug || "",
     },
   });
 
@@ -96,9 +96,8 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
               <FormLabel>Source</FormLabel>
               <FormControl>
                 <Select
-                  items={[
-                    { value: "empty", name: <>(Empty Branch)</> },
-                    ...(branches?.map((branch) => ({
+                  items={
+                    (branches ?? []).map(branch => ({
                       value: branch.slug,
                       name: (
                         <>
@@ -106,8 +105,8 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
                           {branch.name}
                         </>
                       ),
-                    })) ?? []),
-                  ]}
+                    }))
+                  }
                 />
               </FormControl>
               <FormMessage />

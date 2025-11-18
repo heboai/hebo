@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, type ShouldRevalidateFunctionArgs } from "react-router";
 
 import { ErrorView } from "~console/components/ui/ErrorView";
 import { api } from "~console/lib/service";
@@ -33,7 +33,12 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   return { agent, branch };
 }
 
-export { dontRevalidateOnFormErrors as shouldRevalidate }
+export function shouldRevalidate(args: ShouldRevalidateFunctionArgs) {
+  if (args.currentParams.branchSlug !== args.nextParams.branchSlug) {
+    return true;
+  }
+  return dontRevalidateOnFormErrors(args);
+}
 
 
 export default function AgentLayout() {

@@ -52,7 +52,7 @@ export function BranchSelect({
   );
 
   return (
-    <SidebarMenu className="pt-1 pb-2">
+    <SidebarMenu className="pt-1 pb-2 group-data-[state=expanded]:px-0.5">
       <SidebarMenuItem>
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
