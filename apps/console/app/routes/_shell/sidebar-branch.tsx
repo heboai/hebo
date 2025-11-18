@@ -20,7 +20,7 @@ import { kbs } from "~console/lib/utils";
 
 type Branch = {
   slug: string;
-  name?: string;
+  name: string;
 };
 
 type Agent = {

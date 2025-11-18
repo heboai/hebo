@@ -35,7 +35,7 @@ type CreateBranchProps = {
     branches?: 
     {
         slug: string,
-        name?: string,
+        name: string,
     }[]
 };
 
