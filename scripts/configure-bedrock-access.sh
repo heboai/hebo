@@ -6,29 +6,29 @@ readonly DEFAULT_ROLE_NAME="HeboBedrockRole4CrossAccountAssumptionRole"
 
 usage() {
   cat <<'EOF'
-Usage: provision-bedrock-role.sh [options]
+Usage: configure-bedrock-access.sh [options]
 
-Provision or update the Hebo Bedrock cross-account IAM role.
+Configure the Hebo Bedrock cross-account IAM role.
 
 Optional flags:
-  --environment <prod|nonprod>   Target environment (default: prod).
-  --role-name <name>             Explicit IAM role name (overrides derived defaults).
-  --region <region>              AWS region for API calls (default: us-east-1).
-  --profile <profile>            AWS CLI profile to use.
-  --help                         Show this message and exit.
+  --environment <production|preview>          Target environment (default: production).
+  --role-name <name>                          Explicit IAM role name (overrides derived defaults).
+  --region <region>                           AWS region for API calls (default: us-east-1).
+  --profile <profile>                         AWS CLI profile to use.
+  --help                                      Show this message and exit.
 
 Environment-specific requirements:
-  prod:    --gateway-task-role-arn <arn>   ARN of the Hebo gateway ECS task role allowed to assume this role.
-  nonprod: --root-account-id <id>          AWS account ID whose roles should be trusted.
+  production: --gateway-task-role-arn <arn>   ARN of the Hebo gateway ECS task role allowed to assume this role.
+  preview:    --root-account-id <id>          AWS account ID whose roles should be trusted.
 
 Examples:
-  ./provision-bedrock-role.sh --gateway-task-role-arn arn:aws:iam::<aws-account-id>:role/HeboGatewayTaskRole
-  ./provision-bedrock-role.sh --environment nonprod --root-account-id <aws-account-id>
+  ./configure-bedrock-access.sh --gateway-task-role-arn arn:aws:iam::<aws-account-id>:role/HeboGatewayTaskRole
+  ./configure-bedrock-access.sh --environment preview --root-account-id <aws-account-id>
 EOF
 }
 
 main() {
-  local environment="prod"
+  local environment="production"
   local role_name="$DEFAULT_ROLE_NAME"
   local aws_region="us-east-1"
   local aws_profile=""
@@ -74,10 +74,10 @@ main() {
   done
 
   case "$environment" in
-    nonprod|prod)
+    production|preview)
       ;;
     *)
-      echo "Error: --environment must be either 'prod' or 'nonprod'." >&2
+      echo "Error: --environment must be either 'production' or 'preview'." >&2
       usage
       exit 1
       ;;
@@ -87,20 +87,20 @@ main() {
   local role_description=""
   local usage_label=""
 
-  if [[ "$environment" == "nonprod" ]]; then
+  if [[ "$environment" == "preview" ]]; then
 
     if [[ -z "$root_aws_account_id" ]]; then
-      echo "Error: --root-account-id is required when --environment is nonprod." >&2
+      echo "Error: --root-account-id is required when --environment is preview." >&2
       usage
       exit 1
     fi
 
     principal_aws="arn:aws:iam::${root_aws_account_id}:root"
-    role_description="Allows Hebo gateway (non-prod) to invoke Bedrock foundation models."
-    usage_label="non-production"
+    role_description="Allows Hebo gateway (preview) to invoke Bedrock foundation models."
+    usage_label="preview"
   else
     if [[ -z "$gateway_task_role_arn" ]]; then
-      echo "Error: --gateway-task-role-arn is required when --environment is prod." >&2
+      echo "Error: --gateway-task-role-arn is required when --environment is production." >&2
       usage
       exit 1
     fi

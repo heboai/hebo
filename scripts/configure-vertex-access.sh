@@ -8,32 +8,31 @@ readonly DEFAULT_PROVIDER_ID="hebo-vertex-aws-provider"
 
 usage() {
   cat <<'EOF'
-Usage: provision-vertex-sa.sh --project-id <gcp-project-id> --aws-account-id <id> [options]
+Usage: configure-vertex-access.sh --project-id <gcp-project-id> --aws-account-id <id> [options]
 
-Provision or update the Google Cloud resources required for Hebo's Vertex provider integration.
+Configure the Google Cloud resources required for Hebo's Vertex AWS federation.
 
 Required flags:
-  --project-id <id>             Target Google Cloud project ID.
-  --aws-account-id <id>         AWS account ID involved in the federation.
+  --project-id <id>                   Target Google Cloud project ID.
+  --aws-account-id <id>               AWS account ID involved in the federation.
 
 Optional flags:
-  --environment <prod|nonprod>  Target environment (default: prod).
-  --gateway-task-role-arn <arn> ARN of the Hebo gateway ECS task role (required when --environment is prod).
-  --service-account-id <id>     Override the workload identity service account ID (default: google-vertex-service-account).
-  --workload-identity-pool-id <id>
-                                Override the workload identity pool ID (default: vertex-aws-pool).
-  --provider-id <id>            Override the AWS provider ID within the workload identity pool (default: google-vertex-aws-provider).
-  --location <location>         Workload identity pool location (default: global).
-  --help                        Show this message and exit.
+  --environment <production|preview>  Target environment (default: production).
+  --gateway-task-role-arn <arn>       ARN of the Hebo gateway ECS task role (required when --environment is production).
+  --service-account-id <id>           Override the workload identity service account ID (default: google-vertex-service-account).
+  --workload-identity-pool-id <id>    Override the workload identity pool ID (default: vertex-aws-pool).
+  --provider-id <id>                  Override the AWS provider ID within the workload identity pool (default: google-vertex-aws-provider).
+  --location <location>               Workload identity pool location (default: global).
+  --help                              Show this message and exit.
 
 Examples:
-  ./provision-vertex-sa.sh \
+  ./configure-vertex-access.sh \
     --project-id hebo-production \
     --aws-account-id <aws-account-id> \
     --gateway-task-role-arn arn:aws:iam::<aws-account-id>:role/HeboGatewayTaskRole
 
-  ./provision-vertex-sa.sh \
-    --environment nonprod \
+  ./configure-vertex-access.sh \
+    --environment preview \
     --project-id hebo-preview \
     --aws-account-id <aws-account-id>
 EOF
@@ -46,7 +45,7 @@ main() {
   local provider_id="$DEFAULT_PROVIDER_ID"
   local location="global"
   local aws_account_id=""
-  local environment="prod"
+  local environment="production"
   local gateway_task_role_arn=""
 
   while [[ $# -gt 0 ]]; do
@@ -96,10 +95,10 @@ main() {
   done
 
   case "$environment" in
-    prod|nonprod)
+    production|preview)
       ;;
     *)
-      echo "Error: --environment must be either 'prod' or 'nonprod'." >&2
+      echo "Error: --environment must be either 'production' or 'preview'." >&2
       usage
       exit 1
       ;;
@@ -133,9 +132,9 @@ main() {
   local completion_label=""
   local member=""
 
-  if [[ "$environment" == "prod" ]]; then
+  if [[ "$environment" == "production" ]]; then
     if [[ -z "$gateway_task_role_arn" ]]; then
-      echo "Error: --gateway-task-role-arn is required when --environment is prod." >&2
+      echo "Error: --gateway-task-role-arn is required when --environment is production." >&2
       usage
       exit 1
     fi
@@ -149,12 +148,12 @@ main() {
     completion_label="production"
   else
     attribute_condition="assertion.account == '${aws_account_id}'"
-    service_account_display_name="Service account for Vertex (non-prod)"
-    pool_display_name="Vertex AWS pool (non-prod)"
-    pool_description="Pool for Vertex → AWS federation (non-prod)"
-    provider_display_name="Vertex AWS provider (nonprod)"
-    provider_description="Provider for Vertex → AWS federation (non-prod)"
-    completion_label="non-production"
+    service_account_display_name="Service account for Vertex (preview)"
+    pool_display_name="Vertex AWS pool (preview)"
+    pool_description="Pool for Vertex → AWS federation (preview)"
+    provider_display_name="Vertex AWS provider (preview)"
+    provider_description="Provider for Vertex → AWS federation (preview)"
+    completion_label="preview"
   fi
 
   local pool_full_name=""
@@ -202,7 +201,7 @@ main() {
 
   echo "Binding workload identity user role to service account..."
   pool_full_name="$(gcloud iam workload-identity-pools describe "$workload_identity_pool_id" --project="$project_id" --location="$location" --format="value(name)")"
-  if [[ "$environment" == "prod" ]]; then
+  if [[ "$environment" == "production" ]]; then
     member="principalSet://iam.googleapis.com/${pool_full_name}/attribute.aws_role/${gateway_task_role_arn}"
   else
     member="principalSet://iam.googleapis.com/${pool_full_name}/attribute.account/${aws_account_id}"
