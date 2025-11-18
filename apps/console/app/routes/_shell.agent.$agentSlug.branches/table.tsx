@@ -24,11 +24,11 @@ import DeleteBranchDialog from "./delete";
 
 type BranchesTableProps = {
   agent: {
-    slug: string;
+    slug: string,
     branches?: {
-      slug: string;
+      slug: string,
       updated_by?: string,
-      updated_at?: Date;
+      updated_at?: Date,
     }[];
   };
 };

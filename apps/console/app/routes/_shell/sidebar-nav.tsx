@@ -23,7 +23,7 @@ const navItems = [
 
 type SidebarNavProps = {
   activeAgent: { slug: string };
-  activeBranch: { slug: string }
+  activeBranch: { slug: string };
 };
 
 export const SidebarNav = ({ activeAgent, activeBranch }: SidebarNavProps) => {
