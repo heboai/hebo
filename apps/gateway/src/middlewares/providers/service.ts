@@ -8,7 +8,7 @@ import type {
   ProviderName,
 } from "@hebo/shared-data/types/providers";
 
-import { getSupportedModelOrThrow } from "~gateway/utils/get-supported-model";
+import { getSupportedModelOrThrow } from "~gateway/utils/supported-models";
 
 import {
   createBedrockProvider,
