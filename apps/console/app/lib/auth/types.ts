@@ -1,12 +1,24 @@
 export interface AuthService {
   ensureSignedIn(): Promise<void>;
-  generateApiKey(): Promise<string>;
   getAccessToken(): string | undefined;
+  generateApiKey(description: string, expiresIn?: number): Promise<string>;
+  revokeApiKey(key: string): Promise<void>;
+  listApiKeys(): Promise<Array<ApiKey>>;
 }
+
+export const DEFAULT_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export type User = {
   email: string;
   name: string;
   initials?: string;
   avatar?: string;
+};
+
+export type ApiKey = {
+  id: string;
+  description: string;
+  key: string;
+  createdAt: Date;
+  expiresAt: Date;
 };
