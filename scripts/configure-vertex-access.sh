@@ -19,9 +19,9 @@ Required flags:
 Optional flags:
   --environment <production|preview>  Target environment (default: production).
   --gateway-task-role-arn <arn>       ARN of the Hebo gateway ECS task role (required when --environment is production).
-  --service-account-id <id>           Override the workload identity service account ID (default: google-vertex-service-account).
-  --workload-identity-pool-id <id>    Override the workload identity pool ID (default: vertex-aws-pool).
-  --provider-id <id>                  Override the AWS provider ID within the workload identity pool (default: google-vertex-aws-provider).
+  --service-account-id <id>           Override the workload identity service account ID (default: hebo-vertex-sa).
+  --workload-identity-pool-id <id>    Override the workload identity pool ID (default: hebo-vertex-aws-pool).
+  --provider-id <id>                  Override the AWS provider ID within the workload identity pool (default: hebo-vertex-aws-provider).
   --location <location>               Workload identity pool location (default: global).
   --help                              Show this message and exit.
 
