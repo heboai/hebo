@@ -1,0 +1,80 @@
+import { parseWithValibot } from "@conform-to/valibot";
+
+import { authService } from "~console/lib/auth";
+import { parseError } from "~console/lib/errors";
+
+import { API_KEY_EXPIRATION_OPTIONS, ApiKeyCreateSchema, CreateApiKeyDialog } from "./create";
+import { ApiKeysTable } from "./table";
+import { ApiKeyRevokeSchema } from "./revoke";
+
+import type { Route } from "./+types/route";
+
+export async function clientLoader() {
+  return { apiKeys: await authService.listApiKeys() };
+}
+
+
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  switch (intent) {
+    case "create": {
+      const submission = parseWithValibot(formData, {
+        schema: ApiKeyCreateSchema,
+      });
+
+      if (submission.status !== "success")
+          return submission.reply();
+
+      try {
+        await authService.generateApiKey(
+          submission.value.description,
+          API_KEY_EXPIRATION_OPTIONS.find((option) => option.value === submission.value.expiresIn)!.durationMs
+        );
+      } catch (error) {
+        return submission.reply({
+          formErrors: [parseError(error).message],
+        });
+      }
+
+      return submission.reply();
+    }
+
+    case "revoke": {
+      const submission = parseWithValibot(formData, {
+        schema: ApiKeyRevokeSchema,
+      });
+
+      if (submission.status !== "success")
+        return submission.reply();
+
+      try {
+        await authService.revokeApiKey(submission.value.apiKeyId);
+      } catch (error) {
+        return submission.reply({
+          formErrors: [parseError(error).message],
+        });
+      }
+
+      return submission.reply();
+    }
+  }
+}
+
+export default function ApiKeysRoute({loaderData: { apiKeys }}: Route.ComponentProps) {
+  return (
+    <div className="flex flex-col gap-6 max-w-3xl">
+      <div>
+        <h1>API Keys</h1>
+        <p className="text-muted-foreground text-sm">
+          Issue and revoke API keys to access your agent programatically.
+        </p>
+      </div>
+
+      <ApiKeysTable apiKeys={apiKeys} />
+      
+      <CreateApiKeyDialog />
+    </div>
+  );
+}

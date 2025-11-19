@@ -62,7 +62,7 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
             </AlertTitle>
           </Alert>
 
-          <input type="hidden" name="branchSlug" value={branchSlug ?? ""} />
+          <input type="hidden" name="branchSlug" value={branchSlug} />
 
           <FormField field={fields.slugConfirm}>
             <FormLabel>

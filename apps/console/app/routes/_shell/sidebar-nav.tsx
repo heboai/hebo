@@ -1,9 +1,10 @@
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@hebo/shared-ui/components/Sidebar";
-import { BrainCog, Home } from "lucide-react";
+import { BrainCog, Home, KeyRound } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useHotkeys } from "react-hotkeys-hook";
 import { kbs } from "~console/lib/utils";
 
+// FUTURE: simplify getPath / isActive to "postfix"
 const navItems = [
   {
     label: "Overview",
@@ -18,6 +19,13 @@ const navItems = [
     getPath: (agentSlug: string, branchSlug: string) => `/agent/${agentSlug}/branch/${branchSlug}/models`,
     isActive: (pathname: string, agentSlug: string, branchSlug: string) => pathname === `/agent/${agentSlug}/branch/${branchSlug}/models`,
     shortcut: "mod+M",
+  },
+  {
+    label: "API Keys",
+    icon: KeyRound,
+    getPath: (agentSlug: string, branchSlug: string) => `/agent/${agentSlug}/branch/${branchSlug}/api-keys`,
+    isActive: (pathname: string, agentSlug: string, branchSlug: string) => pathname === `/agent/${agentSlug}/branch/${branchSlug}/api-keys`,
+    shortcut: "mod+K",
   },
 ];
 
