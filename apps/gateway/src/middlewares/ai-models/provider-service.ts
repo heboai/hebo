@@ -25,33 +25,36 @@ import {
 import type { Provider as AiProvider } from "ai";
 
 interface Provider {
+  resolveConfig(cfg?: ProviderConfig): Promise<ProviderConfig>;
   create(cfg?: ProviderConfig): Promise<AiProvider>;
   transformModelId(id: string, cfg?: ProviderConfig): Promise<string>;
 }
 
 class BedrockProvider implements Provider {
-  private async getDefaultConfig(): Promise<AwsProviderConfig> {
-    return getBedrockDefaultConfig();
+  async resolveConfig(cfg?: AwsProviderConfig): Promise<AwsProviderConfig> {
+    return cfg ?? (await getBedrockDefaultConfig());
   }
 
   async create(cfg?: AwsProviderConfig): Promise<AiProvider> {
-    const resolvedConfig = cfg ?? (await this.getDefaultConfig());
+    const resolvedConfig = await this.resolveConfig(cfg);
     return createBedrockProvider(resolvedConfig);
   }
 
   async transformModelId(id: string, cfg?: AwsProviderConfig): Promise<string> {
-    const resolvedCfg = cfg ?? (await this.getDefaultConfig());
+    const resolvedCfg = await this.resolveConfig(cfg);
     return transformBedrockModelId(id, resolvedCfg);
   }
 }
 
 class VertexProvider implements Provider {
-  private async getDefaultConfig(): Promise<GoogleProviderConfig> {
-    return getVertexDefaultConfig();
+  async resolveConfig(
+    cfg?: GoogleProviderConfig,
+  ): Promise<GoogleProviderConfig> {
+    return cfg ?? (await getVertexDefaultConfig());
   }
 
   async create(cfg?: GoogleProviderConfig): Promise<AiProvider> {
-    const resolvedConfig = cfg ?? (await this.getDefaultConfig());
+    const resolvedConfig = await this.resolveConfig(cfg);
     return createVertexProvider(resolvedConfig);
   }
 
@@ -61,12 +64,14 @@ class VertexProvider implements Provider {
 }
 
 class GroqProvider implements Provider {
-  private async getDefaultConfig(): Promise<ApiKeyProviderConfig> {
-    return getGroqDefaultConfig();
+  async resolveConfig(
+    cfg?: ApiKeyProviderConfig,
+  ): Promise<ApiKeyProviderConfig> {
+    return cfg ?? (await getGroqDefaultConfig());
   }
 
   async create(cfg?: ApiKeyProviderConfig): Promise<AiProvider> {
-    const resolvedConfig = cfg ?? (await this.getDefaultConfig());
+    const resolvedConfig = await this.resolveConfig(cfg);
     return createGroqProvider(resolvedConfig);
   }
 

@@ -36,11 +36,13 @@ export const modelFactory = new Elysia({
       const { providerName, providerConfig, modelType } =
         await getAiModelProviderConfig(dbClient, fullModelAlias, modality);
       const provider = resolveProvider(providerName);
+      const resolvedProviderConfig =
+        await provider.resolveConfig(providerConfig);
       const modelId = await provider.transformModelId(
         modelType,
-        providerConfig,
+        resolvedProviderConfig,
       );
-      const aiProvider = await provider.create(providerConfig);
+      const aiProvider = await provider.create(resolvedProviderConfig);
 
       return modality === "chat"
         ? aiProvider.languageModel(modelId)
