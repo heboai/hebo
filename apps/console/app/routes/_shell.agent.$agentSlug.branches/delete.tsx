@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Form, useActionData, useNavigation } from "react-router";
-import { literal, object, type InferOutput } from "valibot";
+import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@hebo/shared-ui/components/Dialog";
 import { Alert, AlertTitle } from "@hebo/shared-ui/components/Alert";
@@ -15,11 +15,14 @@ import { useActionDataErrorToast } from "~console/lib/errors";
 
 
 export function createBranchDeleteSchema(branchSlug: string) {
-  return object({
-    slugConfirm: literal(branchSlug, "You must type your EXACT branch slug"),
+  return z.object({
+    slugConfirm: ((msg) => z
+      .string({ error: msg })
+      .refine((value) => value === branchSlug, msg)
+    )("You must type your EXACT branch slug")
   });
 }
-export type BranchDeleteFormValues = InferOutput<ReturnType<typeof createBranchDeleteSchema>>;
+export type BranchDeleteFormValues = z.infer<ReturnType<typeof createBranchDeleteSchema>>;
 
 type DeleteBranchDialogProps = {
   open: boolean;
@@ -35,7 +38,7 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
   const [form, fields] = useForm<BranchDeleteFormValues>({
     lastResult,
     id: branchSlug,
-    constraint: getValibotConstraint(createBranchDeleteSchema(branchSlug)),
+    constraint: getZodConstraint(createBranchDeleteSchema(branchSlug)),
   });
 
   const navigation = useNavigation();

@@ -1,7 +1,7 @@
 import { Form, useActionData, useNavigation } from "react-router";
-import { object, literal, type InferOutput } from "valibot";
+import { z } from "zod";
 import { useForm, getFormProps } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 
 import { Alert, AlertTitle } from "@hebo/shared-ui/components/Alert";
 import { Button } from "@hebo/shared-ui/components/Button";
@@ -34,11 +34,15 @@ import { useActionDataErrorToast } from "~console/lib/errors";
 
 
 export function createAgentDeleteSchema(agentSlug: string) {
-  return object({
-    slugConfirm: literal(agentSlug, "You must type your EXACT agent slug"),
+  return z.object({
+    slugConfirm: ((msg) => z
+      .string({ error: msg })
+      .refine((value) => value === agentSlug, msg)
+    )("You must type your EXACT agent slug")
   });
 }
-export type AgentDeleteFormValues = InferOutput<ReturnType<typeof createAgentDeleteSchema>>;
+
+export type AgentDeleteFormValues = z.infer<ReturnType<typeof createAgentDeleteSchema>>;
 
 export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
@@ -48,7 +52,7 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
   const [form, fields] = useForm<AgentDeleteFormValues>({
     lastResult,
-    constraint: getValibotConstraint(createAgentDeleteSchema(agent.slug)),
+    constraint: getZodConstraint(createAgentDeleteSchema(agent.slug)),
   });
 
   const navigation = useNavigation();

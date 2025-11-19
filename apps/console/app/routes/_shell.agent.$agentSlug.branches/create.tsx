@@ -1,10 +1,10 @@
 import { GitBranch } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Form, useActionData, useNavigation } from "react-router";
-import { message, nonEmpty, object, pipe, string, trim, type InferOutput } from "valibot";
+import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import {
@@ -24,11 +24,11 @@ import { Select } from "@hebo/shared-ui/components/Select";
 import { useActionDataErrorToast } from "~console/lib/errors";
 
 
-export const BranchCreateSchema = object({
-  branchName: message(pipe(string(), trim(), nonEmpty()), "Please enter a branch name"),
-  sourceBranchSlug: string(),
+export const BranchCreateSchema = z.object({
+  branchName: ((msg) => z.string({ error: msg }).trim().min(1, msg))("Please enter a branch name"),
+  sourceBranchSlug: z.string(),
 });
-export type BranchCreateFormValues = InferOutput<typeof BranchCreateSchema>;
+export type BranchCreateFormValues = z.infer<typeof BranchCreateSchema>;
 
 
 type CreateBranchProps = {
@@ -47,7 +47,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
 
   const [form, fields] = useForm<BranchCreateFormValues>({
     lastResult,
-    constraint: getValibotConstraint(BranchCreateSchema),
+    constraint: getZodConstraint(BranchCreateSchema),
     defaultValue: {
       sourceBranchSlug: branches[0].slug,
     },

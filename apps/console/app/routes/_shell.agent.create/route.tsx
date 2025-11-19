@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { parseWithValibot } from "@conform-to/valibot";
+import { parseWithZod } from "@conform-to/zod/v4";
 
 import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
@@ -12,7 +12,7 @@ import { AgentCreateForm, AgentCreateSchema } from "./form";
 export async function clientAction({ request }: Route.ClientActionArgs ) {
   const formData = await request.formData();
 
-  const submission = parseWithValibot(formData, { schema: AgentCreateSchema });
+  const submission = parseWithZod(formData, { schema: AgentCreateSchema });
   
   if (submission.status !== 'success')
     return submission.reply();

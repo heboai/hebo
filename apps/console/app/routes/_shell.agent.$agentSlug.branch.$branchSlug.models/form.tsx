@@ -1,7 +1,7 @@
 import { Form, useActionData, useNavigation } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { useForm, getFormProps, type FieldMetadata } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 import { Brain, Edit } from "lucide-react";
 
 import { Button } from "@hebo/shared-ui/components/Button";
@@ -62,7 +62,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
   const [form, fields] = useForm<ModelsConfigFormValues>({
     id: JSON.stringify(models),
     lastResult,
-    constraint: getValibotConstraint(modelsConfigFormSchema),
+    constraint: getZodConstraint(modelsConfigFormSchema),
     defaultValue: { models: models }
   });
 
