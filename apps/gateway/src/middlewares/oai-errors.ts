@@ -1,6 +1,6 @@
 import { Elysia, status } from "elysia";
 
-import { ProvidersHttpError } from "./providers/errors";
+import { AiModelsHttpError } from "~gateway/utils/errors";
 
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;
@@ -39,7 +39,7 @@ export const oaiErrors = new Elysia({ name: "oai-error" })
       }
     }
 
-    if (error instanceof ProvidersHttpError) {
+    if (error instanceof AiModelsHttpError) {
       return status(error.status, { error });
     }
 

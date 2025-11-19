@@ -1,6 +1,6 @@
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
-import { BadRequestError } from "~gateway/middlewares/providers/errors";
+import { BadRequestError } from "./errors";
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
 

@@ -1,13 +1,7 @@
 import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
-import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-
-import {
-  createAIModel,
-  getModelConfig,
-  getProviderConfig,
-} from "~gateway/middlewares/providers/service";
+import { modelFactory } from "~gateway/middlewares/ai-model-factory";
 import {
   toModelMessages,
   toOpenAICompatibleFinishReason,
@@ -25,10 +19,10 @@ export const completions = new Elysia({
   name: "completions",
   prefix: "/chat/completions",
 })
-  .use(dbClient)
+  .use(modelFactory)
   .post(
     "/",
-    async ({ body, dbClient }) => {
+    async ({ body, modelFactory }) => {
       const {
         model: fullModelAlias,
         messages,
@@ -38,13 +32,10 @@ export const completions = new Elysia({
         stream = false,
       } = body;
 
-      const modelConfig = await getModelConfig(dbClient, fullModelAlias);
-      const providerConfig = await getProviderConfig(dbClient, modelConfig);
-      const chatModel = await createAIModel(
-        modelConfig,
-        providerConfig,
-        "chat",
-      );
+      const chatModel = await modelFactory.createAIModelOrThrow({
+        fullModelAlias,
+        modality: "chat",
+      });
 
       const toolSet = toToolSet(tools);
       const modelMessages = toModelMessages(messages);

@@ -61,17 +61,16 @@ export const getBedrockDefaultConfig =
   });
 
 export const createBedrockProvider = async (
-  config: AwsProviderConfig,
+  cfg: AwsProviderConfig,
 ): Promise<Provider> => {
-  const { bedrockRoleArn, region } = config;
-  const creds = await getAwsCreds(bedrockRoleArn, region);
-  return createAmazonBedrock({ ...creds, region });
+  const creds = await getAwsCreds(cfg.bedrockRoleArn, cfg.region);
+  return createAmazonBedrock({ ...creds, region: cfg.region });
 };
 
 export const transformBedrockModelId = async (
   modelId: string,
-  config: AwsProviderConfig,
+  cfg: AwsProviderConfig,
 ): Promise<string> => {
-  const creds = await getAwsCreds(config.bedrockRoleArn, config.region);
-  return getInferenceProfileArn(creds, config.region, modelId);
+  const creds = await getAwsCreds(cfg.bedrockRoleArn, cfg.region);
+  return getInferenceProfileArn(creds, cfg.region, modelId);
 };

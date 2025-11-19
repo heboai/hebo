@@ -1,4 +1,4 @@
-export abstract class ProvidersHttpError extends Error {
+export abstract class AiModelsHttpError extends Error {
   readonly status: number;
   readonly type: string;
   readonly code: string;
@@ -22,7 +22,7 @@ export abstract class ProvidersHttpError extends Error {
   }
 }
 
-export class BadRequestError extends ProvidersHttpError {
+export class BadRequestError extends AiModelsHttpError {
   constructor(message: string, code = "model_mismatch") {
     super(message, {
       status: 400,
@@ -32,7 +32,7 @@ export class BadRequestError extends ProvidersHttpError {
   }
 }
 
-export class ModelNotFoundError extends ProvidersHttpError {
+export class ModelNotFoundError extends AiModelsHttpError {
   constructor(message = "Resource not found") {
     super(message, {
       status: 404,

@@ -48,9 +48,9 @@ export const getVertexDefaultConfig =
   });
 
 export const createVertexProvider = async (
-  config: GoogleProviderConfig,
+  cfg: GoogleProviderConfig,
 ): Promise<Provider> => {
-  const { serviceAccountEmail, audience, location, project, baseURL } = config;
+  const { serviceAccountEmail, audience, location, project, baseURL } = cfg;
   await injectAwsMetadataCredentials();
   const credentials = buildAwsWifOptions(audience, serviceAccountEmail) as any;
   return createVertex({
@@ -62,4 +62,8 @@ export const createVertexProvider = async (
     project,
     baseURL,
   });
+};
+
+export const transformVertexModelId = async (id: string): Promise<string> => {
+  return id;
 };
