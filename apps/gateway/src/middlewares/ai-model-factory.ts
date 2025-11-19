@@ -33,20 +33,20 @@ export const modelFactory = new Elysia({
       fullModelAlias: string;
       modality: "chat" | "embedding";
     }): Promise<LanguageModel | EmbeddingModel<string>> {
-      const { providerName, providerConfig, modelType } =
+      const { providerName, providerConfig, modelId } =
         await getAiModelProviderConfig(dbClient, fullModelAlias, modality);
       const provider = resolveProvider(providerName);
       const resolvedProviderConfig =
         await provider.resolveConfig(providerConfig);
-      const modelId = await provider.transformModelId(
-        modelType,
+      const resolvedModelId = await provider.resolveModelId(
+        modelId,
         resolvedProviderConfig,
       );
       const aiProvider = await provider.create(resolvedProviderConfig);
 
       return modality === "chat"
-        ? aiProvider.languageModel(modelId)
-        : aiProvider.textEmbeddingModel(modelId);
+        ? aiProvider.languageModel(resolvedModelId)
+        : aiProvider.textEmbeddingModel(resolvedModelId);
     }
 
     return {

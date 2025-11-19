@@ -27,7 +27,7 @@ import type { Provider as AiProvider } from "ai";
 interface Provider {
   resolveConfig(cfg?: ProviderConfig): Promise<ProviderConfig>;
   create(cfg?: ProviderConfig): Promise<AiProvider>;
-  transformModelId(id: string, cfg?: ProviderConfig): Promise<string>;
+  resolveModelId(id: string, cfg?: ProviderConfig): Promise<string>;
 }
 
 class BedrockProvider implements Provider {
@@ -40,7 +40,7 @@ class BedrockProvider implements Provider {
     return createBedrockProvider(resolvedConfig);
   }
 
-  async transformModelId(id: string, cfg?: AwsProviderConfig): Promise<string> {
+  async resolveModelId(id: string, cfg?: AwsProviderConfig): Promise<string> {
     const resolvedCfg = await this.resolveConfig(cfg);
     return transformBedrockModelId(id, resolvedCfg);
   }
@@ -58,7 +58,7 @@ class VertexProvider implements Provider {
     return createVertexProvider(resolvedConfig);
   }
 
-  async transformModelId(id: string): Promise<string> {
+  async resolveModelId(id: string): Promise<string> {
     return transformVertexModelId(id);
   }
 }
@@ -75,7 +75,7 @@ class GroqProvider implements Provider {
     return createGroqProvider(resolvedConfig);
   }
 
-  async transformModelId(id: string): Promise<string> {
+  async resolveModelId(id: string): Promise<string> {
     return transformGroqModelId(id);
   }
 }

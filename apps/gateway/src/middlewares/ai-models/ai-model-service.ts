@@ -1,5 +1,3 @@
-
-
 import type { createDbClient } from "@hebo/database/client";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
@@ -13,6 +11,24 @@ import { BadRequestError, ModelNotFoundError } from "./errors";
 type ModelConfig = Models[number];
 
 export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
+
+const getModelIdForProvider = (
+  supportedModel: ReturnType<typeof getSupportedModelOrThrow>,
+  providerName: ProviderName,
+): string => {
+  const entry = supportedModel.providers.find(
+    (provider) => providerName in provider,
+  ) as Record<ProviderName, string>;
+  return entry[providerName];
+};
+
+const resolveProviderName = (
+  supportedModel: ReturnType<typeof getSupportedModelOrThrow>,
+): ProviderName => {
+  // Currently, we just pick the first provider for a model, in future this will be more sophisticated
+  const provider = supportedModel.providers[0];
+  return Object.keys(provider)[0] as ProviderName;
+};
 
 export const getSupportedModelOrThrow = (
   type: string,
@@ -30,16 +46,6 @@ export const getSupportedModelOrThrow = (
       "model_mismatch",
     );
   return model;
-};
-
-const resolveProviderName = (
-  modelConfig: ModelConfig,
-  modality: "chat" | "embedding",
-): ProviderName => {
-  // Currently, we just pick the first provider for a model, in future this will be more sophisticated
-  const supportedProvider = getSupportedModelOrThrow(modelConfig.type, modality)
-    .providers[0];
-  return Object.keys(supportedProvider)[0] as ProviderName;
 };
 
 const getModelConfig = async (
@@ -64,13 +70,15 @@ export const getAiModelProviderConfig = async (
   modality: "chat" | "embedding",
 ) => {
   const model = await getModelConfig(dbClient, alias);
-  const providerName = resolveProviderName(model, modality);
-  let providerConfig: ProviderConfig | undefined;
+  const supportedModel = getSupportedModelOrThrow(model.type, modality);
+  const providerName = resolveProviderName(supportedModel);
+  const modelId = getModelIdForProvider(supportedModel, providerName);
 
+  let providerConfig: ProviderConfig | undefined;
   if (model.customProvider) {
     const provider = await dbClient.providers.getUnredacted(providerName);
     providerConfig = provider.config as ProviderConfig;
   }
 
-  return { providerName, providerConfig, modelType: model.type };
+  return { providerName, providerConfig, modelId };
 };
