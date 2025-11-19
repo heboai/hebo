@@ -47,7 +47,7 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
   const { user } = useSnapshot(authStore);
-  const agentRoute = useRoute("routes/_shell.agent.$agentSlug");
+  const { agent: activeAgent, branch: activeBranch } = useRoute("routes/_shell.agent.$agentSlug")?.loaderData ?? {};
   
   // Focus main element on route change for keyboard nav
   const location = useLocation();
@@ -55,9 +55,6 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
   useEffect(() => {
     mainRef.current?.focus();
   }, [location]);
-
-  const activeAgent = agentRoute?.loaderData?.agent ?? undefined;
-  const activeBranch = agentRoute?.loaderData?.branch ?? undefined;
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
