@@ -1,4 +1,4 @@
-import { http, HttpResponse, delay } from "msw";
+import { http, HttpResponse } from "msw";
 import slugify from "slugify";
 
 import { db } from "~console/mocks/db";
@@ -7,69 +7,105 @@ export const branchHandlers = [
   http.post<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
     async ({ request, params }) => {
-      const body = (await request.json()) as ReturnType<
-        typeof db.branch.create
-      >;
-
-      const branch = {
-        name: body.name,
-        slug: slugify(body.name, { lower: true, strict: true }),
-        agent_slug: params.agentSlug,
+      const body = (await request.json()) as {
+        name: string;
+        sourceBranchSlug: string;
       };
+      const branchSlug = slugify(body.name, { lower: true, strict: true });
 
-      try {
-        db.branch.create(branch);
-      } catch {
-        return new HttpResponse("Branch with the same name already exists", {
+      const agent = db.agents.findFirst((q) =>
+        q.where({ slug: params.agentSlug }),
+      );
+
+      const sourceBranch = agent!.branches.find(
+        (b) => b.slug === body.sourceBranchSlug,
+      );
+
+      const existingBranch = agent!.branches.find((b) => b.slug === branchSlug);
+      if (existingBranch)
+        return new HttpResponse("Branch with the same slug already exists", {
           status: 409,
         });
-      }
 
-      await delay(200);
-      return HttpResponse.json(branch, { status: 201 });
+      const newBranch = await db.branches.create({
+        agent_slug: params.agentSlug,
+        slug: branchSlug,
+        name: body.name,
+        models: structuredClone(sourceBranch!.models),
+      });
+
+      // FUTURE: Update doesn't work right now in msw/data v1
+      // https://github.com/mswjs/data/issues/346
+      db.agents.delete((q) => q.where({ slug: params.agentSlug }));
+      await db.agents.create({
+        slug: agent!.slug,
+        name: agent!.name,
+        branches: [...agent!.branches, newBranch],
+      });
+
+      return HttpResponse.json(newBranch, { status: 201 });
     },
   ),
 
   http.get<{ agentSlug: string }>(
     "/api/v1/agents/:agentSlug/branches",
-    async () => {
-      const branches = db.branch.getAll();
+    async ({ params }) => {
+      const agent = db.agents.findFirst((q) =>
+        q.where({ slug: params.agentSlug }),
+      );
+      if (!agent)
+        return new HttpResponse("Agent with the slug not found", {
+          status: 404,
+        });
 
-      await delay(1000);
-      return HttpResponse.json(branches);
+      return HttpResponse.json(agent.branches);
     },
   ),
 
   http.patch<{ agentSlug: string; branchSlug: string }>(
     "/api/v1/agents/:agentSlug/branches/:branchSlug",
     async ({ params, request }) => {
-      const body = (await request.json()) as {
-        models: ReturnType<typeof db.branch.create>["models"];
-      };
+      const body = (await request.json()) as { models: [] };
 
-      let branch;
+      const branch = db.branches.findFirst((q) =>
+        q.where({
+          slug: params.branchSlug,
+          agent_slug: params.agentSlug,
+        }),
+      );
 
-      try {
-        branch = db.branch.findFirst({
-          where: {
-            agent_slug: { equals: params.agentSlug },
-            slug: { equals: params.branchSlug },
-          },
-          strict: true,
-        });
-      } catch {
-        return new HttpResponse("Branch with the slug not found", {
-          status: 404,
-        });
-      }
-
-      const updatedBranch = db.branch.update({
-        where: { id: { equals: branch.id } },
-        data: { models: body.models },
+      const updatedBranch = await db.branches.update(branch!, {
+        data(b) {
+          b.models = body.models;
+          b.updated_at = new Date();
+        },
       });
 
-      await delay(500);
       return HttpResponse.json(updatedBranch);
+    },
+  ),
+
+  http.delete<{ agentSlug: string; branchSlug: string }>(
+    "/api/v1/agents/:agentSlug/branches/:branchSlug",
+    async ({ params }) => {
+      const branches = db.branches.findMany((q) =>
+        q.where({
+          agent_slug: params.agentSlug,
+        }),
+      );
+      if (branches.length === 1)
+        return new HttpResponse("Can't delete last branch of an agent", {
+          status: 409,
+        });
+
+      db.branches.delete((q) =>
+        q.where({
+          slug: params.branchSlug,
+          agent_slug: params.agentSlug,
+        }),
+      );
+
+      return new HttpResponse(undefined, { status: 200 });
     },
   ),
 ];
