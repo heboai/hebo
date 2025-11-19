@@ -11,7 +11,7 @@ import {
 export function StaticContent() {
   return (
     <SidebarMenu>
-        <SidebarMenuItem>
+        <SidebarMenuItem className="group-data-[state=expanded]:mx-0.5 transition-[margin]">
             <SidebarMenuButton asChild tooltip="Documentation &#x21D7;">
               <a
                   href="https://docs.hebo.ai"

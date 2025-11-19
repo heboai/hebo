@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, type ShouldRevalidateFunctionArgs } from "react-router";
 
 import { ErrorView } from "~console/components/ui/ErrorView";
 import { api } from "~console/lib/service";
@@ -17,10 +17,27 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
       status: 404, statusText: "Not Found"
     });
 
-  return { agent: result.data };
+  const agent = result.data!
+
+  let branch = undefined;
+  if (params.branchSlug) {
+    branch = agent.branches?.find((a) => a.slug === params.branchSlug);
+
+    if (branch === undefined) 
+      throw new Response(`Branch '${params.branchSlug}' does not exist`, {
+        status: 404, statusText: "Not Found"
+      })
+  }
+
+  return { agent, branch };
 }
 
-export { dontRevalidateOnFormErrors as shouldRevalidate }
+export function shouldRevalidate(args: ShouldRevalidateFunctionArgs) {
+  if (args.currentParams.branchSlug !== args.nextParams.branchSlug) {
+    return true;
+  }
+  return dontRevalidateOnFormErrors(args);
+}
 
 
 export default function AgentLayout() {

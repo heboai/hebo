@@ -32,7 +32,7 @@ type User = {
 export function UserMenu({ user }: { user?: User}) {
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className="group-data-[state=collapsed]:my-2 transition-[margin]">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg">

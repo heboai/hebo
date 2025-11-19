@@ -34,10 +34,8 @@ export function AgentSelect({
   agents: Agent[],
 }) {
 
-  // Dropdown open / closed
-  const [open, setOpen] = useState(false);
+  const [selectorOpen, setSelectorOpen] = useState(false);
 
-  // Keyboard shortcuts
   const navigate = useNavigate();
   useHotkeys("mod+shift+o", () =>
     navigate("/agent/create", { viewTransition: true })
@@ -45,18 +43,14 @@ export function AgentSelect({
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu open={open} onOpenChange={setOpen}>
+      <SidebarMenuItem className="group-data-[state=collapsed]:my-2 transition-[margin]">
+        <DropdownMenu open={selectorOpen} onOpenChange={setSelectorOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg" aria-label="Select agent">
-              <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <AgentLogo />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate text-lg font-medium">
-                  {activeAgent?.name ?? "hebo.ai"}
-                </span>
-              </div>
+              <AgentLogo />
+              <span className="truncate text-lg font-medium">
+                {activeAgent?.name ?? "hebo.ai"}
+              </span>
               <ChevronsUpDown className="ml-auto" aria-hidden="true" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -100,7 +94,7 @@ export function AgentSelect({
               agents.map((agent) => (
                 <DropdownMenuItem key={agent.slug} className="gap-2 p-2" asChild>
                   <Link to={`/agent/${agent.slug}/branch/main`} viewTransition>
-                    {agent.name}
+                    <span className="truncate">{agent.name}</span>
                     {agent.slug === activeAgent?.slug && (
                       <Check size={12} className="ml-auto" aria-hidden="true" />
                     )}

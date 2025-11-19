@@ -4,9 +4,12 @@ import { agentHandlers } from "~console/mocks/agents";
 import { branchHandlers } from "~console/mocks/branches";
 
 import { addChaos } from "./chaos";
+import { addDelays } from "./delays";
 
-const handlers = [...agentHandlers, ...branchHandlers];
+let handlers = [...agentHandlers, ...branchHandlers];
 
 const CHAOS =
   import.meta.env.DEV && import.meta.env.VITE_CHAOS_DISABLE !== "true";
-export const worker = setupWorker(...(CHAOS ? addChaos(handlers) : handlers));
+handlers = addDelays(CHAOS ? addChaos(handlers) : handlers);
+
+export const worker = setupWorker(...handlers);
