@@ -25,7 +25,7 @@ import { useActionDataErrorToast } from "~console/lib/errors";
 
 
 export const BranchCreateSchema = z.object({
-  branchName: ((msg) => z.string({ error: msg }).trim().min(1, msg))("Please enter a branch name"),
+  branchName: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a branch name"),
   sourceBranchSlug: z.string(),
 });
 export type BranchCreateFormValues = z.infer<typeof BranchCreateSchema>;

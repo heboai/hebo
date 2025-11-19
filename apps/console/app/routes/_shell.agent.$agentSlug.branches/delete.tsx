@@ -16,11 +16,8 @@ import { useActionDataErrorToast } from "~console/lib/errors";
 
 export function createBranchDeleteSchema(branchSlug: string) {
   return z.object({
-    slugConfirm: ((msg) => z
-      .string({ error: msg })
-      .refine((value) => value === branchSlug, msg)
-    )("You must type your EXACT branch slug")
-  });
+    slugConfirm: z.literal(branchSlug, "You must type your EXACT branch slug")
+  })
 }
 export type BranchDeleteFormValues = z.infer<ReturnType<typeof createBranchDeleteSchema>>;
 

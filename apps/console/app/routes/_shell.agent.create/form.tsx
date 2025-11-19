@@ -28,7 +28,7 @@ import { useActionDataErrorToast } from "~console/lib/errors";
 
 
 export const AgentCreateSchema = z.object({
-  agentName: ((msg) => z.string({ error: msg }).trim().min(1, msg))("Please enter an agent name"),
+  agentName: ((msg) => z.string(msg).trim().min(1, msg))("Please enter an agent name"),
   defaultModel: z.string(),
 });
 export type AgentCreateFormValues = z.infer<typeof AgentCreateSchema>;

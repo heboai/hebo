@@ -35,10 +35,7 @@ import { useActionDataErrorToast } from "~console/lib/errors";
 
 export function createAgentDeleteSchema(agentSlug: string) {
   return z.object({
-    slugConfirm: ((msg) => z
-      .string({ error: msg })
-      .refine((value) => value === agentSlug, msg)
-    )("You must type your EXACT agent slug")
+    slugConfirm: z.literal(agentSlug, "You must type your EXACT agent slug")
   });
 }
 
