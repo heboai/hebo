@@ -20,7 +20,7 @@ export const agentHandlers = [
       });
 
     const agent = await db.agents.create({
-      slug: slugify(body.name, { lower: true, strict: true }),
+      slug: agentSlug,
       name: body.name,
       branches: [
         await db.branches.create({

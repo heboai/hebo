@@ -57,10 +57,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
   }, [location]);
 
   const activeAgent = agentRoute?.loaderData?.agent ?? undefined;
-  const activeBranch =
-    agentRoute?.loaderData?.branch ??
-    activeAgent?.branches?.[0] ??
-    undefined;
+  const activeBranch = agentRoute?.loaderData?.branch ?? undefined;
 
   // FUTURE replace with session storage
   const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";

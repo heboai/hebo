@@ -19,12 +19,12 @@ export function createBranchDeleteSchema(branchSlug: string) {
     slugConfirm: literal(branchSlug, "You must type your EXACT branch slug"),
   });
 }
-export type AgentDeleteFormValues = InferOutput<ReturnType<typeof createBranchDeleteSchema>>;
+export type BranchDeleteFormValues = InferOutput<ReturnType<typeof createBranchDeleteSchema>>;
 
 type DeleteBranchDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  branchSlug?: string;
+  branchSlug: string;
 };
 
 export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: DeleteBranchDialogProps) {
@@ -32,10 +32,10 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
 
   useActionDataErrorToast();
 
-  const [form, fields] = useForm<AgentDeleteFormValues>({
+  const [form, fields] = useForm<BranchDeleteFormValues>({
     lastResult,
-    id: branchSlug ?? "none",
-    constraint: getValibotConstraint(createBranchDeleteSchema(branchSlug ?? "")),
+    id: branchSlug,
+    constraint: getValibotConstraint(createBranchDeleteSchema(branchSlug)),
   });
 
   const navigation = useNavigation();
@@ -51,7 +51,7 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
       <DialogContent className="sm:max-w-md bg-sidebar">
         <Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
-            <DialogTitle>Delete branch</DialogTitle>
+            <DialogTitle>Delete Branch</DialogTitle>
             <DialogDescription>
               This will delete your branch irreversibly.
             </DialogDescription>

@@ -76,7 +76,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
       <DialogContent>
         <Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
-            <DialogTitle>Create branch</DialogTitle>
+            <DialogTitle>Create Banch</DialogTitle>
             <DialogDescription>
               Set a name and choose a source from which to branch out.
             </DialogDescription>

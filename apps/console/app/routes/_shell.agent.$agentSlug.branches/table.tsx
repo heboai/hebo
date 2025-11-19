@@ -35,7 +35,7 @@ type BranchesTableProps = {
 
 export default function BranchesTable({ agent }: BranchesTableProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [selectedBranchSlug, setSelectedBranchSlug] = useState<string | undefined>(undefined);
+  const [selectedBranchSlug, setSelectedBranchSlug] = useState("");
 
   return (
     <div>
@@ -105,7 +105,7 @@ export default function BranchesTable({ agent }: BranchesTableProps) {
         branchSlug={selectedBranchSlug}
         onOpenChange={(open) => {
           setDeleteOpen(open);
-          if (!open) setSelectedBranchSlug(undefined);
+          if (!open) setSelectedBranchSlug("");
         }}
       />
     </div>
