@@ -1,4 +1,4 @@
-import { redirect, useRouteLoaderData } from "react-router";
+import { redirect, unstable_useRoute as useRoute } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
 
 import { api } from "~console/lib/service";
@@ -35,7 +35,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
 
 
 export default function Settings() {
-  const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug");
+  const agent = useRoute("routes/_shell.agent.$agentSlug")!.loaderData!.agent;
  
   return (
     <>
