@@ -1,6 +1,6 @@
 import { Elysia, status } from "elysia";
 
-import { AiModelsHttpError } from "~gateway/utils/errors";
+import { AiModelsHttpError } from "./ai-models/errors";
 
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;

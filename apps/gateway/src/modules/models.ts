@@ -3,7 +3,7 @@ import { Elysia, t } from "elysia";
 import {
   SUPPORTED_MODELS,
   getSupportedModelOrThrow,
-} from "~gateway/utils/supported-models";
+} from "~gateway/middlewares/ai-models/ai-model-service";
 
 export const models = new Elysia({
   name: "models",
