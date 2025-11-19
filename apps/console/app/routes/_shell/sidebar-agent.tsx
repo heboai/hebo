@@ -34,10 +34,8 @@ export function AgentSelect({
   agents: Agent[],
 }) {
 
-  // Dropdown open / closed
-  const [open, setOpen] = useState(false);
+  const [selectorOpen, setSelectorOpen] = useState(false);
 
-  // Keyboard shortcuts
   const navigate = useNavigate();
   useHotkeys("mod+shift+o", () =>
     navigate("/agent/create", { viewTransition: true })
@@ -46,7 +44,7 @@ export function AgentSelect({
   return (
     <SidebarMenu>
       <SidebarMenuItem className="group-data-[state=collapsed]:my-2 transition-[margin]">
-        <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenu open={selectorOpen} onOpenChange={setSelectorOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg" aria-label="Select agent">
               <AgentLogo />

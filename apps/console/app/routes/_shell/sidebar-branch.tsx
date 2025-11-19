@@ -38,14 +38,12 @@ export function BranchSelect({
 
   const branches = activeAgent.branches ?? [];
 
-  // Dropdown open / closed
-  const [open, setOpen] = useState(false);
+  const [selectorOpen, setSelectorOpen] = useState(false);
   
-  // Keyboard shortcuts
   useHotkeys(
     "mod+J",
     () => {
-      setOpen((prev) => !prev);
+      setSelectorOpen((prev) => !prev);
     },
     { preventDefault: true },
     [],
@@ -54,7 +52,7 @@ export function BranchSelect({
   return (
     <SidebarMenu>
       <SidebarMenuItem className="group-data-[state=expanded]:mx-1.5 transition-[margin]">
-        <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenu open={selectorOpen} onOpenChange={setSelectorOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton className="bg-background border-input border-1" aria-label="Select branch">
               <GitBranch aria-hidden="true" />

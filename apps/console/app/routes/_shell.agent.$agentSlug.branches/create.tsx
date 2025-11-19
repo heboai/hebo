@@ -96,7 +96,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
               <FormControl>
                 <Select
                   items={
-                    (branches ?? []).map(branch => ({
+                    branches.map(branch => ({
                       value: branch.slug,
                       name: (
                         <>
