@@ -47,7 +47,11 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
   const { user } = useSnapshot(authStore);
-  const { agent: activeAgent, branch: activeBranch } = useRoute("routes/_shell.agent.$agentSlug")?.loaderData ?? {};
+
+  const { 
+    agent: activeAgent, 
+    branch: activeBranch
+  } = useRoute("routes/_shell.agent.$agentSlug")?.loaderData ?? {};
   
   // Focus main element on route change for keyboard nav
   const location = useLocation();
