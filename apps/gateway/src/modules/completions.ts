@@ -6,10 +6,10 @@ import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import { provider } from "~gateway/middlewares/provider";
 import {
   toModelMessages,
-  toOpenAICompatibleFinishReason,
-  toOpenAICompatibleMessage,
-  toToolSet,
+  toOpenAICompatibleNonStreamResponse,
+  toOpenAICompatibleStream,
   toToolChoice,
+  toToolSet,
 } from "~gateway/utils/converters";
 import { getModelType } from "~gateway/utils/get-model-type";
 import {
@@ -53,7 +53,16 @@ export const completions = new Elysia({
           toolChoice: coreToolChoice,
           temperature,
         });
-        return result.toTextStreamResponse();
+
+        const responseStream = toOpenAICompatibleStream(result, model);
+
+        return new Response(responseStream, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            Connection: "keep-alive",
+          },
+        });
       }
 
       const result = await generateText({
@@ -64,31 +73,7 @@ export const completions = new Elysia({
         temperature,
       });
 
-      const finish_reason = toOpenAICompatibleFinishReason(result.finishReason);
-
-      return {
-        id: "chatcmpl-" + crypto.randomUUID(),
-        object: "chat.completion",
-        created: Math.floor(Date.now() / 1000),
-        model,
-        choices: [
-          {
-            index: 0,
-            message: toOpenAICompatibleMessage(result),
-            finish_reason,
-          },
-        ],
-        usage: result.usage && {
-          prompt_tokens: result.usage.inputTokens ?? 0,
-          completion_tokens: result.usage.outputTokens ?? 0,
-          total_tokens:
-            result.usage.totalTokens ??
-            (result.usage.inputTokens ?? 0) + (result.usage.outputTokens ?? 0),
-          completion_tokens_details: {
-            reasoning_tokens: result.usage.reasoningTokens ?? 0,
-          },
-        },
-      };
+      return toOpenAICompatibleNonStreamResponse(result, model);
     },
     {
       body: t.Object({
