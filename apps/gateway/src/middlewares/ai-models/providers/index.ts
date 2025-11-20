@@ -6,11 +6,11 @@ import type {
   ProviderName,
 } from "@hebo/database/src/types/providers";
 
-import { BedrockProvider } from "./providers/bedrock";
-import { GroqProvider } from "./providers/groq";
-import { VertexProvider } from "./providers/vertex";
+import { BedrockProvider } from "./bedrock";
+import { GroqProvider } from "./groq";
+import { VertexProvider } from "./vertex";
 
-import type { Provider } from "./providers/types";
+import type { Provider } from "./types";
 
 export const createProvider = (
   providerName: ProviderName,
