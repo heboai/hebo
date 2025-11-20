@@ -1,17 +1,21 @@
+import { Suspense } from "react";
+import { Await } from "react-router";
 import { parseWithValibot } from "@conform-to/valibot";
+
+import { TableSkeleton } from "@hebo/shared-ui/components/Skeleton";
 
 import { authService } from "~console/lib/auth";
 import { parseError } from "~console/lib/errors";
 
-import { API_KEY_EXPIRATION_OPTIONS, ApiKeyCreateSchema, CreateApiKeyDialog } from "./create";
-import { ApiKeysTable } from "./table";
-import { ApiKeyRevokeSchema } from "./revoke";
-
 import type { Route } from "./+types/route";
+
+import { API_KEY_EXPIRATION_OPTIONS, ApiKeyCreateSchema, CreateApiKeyDialog } from "./create";
+import { ApiKeyRevokeSchema } from "./revoke";
+import { ApiKeysTable } from "./table";
 
 
 export async function clientLoader() {
-  return { apiKeys: await authService.listApiKeys() };
+  return { apiKeys: authService.listApiKeys() };
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
@@ -62,9 +66,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 }
 
-export default function ApiKeysRoute({loaderData: { apiKeys }}: Route.ComponentProps) {
+export default function ApiKeysRoute({ loaderData }: Route.ComponentProps) {
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <div>
         <h1>API Keys</h1>
         <p className="text-muted-foreground text-sm">
@@ -72,9 +76,15 @@ export default function ApiKeysRoute({loaderData: { apiKeys }}: Route.ComponentP
         </p>
       </div>
 
-      <ApiKeysTable apiKeys={apiKeys} />
-      
-      <CreateApiKeyDialog />
-    </>
+      <Suspense fallback={<TableSkeleton />}>
+        <Await resolve={loaderData.apiKeys}>
+          {(apiKeys) => <ApiKeysTable apiKeys={apiKeys} />}
+        </Await>
+      </Suspense>
+
+      <div className="self-end">
+        <CreateApiKeyDialog />
+      </div>
+    </div>
   );
 }
