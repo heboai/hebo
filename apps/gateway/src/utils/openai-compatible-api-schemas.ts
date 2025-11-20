@@ -116,3 +116,10 @@ export type OpenAICompatibleTool = Static<typeof OpenAICompatibleTool>;
 export type OpenAICompatibleToolChoice = Static<
   typeof OpenAICompatibleToolChoice
 >;
+
+export type OpenAICompatibleToolCallDelta = {
+  id: string;
+  index: number;
+  type: "function";
+  function: { name: string; arguments: string };
+};

@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.29",
-    "@conform-to/react": "^1.9.0",
-    "@conform-to/valibot": "^1.9.0",
+    "@conform-to/react": "^1.13.3",
+    "@conform-to/zod": "^1.13.3",
     "@elysiajs/eden": "^1.4.3",
     "@hebo/aikit-ui": "workspace:*",
     "@hebo/shared-data": "workspace:*",
@@ -47,7 +47,6 @@
     "react-hotkeys-hook": "^5.1.0",
     "react-router": "^7.9.6",
     "sonner": "^2.0.7",
-    "valibot": "^1.1.0",
     "valtio": "^2.1.5",
     "zod": "^4.1.12"
   },

@@ -4,10 +4,10 @@ import { Elysia, t } from "elysia";
 import { aiModelFactory } from "~gateway/middlewares/ai-model-factory";
 import {
   toModelMessages,
-  toOpenAICompatibleFinishReason,
-  toOpenAICompatibleMessage,
-  toToolSet,
+  toOpenAICompatibleNonStreamResponse,
+  toOpenAICompatibleStream,
   toToolChoice,
+  toToolSet,
 } from "~gateway/utils/converters";
 import {
   OpenAICompatibleMessage,
@@ -39,13 +39,23 @@ export const completions = new Elysia({
       const coreToolChoice = toToolChoice(toolChoice);
 
       if (stream) {
-        return streamText({
+        const result = streamText({
           model: chatModel,
           messages: modelMessages as ModelMessage[],
           tools: toolSet,
           toolChoice: coreToolChoice,
           temperature,
-        }).toTextStreamResponse();
+        });
+
+        const responseStream = toOpenAICompatibleStream(result, model);
+
+        return new Response(responseStream, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            Connection: "keep-alive",
+          },
+        });
       }
 
       const result = await generateText({
@@ -56,31 +66,7 @@ export const completions = new Elysia({
         temperature,
       });
 
-      const finish_reason = toOpenAICompatibleFinishReason(result.finishReason);
-
-      return {
-        id: "chatcmpl-" + crypto.randomUUID(),
-        object: "chat.completion",
-        created: Math.floor(Date.now() / 1000),
-        model: fullModelAlias,
-        choices: [
-          {
-            index: 0,
-            message: toOpenAICompatibleMessage(result),
-            finish_reason,
-          },
-        ],
-        usage: result.usage && {
-          prompt_tokens: result.usage.inputTokens ?? 0,
-          completion_tokens: result.usage.outputTokens ?? 0,
-          total_tokens:
-            result.usage.totalTokens ??
-            (result.usage.inputTokens ?? 0) + (result.usage.outputTokens ?? 0),
-          completion_tokens_details: {
-            reasoning_tokens: result.usage.reasoningTokens ?? 0,
-          },
-        },
-      };
+      return toOpenAICompatibleNonStreamResponse(result, fullModelAlias);
     },
     {
       body: t.Object({

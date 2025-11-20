@@ -1,7 +1,7 @@
 import { Form, useActionData, useNavigation } from "react-router";
-import { message, nonEmpty, object, string, pipe, trim, type InferOutput } from "valibot";
+import { z } from "zod";
 import { useForm, getFormProps } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Button } from "@hebo/shared-ui/components/Button";
@@ -27,11 +27,11 @@ import {
 import { useActionDataErrorToast } from "~console/lib/errors";
 
 
-export const AgentCreateSchema = object({
-  agentName: message(pipe(string(), trim(), nonEmpty()), "Please enter an agent name"),
-  defaultModel: string(),
+export const AgentCreateSchema = z.object({
+  agentName: ((msg) => z.string(msg).trim().min(1, msg))("Please enter an agent name"),
+  defaultModel: z.string(),
 });
-export type AgentCreateFormValues = InferOutput<typeof AgentCreateSchema>;
+export type AgentCreateFormValues = z.infer<typeof AgentCreateSchema>;
 
 export function AgentCreateForm() {
   const lastResult = useActionData();
@@ -40,7 +40,7 @@ export function AgentCreateForm() {
   
   const [form, fields] = useForm<AgentCreateFormValues>({
     lastResult,
-    constraint: getValibotConstraint(AgentCreateSchema),
+    constraint: getZodConstraint(AgentCreateSchema),
     defaultValue: {
       defaultModel: supportedModels[0].name,
     }
