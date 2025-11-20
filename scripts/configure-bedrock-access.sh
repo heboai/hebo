@@ -115,8 +115,10 @@ main() {
     exit 1
   fi
 
-  local -a aws_cli_opts
-  aws_cli_opts=("--region" "$aws_region")
+  local -a aws_cli_opts=()
+  if [[ -n "$aws_region" ]]; then
+    aws_cli_opts+=("--region" "$aws_region")
+  fi
   if [[ -n "$aws_profile" ]]; then
     aws_cli_opts+=("--profile" "$aws_profile")
   fi
