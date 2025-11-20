@@ -3,7 +3,6 @@ import { createVertex } from "@ai-sdk/google-vertex";
 import type { GoogleProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-
 import type { AwsTemporaryCredentials } from "./bedrock";
 import type { Provider } from "./types";
 import type { Provider as AiProvider } from "ai";
