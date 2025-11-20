@@ -10,8 +10,8 @@ const apiKeys = new Collection({
     id: z.string().default(crypto.randomUUID()),
     description: z.string(),
     key: z.string(),
-    createdAt: z.date().default(() => new Date()),
-    expiresAt: z.date().default(() => new Date()),
+    createdAt: z.date(),
+    expiresAt: z.date(),
   }),
 });
 
@@ -42,8 +42,8 @@ export const authService = {
     return newKey.key;
   },
 
-  async revokeApiKey(key: string) {
-    apiKeys.delete((q) => q.where({ id: key }));
+  async revokeApiKey(apiKeyId: string) {
+    apiKeys.delete((q) => q.where({ id: apiKeyId }));
   },
 
   async listApiKeys() {

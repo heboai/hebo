@@ -49,15 +49,11 @@ export function CreateApiKeyDialog() {
 
   useActionDataErrorToast();
 
-  const defaultExpirationValue =
-    API_KEY_EXPIRATION_OPTIONS.find((option) => option.value === "30d")
-      ?.value ?? API_KEY_EXPIRATION_OPTIONS[0].value;
-
   const [form, fields] = useForm<ApiKeyCreateFormValues>({
     lastResult,
     constraint: getZodConstraint(ApiKeyCreateSchema),
     defaultValue: {
-      expiresIn: defaultExpirationValue,
+      expiresIn: "30d",
     },
   });
 

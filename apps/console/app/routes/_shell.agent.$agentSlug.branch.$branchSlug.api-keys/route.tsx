@@ -72,7 +72,7 @@ export default function ApiKeysRoute({ loaderData }: Route.ComponentProps) {
       <div>
         <h1>API Keys</h1>
         <p className="text-muted-foreground text-sm">
-          Issue and revoke API keys to access your agent programatically.
+          Issue and revoke API keys to access your agent programmatically.
         </p>
       </div>
 

@@ -67,7 +67,7 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
           </DialogHeader>
           <Alert variant="destructive">
             <AlertDescription>
-              Key (${apiKey?.key ?? ""}) will stop working immediately.
+              Key ({apiKey?.key ?? ""}) will stop working immediately.
             </AlertDescription>
           </Alert>
 
