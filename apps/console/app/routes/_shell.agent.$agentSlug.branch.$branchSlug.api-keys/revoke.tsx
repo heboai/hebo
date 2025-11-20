@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Form, useActionData, useNavigation } from "react-router";
-import { message, nonEmpty, object, pipe, string, trim, type InferOutput } from "valibot";
+import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 
 import { Alert, AlertDescription } from "@hebo/shared-ui/components/Alert";
 import { Button } from "@hebo/shared-ui/components/Button";
@@ -20,14 +20,11 @@ import { FormControl, FormField, FormMessage } from "@hebo/shared-ui/components/
 import { useActionDataErrorToast } from "~console/lib/errors";
 
 
-export const ApiKeyRevokeSchema = object({
-  apiKeyId: message(
-    pipe(string(), trim(), nonEmpty()),
-    "Select an API key to revoke",
-  ),
+export const ApiKeyRevokeSchema = z.object({
+  apiKeyId: ((msg) => z.string(msg).trim().min(1, msg))("Select an API key to revoke"),
 });
 
-type ApiKeyRevokeFormValues = InferOutput<typeof ApiKeyRevokeSchema>;
+type ApiKeyRevokeFormValues = z.infer<typeof ApiKeyRevokeSchema>;
 
 type RevokeApiKeyDialogProps = {
   open: boolean;
@@ -44,7 +41,7 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
   const [form, fields] = useForm<ApiKeyRevokeFormValues>({
     lastResult,
     id: apiKey?.id || "",
-    constraint: getValibotConstraint(ApiKeyRevokeSchema),
+    constraint: getZodConstraint(ApiKeyRevokeSchema),
     defaultValue: {
       apiKeyId: apiKey?.id || "",
     },

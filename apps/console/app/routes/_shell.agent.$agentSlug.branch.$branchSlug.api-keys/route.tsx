@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Await } from "react-router";
-import { parseWithValibot } from "@conform-to/valibot";
+import { parseWithZod } from "@conform-to/zod/v4";
 
 import { TableSkeleton } from "@hebo/shared-ui/components/Skeleton";
 
@@ -24,7 +24,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
   switch (intent) {
     case "create": {
-      const submission = parseWithValibot(formData, {
+      const submission = parseWithZod(formData, {
         schema: ApiKeyCreateSchema,
       });
 
@@ -46,7 +46,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     }
 
     case "revoke": {
-      const submission = parseWithValibot(formData, {
+      const submission = parseWithZod(formData, {
         schema: ApiKeyRevokeSchema,
       });
 

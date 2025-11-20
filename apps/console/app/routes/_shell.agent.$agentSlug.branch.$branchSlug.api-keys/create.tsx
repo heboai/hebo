@@ -1,18 +1,9 @@
 import { useEffect, useState } from "react";
 import { Form, useActionData, useNavigation } from "react-router";
-import {
-  message,
-  nonEmpty,
-  object,
-  picklist,
-  pipe,
-  string,
-  trim,
-  type InferOutput,
-} from "valibot";
+import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import {
@@ -42,18 +33,15 @@ export const API_KEY_EXPIRATION_OPTIONS = [
   { label: "1 year", value: "365d", durationMs: 365 * DAY_IN_MS },
 ] as const;
 
-export const ApiKeyCreateSchema = object({
-  description: message(
-    pipe(string(), trim(), nonEmpty()),
-    "Please enter a description",
-  ),
-  expiresIn: picklist(
+export const ApiKeyCreateSchema = z.object({
+  description: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a description"),
+  expiresIn: z.literal(
     API_KEY_EXPIRATION_OPTIONS.map((option) => option.value),
     "Select an expiration window",
   ),
 });
 
-type ApiKeyCreateFormValues = InferOutput<typeof ApiKeyCreateSchema>;
+type ApiKeyCreateFormValues = z.infer<typeof ApiKeyCreateSchema>;
 
 export function CreateApiKeyDialog() {
   const lastResult = useActionData();
@@ -67,7 +55,7 @@ export function CreateApiKeyDialog() {
 
   const [form, fields] = useForm<ApiKeyCreateFormValues>({
     lastResult,
-    constraint: getValibotConstraint(ApiKeyCreateSchema),
+    constraint: getZodConstraint(ApiKeyCreateSchema),
     defaultValue: {
       expiresIn: defaultExpirationValue,
     },
