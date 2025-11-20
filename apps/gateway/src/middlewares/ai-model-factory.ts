@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 import { getAiModelProviderConfig } from "./ai-models/ai-model-service";
-import { createProvider } from "./ai-models/provider-service";
+import { createProvider } from "./ai-models/providers";
 
 import type { EmbeddingModel, LanguageModel } from "ai";
 
@@ -20,7 +20,7 @@ export const modelFactory = new Elysia({
         await getAiModelProviderConfig(dbClient, fullModelAlias, modality);
       // FUTURE: memoize with TTL
       const provider = createProvider(providerName, providerConfig);
-      // FUTURE: memoize
+      // FUTURE: memoize (depends on provider config)
       const resolvedModelId = await provider.resolveModelId(modelId);
       const aiProvider = await provider.create();
 
