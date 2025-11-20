@@ -11,7 +11,7 @@ import { Button } from "@hebo/shared-ui/components/Button";
 import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 export function createBranchDeleteSchema(branchSlug: string) {
@@ -28,23 +28,21 @@ type DeleteBranchDialogProps = {
 };
 
 export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: DeleteBranchDialogProps) {
+  
   const lastResult = useActionData();
-
-  useActionDataErrorToast();
-
   const [form, fields] = useForm<BranchDeleteFormValues>({
     lastResult,
     id: branchSlug,
     constraint: getZodConstraint(createBranchDeleteSchema(branchSlug)),
   });
+  useFormErrorToast(form.allErrors);
 
   const navigation = useNavigation();
-
   useEffect(() => {
-    if (navigation.state === "idle" && lastResult?.status === "success") {
+    if (navigation.state === "idle" && form.status === "success") {
       onOpenChange(false);
     }
-  }, [navigation.state, lastResult?.status]);
+  }, [navigation.state, form.status]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -90,7 +88,7 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
               variant="destructive"
               name="intent"
               value="delete"
-              isLoading={navigation.state !== "idle"}
+              isLoading={navigation.state !== "idle" && navigation.formData != null}
             >
               Delete
             </Button>

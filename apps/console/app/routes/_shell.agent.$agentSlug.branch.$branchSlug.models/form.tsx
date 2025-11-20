@@ -38,7 +38,7 @@ import {
   CollapsibleTrigger,
 } from "@hebo/shared-ui/components/Collapsible";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 import {
   modelsConfigFormSchema,
   supportedModels,
@@ -54,29 +54,27 @@ type ModelsConfigProps = {
 };
 
 export default function ModelsConfigForm({ agentSlug, branchSlug, models }: ModelsConfigProps) {
+  
   const lastResult = useActionData();
-  const navigation = useNavigation();
-
-  useActionDataErrorToast();
-
   const [form, fields] = useForm<ModelsConfigFormValues>({
     id: JSON.stringify(models),
     lastResult,
     constraint: getZodConstraint(modelsConfigFormSchema),
     defaultValue: { models: models }
   });
-
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const modelItems = fields.models.getFieldList();
+  useFormErrorToast(form.allErrors);
 
   // Close the active card on successful submit
+  const navigation = useNavigation();
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
-    if (navigation.state === "idle" && lastResult?.status === "success") {
+    if (navigation.state === "idle" && form.status === "success") {
       setExpandedCardId(null);
     }
-  }, [navigation.state, lastResult?.status]);
+  }, [navigation.state, form.status]);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const modelItems = fields.models.getFieldList();
 
   return (
     <Form method="post" ref={formRef} {...getFormProps(form)} className="contents">

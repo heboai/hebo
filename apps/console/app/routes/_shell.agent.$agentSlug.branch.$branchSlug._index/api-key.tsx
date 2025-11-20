@@ -22,7 +22,7 @@ export function GenerateApiKey() {
 
     try {
       const newKey = await authService.generateApiKey("On-boarding Key");
-      setKey(newKey ?? "Failed to generate key");
+      setKey(newKey.value ?? "Failed to generate key");
       setLoading("success");
     } catch (error_) {
       setError((error_ as Error).message);

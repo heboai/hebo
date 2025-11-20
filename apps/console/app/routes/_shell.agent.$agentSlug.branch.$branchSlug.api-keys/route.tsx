@@ -29,20 +29,21 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
       });
 
       if (submission.status !== "success")
-          return submission.reply();
+          return { submission: submission.reply() };
 
+      let apiKey;
       try {
-        await authService.generateApiKey(
+        apiKey = await authService.generateApiKey(
           submission.value.description,
           API_KEY_EXPIRATION_OPTIONS.find((option) => option.value === submission.value.expiresIn)!.durationMs
         );
       } catch (error) {
-        return submission.reply({
+        return { submission: submission.reply({
           formErrors: [parseError(error).message],
-        });
+        })};
       }
-
-      return submission.reply();
+      
+      return { submission: submission.reply(), apiKey };
     }
 
     case "revoke": {
@@ -51,17 +52,17 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
       });
 
       if (submission.status !== "success")
-        return submission.reply();
+        return { submission: submission.reply() };
 
       try {
         await authService.revokeApiKey(submission.value.apiKeyId);
       } catch (error) {
-        return submission.reply({
+        return { submission: submission.reply({
           formErrors: [parseError(error).message],
-        });
+        })};
       }
 
-      return submission.reply();
+      return { submission: submission.reply() };
     }
   }
 }

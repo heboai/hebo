@@ -1,7 +1,7 @@
 export interface AuthService {
   ensureSignedIn(): Promise<void>;
   getAccessToken(): string | undefined;
-  generateApiKey(description: string, expiresIn?: number): Promise<string>;
+  generateApiKey(description: string, expiresIn?: number): Promise<ApiKey>;
   revokeApiKey(apiKeyId: string): Promise<void>;
   listApiKeys(): Promise<Array<ApiKey>>;
 }
@@ -18,7 +18,7 @@ export type User = {
 export type ApiKey = {
   id: string;
   description: string;
-  key: string;
+  value: string;
   createdAt: Date;
   expiresAt: Date;
 };

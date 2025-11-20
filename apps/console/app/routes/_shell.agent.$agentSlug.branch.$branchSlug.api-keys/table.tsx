@@ -91,8 +91,8 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 font-mono text-sm">
-                      <span className="truncate">{key.key}</span>
-                      <CopyToClipboardButton textToCopy={key.key} />
+                      <span className="truncate">{key.value}</span>
+                      <CopyToClipboardButton textToCopy={key.value} />
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">

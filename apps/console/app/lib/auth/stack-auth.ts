@@ -53,7 +53,7 @@ const authService = {
       isPublic: false,
     });
 
-    return apiKey.value;
+    return apiKey;
   },
 
   async revokeApiKey(apiKeyId: string) {
@@ -70,15 +70,11 @@ const authService = {
 
     const keys = await user!.listApiKeys();
 
-    return keys.map((key) => {
-      return {
-        id: key.id,
-        description: key.description,
-        key: `********${key.value.lastFour}`,
-        createdAt: key.createdAt,
-        expiresAt: key.expiresAt!,
-      };
-    });
+    return keys.map((key) => ({
+      ...key,
+      value: `********${key.value.lastFour}`,
+      expiresAt: key.expiresAt!,
+    }));
   },
 } satisfies AuthService;
 

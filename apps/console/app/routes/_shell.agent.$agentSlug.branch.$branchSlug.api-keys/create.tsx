@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
@@ -20,7 +20,7 @@ import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -44,26 +44,23 @@ export const ApiKeyCreateSchema = z.object({
 type ApiKeyCreateFormValues = z.infer<typeof ApiKeyCreateSchema>;
 
 export function CreateApiKeyDialog() {
-  const lastResult = useActionData();
-  const [open, setOpen] = useState(false);
-
-  useActionDataErrorToast();
-
+  
+  const fetcher = useFetcher();
   const [form, fields] = useForm<ApiKeyCreateFormValues>({
-    lastResult,
+    lastResult: fetcher.data?.submission,
     constraint: getZodConstraint(ApiKeyCreateSchema),
     defaultValue: {
       expiresIn: "30d",
     },
   });
+  useFormErrorToast(form.allErrors);
 
-  const navigation = useNavigation();
-
+  const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (navigation.state === "idle" && lastResult?.status === "success") {
+    if (fetcher.state === "idle" && form.status === "success") {
       setOpen(false);
     }
-  }, [navigation.state, lastResult?.status]);
+  }, [fetcher.state, form.status]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -73,7 +70,7 @@ export function CreateApiKeyDialog() {
         </DialogTrigger>
       </div>
       <DialogContent>
-        <Form method="post" {...getFormProps(form)} className="contents">
+        <fetcher.Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
             <DialogTitle>Create API key</DialogTitle>
             <DialogDescription>
@@ -111,12 +108,12 @@ export function CreateApiKeyDialog() {
               type="submit"
               name="intent"
               value="create"
-              isLoading={navigation.state !== "idle"}
+              isLoading={fetcher.state !== "idle"}
             >
               Create key
             </Button>
           </DialogFooter>
-        </Form>
+        </fetcher.Form>
       </DialogContent>
     </Dialog>
   );

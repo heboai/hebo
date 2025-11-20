@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
@@ -17,7 +17,7 @@ import {
 } from "@hebo/shared-ui/components/Dialog";
 import { FormControl, FormField, FormMessage } from "@hebo/shared-ui/components/Form";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 export const ApiKeyRevokeSchema = z.object({
@@ -29,36 +29,32 @@ type ApiKeyRevokeFormValues = z.infer<typeof ApiKeyRevokeSchema>;
 type RevokeApiKeyDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  apiKey?: { id: string; description: string; key: string };
+  apiKey?: { id: string; description: string; value: string };
 };
 
 export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDialogProps) {
 
-  const lastResult = useActionData();
-
-  useActionDataErrorToast();
-
+  const fetcher = useFetcher();
   const [form, fields] = useForm<ApiKeyRevokeFormValues>({
-    lastResult,
-    id: apiKey?.id || "",
+    lastResult: fetcher.data?.submission,
+    id: apiKey?.id,
     constraint: getZodConstraint(ApiKeyRevokeSchema),
     defaultValue: {
-      apiKeyId: apiKey?.id || "",
+      apiKeyId: apiKey?.id,
     },
   });
-
-  const navigation = useNavigation();
+  useFormErrorToast(form.allErrors);
 
   useEffect(() => {
-    if (navigation.state === "idle" && lastResult?.status === "success") {
+    if (fetcher.state === "idle" && form.status === "success") {
       onOpenChange(false);
     }
-  }, [navigation.state, lastResult?.status]);
+  }, [fetcher.state, form.status]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-sidebar">
-        <Form method="post" {...getFormProps(form)} className="contents">
+        <fetcher.Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
             <DialogTitle>Revoke API key</DialogTitle>
             <DialogDescription>
@@ -67,7 +63,7 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
           </DialogHeader>
           <Alert variant="destructive">
             <AlertDescription>
-              Key ({apiKey?.key ?? ""}) will stop working immediately.
+              Key ({apiKey?.value ?? ""}) will stop working immediately.
             </AlertDescription>
           </Alert>
 
@@ -91,12 +87,12 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
             <Button
               type="submit"
               variant="destructive"
-              isLoading={navigation.state !== "idle"}
+              isLoading={fetcher.state !== "idle"}
             >
               Revoke
             </Button>
           </DialogFooter>
-        </Form>
+        </fetcher.Form>
       </DialogContent>
     </Dialog>
   );

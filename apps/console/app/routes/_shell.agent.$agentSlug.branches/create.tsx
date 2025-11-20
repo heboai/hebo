@@ -21,7 +21,7 @@ import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 export const BranchCreateSchema = z.object({
@@ -41,10 +41,6 @@ type CreateBranchProps = {
 export default function CreateBranch({ branches }: CreateBranchProps) {
 
   const lastResult = useActionData();
-  const [open, setOpen] = useState(false);
-
-  useActionDataErrorToast();
-
   const [form, fields] = useForm<BranchCreateFormValues>({
     lastResult,
     constraint: getZodConstraint(BranchCreateSchema),
@@ -52,14 +48,15 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
       sourceBranchSlug: branches[0].slug,
     },
   });
+  useFormErrorToast(form.allErrors)
 
   const navigation = useNavigation();
-
+  const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (navigation.state === "idle" && lastResult?.status === "success") {
+    if (navigation.state === "idle" && form.status === "success") {
       setOpen(false);
     }
-  }, [navigation.state, lastResult?.status]);
+  }, [navigation.state, form.status]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -121,7 +118,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
               type="submit"
               name="intent"
               value="create"
-              isLoading={navigation.state !== "idle"}
+              isLoading={navigation.state !== "idle" && navigation.formData != null}
             >
               Create
             </Button>

@@ -9,7 +9,7 @@ const apiKeys = new Collection({
   schema: z.object({
     id: z.string().default(crypto.randomUUID()),
     description: z.string(),
-    key: z.string(),
+    value: z.string(),
     createdAt: z.date(),
     expiresAt: z.date(),
   }),
@@ -34,12 +34,12 @@ export const authService = {
     const now = new Date();
     const newKey = await apiKeys.create({
       description,
-      key: crypto.randomUUID(),
+      value: crypto.randomUUID(),
       createdAt: now,
       expiresAt: new Date(now.getTime() + expiresIn),
     });
 
-    return newKey.key;
+    return newKey;
   },
 
   async revokeApiKey(apiKeyId: string) {
