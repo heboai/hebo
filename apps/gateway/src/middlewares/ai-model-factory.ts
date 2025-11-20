@@ -12,27 +12,10 @@ export const modelFactory = new Elysia({
 })
   .use(dbClient)
   .resolve(({ dbClient }) => {
-    async function createAIModelOrThrow({
-      fullModelAlias,
-      modality,
-    }: {
-      fullModelAlias: string;
-      modality: "chat";
-    }): Promise<LanguageModel>;
-    async function createAIModelOrThrow({
-      fullModelAlias,
-      modality,
-    }: {
-      fullModelAlias: string;
-      modality: "embedding";
-    }): Promise<EmbeddingModel<string>>;
-    async function createAIModelOrThrow({
-      fullModelAlias,
-      modality,
-    }: {
-      fullModelAlias: string;
-      modality: "chat" | "embedding";
-    }): Promise<LanguageModel | EmbeddingModel<string>> {
+    async function createBaseModel(
+      fullModelAlias: string,
+      modality: "chat" | "embedding",
+    ): Promise<LanguageModel | EmbeddingModel<string>> {
       const { providerName, providerConfig, modelId } =
         await getAiModelProviderConfig(dbClient, fullModelAlias, modality);
       const provider = resolveProvider(providerName);
@@ -49,10 +32,21 @@ export const modelFactory = new Elysia({
         : aiProvider.textEmbeddingModel(resolvedModelId);
     }
 
-    return {
-      modelFactory: {
-        createAIModelOrThrow,
+    const createAIModel = {
+      chat: async (fullModelAlias: string): Promise<LanguageModel> => {
+        const model = await createBaseModel(fullModelAlias, "chat");
+        return model as LanguageModel;
       },
+      embedding: async (
+        fullModelAlias: string,
+      ): Promise<EmbeddingModel<string>> => {
+        const model = await createBaseModel(fullModelAlias, "embedding");
+        return model as EmbeddingModel<string>;
+      },
+    } as const;
+
+    return {
+      modelFactory: createAIModel,
     };
   })
   .as("scoped");
