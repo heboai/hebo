@@ -1,6 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
 
-import { ProviderNameEnum } from "./providers";
 import supportedModels from "../json/supported-models.json";
 
 export const SupportedModelsEnum = Type.Enum(
@@ -12,7 +11,7 @@ export const ModelsSchema = Type.Array(
   Type.Object({
     alias: Type.String({ minLength: 1 }),
     type: SupportedModelsEnum,
-    customProvider: Type.Optional(ProviderNameEnum),
+    customProvider: Type.Optional(Type.Boolean()),
   }),
 );
 

@@ -1,11 +1,11 @@
 import { Elysia, status, t } from "elysia";
 
-import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import {
   Provider,
   ProviderConfig,
   ProviderNameEnum,
-} from "@hebo/shared-data/types/providers";
+} from "@hebo/database/src/types/providers";
+import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 export const providersModule = new Elysia({
   prefix: "/providers",

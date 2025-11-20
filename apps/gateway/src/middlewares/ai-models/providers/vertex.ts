@@ -1,9 +1,10 @@
 import { createVertex } from "@ai-sdk/google-vertex";
 
+import type { GoogleProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
-import type { GoogleProviderConfig } from "@hebo/shared-data/types/providers";
 
 import type { Provider } from "ai";
+
 
 type AwsContainerCredentials = {
   AccessKeyId: string;

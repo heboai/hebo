@@ -1,7 +1,7 @@
 import { createGroq } from "@ai-sdk/groq";
 
+import type { ApiKeyProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
-import type { ApiKeyProviderConfig } from "@hebo/shared-data/types/providers";
 
 export const getGroqDefaultConfig = async () => ({
   apiKey: await getSecret("GroqApiKey"),

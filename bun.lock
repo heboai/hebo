@@ -196,6 +196,7 @@
         "@hebo/shared-data": "workspace:*",
         "@prisma/adapter-pg": "^6.17.0",
         "@prisma/client": "^6.17.0",
+        "@sinclair/typebox": "^0.34.41",
         "crypto-random-string": "^5.0.0",
         "slugify": "^1.6.6",
       },

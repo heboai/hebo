@@ -1,10 +1,11 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
-import type { ProviderConfig } from "@hebo/shared-data/types/providers";
-import { redactProviderConfig } from "@hebo/shared-data/utils/redact-provider";
-
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
+import { redactProviderConfig } from "./src/utils/redact-provider";
+
+import type { ProviderConfig } from "./src/types/providers";
+
 
 export const connectionString = (() => {
   try {

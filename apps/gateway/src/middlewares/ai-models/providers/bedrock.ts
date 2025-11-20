@@ -5,10 +5,11 @@ import {
 } from "@aws-sdk/client-bedrock";
 import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 
+import type { AwsProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
-import type { AwsProviderConfig } from "@hebo/shared-data/types/providers";
 
 import type { Provider } from "ai";
+
 
 // FUTURE: Cache the inference profile ARN
 const getInferenceProfileArn = async (

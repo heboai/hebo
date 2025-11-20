@@ -1,10 +1,10 @@
 import type { createDbClient } from "@hebo/database/client";
-import supportedModels from "@hebo/shared-data/json/supported-models";
-import type { Models } from "@hebo/shared-data/types/models";
 import type {
   ProviderConfig,
   ProviderName,
-} from "@hebo/shared-data/types/providers";
+} from "@hebo/database/src/types/providers";
+import supportedModels from "@hebo/shared-data/json/supported-models";
+import type { Models } from "@hebo/shared-data/types/models";
 
 import { BadRequestError, ModelNotFoundError } from "./errors";
 

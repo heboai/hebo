@@ -4,7 +4,7 @@ import type {
   GoogleProviderConfig,
   ProviderConfig,
   ProviderName,
-} from "@hebo/shared-data/types/providers";
+} from "@hebo/database/src/types/providers";
 
 import {
   getBedrockDefaultConfig,
