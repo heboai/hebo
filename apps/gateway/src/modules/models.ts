@@ -3,8 +3,6 @@ import { Elysia, t } from "elysia";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import { SupportedModelsEnum } from "@hebo/shared-data/types/models";
 
-import { getSupportedModelOrThrow } from "~gateway/middlewares/ai-models/ai-model-service";
-
 export const models = new Elysia({
   name: "models",
   prefix: "/models",
@@ -44,12 +42,8 @@ export const models = new Elysia({
   .get(
     "/:id",
     ({ params }) => {
-      const { id } = params;
-
-      getSupportedModelOrThrow(id);
-
       return {
-        id,
+        id: params.id,
         object: "model",
         // FUTURE implement real value in supported models
         created: Math.floor(Date.now() / 1000),

@@ -6,12 +6,10 @@ import type {
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 
-import { BadRequestError, ModelNotFoundError } from "./errors";
-
 type ModelConfig = Models[number];
 
 const getModelIdForProvider = (
-  supportedModel: ReturnType<typeof getSupportedModelOrThrow>,
+  supportedModel: (typeof supportedModels)[number],
   providerName: ProviderName,
 ): string => {
   const entry = supportedModel.providers.find(
@@ -21,29 +19,11 @@ const getModelIdForProvider = (
 };
 
 const resolveProviderName = (
-  supportedModel: ReturnType<typeof getSupportedModelOrThrow>,
+  supportedModel: (typeof supportedModels)[number],
 ): ProviderName => {
   // Currently, we just pick the first provider for a model, in future this will be more sophisticated
   const provider = supportedModel.providers[0];
   return Object.keys(provider)[0] as ProviderName;
-};
-
-export const getSupportedModelOrThrow = (
-  type: string,
-  modality?: "chat" | "embedding" | undefined,
-) => {
-  const model = supportedModels.find((m) => m.name === type);
-  if (!model)
-    throw new BadRequestError(
-      `Unknown or unsupported model '${type}'`,
-      "model_unsupported",
-    );
-  if (modality && model.modality !== modality)
-    throw new BadRequestError(
-      `Model '${type}' is a ${model.modality} model, not a ${modality} model`,
-      "model_mismatch",
-    );
-  return model;
 };
 
 const getModelConfig = async (
@@ -58,19 +38,17 @@ const getModelConfig = async (
   const modelConfig = (branch.models as Models)?.find(
     (model) => model?.alias === modelAlias,
   );
-  if (!modelConfig) throw new ModelNotFoundError();
-  return modelConfig;
+  return modelConfig!;
 };
 
 export const getAiModelProviderConfig = async (
   dbClient: ReturnType<typeof createDbClient>,
   alias: string,
-  modality: "chat" | "embedding",
 ) => {
   const model = await getModelConfig(dbClient, alias);
-  const supportedModel = getSupportedModelOrThrow(model.type, modality);
-  const providerName = resolveProviderName(supportedModel);
-  const modelId = getModelIdForProvider(supportedModel, providerName);
+  const supportedModel = supportedModels.find((m) => m.name === model.type);
+  const providerName = resolveProviderName(supportedModel!);
+  const modelId = getModelIdForProvider(supportedModel!, providerName);
 
   let providerConfig: ProviderConfig | undefined;
   if (model.customProvider) {
