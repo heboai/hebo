@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 import { getAiModelProviderConfig } from "./ai-models/ai-model-service";
-import { resolveProvider } from "./ai-models/provider-service";
+import { createProvider } from "./ai-models/provider-service";
 
 import type { EmbeddingModel, LanguageModel } from "ai";
 
@@ -18,7 +18,7 @@ export const modelFactory = new Elysia({
     ): Promise<LanguageModel | EmbeddingModel<string>> {
       const { providerName, providerConfig, modelId } =
         await getAiModelProviderConfig(dbClient, fullModelAlias, modality);
-      const provider = resolveProvider(providerName);
+      const provider = createProvider(providerName);
       const resolvedProviderConfig =
         await provider.resolveConfig(providerConfig);
       const resolvedModelId = await provider.resolveModelId(

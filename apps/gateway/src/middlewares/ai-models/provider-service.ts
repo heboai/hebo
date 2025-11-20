@@ -80,7 +80,7 @@ class GroqProvider implements Provider {
   }
 }
 
-export const resolveProvider = (providerName: ProviderName): Provider => {
+export const createProvider = (providerName: ProviderName): Provider => {
   switch (providerName) {
     case "bedrock": {
       return new BedrockProvider();
