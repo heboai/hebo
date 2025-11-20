@@ -66,7 +66,6 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
   // Close the active card on successful submit
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
-    console.log(`${fetcher.state} ${form.status}`);
     if (fetcher.state === "idle" && form.status === "success") {
       setExpandedCardId(null);
     }
