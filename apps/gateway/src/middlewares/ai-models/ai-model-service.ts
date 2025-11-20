@@ -45,16 +45,19 @@ export const getAiModelProviderConfig = async (
   dbClient: ReturnType<typeof createDbClient>,
   alias: string,
 ) => {
-  const model = await getModelConfig(dbClient, alias);
-  const supportedModel = supportedModels.find((m) => m.name === model.type);
-  const providerName = resolveProviderName(supportedModel!);
-  const modelId = getModelIdForProvider(supportedModel!, providerName);
+  const customModelConfig = await getModelConfig(dbClient, alias);
+  const commonModelConfig = supportedModels.find(
+    (m) => m.name === customModelConfig.type,
+  );
+  const providerName = resolveProviderName(commonModelConfig!);
+  const modelId = getModelIdForProvider(commonModelConfig!, providerName);
 
-  let providerConfig: ProviderConfig | undefined;
-  if (model.customProvider) {
-    const provider = await dbClient.providers.getUnredacted(providerName);
-    providerConfig = provider.config as ProviderConfig;
+  let customProviderConfig: ProviderConfig | undefined;
+  if (customModelConfig.customProvider) {
+    const customerProviderConfig =
+      await dbClient.providers.getUnredacted(providerName);
+    customProviderConfig = customerProviderConfig.config as ProviderConfig;
   }
 
-  return { providerName, providerConfig, modelId };
+  return { providerName, customProviderConfig, modelId };
 };

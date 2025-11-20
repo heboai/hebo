@@ -16,10 +16,10 @@ export const modelFactory = new Elysia({
       fullModelAlias: string,
       modality: "chat" | "embedding",
     ): Promise<LanguageModel | EmbeddingModel<string>> {
-      const { providerName, providerConfig, modelId } =
+      const { providerName, customProviderConfig, modelId } =
         await getAiModelProviderConfig(dbClient, fullModelAlias);
       // FUTURE: memoize with TTL
-      const provider = createProvider(providerName, providerConfig);
+      const provider = createProvider(providerName, customProviderConfig);
       // FUTURE: memoize (depends on provider config)
       const resolvedModelId = await provider.resolveModelId(modelId);
       const aiProvider = await provider.create();
