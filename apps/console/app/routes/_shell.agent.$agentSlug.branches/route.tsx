@@ -1,6 +1,6 @@
 import { unstable_useRoute as useRoute } from "react-router";
 
-import { parseWithValibot } from "@conform-to/valibot";
+import { parseWithZod } from "@conform-to/zod/v4";
 
 import CreateBranch, { BranchCreateSchema } from "./create";
 import { createBranchDeleteSchema } from "./delete";
@@ -19,7 +19,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
 
   switch (intent) {
     case "create":
-      submission = parseWithValibot(formData, {
+      submission = parseWithZod(formData, {
         schema: BranchCreateSchema
       });
 
@@ -45,7 +45,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
     case "delete": 
       const branchSlug = formData.get("branchSlug") as string;
 
-      submission = parseWithValibot(formData, {
+      submission = parseWithZod(formData, {
         schema: createBranchDeleteSchema(branchSlug)
       });
 

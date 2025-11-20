@@ -1,34 +1,21 @@
-import {
-  array,
-  message,
-  nonEmpty,
-  object,
-  optional,
-  picklist,
-  pipe,
-  string,
-  trim,
-  type InferOutput,
-} from "valibot";
+import { z } from "zod";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
 
-export const modelConfigSchema = object({
-  alias: message(pipe(string(), trim(), nonEmpty()), "Please enter a unique alias name"),
-  type: picklist(
+export const modelConfigSchema = z.object({
+  alias: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a unique alias name"),
+  type: z.literal(
     supportedModels.map((model) => model.name),
-    "Select one of the supported models",
+    "Select one of the supported models"
   )
 });
 
-export const modelsConfigFormSchema = object({
-  models: pipe(
-    optional(array(modelConfigSchema)),
-  ),
+export const modelsConfigFormSchema = z.object({
+  models: z.array(modelConfigSchema).optional(),
 });
 
-export type ModelsConfigFormValues = InferOutput<typeof modelsConfigFormSchema>;
+export type ModelsConfigFormValues = z.infer<typeof modelsConfigFormSchema>;
 export type ModelConfigFormValue = NonNullable<ModelsConfigFormValues["models"]>[number];
 
 export { supportedModels };
