@@ -2,6 +2,13 @@ import { useState } from "react";
 
 import { Badge } from "@hebo/shared-ui/components/Badge";
 import { Button } from "@hebo/shared-ui/components/Button";
+import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@hebo/shared-ui/components/DropdownMenu";
 import {
   Table,
   TableBody,
@@ -10,17 +17,27 @@ import {
   TableHeader,
   TableRow,
 } from "@hebo/shared-ui/components/Table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@hebo/shared-ui/components/Tooltip";
+import { MoreVertical } from "lucide-react";
 
 import type { ApiKey } from "~console/lib/auth/types";
 
 import { RevokeApiKeyDialog } from "./revoke";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@hebo/shared-ui/components/DropdownMenu";
-import { MoreVertical } from "lucide-react";
 
+
+const formatDateTime = (date: Date) =>
+  date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 
 export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
   const [revokeOpen, setRevokeOpen] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<ApiKey | null>(null);
+  const [selectedKey, setSelectedKey] = useState<ApiKey | undefined>(undefined);
 
   return (
     <div>
@@ -30,9 +47,8 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
             <TableHead>Description</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Key</TableHead>
-            <TableHead>Expires</TableHead>
             <TableHead>Created</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -52,40 +68,44 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
 
               return (
                 <TableRow key={key.id}>
-                  <TableCell>{key.description}</TableCell>
+                  <TableCell>{key.description || "—"}</TableCell>
                   <TableCell className="align-middle">
-                    <Badge
-                      variant="outline"
-                      className={
-                        isExpired
-                          ? "border-destructive/50 text-destructive"
-                          : "border-emerald-500/40 text-emerald-500"
-                      }
-                    >
-                      {status}
-                    </Badge>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge
+                          variant="outline"
+                          className={
+                            isExpired
+                              ? "border-destructive text-destructive"
+                              : "border-emerald-600 text-emerald-600"
+                          }
+                        >
+                          {status}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {isExpired ? "Expired " : "Expires "}
+                        {formatDateTime(key.expiresAt)}
+                      </TooltipContent>
+                    </Tooltip>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 font-mono text-sm">
                       <span className="truncate">{key.key}</span>
+                      <CopyToClipboardButton textToCopy={key.key} />
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {key.expiresAt.toLocaleString(undefined, {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {key.createdAt.toLocaleString(undefined, {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
+                    {formatDateTime(key.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label="Branch actions">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="API key actions"
+                        >
                           <MoreVertical className="size-4" aria-hidden="true" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -95,8 +115,8 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
                           onSelect={() => {
                             setSelectedKey(key);
                             setRevokeOpen(true);
-                            }}
-                          >
+                          }}
+                        >
                           Revoke
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -114,7 +134,7 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
         apiKey={selectedKey}
         onOpenChange={(open) => {
           setRevokeOpen(open);
-          if (!open) setSelectedKey(null);
+          if (!open) setSelectedKey(undefined);
         }}
       />
     </div>

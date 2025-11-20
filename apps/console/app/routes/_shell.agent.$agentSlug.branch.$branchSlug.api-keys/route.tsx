@@ -9,10 +9,10 @@ import { ApiKeyRevokeSchema } from "./revoke";
 
 import type { Route } from "./+types/route";
 
+
 export async function clientLoader() {
   return { apiKeys: await authService.listApiKeys() };
 }
-
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
@@ -64,7 +64,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
 export default function ApiKeysRoute({loaderData: { apiKeys }}: Route.ComponentProps) {
   return (
-    <div className="flex flex-col gap-6 max-w-3xl">
+    <>
       <div>
         <h1>API Keys</h1>
         <p className="text-muted-foreground text-sm">
@@ -75,6 +75,6 @@ export default function ApiKeysRoute({loaderData: { apiKeys }}: Route.ComponentP
       <ApiKeysTable apiKeys={apiKeys} />
       
       <CreateApiKeyDialog />
-    </div>
+    </>
   );
 }
