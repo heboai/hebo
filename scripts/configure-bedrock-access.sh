@@ -13,7 +13,7 @@ Configure the Hebo Bedrock cross-account IAM role.
 Optional flags:
   --environment <production|preview>          Target environment (default: production).
   --role-name <name>                          Explicit IAM role name (overrides derived defaults).
-  --region <region>                           AWS region for API calls (default: us-east-1).
+  --region <region>                           AWS region for API calls.
   --profile <profile>                         AWS CLI profile to use.
   --help                                      Show this message and exit.
 
@@ -22,15 +22,15 @@ Environment-specific requirements:
   preview:    --root-account-id <id>          AWS account ID whose roles should be trusted.
 
 Examples:
-  ./configure-bedrock-access.sh --gateway-task-role-arn arn:aws:iam::<aws-account-id>:role/HeboGatewayTaskRole
-  ./configure-bedrock-access.sh --environment preview --root-account-id <aws-account-id>
+  ./configure-bedrock-access.sh --region us-east-1 --gateway-task-role-arn arn:aws:iam::<aws-account-id>:role/HeboGatewayTaskRole
+  ./configure-bedrock-access.sh --region us-east-1 --environment preview --root-account-id <aws-account-id>
 EOF
 }
 
 main() {
   local environment="production"
   local role_name="$DEFAULT_ROLE_NAME"
-  local aws_region="us-east-1"
+  local aws_region=""
   local aws_profile=""
   local root_aws_account_id=""
   local gateway_task_role_arn=""
