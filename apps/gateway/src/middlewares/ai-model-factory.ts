@@ -9,7 +9,6 @@ import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 
-
 import { createProvider } from "./ai-models/providers";
 
 import type { EmbeddingModel, LanguageModel } from "ai";
@@ -69,8 +68,8 @@ const getAiModelProviderConfig = async (
   return { providerName, customProviderConfig, modelId };
 };
 
-export const modelFactory = new Elysia({
-  name: "model-factory",
+export const aiModelFactory = new Elysia({
+  name: "ai-model-factory",
 })
   .use(dbClient)
   .resolve(({ dbClient }) => {
@@ -105,7 +104,7 @@ export const modelFactory = new Elysia({
     } as const;
 
     return {
-      modelFactory: createAIModel,
+      aiModelFactory: createAIModel,
     };
   })
   .as("scoped");

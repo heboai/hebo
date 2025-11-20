@@ -1,7 +1,7 @@
 import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
-import { modelFactory } from "~gateway/middlewares/ai-model-factory";
+import { aiModelFactory } from "~gateway/middlewares/ai-model-factory";
 import {
   toModelMessages,
   toOpenAICompatibleFinishReason,
@@ -19,10 +19,10 @@ export const completions = new Elysia({
   name: "completions",
   prefix: "/chat/completions",
 })
-  .use(modelFactory)
+  .use(aiModelFactory)
   .post(
     "/",
-    async ({ body, modelFactory }) => {
+    async ({ body, aiModelFactory }) => {
       const {
         model: fullModelAlias,
         messages,
@@ -32,7 +32,7 @@ export const completions = new Elysia({
         stream = false,
       } = body;
 
-      const chatModel = await modelFactory.chat(fullModelAlias);
+      const chatModel = await aiModelFactory.chat(fullModelAlias);
 
       const toolSet = toToolSet(tools);
       const modelMessages = toModelMessages(messages);

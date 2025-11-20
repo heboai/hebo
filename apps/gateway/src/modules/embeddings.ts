@@ -1,19 +1,19 @@
 import { embed, embedMany } from "ai";
 import { Elysia, t } from "elysia";
 
-import { modelFactory } from "~gateway/middlewares/ai-model-factory";
+import { aiModelFactory } from "~gateway/middlewares/ai-model-factory";
 
 export const embeddings = new Elysia({
   name: "embeddings",
   prefix: "/embeddings",
 })
-  .use(modelFactory)
+  .use(aiModelFactory)
   .post(
     "/",
-    async ({ body, modelFactory }) => {
+    async ({ body, aiModelFactory }) => {
       const { model: fullModelAlias, input } = body;
 
-      const embeddingModel = await modelFactory.embedding(fullModelAlias);
+      const embeddingModel = await aiModelFactory.embedding(fullModelAlias);
 
       if (Array.isArray(input)) {
         const { embeddings, usage } = await embedMany({
