@@ -20,7 +20,6 @@ import {
 import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@hebo/shared-ui/components/Tooltip";
 
 import { useFormErrorToast } from "~console/lib/errors";
 import { Info } from "lucide-react";
