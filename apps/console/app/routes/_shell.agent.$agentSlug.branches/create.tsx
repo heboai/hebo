@@ -1,6 +1,6 @@
 import { GitBranch } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
@@ -40,9 +40,9 @@ type CreateBranchProps = {
 
 export default function CreateBranch({ branches }: CreateBranchProps) {
 
-  const lastResult = useActionData();
+  const fetcher = useFetcher();
   const [form, fields] = useForm<BranchCreateFormValues>({
-    lastResult,
+    lastResult: fetcher.data,
     constraint: getZodConstraint(BranchCreateSchema),
     defaultValue: {
       sourceBranchSlug: branches[0].slug,
@@ -50,13 +50,12 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
   });
   useFormErrorToast(form.allErrors)
 
-  const navigation = useNavigation();
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (navigation.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status === "success") {
       setOpen(false);
     }
-  }, [navigation.state, form.status]);
+  }, [fetcher.state, form.status]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -71,7 +70,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
         </DialogTrigger>
       </div>
       <DialogContent>
-        <Form method="post" {...getFormProps(form)} className="contents">
+        <fetcher.Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
             <DialogTitle>Create Banch</DialogTitle>
             <DialogDescription>
@@ -118,12 +117,12 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
               type="submit"
               name="intent"
               value="create"
-              isLoading={navigation.state !== "idle" && navigation.formData != null}
+              isLoading={fetcher.state !== "idle"}
             >
               Create
             </Button>
           </DialogFooter>
-        </Form>
+        </fetcher.Form>
       </DialogContent>
     </Dialog>
   );

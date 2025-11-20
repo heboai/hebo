@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
@@ -29,25 +29,24 @@ type DeleteBranchDialogProps = {
 
 export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: DeleteBranchDialogProps) {
   
-  const lastResult = useActionData();
+  const fetcher = useFetcher();
   const [form, fields] = useForm<BranchDeleteFormValues>({
-    lastResult,
     id: branchSlug,
+    lastResult: fetcher.data,
     constraint: getZodConstraint(createBranchDeleteSchema(branchSlug)),
   });
   useFormErrorToast(form.allErrors);
 
-  const navigation = useNavigation();
   useEffect(() => {
-    if (navigation.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status === "success") {
       onOpenChange(false);
     }
-  }, [navigation.state, form.status]);
+  }, [fetcher.state, form.status]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-sidebar">
-        <Form method="post" {...getFormProps(form)} className="contents">
+        <fetcher.Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
             <DialogTitle>Delete Branch</DialogTitle>
             <DialogDescription>
@@ -88,12 +87,12 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
               variant="destructive"
               name="intent"
               value="delete"
-              isLoading={navigation.state !== "idle" && navigation.formData != null}
+              isLoading={fetcher.state !== "idle"}
             >
               Delete
             </Button>
           </DialogFooter>
-        </Form>
+        </fetcher.Form>
       </DialogContent>
     </Dialog>
   );

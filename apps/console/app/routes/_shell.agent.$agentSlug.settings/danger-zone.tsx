@@ -45,6 +45,7 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
   const lastResult = useActionData();
   const [form, fields] = useForm<AgentDeleteFormValues>({
+    id: agent.slug,
     lastResult,
     constraint: getZodConstraint(createAgentDeleteSchema(agent.slug)),
   });

@@ -36,8 +36,8 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
 
   const fetcher = useFetcher();
   const [form, fields] = useForm<ApiKeyRevokeFormValues>({
-    lastResult: fetcher.data?.submission,
     id: apiKey?.id,
+    lastResult: fetcher.data?.submission,
     constraint: getZodConstraint(ApiKeyRevokeSchema),
     defaultValue: {
       apiKeyId: apiKey?.id,
