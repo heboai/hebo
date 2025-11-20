@@ -127,7 +127,7 @@ main() {
   local inline_policy_file
   trust_policy_file="$(mktemp)"
   inline_policy_file="$(mktemp)"
-  trap "rm -f '$trust_policy_file' '$inline_policy_file'" EXIT
+  trap 'rm -f "$trust_policy_file" "$inline_policy_file"' EXIT
 
   cat >"$trust_policy_file" <<EOF
 {
