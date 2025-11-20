@@ -10,8 +10,6 @@ import { BadRequestError, ModelNotFoundError } from "./errors";
 
 type ModelConfig = Models[number];
 
-export const SUPPORTED_MODELS = supportedModels.map((m) => m.name).sort();
-
 const getModelIdForProvider = (
   supportedModel: ReturnType<typeof getSupportedModelOrThrow>,
   providerName: ProviderName,

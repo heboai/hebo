@@ -1,9 +1,9 @@
 import { Elysia, t } from "elysia";
 
-import {
-  SUPPORTED_MODELS,
-  getSupportedModelOrThrow,
-} from "~gateway/middlewares/ai-models/ai-model-service";
+import supportedModels from "@hebo/shared-data/json/supported-models";
+import { SupportedModelsEnum } from "@hebo/shared-data/types/models";
+
+import { getSupportedModelOrThrow } from "~gateway/middlewares/ai-models/ai-model-service";
 
 export const models = new Elysia({
   name: "models",
@@ -14,13 +14,16 @@ export const models = new Elysia({
     () => {
       return {
         object: "list" as const,
-        data: SUPPORTED_MODELS.map((id) => ({
-          id,
-          object: "model" as const,
-          // FUTURE implement real value in supported models
-          created: Math.floor(Date.now() / 1000),
-          owned_by: "gateway",
-        })),
+        data: supportedModels
+          .map((m) => m.name)
+          .sort()
+          .map((id) => ({
+            id,
+            object: "model" as const,
+            // FUTURE implement real value in supported models
+            created: Math.floor(Date.now() / 1000),
+            owned_by: "gateway",
+          })),
       };
     },
     {
@@ -55,7 +58,7 @@ export const models = new Elysia({
     },
     {
       params: t.Object({
-        id: t.String({ enum: [...SUPPORTED_MODELS] }),
+        id: SupportedModelsEnum,
       }),
       response: t.Object({
         id: t.String(),
