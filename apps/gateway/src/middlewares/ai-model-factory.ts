@@ -18,7 +18,9 @@ export const modelFactory = new Elysia({
     ): Promise<LanguageModel | EmbeddingModel<string>> {
       const { providerName, providerConfig, modelId } =
         await getAiModelProviderConfig(dbClient, fullModelAlias, modality);
+      // FUTURE: memoize with TTL
       const provider = createProvider(providerName, providerConfig);
+      // FUTURE: memoize
       const resolvedModelId = await provider.resolveModelId(modelId);
       const aiProvider = await provider.create();
 

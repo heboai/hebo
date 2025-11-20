@@ -21,7 +21,6 @@ const toTemporaryCredentials = (
   sessionToken: credentials.Token,
 });
 
-// FUTURE: Cache credentials, or memoize with TTL the upstream provider
 // FUTURE: Let google auth library handle this once they will start supporting WIF for ECS tasks: https://github.com/googleapis/google-auth-library-php/issues/496
 const injectAwsMetadataCredentials = async () => {
   if (!process.env.IS_REMOTE) return;

@@ -17,7 +17,6 @@ export type AwsTemporaryCredentials = {
   sessionToken: string;
 };
 
-// FUTURE: Cache the inference profile ARN
 const getInferenceProfileArn = async (
   credentials: AwsTemporaryCredentials,
   region: string,
@@ -40,7 +39,6 @@ const getInferenceProfileArn = async (
   return modelId;
 };
 
-// FUTURE: Cache credentials
 const getAwsCreds = async (
   bedrockRoleArn: string,
   region: string,
