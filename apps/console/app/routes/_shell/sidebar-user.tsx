@@ -72,13 +72,6 @@ export function UserMenu({ user }: { user?: User}) {
             <DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/user/account" viewTransition>
-                  <Settings aria-hidden="true" />
-                  Manage Account
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
                 <Link to="/handler/sign-out" viewTransition>
                   <LogOut aria-hidden="true" />
                   Log out

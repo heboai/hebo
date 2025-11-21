@@ -30,7 +30,7 @@ import {
 } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 export function createAgentDeleteSchema(agentSlug: string) {
@@ -44,13 +44,12 @@ export type AgentDeleteFormValues = z.infer<ReturnType<typeof createAgentDeleteS
 export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
   const lastResult = useActionData();
-
-  useActionDataErrorToast();
-
   const [form, fields] = useForm<AgentDeleteFormValues>({
+    id: agent.slug,
     lastResult,
     constraint: getZodConstraint(createAgentDeleteSchema(agent.slug)),
   });
+  useFormErrorToast(form.allErrors);
 
   const navigation = useNavigation();
 
@@ -104,7 +103,7 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
                     <DialogClose asChild>
                       <Button variant="outline" type="button">Cancel</Button>
                     </DialogClose>
-                    <Button isLoading={navigation.state !== "idle"} type="submit">
+                    <Button isLoading={navigation.state !== "idle" && navigation.formData != null} type="submit">
                       Delete
                     </Button>
                   </DialogFooter>

@@ -1,4 +1,4 @@
-import { Form, useActionData, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { useForm, getFormProps, type FieldMetadata } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
@@ -38,7 +38,7 @@ import {
   CollapsibleTrigger,
 } from "@hebo/shared-ui/components/Collapsible";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 import {
   modelsConfigFormSchema,
   supportedModels,
@@ -54,32 +54,28 @@ type ModelsConfigProps = {
 };
 
 export default function ModelsConfigForm({ agentSlug, branchSlug, models }: ModelsConfigProps) {
-  const lastResult = useActionData();
-  const navigation = useNavigation();
-
-  useActionDataErrorToast();
-
+  
+  const fetcher = useFetcher();
   const [form, fields] = useForm<ModelsConfigFormValues>({
-    id: JSON.stringify(models),
-    lastResult,
+    lastResult: fetcher.data,
     constraint: getZodConstraint(modelsConfigFormSchema),
     defaultValue: { models: models }
   });
-
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const modelItems = fields.models.getFieldList();
+  useFormErrorToast(form.allErrors);
 
   // Close the active card on successful submit
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
-    if (navigation.state === "idle" && lastResult?.status === "success") {
+    if (fetcher.state === "idle" && form.status === "success") {
       setExpandedCardId(null);
     }
-  }, [navigation.state, lastResult?.status]);
+  }, [fetcher.state, form.status]);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const modelItems = fields.models.getFieldList();
 
   return (
-    <Form method="post" ref={formRef} {...getFormProps(form)} className="contents">
+    <fetcher.Form method="post" ref={formRef} {...getFormProps(form)} className="contents">
       {modelItems.map((model, index) => (
         <ModelCard
           key={model.key}
@@ -96,13 +92,13 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
             form.remove({ name: fields.models.name, index })
             // FUTURE: this is a quirk to work around a current Conform limitation. 
             // Remove once upgrade to future APIs in conform 1.9+
-            setTimeout(() => formRef.current?.requestSubmit(), 250);
+            setTimeout(() => formRef.current?.requestSubmit(), 1000);
           }}
           onCancel={() => {
             form.dirty && form.reset({ name: fields.models.name  });
             setExpandedCardId(null);
           }}
-          isSubmitting={navigation.state === "submitting"}
+          isSubmitting={fetcher.state === "submitting"}
         />
       ))}
 
@@ -119,7 +115,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           + Add Model
         </Button>
       </div>
-    </Form>
+    </fetcher.Form>
   );
 }
 
