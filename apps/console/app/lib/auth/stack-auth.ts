@@ -53,7 +53,10 @@ const authService = {
       isPublic: false,
     });
 
-    return apiKey;
+    return {
+      ...apiKey,
+      expiresAt: apiKey.expiresAt!,
+    };
   },
 
   async revokeApiKey(apiKeyId: string) {
@@ -83,14 +86,14 @@ const authService = {
 
   async sendMagicLinkEmail(email: string) {
     const response = await getStackApp().sendMagicLinkEmail(email);
-    return response.data.nonce;
+    if (response.status === "ok") return response.data.nonce;
+    throw new Error(response.error.message);
   },
 
   async signInWithMagicLink(code: string) {
     const result = await getStackApp().signInWithMagicLink(code);
     if (result.status === "error") throw new Error("Invalid OTP");
   },
-
 } satisfies AuthService;
 
 export { authService, getStackApp };
