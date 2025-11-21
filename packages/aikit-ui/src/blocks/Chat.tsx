@@ -89,7 +89,7 @@ export function Chat({
       fetch: currentModel?.endpoint?.fetch || fetch,
       model: currentModelAlias,
       stream: true,
-      // FUTURE: add reasoningEffort parameter
+      // reasoningEffort: "medium",
     }),
   });
 
