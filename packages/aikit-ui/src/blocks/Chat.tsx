@@ -88,7 +88,6 @@ export function Chat({
       api: currentModel?.endpoint?.baseUrl + "/chat/completions",
       fetch: currentModel?.endpoint?.fetch || fetch,
       model: currentModelAlias,
-      stream: true,
       // reasoningEffort: "medium",
     }),
   });
