@@ -2,7 +2,7 @@
 
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText, type UIMessage } from "ai";
-import { Bot, Edit } from "lucide-react";
+import { Brain, Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -10,25 +10,40 @@ import {
   ConversationContent,
   ConversationScrollButton,
 } from "../_ai-elements/conversation";
-import { Message as Message, MessageContent } from "../_ai-elements/message";
+import { Loader } from "../_ai-elements/loader";
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "../_ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
-  PromptInputMessage,
-  PromptInputModelSelect,
-  PromptInputModelSelectContent,
-  PromptInputModelSelectItem,
-  PromptInputModelSelectTrigger,
-  PromptInputModelSelectValue,
+  type PromptInputMessage,
+  PromptInputSelect,
+  PromptInputSelectContent,
+  PromptInputSelectItem,
+  PromptInputSelectTrigger,
+  PromptInputSelectValue,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputToolbar,
+  PromptInputFooter,
   PromptInputTools,
 } from "../_ai-elements/prompt-input";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "../_ai-elements/reasoning";
+import { Avatar, AvatarFallback } from "../_shadcn/ui/avatar";
 import { Button } from "../_shadcn/ui/button";
-
-const kbdStyles =
-  "inline-flex w-fit rounded-md border border-gray-300 bg-gray-50 px-2 py-1 text-sm font-mono font-medium text-muted-foreground shadow-sm";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "../_shadcn/ui/empty";
 
 // Types based on models.schema.json
 type ModelsConfig = Array<{
@@ -40,7 +55,15 @@ type ModelsConfig = Array<{
   };
 }>;
 
-export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
+export function Chat({
+  modelsConfig,
+  name = "Hebo AI",
+  reasoning = false,
+}: {
+  modelsConfig: ModelsConfig;
+  name?: string;
+  reasoning?: boolean;
+}) {
   const [currentModelAlias, setCurrentModelAlias] = useState("");
   const [messages, setMessages] = useState<UIMessage[]>([]);
   const [text, setText] = useState("");
@@ -110,6 +133,11 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
           role: msg.role,
           content: renderMessagePart(msg.parts[0]),
         })),
+        providerOptions: {
+          openai: {
+            reasoningEffot: "medium",
+          },
+        },
       });
 
       const assistantMessage: UIMessage = {
@@ -157,57 +185,89 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
           tabIndex={-1}
         >
           {messages.length === 0 ? (
-            <div className="text-muted-foreground m-auto flex flex-col justify-center gap-2 pt-10 text-center">
-              <div className="text-7xl">🐵</div>
-              Open an agent and start chatting
-              <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-                <kbd className={kbdStyles}>⌘</kbd>/{" "}
-                <kbd className={kbdStyles}>Ctrl</kbd>+{" "}
-                <kbd className={kbdStyles}>I</kbd>
-              </div>
-            </div>
+            <Empty className={currentModelAlias ? "" : "opacity-50"}>
+              <EmptyHeader>
+                <EmptyMedia variant="default">
+                  <Avatar className="size-28">
+                    <AvatarFallback className="text-7xl">🐵</AvatarFallback>
+                  </Avatar>
+                </EmptyMedia>
+                <EmptyTitle className="text-3xl">{name}</EmptyTitle>
+                <EmptyDescription>
+                  Hi, how can I help you today?
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
           ) : (
             <>
               {messages.map((message) => (
-                <Message
-                  from={message.role}
-                  key={message.id}
-                  tabIndex={-1}
-                  role="article"
-                  aria-label={`Message from ${message.role}`}
-                  className="p-1"
-                >
-                  <MessageContent className="px-3 py-2">
-                    <div>{renderMessagePart(message.parts[0])}</div>
-                  </MessageContent>
-                </Message>
+                <div key={message.id}>
+                  {message.parts.map((part, i) => {
+                    switch (part.type) {
+                      case "text": {
+                        return (
+                          <Message
+                            from={message.role}
+                            key={`${message.id}-${i}`}
+                            tabIndex={-1}
+                            role="article"
+                            aria-label={`Message from ${message.role}`}
+                            className="px-2"
+                          >
+                            <MessageContent className="">
+                              <MessageResponse>{part.text}</MessageResponse>
+                            </MessageContent>
+                          </Message>
+                        );
+                      }
+                      case "reasoning": {
+                        return (
+                          reasoning && (
+                            <Reasoning
+                              key={`${message.id}-${i}`}
+                              className="w-full"
+                              isStreaming={
+                                status === "streaming" &&
+                                i === message.parts.length - 1 &&
+                                message.id === messages.at(-1)?.id
+                              }
+                            >
+                              <ReasoningTrigger />
+                              <ReasoningContent>{part.text}</ReasoningContent>
+                            </Reasoning>
+                          )
+                        );
+                      }
+                      default: {
+                        return;
+                      }
+                    }
+                  })}
+                </div>
               ))}
-              {isLoading && (
-                <Message from="assistant" key="loading" className="p-1">
-                  <MessageContent className="px-3 py-2">
-                    <div aria-live="polite">
-                      <span className="animate-pulse">Thinking...</span>
-                    </div>
-                  </MessageContent>
-                </Message>
-              )}
             </>
           )}
+          {isLoading && <Loader />}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
 
       {/* Input area */}
-      <PromptInput onSubmit={handleSubmit} role="form">
+      <PromptInput
+        onSubmit={handleSubmit}
+        role="form"
+        className="bg-background"
+      >
         <PromptInputBody>
           <PromptInputTextarea
             id="chat-input"
             disabled={!currentModelAlias}
             onChange={(e) => setText(e.target.value)}
             value={text}
-            placeholder="Start prompting..."
+            placeholder="Ask anything …"
             aria-label="Chat message input"
             aria-describedby="input-help"
+            className="min-h-6"
           />
 
           {/* Hidden help text */}
@@ -216,36 +276,37 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
           </div>
         </PromptInputBody>
 
-        <PromptInputToolbar>
+        <PromptInputFooter>
           <PromptInputTools>
             {/* Model selector */}
-            <PromptInputModelSelect
-              onValueChange={(alias) => setCurrentModelAlias(alias)}
-              value={currentModelAlias}
-              disabled={isLoading || modelsConfig.length === 0}
-              aria-label="Select AI model"
-            >
-              <PromptInputModelSelectTrigger
-                aria-label={`Current model: ${currentModelAlias}`}
+            {modelsConfig.length > 1 && (
+              <PromptInputSelect
+                onValueChange={(alias) => setCurrentModelAlias(alias)}
+                value={currentModelAlias}
+                disabled={isLoading || modelsConfig.length === 0}
+                aria-label="Select AI model"
               >
-                <Bot />
-                {modelsConfig.length > 0 ? (
-                  <PromptInputModelSelectValue />
-                ) : (
-                  "No agent opened"
-                )}
-              </PromptInputModelSelectTrigger>
-              <PromptInputModelSelectContent>
-                {modelsConfig.map((model) => (
-                  <PromptInputModelSelectItem
-                    key={model.alias}
-                    value={model.alias}
-                  >
-                    {model.alias}
-                  </PromptInputModelSelectItem>
-                ))}
-              </PromptInputModelSelectContent>
-            </PromptInputModelSelect>
+                <PromptInputSelectTrigger
+                  aria-label={`Current model: ${currentModelAlias}`}
+                  className="max-w-3xs px-2"
+                >
+                  <>
+                    <Brain />
+                    <PromptInputSelectValue className="truncate" />
+                  </>
+                </PromptInputSelectTrigger>
+                <PromptInputSelectContent>
+                  {modelsConfig.map((model) => (
+                    <PromptInputSelectItem
+                      key={model.alias}
+                      value={model.alias}
+                    >
+                      {model.alias.split("/").pop()}
+                    </PromptInputSelectItem>
+                  ))}
+                </PromptInputSelectContent>
+              </PromptInputSelect>
+            )}
           </PromptInputTools>
 
           {/* Submit button - disable when no model is selected */}
@@ -256,7 +317,7 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
             }
             title={isLoading ? "Sending message..." : "Send message (Enter)"}
           />
-        </PromptInputToolbar>
+        </PromptInputFooter>
       </PromptInput>
     </div>
   );
