@@ -69,6 +69,8 @@ type ToolCall = {
   arguments: string; // raw JSON string
 };
 
+type ReasoningEffort = "low" | "medium" | "high";
+
 type OpenAIHttpChatTransportOptions = {
   /** Like DefaultChatTransport.api – path or full URL */
   api: string;
@@ -76,6 +78,8 @@ type OpenAIHttpChatTransportOptions = {
   model: string;
   /** Use streaming SSE (recommended) */
   stream?: boolean;
+  /** Reasoning effort (OpenAI reasoning parameter) */
+  reasoningEffort?: ReasoningEffort;
 
   /** Optional custom fetch (for logging, retries, etc.) */
   fetch?: typeof globalThis.fetch;
@@ -93,12 +97,14 @@ export class OpenAIHttpChatTransport<UI_MESSAGE extends UIMessage = UIMessage>
   private readonly api: string;
   private readonly model: string;
   private readonly stream: boolean;
+  private readonly reasoningEffort?: ReasoningEffort;
   private readonly fetchImpl: typeof globalThis.fetch;
 
   constructor(private readonly options: OpenAIHttpChatTransportOptions) {
     this.api = options.api;
     this.model = options.model;
     this.stream = options.stream ?? true;
+    this.reasoningEffort = options.reasoningEffort;
     this.fetchImpl = options.fetch ?? globalThis.fetch;
   }
 
@@ -143,12 +149,22 @@ export class OpenAIHttpChatTransport<UI_MESSAGE extends UIMessage = UIMessage>
           const perCallBody =
             (requestOptions.body as Record<string, unknown> | undefined) ?? {};
 
+          const { reasoning: perCallReasoning, ...perCallRest } =
+            perCallBody as Record<string, unknown> & {
+              reasoning?: { effort?: ReasoningEffort };
+            };
+
+          const reasoning =
+            perCallReasoning ??
+            (this.reasoningEffort ? { effort: this.reasoningEffort } : null);
+
           const body: any = {
             model: this.model,
             messages: openaiMessages,
             stream: this.stream,
+            ...(reasoning ? { reasoning } : {}),
             ...extraBody,
-            ...perCallBody,
+            ...perCallRest,
           };
 
           const staticHeaders =
