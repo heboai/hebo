@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "types": ["bun-types"]
+    "types": ["bun-types"],
+    "target": "es2022",
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler"
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]

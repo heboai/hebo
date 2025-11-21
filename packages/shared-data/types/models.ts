@@ -2,23 +2,17 @@ import { Type, type Static } from "@sinclair/typebox";
 
 import supportedModels from "../json/supported-models.json";
 
-export const supportedModelsEnum = Type.Enum(
+export const SupportedModelsEnum = Type.Enum(
   Object.fromEntries(supportedModels.map(({ name }) => [name, name])),
   { error: "Invalid model name" },
 );
 
-// FUTURE: infer from models.schema.json
-export const modelsSchema = Type.Array(
+export const ModelsSchema = Type.Array(
   Type.Object({
-    alias: Type.String(),
-    type: supportedModelsEnum,
-    endpoint: Type.Optional(
-      Type.Object({
-        baseUrl: Type.String(),
-        apiKey: Type.String(),
-      }),
-    ),
+    alias: Type.String({ minLength: 1 }),
+    type: SupportedModelsEnum,
+    customProvider: Type.Optional(Type.Boolean()),
   }),
 );
 
-export type Models = Static<typeof modelsSchema>;
+export type Models = Static<typeof ModelsSchema>;

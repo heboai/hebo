@@ -1,9 +1,7 @@
 import { generateText, streamText, type ModelMessage } from "ai";
 import { Elysia, t } from "elysia";
 
-import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-
-import { provider } from "~gateway/middlewares/provider";
+import { aiModelFactory } from "~gateway/middlewares/ai-model-factory";
 import {
   toModelMessages,
   toOpenAICompatibleNonStreamResponse,
@@ -11,7 +9,6 @@ import {
   toToolChoice,
   toToolSet,
 } from "~gateway/utils/converters";
-import { getModelType } from "~gateway/utils/get-model-type";
 import {
   OpenAICompatibleMessage,
   OpenAICompatibleTool,
@@ -22,13 +19,12 @@ export const completions = new Elysia({
   name: "completions",
   prefix: "/chat/completions",
 })
-  .use(dbClient)
-  .use(provider)
+  .use(aiModelFactory)
   .post(
     "/",
-    async ({ body, dbClient, provider }) => {
+    async ({ body, aiModelFactory }) => {
       const {
-        model,
+        model: fullModelAlias,
         messages,
         tools,
         toolChoice,
@@ -36,13 +32,10 @@ export const completions = new Elysia({
         stream = false,
       } = body;
 
+      const chatModel = await aiModelFactory.chat(fullModelAlias);
+
       const toolSet = toToolSet(tools);
-
-      const modelType = await getModelType(dbClient, model);
-      const chatModel = provider.chat(modelType);
-
       const modelMessages = toModelMessages(messages);
-
       const coreToolChoice = toToolChoice(toolChoice);
 
       if (stream) {
@@ -73,7 +66,7 @@ export const completions = new Elysia({
         temperature,
       });
 
-      return toOpenAICompatibleNonStreamResponse(result, model);
+      return toOpenAICompatibleNonStreamResponse(result, fullModelAlias);
     },
     {
       body: t.Object({

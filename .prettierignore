@@ -1,3 +1,4 @@
 **/_*/**
 apps/console/public/mockServiceWorker.js
 **/migrations/**
+**/generated/**

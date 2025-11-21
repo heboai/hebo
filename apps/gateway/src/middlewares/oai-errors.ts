@@ -1,7 +1,5 @@
 import { Elysia, status } from "elysia";
 
-import { ModelNotFoundError } from "~gateway/utils/get-model-type";
-
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;
   return r instanceof Response ? r : undefined;
@@ -40,11 +38,10 @@ export const oaiErrors = new Elysia({ name: "oai-error" })
     }
 
     if (
-      error instanceof ModelNotFoundError ||
-      (error &&
-        typeof error === "object" &&
-        "code" in error &&
-        error.code === "P2025")
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      (error as any).code === "P2025"
     ) {
       return status(404, {
         error: {

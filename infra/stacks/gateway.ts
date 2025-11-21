@@ -12,6 +12,12 @@ const heboGateway = new sst.aws.Service("HeboGateway", {
   architecture: "arm64",
   cpu: isProd ? "1 vCPU" : "0.25 vCPU",
   memory: isProd ? "2 GB" : "0.5 GB",
+  permissions: [
+    {
+      actions: ["sts:AssumeRole"],
+      resources: ["*"],
+    },
+  ],
   link: [heboDatabase, ...allSecrets],
   image: {
     context: ".",

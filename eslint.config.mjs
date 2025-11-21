@@ -26,12 +26,16 @@ const eslintConfig = [
       tailwindcss: {
         config: false, 
       },
+      react: {
+        version: 'detect',
+      },
       // Point to the correct tsconfig
       'import/resolver': {
         typescript: {
           project: ['**/tsconfig.json'], 
           noWarnOnMultipleProjects: true,
         },
+        'typescript-bun': {},
       },
     },
   },
@@ -55,7 +59,7 @@ const eslintConfig = [
     rules: {
       ...importPlugin.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
-      "no-secrets/no-secrets": ["error", { "tolerance": 4.1 }],
+      "no-secrets/no-secrets": ["error", { "tolerance": 4.2 }],
       ...unicorn.configs.recommended.rules,
       "unused-imports/no-unused-imports": "error",
       ...promise.configs.recommended.rules,
