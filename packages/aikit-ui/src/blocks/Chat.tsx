@@ -82,7 +82,7 @@ export function Chat({
   const currentModel = modelsConfig.find((m) => m.alias === currentModelAlias);
 
   const [input, setInput] = useState("");
-  const { messages, sendMessage, setMessages, status, error } = useChat({
+  const { messages, sendMessage, setMessages, status, error, stop } = useChat({
     transport: new OpenAIHttpChatTransport({
       api: currentModel?.endpoint?.baseUrl + "/chat/completions",
       fetch: currentModel?.endpoint?.fetch || fetch,
@@ -111,13 +111,13 @@ export function Chat({
   }, []);
 
   const handleSubmit = async (message: PromptInputMessage) => {
+    if (status === "streaming") stop();
     if (!message.text) return;
 
     console.log(message.files.length);
 
     sendMessage({
       text: message.text,
-      // FUTURE: add attachment controls
       files: message.files,
     });
     setInput("");
@@ -284,9 +284,8 @@ export function Chat({
           </PromptInputTools>
 
           {/* Submit button - disable when no model is selected */}
-          {/* FUTURE: implement cancel */}
           <PromptInputSubmit
-            disabled={!input || !status || !currentModelAlias}
+            disabled={!currentModelAlias || (!input && status !== "streaming")}
             status={status}
           />
         </PromptInputFooter>
