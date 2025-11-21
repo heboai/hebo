@@ -18,7 +18,7 @@
     "tailwind-merge": "^3.3.1"
   },
   "peerDependencies": {
-    "@ai-sdk/openai": "^2.0.29",
+    "@ai-sdk/react": "^2.0.98",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -40,7 +40,7 @@
     "use-stick-to-bottom": "^1.1.1"
   },
   "devDependencies": {
-    "@ai-sdk/openai": "^2.0.29",
+    "@ai-sdk/react": "^2.0.98",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",

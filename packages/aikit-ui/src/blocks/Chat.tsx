@@ -1,7 +1,6 @@
 "use client";
 
-import { createOpenAI } from "@ai-sdk/openai";
-import { generateText, type UIMessage } from "ai";
+import { useChat } from "@ai-sdk/react";
 import { Brain, Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -44,6 +43,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../_shadcn/ui/empty";
+import { OpenAIHttpChatTransport } from "../lib/openai-transport";
 
 // Types based on models.schema.json
 type ModelsConfig = Array<{
@@ -64,32 +64,30 @@ export function Chat({
   name?: string;
   reasoning?: boolean;
 }) {
-  const [currentModelAlias, setCurrentModelAlias] = useState("");
-  const [messages, setMessages] = useState<UIMessage[]>([]);
-  const [text, setText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedModelAlias, setSelectedModelAlias] = useState<
+    string | undefined
+  >();
+  const aliases = modelsConfig.map((m) => m.alias);
+  const currentModelAlias =
+    selectedModelAlias && aliases.includes(selectedModelAlias)
+      ? selectedModelAlias
+      : (aliases[0] ?? "");
+  const currentModel = modelsConfig.find((m) => m.alias === currentModelAlias);
 
-  // Set default model alias if non has been selected
+  const [input, setInput] = useState("");
+  const { messages, sendMessage, setMessages, status, error } = useChat({
+    transport: new OpenAIHttpChatTransport({
+      api: "http://localhost:3002/v1/chat/completions",
+      fetch: currentModel?.endpoint?.fetch || fetch,
+      model: currentModelAlias,
+      stream: true,
+    }),
+  });
+
+  // FUTURE: show this in the UI
   useEffect(() => {
-    const aliases = modelsConfig.map((m) => m.alias);
-    if (!currentModelAlias || !aliases.includes(currentModelAlias)) {
-      setCurrentModelAlias(aliases[0] ?? "");
-    }
-  }, [modelsConfig, currentModelAlias]);
-
-  // Get current model config for the selected alias
-  const currentModel = currentModelAlias
-    ? modelsConfig.find((m) => m.alias === currentModelAlias)
-    : undefined;
-
-  // Create OpenAI client based on current model
-  const openai = currentModel
-    ? createOpenAI({
-        apiKey: "",
-        baseURL: currentModel.endpoint?.baseUrl || "",
-        fetch: currentModel.endpoint?.fetch || fetch,
-      })
-    : undefined;
+    console.log(`${error}`);
+  }, [error]);
 
   // Shortcut: Ctrl/Cmd+i to focus chat input field
   useEffect(() => {
@@ -104,60 +102,15 @@ export function Chat({
     return () => document.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
-  const renderMessagePart = (part: UIMessage["parts"][0]) => {
-    if (part.type === "text") return part.text;
-    if (part.type === "dynamic-tool" && "input" in part) {
-      return JSON.stringify(part.input);
-    }
-    return "";
-  };
-
   const handleSubmit = async (message: PromptInputMessage) => {
-    if (!message.text || isLoading || !currentModel || !openai) return;
+    if (!message.text) return;
 
-    setIsLoading(true);
-
-    const userMessage: UIMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      parts: [{ type: "text", text: message.text }],
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setText("");
-
-    try {
-      const { text } = await generateText({
-        model: openai.chat(currentModel.type ?? currentModel.alias),
-        messages: [...messages, userMessage].map((msg) => ({
-          role: msg.role,
-          content: renderMessagePart(msg.parts[0]),
-        })),
-        providerOptions: {
-          openai: {
-            reasoningEffot: "medium",
-          },
-        },
-      });
-
-      const assistantMessage: UIMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        parts: [{ type: "text", text: text }],
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch {
-      const errorMessage: UIMessage = {
-        id: crypto.randomUUID(),
-        role: "system",
-        metadata: { error: true },
-        parts: [{ type: "text", text: "⚠️ Sorry, I encountered an error" }],
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
+    sendMessage({
+      text: message.text,
+      // FUTURE: add attachment controls
+      files: message.files,
+    });
+    setInput("");
   };
 
   return (
@@ -177,80 +130,77 @@ export function Chat({
         </Button>
       </div>
 
-      {/* Conversation area */}
-      <Conversation>
-        <ConversationContent
-          className="px-0 pt-0"
-          aria-label="Chat conversation"
-          tabIndex={-1}
-        >
-          {messages.length === 0 ? (
-            <Empty className={currentModelAlias ? "" : "opacity-50"}>
-              <EmptyHeader>
-                <EmptyMedia variant="default">
-                  <Avatar className="size-28">
-                    <AvatarFallback className="text-7xl">🐵</AvatarFallback>
-                  </Avatar>
-                </EmptyMedia>
-                <EmptyTitle className="text-3xl">{name}</EmptyTitle>
-                <EmptyDescription>
-                  Hi, how can I help you today?
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : (
-            <>
-              {messages.map((message) => (
-                <div key={message.id}>
-                  {message.parts.map((part, i) => {
-                    switch (part.type) {
-                      case "text": {
-                        return (
-                          <Message
-                            from={message.role}
-                            key={`${message.id}-${i}`}
-                            tabIndex={-1}
-                            role="article"
-                            aria-label={`Message from ${message.role}`}
-                            className="px-2"
-                          >
-                            <MessageContent className="">
-                              <MessageResponse>{part.text}</MessageResponse>
-                            </MessageContent>
-                          </Message>
-                        );
-                      }
-                      case "reasoning": {
-                        return (
-                          reasoning && (
-                            <Reasoning
-                              key={`${message.id}-${i}`}
-                              className="w-full"
-                              isStreaming={
-                                status === "streaming" &&
-                                i === message.parts.length - 1 &&
-                                message.id === messages.at(-1)?.id
-                              }
-                            >
-                              <ReasoningTrigger />
-                              <ReasoningContent>{part.text}</ReasoningContent>
-                            </Reasoning>
-                          )
-                        );
-                      }
-                      default: {
-                        return;
-                      }
+      {messages.length === 0 ? (
+        // Empty Placeholder
+        <Empty className={currentModelAlias ? "" : "opacity-50"}>
+          <EmptyHeader>
+            <EmptyMedia variant="default">
+              <Avatar className="size-28">
+                <AvatarFallback className="text-7xl">🐵</AvatarFallback>
+              </Avatar>
+            </EmptyMedia>
+            <EmptyTitle className="text-3xl">{name}</EmptyTitle>
+            <EmptyDescription>Hi, how can I help you today?</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        // Conversation area
+        <Conversation className="h-full">
+          <ConversationContent
+            className="px-0"
+            aria-label="Chat conversation"
+            tabIndex={-1}
+          >
+            {messages.map((message) => (
+              <div key={message.id}>
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case "text": {
+                      return (
+                        <Message
+                          from={message.role}
+                          key={`${message.id}-${i}`}
+                          tabIndex={-1}
+                          role="article"
+                          aria-label={`Message from ${message.role}`}
+                          className="px-2"
+                        >
+                          <MessageContent>
+                            <MessageResponse>{part.text}</MessageResponse>
+                          </MessageContent>
+                        </Message>
+                      );
                     }
-                  })}
-                </div>
-              ))}
-            </>
-          )}
-          {isLoading && <Loader />}
-        </ConversationContent>
-        <ConversationScrollButton />
-      </Conversation>
+                    case "reasoning": {
+                      return (
+                        reasoning && (
+                          <Reasoning
+                            key={`${message.id}-${i}`}
+                            className="w-full"
+                            isStreaming={
+                              status === "streaming" &&
+                              i === message.parts.length - 1 &&
+                              message.id === messages.at(-1)?.id
+                            }
+                          >
+                            <ReasoningTrigger />
+                            <ReasoningContent>{part.text}</ReasoningContent>
+                          </Reasoning>
+                        )
+                      );
+                    }
+                    default: {
+                      return;
+                    }
+                  }
+                })}
+              </div>
+            ))}
+            {status === "submitted" && <Loader />}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+      )}
 
       {/* Input area */}
       <PromptInput
@@ -262,12 +212,12 @@ export function Chat({
           <PromptInputTextarea
             id="chat-input"
             disabled={!currentModelAlias}
-            onChange={(e) => setText(e.target.value)}
-            value={text}
+            onChange={(e) => setInput(e.target.value)}
+            value={input}
             placeholder="Ask anything …"
             aria-label="Chat message input"
             aria-describedby="input-help"
-            className="min-h-6"
+            className="min-h-0 pb-0"
           />
 
           {/* Hidden help text */}
@@ -276,20 +226,17 @@ export function Chat({
           </div>
         </PromptInputBody>
 
-        <PromptInputFooter>
-          <PromptInputTools>
+        <PromptInputFooter className="pb-2">
+          <PromptInputTools className="h-6">
             {/* Model selector */}
             {modelsConfig.length > 1 && (
               <PromptInputSelect
-                onValueChange={(alias) => setCurrentModelAlias(alias)}
+                onValueChange={(alias) => setSelectedModelAlias(alias)}
                 value={currentModelAlias}
-                disabled={isLoading || modelsConfig.length === 0}
-                aria-label="Select AI model"
+                disabled={status === "submitted" || modelsConfig.length === 0}
+                aria-label="Select model"
               >
-                <PromptInputSelectTrigger
-                  aria-label={`Current model: ${currentModelAlias}`}
-                  className="max-w-3xs px-2"
-                >
+                <PromptInputSelectTrigger className="-ml-1.5 max-w-3xs px-2">
                   <>
                     <Brain />
                     <PromptInputSelectValue className="truncate" />
@@ -311,11 +258,8 @@ export function Chat({
 
           {/* Submit button - disable when no model is selected */}
           <PromptInputSubmit
-            disabled={!text || isLoading || !currentModel}
-            aria-label={
-              isLoading ? "Sending message..." : "Send message (Enter)"
-            }
-            title={isLoading ? "Sending message..." : "Send message (Enter)"}
+            disabled={!input || !status || !currentModelAlias}
+            status={status}
           />
         </PromptInputFooter>
       </PromptInput>
