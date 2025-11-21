@@ -51,3 +51,20 @@ export type ContactIdentifier =
   | `id:${string}`
   | `email:${string}`
   | `phone:${string}`;
+
+export type AddTagsPayload = string[];
+
+export interface AddTagsResponse {
+  contactId: number;
+}
+
+export interface CreateCommentPayload {
+  text: string;
+}
+
+export interface CreateCommentResponse {
+  contactId: number;
+  text: string;
+  created_at: number;
+}
+

@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "hebo",
@@ -141,12 +140,14 @@
       "name": "@hebo/aikit-respond-io",
       "version": "0.0.1",
       "dependencies": {
-        "ai": "^5.0.60",
         "ky": "^1.9.0",
       },
       "devDependencies": {
         "bun-types": "^1.2.22",
         "typescript": "^5.9.2",
+      },
+      "peerDependencies": {
+        "ai": "^5.0.60",
       },
     },
     "packages/aikit-ui": {
