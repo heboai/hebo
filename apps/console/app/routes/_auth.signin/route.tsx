@@ -1,14 +1,13 @@
 import { Ban, BookOpen, CreditCard } from "lucide-react";
-import { Suspense } from "react";
 
 import { Badge } from "@hebo/shared-ui/components/Badge";
 import { Button } from "@hebo/shared-ui/components/Button";
-import { Skeleton } from "@hebo/shared-ui/components/Skeleton";
 
-import { AuthProvider } from "~console/components/AuthProvider";
+import { Logo } from "~console/components/ui/Logo";
+
 import { MagicLinkSignIn } from "./magiclink";
 import { OAuthSignIn } from "./oauth";
-import { Logo } from "~console/components/ui/Logo";
+
 
 export default function SignIn() {
   return (
@@ -63,33 +62,28 @@ export default function SignIn() {
       {/* Login Components */}
       <main className="flex min-h-dvh flex-1 items-center justify-center transition-all duration-300 lg:ml-128">
         <div className="flex w-xs flex-col items-center gap-4">
-          {/* AuthComponents may take a few seconds to load */}
-          <Suspense fallback={<Skeleton className="h-10 w-full" count={5} />}>
-            <AuthProvider>
-              <Logo />
-              <p className="text-center text-base">
-                The fastest way to build & scale agents
-              </p>
+          <Logo />
+          <p className="text-center text-base">
+            The fastest way to build & scale agents
+          </p>
 
-              <div className="w-full space-y-4">
-                <OAuthSignIn />
-                <div className="flex items-center gap-4">
-                  <div className="h-[1px] flex-1 bg-gray-300" />
-                  <span className="text-sm whitespace-nowrap">or</span>
-                  <div className="h-[1px] flex-1 bg-gray-300" />
-                </div>
-                <MagicLinkSignIn />
-              </div>
+          <div className="w-full space-y-4">
+            <OAuthSignIn />
+            <div className="flex items-center gap-4">
+              <div className="h-[1px] flex-1 bg-gray-300" />
+              <span className="text-sm whitespace-nowrap">or</span>
+              <div className="h-[1px] flex-1 bg-gray-300" />
+            </div>
+            <MagicLinkSignIn />
+          </div>
 
-              <div className="flex items-center gap-2">
-                <span className="relative">
-                  <Ban className="h-4 w-4" />
-                  <CreditCard className="absolute top-1 left-1 h-2 w-2" />
-                </span>
-                <span className="text-sm">No credit card required</span>
-              </div>
-            </AuthProvider>
-          </Suspense>
+          <div className="flex items-center gap-2">
+            <span className="relative">
+              <Ban className="h-4 w-4" />
+              <CreditCard className="absolute top-1 left-1 h-2 w-2" />
+            </span>
+            <span className="text-sm">No credit card required</span>
+          </div>
         </div>
       </main>
     </div>

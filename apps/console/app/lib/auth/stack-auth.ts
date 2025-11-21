@@ -53,7 +53,10 @@ const authService = {
       isPublic: false,
     });
 
-    return apiKey;
+    return {
+      ...apiKey,
+      expiresAt: apiKey.expiresAt!,
+    };
   },
 
   async revokeApiKey(apiKeyId: string) {
@@ -75,6 +78,21 @@ const authService = {
       value: `********${key.value.lastFour}`,
       expiresAt: key.expiresAt!,
     }));
+  },
+
+  async signInWithOAuth(provider: string) {
+    await getStackApp().signInWithOAuth(provider);
+  },
+
+  async sendMagicLinkEmail(email: string) {
+    const response = await getStackApp().sendMagicLinkEmail(email);
+    if (response.status === "ok") return response.data.nonce;
+    throw new Error(response.error.message);
+  },
+
+  async signInWithMagicLink(code: string) {
+    const result = await getStackApp().signInWithMagicLink(code);
+    if (result.status === "error") throw new Error("Invalid OTP");
   },
 } satisfies AuthService;
 

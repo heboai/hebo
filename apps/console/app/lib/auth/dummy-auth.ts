@@ -49,4 +49,17 @@ export const authService = {
   async listApiKeys() {
     return apiKeys.findMany();
   },
+
+  async signInWithOAuth() {
+    globalThis.location.href = "/";
+  },
+
+  async sendMagicLinkEmail() {
+    return "dummy nonce";
+  },
+
+  async signInWithMagicLink() {
+    throw new Error("Magic Link not implemented");
+  },
+
 } satisfies AuthService;
