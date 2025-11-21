@@ -28,6 +28,13 @@ import {
   PromptInputTextarea,
   PromptInputFooter,
   PromptInputTools,
+  PromptInputAttachment,
+  PromptInputHeader,
+  PromptInputAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuTrigger,
+  PromptInputActionMenuContent,
+  PromptInputActionAddAttachments,
 } from "../_ai-elements/prompt-input";
 import {
   Reasoning,
@@ -81,6 +88,7 @@ export function Chat({
       fetch: currentModel?.endpoint?.fetch || fetch,
       model: currentModelAlias,
       stream: true,
+      // FUTURE: add reasoningEffort parameter
     }),
   });
 
@@ -104,6 +112,8 @@ export function Chat({
 
   const handleSubmit = async (message: PromptInputMessage) => {
     if (!message.text) return;
+
+    console.log(message.files.length);
 
     sendMessage({
       text: message.text,
@@ -206,8 +216,17 @@ export function Chat({
       <PromptInput
         onSubmit={handleSubmit}
         role="form"
-        className="bg-background"
+        className="bg-background mt-4"
+        globalDrop
+        multiple
       >
+        <PromptInputHeader className="p-0">
+          <PromptInputAttachments className="max-w-full pb-0">
+            {(attachment) => (
+              <PromptInputAttachment data={attachment} className="truncate" />
+            )}
+          </PromptInputAttachments>
+        </PromptInputHeader>
         <PromptInputBody>
           <PromptInputTextarea
             id="chat-input"
@@ -227,7 +246,15 @@ export function Chat({
         </PromptInputBody>
 
         <PromptInputFooter className="pb-2">
-          <PromptInputTools className="h-6">
+          <PromptInputTools className="h-6 w-full">
+            {/* File upload */}
+            <PromptInputActionMenu>
+              <PromptInputActionMenuTrigger className="-ml-1.5" />
+              <PromptInputActionMenuContent>
+                <PromptInputActionAddAttachments />
+              </PromptInputActionMenuContent>
+            </PromptInputActionMenu>
+
             {/* Model selector */}
             {modelsConfig.length > 1 && (
               <PromptInputSelect
@@ -236,7 +263,7 @@ export function Chat({
                 disabled={status === "submitted" || modelsConfig.length === 0}
                 aria-label="Select model"
               >
-                <PromptInputSelectTrigger className="-ml-1.5 max-w-3xs px-2">
+                <PromptInputSelectTrigger className="ml-auto max-w-3xs">
                   <>
                     <Brain />
                     <PromptInputSelectValue className="truncate" />
@@ -257,6 +284,7 @@ export function Chat({
           </PromptInputTools>
 
           {/* Submit button - disable when no model is selected */}
+          {/* FUTURE: implement cancel */}
           <PromptInputSubmit
             disabled={!input || !status || !currentModelAlias}
             status={status}
