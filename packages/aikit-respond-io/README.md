@@ -211,7 +211,7 @@ app.post("/send-message", async (c) => {
       message: message,
     };
 
-    const response: SendMessageResponse = await client.sendMessage(
+    const response: SendMessageResponse = await client.messaging.sendMessage(
       contactIdentifier,
       payload,
     );
@@ -239,4 +239,38 @@ app.post("/send-message", async (c) => {
 
 // For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
 export default app;
+```
+
+### Utilities
+
+#### Vercel AI SDK Integration
+
+The `@hebo/aikit-respond-io/webhook` package provides a `toAiModelMessage` utility function to easily convert a Respond.io message payload into a `ModelMessage` compatible with the [Vercel AI SDK](https://sdk.vercel.ai/).
+
+```ts
+import {
+  toAiModelMessage,
+  WebhookEvents,
+  MessageReceivedPayload,
+} from "@hebo/aikit-respond-io/webhook";
+import { ModelMessage } from "ai";
+
+// Assuming webhook instance configured
+webhook.on(
+  WebhookEvents.MessageReceived,
+  async (payload: MessageReceivedPayload) => {
+    try {
+      // Convert the incoming message to a user message for the AI SDK
+      const aiMessage: ModelMessage = toAiModelMessage(
+        payload.message.message,
+        "user",
+      );
+
+      // You can now use `aiMessage` with the Vercel AI SDK functions like `streamText`
+      const result = await streamText({ model, messages: [aiMessage] });
+    } catch (error) {
+      console.error("Failed to convert message:", error);
+    }
+  },
+);
 ```

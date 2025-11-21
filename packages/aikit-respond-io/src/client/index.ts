@@ -15,25 +15,8 @@ import {
   CreateCommentResponse,
 } from "./types";
 
-export class RespondIoClient {
-  private kyInstance: KyInstance;
-  private readonly DEFAULT_BASE_URL = "https://api.respond.io/v2";
-
-  constructor(config: RespondIoClientConfig) {
-    if (!config.apiKey) {
-      throw new Error("API Key is required.");
-    }
-
-    this.kyInstance = ky.create({
-      prefixUrl: config.baseUrl || this.DEFAULT_BASE_URL,
-      headers: {
-        Authorization: `Bearer ${config.apiKey}`,
-        "Content-Type": "application/json",
-      },
-      timeout: 10_000, // 10 seconds timeout
-      retry: { limit: 0 },
-    });
-  }
+class MessagingClient {
+  constructor(private readonly kyInstance: KyInstance) {}
 
   /**
    * Sends a message to a specific contact.
@@ -82,6 +65,10 @@ export class RespondIoClient {
       }
     }
   }
+}
+
+class ContactTagsClient {
+  constructor(private readonly kyInstance: KyInstance) {}
 
   /**
    * Adds tags to a specific contact.
@@ -89,7 +76,7 @@ export class RespondIoClient {
    * @param payload The tags to be added.
    * @returns The response from the API.
    */
-  public async addTags(
+  public async add(
     identifier: ContactIdentifier,
     payload: AddTagsPayload,
   ): Promise<AddTagsResponse> {
@@ -130,14 +117,24 @@ export class RespondIoClient {
       }
     }
   }
+}
 
+class ContactClient {
+  public readonly tags: ContactTagsClient;
+  constructor(private readonly kyInstance: KyInstance) {
+    this.tags = new ContactTagsClient(kyInstance);
+  }
+}
+
+class CommentClient {
+  constructor(private readonly kyInstance: KyInstance) {}
   /**
    * Creates a comment on a specific contact.
    * @param identifier The contact identifier (e.g., 'id:123', 'email:abdc@gmail.com', 'phone:+60121233112').
    * @param payload The comment payload.
    * @returns The response from the API.
    */
-  public async createComment(
+  public async create(
     identifier: ContactIdentifier,
     payload: CreateCommentPayload,
   ): Promise<CreateCommentResponse> {
@@ -178,10 +175,35 @@ export class RespondIoClient {
       }
     }
   }
+}
 
-  // FUTURE: Add other API methods here as needed
-  // public async createContact(...) { ... }
-  // public async getContact(...) { ... }
+export class RespondIoClient {
+  private readonly kyInstance: KyInstance;
+  private readonly DEFAULT_BASE_URL = "https://api.respond.io/v2";
+
+  public readonly messaging: MessagingClient;
+  public readonly contact: ContactClient;
+  public readonly comment: CommentClient;
+
+  constructor(config: RespondIoClientConfig) {
+    if (!config.apiKey) {
+      throw new Error("API Key is required.");
+    }
+
+    this.kyInstance = ky.create({
+      prefixUrl: config.baseUrl || this.DEFAULT_BASE_URL,
+      headers: {
+        Authorization: `Bearer ${config.apiKey}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 10_000, // 10 seconds timeout
+      retry: { limit: 0 },
+    });
+
+    this.messaging = new MessagingClient(this.kyInstance);
+    this.contact = new ContactClient(this.kyInstance);
+    this.comment = new CommentClient(this.kyInstance);
+  }
 }
 
 export * from "./types";
