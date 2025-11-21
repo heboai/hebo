@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { Brain, Edit } from "lucide-react";
+import { Brain, Edit, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -41,6 +41,7 @@ import {
   ReasoningContent,
   ReasoningTrigger,
 } from "../_ai-elements/reasoning";
+import { Alert, AlertDescription, AlertTitle } from "../_shadcn/ui/alert";
 import { Avatar, AvatarFallback } from "../_shadcn/ui/avatar";
 import { Button } from "../_shadcn/ui/button";
 import {
@@ -92,11 +93,6 @@ export function Chat({
     }),
   });
 
-  // FUTURE: show this in the UI
-  useEffect(() => {
-    console.log(`${error}`);
-  }, [error]);
-
   // Shortcut: Ctrl/Cmd+i to focus chat input field
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -113,8 +109,6 @@ export function Chat({
   const handleSubmit = async (message: PromptInputMessage) => {
     if (status === "streaming") stop();
     if (!message.text) return;
-
-    console.log(message.files.length);
 
     sendMessage({
       text: message.text,
@@ -207,6 +201,16 @@ export function Chat({
               </div>
             ))}
             {status === "submitted" && <Loader />}
+            {error && (
+              <Alert variant="destructive">
+                <TriangleAlert />
+                <AlertTitle>Something went wrong :(</AlertTitle>
+                <AlertDescription>
+                  <p>{error.message}</p>
+                </AlertDescription>
+              </Alert>
+            )}
+            {error && console.log(error)}
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
