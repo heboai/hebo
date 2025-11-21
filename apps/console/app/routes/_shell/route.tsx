@@ -142,7 +142,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           />
         <Sidebar side="right" collapsible="offcanvas">
           <SidebarContent>
-            <PlaygroundSidebar activeBranch={activeBranch} />
+            <PlaygroundSidebar activeAgent={activeAgent} activeBranch={activeBranch} />
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>
