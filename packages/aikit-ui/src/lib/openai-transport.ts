@@ -1,20 +1,13 @@
 /* eslint-disable */
-/* Simplified OpenAI-compatible transport */
+
 import {
-  type ChatRequestOptions,
-  type ChatTransport,
+  HttpChatTransport,
+  type HttpChatTransportInitOptions,
   type FinishReason,
   type UIMessage,
   type UIMessageChunk,
 } from "ai";
-
-type ReasoningEffort = "low" | "medium" | "high";
-
-type OpenAIMessage = {
-  role: "system" | "user" | "assistant";
-  content: string | OpenAIContentPart[];
-  reasoning_content?: string;
-};
+import { parseJsonEventStream, type ParseResult } from "@ai-sdk/provider-utils";
 
 type OpenAIContentPart =
   | { type: "text"; text: string }
@@ -22,6 +15,12 @@ type OpenAIContentPart =
       type: "file";
       file: { data: string; media_type: string; filename: string };
     };
+
+type OpenAIMessage = {
+  role: "system" | "user" | "assistant";
+  content: string | OpenAIContentPart[];
+  reasoning_content?: string;
+};
 
 type OpenAIChatDelta = {
   choices?: Array<{
@@ -39,21 +38,6 @@ type OpenAIChatDelta = {
   }>;
 };
 
-type OpenAIChatCompletion = {
-  choices?: Array<{
-    message?: {
-      content?: string;
-      reasoning_content?: string | Array<{ text?: string }>;
-      tool_calls?: Array<{
-        id?: string;
-        type?: string;
-        function?: { name?: string; arguments?: string };
-      }>;
-    };
-    finish_reason?: string | null;
-  }>;
-};
-
 type ToolCall = {
   id: string;
   type: string;
@@ -61,132 +45,51 @@ type ToolCall = {
   arguments: string;
 };
 
-type OpenAIHttpChatTransportOptions = {
-  api: string;
-  model: string;
-  stream?: boolean;
-  reasoningEffort?: ReasoningEffort;
-  fetch?: typeof globalThis.fetch;
-  headers?: HeadersInit | (() => HeadersInit);
-  extraBody?: Record<string, unknown> | (() => Record<string, unknown>);
-};
+type OpenAIHttpChatTransportOptions =
+  HttpChatTransportInitOptions<UIMessage> & {
+    model: string;
+    reasoningEffort?: "low" | "medium" | "high";
+  };
 
-export class OpenAIHttpChatTransport<UI_MESSAGE extends UIMessage = UIMessage>
-  implements ChatTransport<UI_MESSAGE>
-{
-  private readonly api: string;
-  private readonly model: string;
-  private readonly stream: boolean;
-  private readonly reasoningEffort?: ReasoningEffort;
-  private readonly fetchImpl: typeof globalThis.fetch;
-  private readonly headers?: HeadersInit | (() => HeadersInit);
-  private readonly extraBody?:
-    | Record<string, unknown>
-    | (() => Record<string, unknown>);
-
+export class OpenAIHttpChatTransport<
+  UI_MESSAGE extends UIMessage = UIMessage,
+> extends HttpChatTransport<UI_MESSAGE> {
   constructor(options: OpenAIHttpChatTransportOptions) {
-    this.api = options.api;
-    this.model = options.model;
-    this.stream = options.stream ?? true;
-    this.reasoningEffort = options.reasoningEffort;
-    this.fetchImpl = options.fetch ?? globalThis.fetch;
-    this.headers = options.headers;
-    this.extraBody = options.extraBody;
-  }
+    const { model, reasoningEffort, ...rest } = options;
+    const fetchImpl = rest.fetch ?? globalThis.fetch;
+    super({
+      ...rest,
+      fetch: fetchImpl,
+      prepareSendMessagesRequest: async ({ messages, body }) => {
+        const openaiMessages = await Promise.all(
+          messages.map((m) => toOpenAIMessage(m as UIMessage, fetchImpl)),
+        );
 
-  close() {}
-  async reconnectToStream(): Promise<null> {
-    return null;
-  }
+        const reasoning = reasoningEffort
+          ? { effort: reasoningEffort }
+          : undefined;
 
-  async sendMessages({
-    abortSignal,
-    messages,
-    messageId,
-    ...requestOptions
-  }: {
-    abortSignal?: AbortSignal;
-    chatId: string;
-    messageId?: string;
-    messages: UI_MESSAGE[];
-    trigger: "regenerate-message" | "submit-message";
-  } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk>> {
-    const stream = new ReadableStream<UIMessageChunk>({
-      start: async (controller) => {
-        try {
-          const openaiMessages = await Promise.all(
-            messages.map((m) => toOpenAIMessage(m as any, this.fetchImpl)),
-          );
-
-          const baseHeaders =
-            typeof this.headers === "function"
-              ? this.headers()
-              : (this.headers ?? {});
-          const perCallHeaders =
-            (requestOptions.headers as HeadersInit | undefined) ?? {};
-
-          const extraBody =
-            typeof this.extraBody === "function"
-              ? this.extraBody()
-              : (this.extraBody ?? {});
-          const perCallBody =
-            (requestOptions.body as Record<string, unknown> | undefined) ?? {};
-
-          const { reasoning: perCallReasoning, ...restPerCallBody } =
-            perCallBody as { reasoning?: { effort?: ReasoningEffort } };
-
-          const reasoning =
-            perCallReasoning ??
-            (this.reasoningEffort
-              ? { effort: this.reasoningEffort }
-              : undefined);
-
-          const res = await this.fetchImpl(this.api, {
-            method: "POST",
-            signal: abortSignal,
-            headers: {
-              "Content-Type": "application/json",
-              ...baseHeaders,
-              ...perCallHeaders,
-            },
-            body: JSON.stringify({
-              model: this.model,
-              messages: openaiMessages,
-              stream: this.stream,
-              ...(reasoning ? { reasoning } : {}),
-              ...extraBody,
-              ...restPerCallBody,
-            }),
-          });
-
-          if (!res.ok) {
-            throw new Error(
-              (await res.text().catch(() => "")) || "Request failed",
-            );
-          }
-
-          const id = messageId ?? crypto.randomUUID();
-          const isSSE =
-            this.stream &&
-            res.headers.get("content-type")?.includes("text/event-stream");
-
-          if (isSSE) {
-            await handleSSE({ res, controller, id });
-          } else {
-            const json = (await res.json()) as OpenAIChatCompletion;
-            handleJSON({ json, controller, id });
-          }
-        } catch (error) {
-          controller.enqueue({
-            type: "error",
-            errorText: error instanceof Error ? error.message : "Unknown error",
-          } as UIMessageChunk);
-          controller.close();
-        }
+        return {
+          body: {
+            ...body,
+            model,
+            messages: openaiMessages,
+            stream: true,
+            ...(reasoning ? { reasoning } : {}),
+          },
+        };
       },
     });
+  }
 
-    return stream;
+  protected processResponseStream(
+    stream: ReadableStream<Uint8Array>,
+  ): ReadableStream<UIMessageChunk> {
+    return new ReadableStream<UIMessageChunk>({
+      start: async (controller) => {
+        await handleSSEStream(stream, controller);
+      },
+    });
   }
 }
 
@@ -197,6 +100,7 @@ async function toOpenAIMessage(
 ): Promise<OpenAIMessage> {
   const contentParts: OpenAIContentPart[] = [];
   const reasoningText: string[] = [];
+
   for (const part of message.parts ?? []) {
     if (part.type === "text") {
       contentParts.push({ type: "text", text: part.text });
@@ -255,142 +159,96 @@ async function toFileContent(
   }
 }
 
-function handleJSON({
-  json,
-  controller,
-  id,
-}: {
-  json: OpenAIChatCompletion;
-  controller: ReadableStreamDefaultController<UIMessageChunk>;
-  id: string;
-}) {
-  const choice = json.choices?.[0];
-  const msg = choice?.message;
-  controller.enqueue({ type: "start", messageId: id });
-  if (msg?.reasoning_content) {
-    const reasoningId = crypto.randomUUID();
-    controller.enqueue({ type: "reasoning-start", id: reasoningId });
-    controller.enqueue({
-      type: "reasoning-delta",
-      id: reasoningId,
-      delta: asText(msg.reasoning_content),
-    });
-    controller.enqueue({ type: "reasoning-end", id: reasoningId });
-  }
-  if (msg?.content) {
-    const textId = crypto.randomUUID();
-    controller.enqueue({ type: "text-start", id: textId });
-    controller.enqueue({
-      type: "text-delta",
-      id: textId,
-      delta: asText(msg.content),
-    });
-    controller.enqueue({ type: "text-end", id: textId });
-  }
-  if (msg?.tool_calls?.length) {
-    controller.enqueue({
-      type: "data-openai-tool-calls",
-      data: normalizeToolCalls(msg.tool_calls),
-    } as any);
-  }
-  controller.enqueue({
-    type: "finish",
-    finishReason: toFinishReason(choice?.finish_reason),
-  });
-  controller.close();
-}
-
-async function handleSSE({
-  res,
-  controller,
-  id,
-}: {
-  res: Response;
-  controller: ReadableStreamDefaultController<UIMessageChunk>;
-  id: string;
-}) {
-  const reader = res.body!.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let done = false;
+async function handleSSEStream(
+  stream: ReadableStream<Uint8Array>,
+  controller: ReadableStreamDefaultController<UIMessageChunk>,
+) {
+  const messageId = crypto.randomUUID();
+  const textId = `text-${messageId}`;
+  const reasoningId = `reasoning-${messageId}`;
   let textStarted = false;
   let reasoningStarted = false;
-  controller.enqueue({ type: "start", messageId: id });
+  let finalFinish: FinishReason | undefined;
 
-  while (!done) {
-    const { value, done: doneRead } = await reader.read();
-    if (doneRead) break;
-    buffer += decoder.decode(value, { stream: true });
-    const chunks = buffer.split("\n\n");
-    buffer = chunks.pop() ?? "";
-    for (const chunk of chunks) {
-      const dataLine = chunk
-        .split("\n")
-        .find((line) => line.startsWith("data:"));
-      if (!dataLine) continue;
-      const data = dataLine.slice(5).trim();
-      if (data === "[DONE]") {
-        done = true;
-        break;
-      }
-      let json: OpenAIChatDelta;
-      try {
-        json = JSON.parse(data);
-      } catch {
-        continue;
-      }
-      const delta = json.choices?.[0]?.delta;
-      const finishReason = json.choices?.[0]?.finish_reason;
+  await parseJsonEventStream<OpenAIChatDelta>({
+    stream,
+    schema: undefined as unknown as any,
+  })
+    .pipeThrough(
+      new TransformStream<ParseResult<OpenAIChatDelta>, UIMessageChunk>({
+        start(ctrl) {
+          ctrl.enqueue({ type: "start", messageId });
+        },
+        transform(result, ctrl) {
+          if (!result?.success) {
+            ctrl.enqueue({
+              type: "error",
+              errorText: result?.error?.message ?? "Stream parse error",
+            });
+            return;
+          }
 
-      if (delta?.content) {
-        const textId = `text-${id}`;
-        if (!textStarted) {
-          controller.enqueue({ type: "text-start", id: textId });
-          textStarted = true;
-        }
-        controller.enqueue({
-          type: "text-delta",
-          id: textId,
-          delta: delta.content,
-        });
-      }
+          const parsed = result.value;
+          const delta = parsed.choices?.[0]?.delta;
+          const finishReason = parsed.choices?.[0]?.finish_reason;
 
-      if (delta?.reasoning_content) {
-        const reasoningId = `reasoning-${id}`;
-        if (!reasoningStarted) {
-          controller.enqueue({ type: "reasoning-start", id: reasoningId });
-          reasoningStarted = true;
-        }
-        controller.enqueue({
-          type: "reasoning-delta",
-          id: reasoningId,
-          delta: asText(delta.reasoning_content),
-        });
-      }
+          if (delta?.content) {
+            if (!textStarted) {
+              ctrl.enqueue({ type: "text-start", id: textId });
+              textStarted = true;
+            }
+            ctrl.enqueue({
+              type: "text-delta",
+              id: textId,
+              delta: delta.content,
+            });
+          }
 
-      if (delta?.tool_calls?.length) {
-        controller.enqueue({
-          type: "data-openai-tool-calls",
-          data: normalizeToolCalls(delta.tool_calls),
-        } as any);
-      }
+          if (delta?.reasoning_content) {
+            if (!reasoningStarted) {
+              ctrl.enqueue({ type: "reasoning-start", id: reasoningId });
+              reasoningStarted = true;
+            }
+            ctrl.enqueue({
+              type: "reasoning-delta",
+              id: reasoningId,
+              delta: asText(delta.reasoning_content),
+            });
+          }
 
-      if (finishReason) {
-        controller.enqueue({
-          type: "finish",
-          finishReason: toFinishReason(finishReason),
-        });
-        controller.close();
-        return;
-      }
-    }
-  }
+          if (delta?.tool_calls?.length) {
+            ctrl.enqueue({
+              type: "data-openai-tool-calls",
+              data: normalizeToolCalls(delta.tool_calls),
+            } as any);
+          }
 
-  if (textStarted) controller.enqueue({ type: "text-end", id: `text-${id}` });
-  if (reasoningStarted)
-    controller.enqueue({ type: "reasoning-end", id: `reasoning-${id}` });
-  controller.enqueue({ type: "finish", finishReason: "stop" });
-  controller.close();
+          if (finishReason) {
+            finalFinish = toFinishReason(finishReason);
+          }
+        },
+        flush(ctrl) {
+          if (textStarted) ctrl.enqueue({ type: "text-end", id: textId });
+          if (reasoningStarted) {
+            ctrl.enqueue({ type: "reasoning-end", id: reasoningId });
+          }
+          ctrl.enqueue({
+            type: "finish",
+            finishReason: finalFinish ?? "stop",
+          });
+        },
+      }),
+    )
+    .pipeTo(
+      new WritableStream({
+        write(chunk) {
+          controller.enqueue(chunk);
+        },
+        close() {
+          controller.close();
+        },
+      }),
+    );
 }
 
 function normalizeToolCalls(
