@@ -7,12 +7,20 @@ import {
   type FinishReason,
   type UIMessage,
   type UIMessageChunk,
-  convertToModelMessages,
 } from "ai";
 
 type OpenAIMessage = {
   role: "system" | "user" | "assistant";
-  content: string;
+  content:
+    | string
+    | Array<
+        | { type: "text"; text: string }
+        | {
+            type: "file";
+            file: { data: string; media_type: string; filename: string };
+          }
+      >;
+  reasoning_content?: string;
 };
 
 type OpenAIChatDelta = {
@@ -122,15 +130,8 @@ export class OpenAIHttpChatTransport<UI_MESSAGE extends UIMessage = UIMessage>
     const stream = new ReadableStream<UIMessageChunk>({
       start: async (controller) => {
         try {
-          const modelMessages = convertToModelMessages(messages as any);
-
-          const openaiMessages: OpenAIMessage[] = modelMessages.map(
-            (m: any) => ({
-              role: m.role,
-              content: m.content
-                .map((part: any) => (part.type === "text" ? part.text : ""))
-                .join(""),
-            }),
+          const openaiMessages: OpenAIMessage[] = await Promise.all(
+            messages.map((m) => toOpenAIMessage(m as any, this.fetchImpl)),
           );
 
           const extraBody =
@@ -447,6 +448,103 @@ export class OpenAIHttpChatTransport<UI_MESSAGE extends UIMessage = UIMessage>
 }
 
 // ---------- helpers ----------
+
+type OpenAIContentPart = Extract<
+  NonNullable<OpenAIMessage["content"]>,
+  Array<unknown>
+>[number];
+
+async function toOpenAIMessage(
+  message: UIMessage,
+  fetchImpl: typeof fetch,
+): Promise<OpenAIMessage> {
+  const contentParts: OpenAIContentPart[] = [];
+  const textParts: string[] = [];
+
+  for (const part of message.parts ?? []) {
+    if (part.type === "text") {
+      textParts.push(part.text);
+      contentParts.push({ type: "text", text: part.text });
+    } else if (part.type === "file") {
+      const filePart = await toFileContent(part, fetchImpl);
+      if (filePart) {
+        contentParts.push(filePart);
+      }
+    }
+  }
+
+  const base = {
+    role: message.role as OpenAIMessage["role"],
+  };
+
+  if (message.role === "assistant") {
+    return {
+      ...base,
+      content: textParts.join(""),
+      reasoning_content: extractReasoning(message),
+    } as any;
+  }
+
+  return {
+    ...base,
+    content: contentParts.length ? contentParts : textParts.join(""),
+  };
+}
+
+async function toFileContent(
+  part: {
+    mediaType?: string;
+    url?: string;
+    filename?: string;
+  },
+  fetchImpl: typeof fetch,
+): Promise<
+  | {
+      type: "file";
+      file: { data: string; media_type: string; filename: string };
+    }
+  | undefined
+> {
+  if (!part.url) return;
+
+  if (part.url.startsWith("data:")) {
+    const [meta, data] = part.url.split(",");
+    const mediaType =
+      part.mediaType ?? meta.slice("data:".length, meta.indexOf(";")).trim();
+    const filename = part.filename || "file";
+
+    if (!data || !mediaType) return;
+
+    return {
+      type: "file",
+      file: { data, media_type: mediaType, filename },
+    };
+  }
+
+  try {
+    const resp = await fetchImpl(part.url);
+    const blob = await resp.blob();
+    const arrayBuffer = await blob.arrayBuffer();
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const mediaType = part.mediaType || blob.type || "application/octet-stream";
+    const filename = part.filename || "file";
+
+    return {
+      type: "file",
+      file: { data: base64, media_type: mediaType, filename },
+    };
+  } catch {
+    // ignore fetch errors and skip the part
+  }
+}
+
+function extractReasoning(message: UIMessage): string | undefined {
+  const reasoning = (message.parts ?? [])
+    .filter((p: any) => p.type === "reasoning")
+    .map((p: any) => p.text)
+    .join("");
+  return reasoning || undefined;
+}
 
 function normalizeReasoning(
   raw: string | Array<{ type?: string; text?: string }> | undefined,
