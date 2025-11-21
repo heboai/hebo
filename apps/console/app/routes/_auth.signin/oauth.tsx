@@ -33,7 +33,7 @@ function SignInButton({ provider, icon: Icon }: { provider: string, icon?: React
     >
       {!isLoading && (
         <>
-          { Icon && <span className="absolute left-4"><Icon /></span> }
+          { Icon && <span className="absolute left-4"><Icon aria-hidden="true" /></span> }
           Sign in with {provider.charAt(0).toUpperCase()}{provider.slice(1)}
         </>
       )

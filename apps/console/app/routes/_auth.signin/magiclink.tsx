@@ -26,6 +26,8 @@ export function MagicLinkSignIn() {
           setLoading(true);
           try {
             setNonce(await authService.sendMagicLinkEmail(email!));
+          } catch (error) {
+            error instanceof Error && setError(error.message);
           } finally {
             setLoading(false);
           }
@@ -45,6 +47,8 @@ export function MagicLinkSignIn() {
         <Button type="submit" disabled={loading}>
           { loading? <Loader2Icon className="animate-spin" /> : "Send Email" }
         </Button>
+        
+        {error && <div className="text-destructive text-sm">{error}</div>}
       </form>
 
     ) : (
