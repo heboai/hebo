@@ -76,6 +76,21 @@ const authService = {
       expiresAt: key.expiresAt!,
     }));
   },
+
+  async signInWithOAuth(provider: string) {
+    await getStackApp().signInWithOAuth(provider);
+  },
+
+  async sendMagicLinkEmail(email: string) {
+    const response = await getStackApp().sendMagicLinkEmail(email);
+    return response.data.nonce;
+  },
+
+  async signInWithMagicLink(code: string) {
+    const result = await getStackApp().signInWithMagicLink(code);
+    if (result.status === "error") throw new Error("Invalid OTP");
+  },
+
 } satisfies AuthService;
 
 export { authService, getStackApp };
