@@ -48,7 +48,7 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
             <TableHead>Status</TableHead>
             <TableHead>Key</TableHead>
             <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -63,8 +63,8 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
             </TableRow>
           ) : (
             apiKeys.map((key) => {
-              const status = key.expiresAt.getTime() <= Date.now() ? "Expired" : "Active";
-              const isExpired = status === "Expired";
+              const isExpired = key.expiresAt.getTime() <= Date.now();
+              const isExpiringSoon = !isExpired && key.expiresAt.getTime() - Date.now() <= 7 * 24 * 60 * 60 * 1000; // 7 Days
 
               return (
                 <TableRow key={key.id}>
@@ -74,13 +74,12 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
                       <TooltipTrigger asChild>
                         <Badge
                           variant="outline"
-                          className={
-                            isExpired
-                              ? "border-destructive text-destructive"
-                              : "border-emerald-600 text-emerald-600"
-                          }
+                          className={isExpired ? "border-destructive text-destructive"
+                            : isExpiringSoon
+                              ? "border-amber-600 text-amber-600"
+                              : "border-emerald-600 text-emerald-600"}
                         >
-                          {status}
+                          {isExpired? "Expired" : isExpiringSoon? "Expires Soon": "Active"}
                         </Badge>
                       </TooltipTrigger>
                       <TooltipContent>
