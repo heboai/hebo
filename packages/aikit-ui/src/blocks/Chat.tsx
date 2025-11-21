@@ -77,7 +77,7 @@ export function Chat({
   const [input, setInput] = useState("");
   const { messages, sendMessage, setMessages, status, error } = useChat({
     transport: new OpenAIHttpChatTransport({
-      api: "http://localhost:3002/v1/chat/completions",
+      api: currentModel?.endpoint?.baseUrl + "/chat/completions",
       fetch: currentModel?.endpoint?.fetch || fetch,
       model: currentModelAlias,
       stream: true,
