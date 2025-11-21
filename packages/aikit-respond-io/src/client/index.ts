@@ -8,12 +8,38 @@ import {
   AddTagsPayload,
   AddTagsResponse,
   ContactIdentifier,
+  CreateCommentPayload,
+  CreateCommentResponse,
   RespondIoClientConfig,
   SendMessagePayload,
   SendMessageResponse,
-  CreateCommentPayload,
-  CreateCommentResponse,
 } from "./types";
+
+async function handleKyError(error: unknown): Promise<never> {
+  if (error instanceof HTTPError) {
+    const errorBody = await error.response.json();
+    throw new RespondIoClientFailureError(
+      error.response.status,
+      { json: errorBody },
+      `API Error: ${error.response.status} - ${error.message}`,
+    );
+  } else if (error instanceof TimeoutError) {
+    throw new RespondIoClientNetworkError(
+      `Network Error: Request timed out - ${error.message}`,
+    );
+  } else if (error instanceof Error) {
+    if (error.name === "TypeError") {
+      throw new RespondIoClientNetworkError(
+        `Network Error: No response received - ${error.message}`,
+      );
+    }
+    throw new Error(`Request Error: ${error.message}`);
+  } else {
+    throw new TypeError(
+      `An unknown error occurred in request: ${String(error)}`,
+    );
+  }
+}
 
 class MessagingClient {
   constructor(private readonly kyInstance: KyInstance) {}
@@ -35,34 +61,7 @@ class MessagingClient {
       );
       return await response.json<SendMessageResponse>();
     } catch (error) {
-      if (error instanceof HTTPError) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        const errorBody = await error.response.json();
-        throw new RespondIoClientFailureError(
-          error.response.status,
-          { json: errorBody },
-          `API Error: ${error.response.status} - ${error.message}`,
-        );
-      } else if (error instanceof TimeoutError) {
-        // The request was made but no response was received
-        throw new RespondIoClientNetworkError(
-          `Network Error: Request timed out - ${error.message}`,
-        );
-      } else if (error instanceof Error) {
-        // This can happen for various network reasons (e.g., DNS, connection refused)
-        if (error.name === "TypeError") {
-          throw new RespondIoClientNetworkError(
-            `Network Error: No response received - ${error.message}`,
-          );
-        }
-        throw new Error(`Request Error: ${error.message}`);
-      } else {
-        // Something happened that triggered an error that wasn't an instance of Error
-        throw new TypeError(
-          `An unknown error occurred in request: ${String(error)}`,
-        );
-      }
+      return handleKyError(error);
     }
   }
 }
@@ -87,34 +86,7 @@ class ContactTagsClient {
       );
       return await response.json<AddTagsResponse>();
     } catch (error) {
-      if (error instanceof HTTPError) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        const errorBody = await error.response.json();
-        throw new RespondIoClientFailureError(
-          error.response.status,
-          { json: errorBody },
-          `API Error: ${error.response.status} - ${error.message}`,
-        );
-      } else if (error instanceof TimeoutError) {
-        // The request was made but no response was received
-        throw new RespondIoClientNetworkError(
-          `Network Error: Request timed out - ${error.message}`,
-        );
-      } else if (error instanceof Error) {
-        // This can happen for various network reasons (e.g., DNS, connection refused)
-        if (error.name === "TypeError") {
-          throw new RespondIoClientNetworkError(
-            `Network Error: No response received - ${error.message}`,
-          );
-        }
-        throw new Error(`Request Error: ${error.message}`);
-      } else {
-        // Something happened that triggered an error that wasn't an instance of Error
-        throw new TypeError(
-          `An unknown error occurred in request: ${String(error)}`,
-        );
-      }
+      return handleKyError(error);
     }
   }
 }
@@ -145,34 +117,7 @@ class CommentClient {
       );
       return await response.json<CreateCommentResponse>();
     } catch (error) {
-      if (error instanceof HTTPError) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        const errorBody = await error.response.json();
-        throw new RespondIoClientFailureError(
-          error.response.status,
-          { json: errorBody },
-          `API Error: ${error.response.status} - ${error.message}`,
-        );
-      } else if (error instanceof TimeoutError) {
-        // The request was made but no response was received
-        throw new RespondIoClientNetworkError(
-          `Network Error: Request timed out - ${error.message}`,
-        );
-      } else if (error instanceof Error) {
-        // This can happen for various network reasons (e.g., DNS, connection refused)
-        if (error.name === "TypeError") {
-          throw new RespondIoClientNetworkError(
-            `Network Error: No response received - ${error.message}`,
-          );
-        }
-        throw new Error(`Request Error: ${error.message}`);
-      } else {
-        // Something happened that triggered an error that wasn't an instance of Error
-        throw new TypeError(
-          `An unknown error occurred in request: ${String(error)}`,
-        );
-      }
+      return handleKyError(error);
     }
   }
 }

@@ -27,8 +27,10 @@
   },
   "type": "module",
   "dependencies": {
-    "ai": "^5.0.60",
     "ky": "^1.9.0"
+  },
+  "peerDependencies": {
+    "ai": "^5.0.60"
   },
   "devDependencies": {
     "bun-types": "^1.2.22",
