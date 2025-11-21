@@ -101,6 +101,15 @@ export const OpenAICompatibleFinishReason = t.Union([
   t.Literal("tool_calls"),
 ]);
 
+export const OpenAICompatibleReasoning = t.Object({
+  enabled: t.Boolean(),
+  max_tokens: t.Optional(t.Number()),
+  effort: t.Optional(
+    t.Union([t.Literal("low"), t.Literal("medium"), t.Literal("high")]),
+  ),
+  exclude: t.Optional(t.Boolean()),
+});
+
 export type OpenAICompatibleMessage = Static<typeof OpenAICompatibleMessage>;
 export type OpenAICompatibleContentPart =
   | Static<typeof OpenAICompatibleContentPartText>
@@ -108,6 +117,9 @@ export type OpenAICompatibleContentPart =
   | Static<typeof OpenAICompatibleContentPartFile>;
 export type OpenAICompatibleFinishReason = Static<
   typeof OpenAICompatibleFinishReason
+>;
+export type OpenAICompatibleReasoning = Static<
+  typeof OpenAICompatibleReasoning
 >;
 export type OpenAICompatibleAssistantMessage = Static<
   typeof OpenAICompatibleAssistantMessage
