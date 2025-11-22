@@ -41,7 +41,7 @@ const messageReceivedHandler = webhook<MessageReceivedPayload>({
   },
   onError: (error) => {
     // This handler will be called for internal errors during processing or from the 'handle' function.
-    console.log("[Webhook Error]", error); // Use console.log for example consistency
+    console.log("[Webhook Error]", error);
   },
 });
 
@@ -54,7 +54,7 @@ const conversationClosedHandler = webhook<ConversationClosedPayload>({
   },
   onError: (error) => {
     // This handler will be called for internal errors during processing or from the 'handle' function.
-    console.log("[Webhook Error]", error); // Use console.log for example consistency
+    console.log("[Webhook Error]", error);
   },
 });
 
@@ -101,7 +101,7 @@ export const handler = async (
   });
 
   // The fetch handler validates the signature and triggers any .on() handlers
-  const response = await messageReceivedHandler(request); // Direct call to the handler
+  const response = await messageReceivedHandler(request);
 
   // Convert the standard Response back to the format Lambda expects
   return {
@@ -204,14 +204,10 @@ const aiWebhookHandler = webhook<MessageReceivedPayload>({
         "user",
       );
 
-      // Assuming 'model' is defined elsewhere or passed in context
-      const model: any = {
-        /* your AI model instance */
-      }; // Replace with your actual model instance
-
+      // Assuming 'model' is defined
       // You can now use `aiMessage` with the Vercel AI SDK functions like `streamText`
       const result = await streamText({ model, messages: [aiMessage] });
-      console.log("AI streamed text:", result.text); // Log or store the result
+      console.log("AI streamed text:", result.text);
     } catch (error) {
       console.error("Failed to process AI message:", error);
     }
