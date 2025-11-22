@@ -28,7 +28,7 @@ import {
   webhook,
   MessageReceivedPayload,
   ConversationClosedPayload,
-} from "@hebo/aikit-respond-io";
+} from "@hebo/aikit-respond-io/webhook";
 
 const app = new Hono();
 
@@ -73,7 +73,10 @@ For a direct, serverless deployment without API Gateway, you can use an [AWS Lam
 The function validates the request, and for longer-running tasks, it can pass the verified payload to an SQS queue for asynchronous processing.
 
 ```ts
-import { webhook, MessageReceivedPayload } from "@hebo/aikit-respond-io";
+import {
+  webhook,
+  MessageReceivedPayload,
+} from "@hebo/aikit-respond-io/webhook";
 // Note the specific event/result types for Function URLs
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 
@@ -189,7 +192,7 @@ import {
   webhook,
   toAiModelMessage,
   MessageReceivedPayload,
-} from "@hebo/aikit-respond-io";
+} from "@hebo/aikit-respond-io/webhook";
 import { ModelMessage } from "ai";
 import { streamText } from "ai"; // Assuming this is part of Vercel AI SDK
 
