@@ -136,7 +136,7 @@
   }
 
   /* Underline links by default */
-  a:not([href^="/"]) {
+  a:not([href^="/"]):not(:has(*)) {
     @apply text-indigo-700 underline decoration-dotted;
   }
 
