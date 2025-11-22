@@ -1,7 +1,14 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { Brain, Edit, TriangleAlert } from "lucide-react";
+import {
+  Brain,
+  Download,
+  Edit,
+  FileUp,
+  Paperclip,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -31,10 +38,9 @@ import {
   PromptInputAttachment,
   PromptInputHeader,
   PromptInputAttachments,
-  PromptInputActionMenu,
-  PromptInputActionMenuTrigger,
-  PromptInputActionMenuContent,
-  PromptInputActionAddAttachments,
+  PromptInputButton,
+  PromptInputProvider,
+  usePromptInputAttachments,
 } from "../_ai-elements/prompt-input";
 import {
   Reasoning,
@@ -51,7 +57,16 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../_shadcn/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "../_shadcn/ui/item";
 import { OpenAIHttpChatTransport } from "../lib/openai-transport";
+import { cn } from "../lib/utils";
 
 // Types based on models.schema.json
 type ModelsConfig = Array<{
@@ -88,7 +103,8 @@ export function Chat({
       api: currentModel?.endpoint?.baseUrl + "/chat/completions",
       fetch: currentModel?.endpoint?.fetch || fetch,
       model: currentModelAlias,
-      // reasoningEffort: "medium",
+      // FUTURE: enable once gateway supports it
+      // reasoningEffort: "medium"
     }),
   });
 
@@ -135,7 +151,7 @@ export function Chat({
 
       {messages.length === 0 ? (
         // Empty Placeholder
-        <Empty className={currentModelAlias ? "" : "opacity-50"}>
+        <Empty className={cn(currentModelAlias ? "" : "opacity-50", "-mt-12")}>
           <EmptyHeader>
             <EmptyMedia variant="default">
               <Avatar className="size-28">
@@ -150,7 +166,7 @@ export function Chat({
         // Conversation area
         <Conversation className="h-full">
           <ConversationContent
-            className="px-0"
+            className="gap-6 px-0"
             aria-label="Chat conversation"
             tabIndex={-1}
           >
@@ -192,7 +208,47 @@ export function Chat({
                         )
                       );
                     }
+                    case "file": {
+                      const IMAGE_TYPES = [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp",
+                        "image/gif",
+                      ];
+                      return IMAGE_TYPES.includes(part.mediaType) ? (
+                        <img
+                          key={`${message.id}-${i}`}
+                          className="m-2 ml-auto h-auto w-24 rounded-lg"
+                          src={part.url}
+                          alt={part.filename}
+                        />
+                      ) : (
+                        // FUTURE: currently non image file types break in the gateway
+                        <Item
+                          key={`${message.id}-${i}`}
+                          variant="outline"
+                          asChild
+                          className="bg-card m-2 ml-auto w-3xs py-2"
+                        >
+                          <a href={part.url} download={part.filename}>
+                            <ItemMedia className="translate-y-0! self-center!">
+                              <FileUp size={24} className="text-foreground" />
+                            </ItemMedia>
+                            <ItemContent className="gap-0 truncate">
+                              <ItemTitle>{part.filename}</ItemTitle>
+                              <ItemDescription>
+                                {part.mediaType}
+                              </ItemDescription>
+                            </ItemContent>
+                            <ItemActions>
+                              <Download className="size-4" />
+                            </ItemActions>
+                          </a>
+                        </Item>
+                      );
+                    }
                     default: {
+                      // FUTURE: add tool support
                       return;
                     }
                   }
@@ -216,83 +272,97 @@ export function Chat({
       )}
 
       {/* Input area */}
-      <PromptInput
-        onSubmit={handleSubmit}
-        role="form"
-        className="bg-background mt-4"
-        globalDrop
-        multiple
-      >
-        <PromptInputHeader className="p-0">
-          <PromptInputAttachments className="max-w-full pb-0">
-            {(attachment) => (
-              <PromptInputAttachment data={attachment} className="truncate" />
-            )}
-          </PromptInputAttachments>
-        </PromptInputHeader>
-        <PromptInputBody>
-          <PromptInputTextarea
-            id="chat-input"
-            disabled={!currentModelAlias}
-            onChange={(e) => setInput(e.target.value)}
-            value={input}
-            placeholder="Ask anything …"
-            aria-label="Chat message input"
-            aria-describedby="input-help"
-            className="min-h-0 pb-0"
-          />
+      <PromptInputProvider>
+        <PromptInput
+          onSubmit={handleSubmit}
+          role="form"
+          className="bg-background mt-4"
+          globalDrop
+          multiple
+        >
+          <PromptInputHeader className="p-0">
+            <PromptInputAttachments className="max-w-full pb-0">
+              {(attachment) => (
+                <PromptInputAttachment data={attachment} className="truncate" />
+              )}
+            </PromptInputAttachments>
+          </PromptInputHeader>
+          <PromptInputBody>
+            <PromptInputTextarea
+              id="chat-input"
+              disabled={!currentModelAlias}
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
+              placeholder="Ask anything …"
+              aria-label="Chat message input"
+              aria-describedby="input-help"
+              className="min-h-0 pb-0"
+            />
 
-          {/* Hidden help text */}
-          <div id="input-help" className="sr-only">
-            Press Enter to send message, Shift+Enter for new line
-          </div>
-        </PromptInputBody>
+            {/* Hidden help text */}
+            <div id="input-help" className="sr-only">
+              Press Enter to send message, Shift+Enter for new line
+            </div>
+          </PromptInputBody>
 
-        <PromptInputFooter className="pb-2">
-          <PromptInputTools className="h-6 w-full">
-            {/* File upload */}
-            <PromptInputActionMenu>
-              <PromptInputActionMenuTrigger className="-ml-1.5" />
-              <PromptInputActionMenuContent>
-                <PromptInputActionAddAttachments />
-              </PromptInputActionMenuContent>
-            </PromptInputActionMenu>
+          <PromptInputFooter className="pb-2">
+            <PromptInputTools className="h-6 w-full">
+              {/* File upload */}
+              <PromptInputActionAddAttachment />
 
-            {/* Model selector */}
-            {modelsConfig.length > 1 && (
-              <PromptInputSelect
-                onValueChange={(alias) => setSelectedModelAlias(alias)}
-                value={currentModelAlias}
-                disabled={status === "submitted" || modelsConfig.length === 0}
-                aria-label="Select model"
-              >
-                <PromptInputSelectTrigger className="ml-auto max-w-3xs">
-                  <>
-                    <Brain />
-                    <PromptInputSelectValue className="truncate" />
-                  </>
-                </PromptInputSelectTrigger>
-                <PromptInputSelectContent>
-                  {modelsConfig.map((model) => (
-                    <PromptInputSelectItem
-                      key={model.alias}
-                      value={model.alias}
-                    >
-                      {model.alias.split("/").pop()}
-                    </PromptInputSelectItem>
-                  ))}
-                </PromptInputSelectContent>
-              </PromptInputSelect>
-            )}
-          </PromptInputTools>
+              {/* Model selector */}
+              {modelsConfig.length > 1 && (
+                <PromptInputSelect
+                  onValueChange={(alias) => setSelectedModelAlias(alias)}
+                  value={currentModelAlias}
+                  disabled={status === "submitted" || modelsConfig.length === 0}
+                  aria-label="Select model"
+                >
+                  <PromptInputSelectTrigger className="ml-auto max-w-3xs">
+                    <>
+                      <Brain />
+                      <PromptInputSelectValue className="truncate" />
+                    </>
+                  </PromptInputSelectTrigger>
+                  <PromptInputSelectContent>
+                    {modelsConfig.map((model) => (
+                      <PromptInputSelectItem
+                        key={model.alias}
+                        value={model.alias}
+                      >
+                        {model.alias.split("/").pop()}
+                      </PromptInputSelectItem>
+                    ))}
+                  </PromptInputSelectContent>
+                </PromptInputSelect>
+              )}
+            </PromptInputTools>
 
-          {/* Submit button - disable when no model is selected */}
-          <PromptInputSubmit
-            disabled={!currentModelAlias || (!input && status !== "streaming")}
-            status={status}
-          />
-        </PromptInputFooter>
-      </PromptInput>
+            {/* Submit button - disable when no model is selected */}
+            <PromptInputSubmit
+              disabled={
+                !currentModelAlias || (!input && status !== "streaming")
+              }
+              status={status}
+            />
+          </PromptInputFooter>
+        </PromptInput>
+      </PromptInputProvider>
     </div>
+  );
+}
+
+export function PromptInputActionAddAttachment() {
+  const attachments = usePromptInputAttachments();
+
+  return (
+    <PromptInputButton
+      className="-ml-1.5"
+      onClick={() => {
+        attachments.openFileDialog();
+      }}
+    >
+      <Paperclip className="size-4" />
+    </PromptInputButton>
   );
 }

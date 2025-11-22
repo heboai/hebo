@@ -36,7 +36,6 @@
     "motion": "^12.23.24",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "shiki": "^3.15.0",
     "streamdown": "^1.5.1",
     "use-stick-to-bottom": "^1.1.1"
   },
@@ -60,7 +59,6 @@
     "motion": "^12.23.24",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "shiki": "^3.15.0",
     "streamdown": "^1.5.1",
     "use-stick-to-bottom": "^1.1.1"
   }
