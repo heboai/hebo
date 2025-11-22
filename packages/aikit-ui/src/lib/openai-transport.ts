@@ -1,5 +1,4 @@
-/* eslint-disable */
-
+import { parseJsonEventStream, type ParseResult } from "@ai-sdk/provider-utils";
 import {
   HttpChatTransport,
   type HttpChatTransportInitOptions,
@@ -7,7 +6,6 @@ import {
   type UIMessage,
   type UIMessageChunk,
 } from "ai";
-import { parseJsonEventStream, type ParseResult } from "@ai-sdk/provider-utils";
 
 type OpenAIContentPart =
   | { type: "text"; text: string }
@@ -102,13 +100,24 @@ async function toOpenAIMessage(
   const reasoningText: string[] = [];
 
   for (const part of message.parts ?? []) {
-    if (part.type === "text") {
-      contentParts.push({ type: "text", text: part.text });
-    } else if (part.type === "reasoning") {
-      reasoningText.push(part.text);
-    } else if (part.type === "file") {
-      const filePart = await toFileContent(part, fetchImpl);
-      if (filePart) contentParts.push(filePart);
+    switch (part.type) {
+      case "text": {
+        contentParts.push({ type: "text", text: part.text });
+
+        break;
+      }
+      case "reasoning": {
+        reasoningText.push(part.text);
+
+        break;
+      }
+      case "file": {
+        const filePart = await toFileContent(part, fetchImpl);
+        if (filePart) contentParts.push(filePart);
+
+        break;
+      }
+      // No default
     }
   }
 
@@ -122,7 +131,7 @@ async function toOpenAIMessage(
 
   return {
     role: message.role as OpenAIMessage["role"],
-    content: contentParts.length ? contentParts : "",
+    content: contentParts.length > 0 ? contentParts : "",
   };
 }
 
@@ -152,7 +161,7 @@ async function toFileContent(
     const blob = await resp.blob();
     const mediaType = part.mediaType || blob.type || "application/octet-stream";
     const arrayBuffer = await blob.arrayBuffer();
-    const data = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+    const data = btoa(String.fromCodePoint(...new Uint8Array(arrayBuffer)));
     return { type: "file", file: { data, media_type: mediaType, filename } };
   } catch {
     return;
@@ -172,7 +181,8 @@ async function handleSSEStream(
 
   await parseJsonEventStream<OpenAIChatDelta>({
     stream,
-    schema: undefined as unknown as any,
+    // no schema validation; the upstream SSE format is trusted to be OpenAI delta shape
+    schema: undefined as unknown as never,
   })
     .pipeThrough(
       new TransformStream<ParseResult<OpenAIChatDelta>, UIMessageChunk>({
@@ -220,7 +230,7 @@ async function handleSSEStream(
             ctrl.enqueue({
               type: "data-openai-tool-calls",
               data: normalizeToolCalls(delta.tool_calls),
-            } as any);
+            });
           }
 
           if (finishReason) {
