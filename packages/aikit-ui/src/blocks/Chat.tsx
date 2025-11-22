@@ -123,7 +123,7 @@ export function Chat({
 
   const handleSubmit = async (message: PromptInputMessage) => {
     if (status === "streaming") stop();
-    if (!message.text) return;
+    if (!message.text && !message.files) return;
 
     sendMessage({
       text: message.text,
@@ -361,6 +361,7 @@ export function PromptInputActionAddAttachment() {
       onClick={() => {
         attachments.openFileDialog();
       }}
+      aria-label="Add attachment"
     >
       <Paperclip className="size-4" />
     </PromptInputButton>
