@@ -8,62 +8,15 @@ A library to help setup webhook for respond.io integration using a clean, event-
 bun add @hebo/aikit-respond-io
 ```
 
-## Usage
+## What This Library Offers
 
-This library provides three ways to interact with Respond.io:
+This library helps you build robust Respond.io integrations by providing simple, secure, and resilient tools.
 
-- `createAdapter`: A factory function to create a high-level adapter that simplifies common workflows like receiving and sending messages.
-- `createWebhookHandler`: A factory function to create a low-level webhook handler for processing events from Respond.io.
-- `createRespondIoClient`: A factory function to create a low-level client for making requests to the Respond.io API.
-
-### Adapter Example with Hono
-
-The `Adapter`, created using the `createAdapter` factory, is the easiest way to get started. It combines the webhook and API client into a single, easy-to-use class.
-
-```ts
-import { Hono } from "hono";
-import { createAdapter } from "@hebo/aikit-respond-io";
-import { WebhookEvents } from "@hebo/aikit-respond-io/webhook";
-
-const app = new Hono();
-
-// 1. Create and configure the adapter.
-//    It's recommended to use environment variables for sensitive information.
-const adapter = createAdapter({
-  webhookConfig: {
-    events: {
-      [WebhookEvents.MessageReceived]: {
-        signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
-      },
-      // Add other event types you want the adapter to handle and their signing keys
-    },
-  },
-  clientConfig: {
-    apiKey: process.env.RESPOND_IO_API_KEY!,
-  },
-});
-
-// 2. Register a handler for incoming messages.
-adapter.onMessageReceived(async (payload) => {
-  const contactId = String(payload.contact.id);
-  const message = payload.message.message.text;
-
-  console.log(`Received message "${message}" from contact ${contactId}`);
-
-  // Example: Echo the message back to the user.
-  if (message) {
-    await adapter.sendTextMessage(`You said: ${message}`, contactId);
-    console.log(`Replied to contact ${contactId}`);
-  }
-});
-
-// 3. Mount the adapter's fetch handler under a specific path.
-// Hono will forward all requests under this path to the adapter's fetch handler.
-app.mount("/webhook/respond-io", adapter.fetch);
-
-// For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
-export default app;
-```
+- **`webhook`**: A factory function to create webhook handlers.
+  - **Secure**: Automatically verifies webhook signatures using constant-time comparison to prevent timing attacks.
+  - **Resilient**: Responds instantly to meet Respond.io's strict timeout, running your logic in the background.
+  - **Compatibility**: Works with any framework that supports the standard Fetch API `Request` and `Response` objects (Hono, Next.js, Cloudflare Workers, etc.).
+- **`client`**: A low-level client for making direct requests to the Respond.io API.
 
 ### Webhook Example with Hono
 
@@ -72,50 +25,42 @@ The `Webhook` handler now includes a `fetch` method to simplify integration, whi
 ```ts
 import { Hono } from "hono";
 import {
-  createWebhookHandler,
-  WebhookEvents,
+  webhook,
   MessageReceivedPayload,
   ConversationClosedPayload,
-} from "@hebo/aikit-respond-io/webhook";
+} from "@hebo/aikit-respond-io";
 
 const app = new Hono();
 
-// 1. Create and configure the webhook handler instance using the factory function.
-const webhook = createWebhookHandler({
-  events: {
-    [WebhookEvents.MessageReceived]: {
-      signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
-    },
-    [WebhookEvents.ConversationClosed]: {
-      signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
-    },
-    // Add other event types you want to handle and their signing keys
+// 1. Create and configure a webhook handler for MessageReceived events.
+const messageReceivedHandler = webhook<MessageReceivedPayload>({
+  signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
+  handle: (payload) => {
+    console.log("Got a new message:", payload.message.message.text);
+    // Add your business logic here (e.g., save to database, send a reply).
+  },
+  onError: (error) => {
+    // This handler will be called for internal errors during processing or from the 'handle' function.
+    console.log("[Webhook Error]", error); // Use console.log for example consistency
   },
 });
 
-// 2. Register handlers for each event type.
-webhook.on(WebhookEvents.MessageReceived, (payload: MessageReceivedPayload) => {
-  console.log("Got a new message:", payload.message.message.text);
-  // Add your business logic here (e.g., save to database, send a reply).
-});
-
-webhook.on(
-  WebhookEvents.ConversationClosed,
-  (payload: ConversationClosedPayload) => {
+// 2. Create and configure a webhook handler for ConversationClosed events.
+const conversationClosedHandler = webhook<ConversationClosedPayload>({
+  signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
+  handle: (payload) => {
     console.log(`Conversation ${payload.conversation.summary} was closed.`);
     // Add your business logic here.
   },
-);
-
-// 3. (Optional) Register a global error handler.
-webhook.onError((error) => {
-  // This handler will be called by the `fetch` method for internal errors.
-  console.error("[Webhook Error]", error.message);
+  onError: (error) => {
+    // This handler will be called for internal errors during processing or from the 'handle' function.
+    console.log("[Webhook Error]", error); // Use console.log for example consistency
+  },
 });
 
-// 4. Mount the webhook handler.
-// Hono will forward all requests under this path to the webhook's fetch handler.
-app.mount("/webhook/respond-io", webhook.fetch);
+// 3. Mount the webhook handlers to their respective paths.
+app.mount("/webhook/respond-io/message-received", messageReceivedHandler);
+app.mount("/webhook/respond-io/conversation-closed", conversationClosedHandler);
 
 // For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
 export default app;
@@ -128,10 +73,7 @@ For a direct, serverless deployment without API Gateway, you can use an [AWS Lam
 The function validates the request, and for longer-running tasks, it can pass the verified payload to an SQS queue for asynchronous processing.
 
 ```ts
-import {
-  createWebhookHandler,
-  WebhookEvents,
-} from "@hebo/aikit-respond-io/webhook";
+import { webhook, MessageReceivedPayload } from "@hebo/aikit-respond-io";
 // Note the specific event/result types for Function URLs
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 
@@ -139,18 +81,13 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2> => {
-  const webhook = createWebhookHandler({
-    events: {
-      [WebhookEvents.MessageReceived]: {
-        signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
-      },
+  // 1. Create and configure a webhook handler for MessageReceived events.
+  const messageReceivedHandler = webhook<MessageReceivedPayload>({
+    signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
+    handle: async (payload) => {
+      console.log(`Verified message from ${payload.contact.id}.`);
+      // Here you could add it to an SQS queue for async processing
     },
-  });
-
-  // Example: Log the message after it's been verified
-  webhook.on(WebhookEvents.MessageReceived, async (payload) => {
-    console.log(`Verified message from ${payload.contact.id}.`);
-    // Here you could add it to an SQS queue for async processing
   });
 
   // The domain/path are part of the V2 event structure
@@ -164,7 +101,7 @@ export const handler = async (
   });
 
   // The fetch handler validates the signature and triggers any .on() handlers
-  const response = await webhook.fetch(request);
+  const response = await messageReceivedHandler(request); // Direct call to the handler
 
   // Convert the standard Response back to the format Lambda expects
   return {
@@ -180,7 +117,7 @@ export const handler = async (
 ```ts
 import { Hono } from "hono";
 import {
-  createRespondIoClient,
+  client,
   SendMessagePayload,
   ContactIdentifier,
   TextMessage,
@@ -191,7 +128,7 @@ const app = new Hono();
 
 // Initialize the client with your API key.
 // It's recommended to use environment variables for sensitive information.
-const client = createRespondIoClient({
+const client = client({
   apiKey: process.env.RESPOND_IO_API_KEY!,
 });
 
@@ -245,20 +182,21 @@ export default app;
 
 #### Vercel AI SDK Integration
 
-The `@hebo/aikit-respond-io/webhook` package provides a `toAiModelMessage` utility function to easily convert a Respond.io message payload into a `ModelMessage` compatible with the [Vercel AI SDK](https://sdk.vercel.ai/).
+The `@hebo/aikit-respond-io` package provides a `toAiModelMessage` utility function to easily convert a Respond.io message payload into a `ModelMessage` compatible with the [Vercel AI SDK](https://sdk.vercel.ai/).
 
 ```ts
 import {
+  webhook,
   toAiModelMessage,
-  WebhookEvents,
   MessageReceivedPayload,
-} from "@hebo/aikit-respond-io/webhook";
+} from "@hebo/aikit-respond-io";
 import { ModelMessage } from "ai";
+import { streamText } from "ai"; // Assuming this is part of Vercel AI SDK
 
-// Assuming webhook instance configured
-webhook.on(
-  WebhookEvents.MessageReceived,
-  async (payload: MessageReceivedPayload) => {
+// Create a webhook handler specifically for message received events
+const aiWebhookHandler = webhook<MessageReceivedPayload>({
+  signingKey: process.env.RESPOND_IO_SIGNING_KEY!, // Use your signing key
+  handle: async (payload) => {
     try {
       // Convert the incoming message to a user message for the AI SDK
       const aiMessage: ModelMessage = toAiModelMessage(
@@ -266,11 +204,23 @@ webhook.on(
         "user",
       );
 
+      // Assuming 'model' is defined elsewhere or passed in context
+      const model: any = {
+        /* your AI model instance */
+      }; // Replace with your actual model instance
+
       // You can now use `aiMessage` with the Vercel AI SDK functions like `streamText`
       const result = await streamText({ model, messages: [aiMessage] });
+      console.log("AI streamed text:", result.text); // Log or store the result
     } catch (error) {
-      console.error("Failed to convert message:", error);
+      console.error("Failed to process AI message:", error);
     }
   },
-);
+  onError: (error) => {
+    console.error("[AI Webhook Error]", error);
+  },
+});
+
+// This handler can then be mounted to your framework, e.g., Hono or Lambda
+export default aiWebhookHandler;
 ```

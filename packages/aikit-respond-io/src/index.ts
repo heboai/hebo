@@ -1,4 +1,2 @@
-export * as webhook from "./webhook";
-export * as client from "./client";
-
-export { createAdapter } from "./adapter";
+export * from "./client";
+export * from "./webhook";

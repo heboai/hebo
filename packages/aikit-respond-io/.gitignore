@@ -1,0 +1,6 @@
+# Vim backup files
+*.swp
+*.swo
+*~
+*.un~
+.un~*
