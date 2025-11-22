@@ -83,11 +83,7 @@ export class OpenAIHttpChatTransport<
   protected processResponseStream(
     stream: ReadableStream<Uint8Array>,
   ): ReadableStream<UIMessageChunk> {
-    return new ReadableStream<UIMessageChunk>({
-      start: async (controller) => {
-        await handleSSEStream(stream, controller);
-      },
-    });
+    return handleSSEStream(stream);
   }
 }
 
@@ -161,17 +157,16 @@ async function toFileContent(
     const blob = await resp.blob();
     const mediaType = part.mediaType || blob.type || "application/octet-stream";
     const arrayBuffer = await blob.arrayBuffer();
-    const data = btoa(String.fromCodePoint(...new Uint8Array(arrayBuffer)));
+    const data = toBase64(arrayBuffer);
     return { type: "file", file: { data, media_type: mediaType, filename } };
   } catch {
     return;
   }
 }
 
-async function handleSSEStream(
+function handleSSEStream(
   stream: ReadableStream<Uint8Array>,
-  controller: ReadableStreamDefaultController<UIMessageChunk>,
-) {
+): ReadableStream<UIMessageChunk> {
   const messageId = crypto.randomUUID();
   const textId = `text-${messageId}`;
   const reasoningId = `reasoning-${messageId}`;
@@ -179,86 +174,75 @@ async function handleSSEStream(
   let reasoningStarted = false;
   let finalFinish: FinishReason | undefined;
 
-  await parseJsonEventStream<OpenAIChatDelta>({
+  return parseJsonEventStream<OpenAIChatDelta>({
     stream,
     // no schema validation; the upstream SSE format is trusted to be OpenAI delta shape
     schema: undefined as unknown as never,
-  })
-    .pipeThrough(
-      new TransformStream<ParseResult<OpenAIChatDelta>, UIMessageChunk>({
-        start(ctrl) {
-          ctrl.enqueue({ type: "start", messageId });
-        },
-        transform(result, ctrl) {
-          if (!result?.success) {
-            ctrl.enqueue({
-              type: "error",
-              errorText: result?.error?.message ?? "Stream parse error",
-            });
-            return;
-          }
+  }).pipeThrough(
+    new TransformStream<ParseResult<OpenAIChatDelta>, UIMessageChunk>({
+      start(ctrl) {
+        ctrl.enqueue({ type: "start", messageId });
+      },
+      transform(result, ctrl) {
+        if (!result?.success) {
+          ctrl.enqueue({
+            type: "error",
+            errorText: result?.error?.message ?? "Stream parse error",
+          });
+          return;
+        }
 
-          const parsed = result.value;
-          const delta = parsed.choices?.[0]?.delta;
-          const finishReason = parsed.choices?.[0]?.finish_reason;
+        const parsed = result.value;
+        const delta = parsed.choices?.[0]?.delta;
+        const finishReason = parsed.choices?.[0]?.finish_reason;
 
-          if (delta?.content) {
-            if (!textStarted) {
-              ctrl.enqueue({ type: "text-start", id: textId });
-              textStarted = true;
-            }
-            ctrl.enqueue({
-              type: "text-delta",
-              id: textId,
-              delta: delta.content,
-            });
-          }
-
-          if (delta?.reasoning_content) {
-            if (!reasoningStarted) {
-              ctrl.enqueue({ type: "reasoning-start", id: reasoningId });
-              reasoningStarted = true;
-            }
-            ctrl.enqueue({
-              type: "reasoning-delta",
-              id: reasoningId,
-              delta: asText(delta.reasoning_content),
-            });
-          }
-
-          if (delta?.tool_calls?.length) {
-            ctrl.enqueue({
-              type: "data-openai-tool-calls",
-              data: normalizeToolCalls(delta.tool_calls),
-            });
-          }
-
-          if (finishReason) {
-            finalFinish = toFinishReason(finishReason);
-          }
-        },
-        flush(ctrl) {
-          if (textStarted) ctrl.enqueue({ type: "text-end", id: textId });
-          if (reasoningStarted) {
-            ctrl.enqueue({ type: "reasoning-end", id: reasoningId });
+        if (delta?.content) {
+          if (!textStarted) {
+            ctrl.enqueue({ type: "text-start", id: textId });
+            textStarted = true;
           }
           ctrl.enqueue({
-            type: "finish",
-            finishReason: finalFinish ?? "stop",
+            type: "text-delta",
+            id: textId,
+            delta: delta.content,
           });
-        },
-      }),
-    )
-    .pipeTo(
-      new WritableStream({
-        write(chunk) {
-          controller.enqueue(chunk);
-        },
-        close() {
-          controller.close();
-        },
-      }),
-    );
+        }
+
+        if (delta?.reasoning_content) {
+          if (!reasoningStarted) {
+            ctrl.enqueue({ type: "reasoning-start", id: reasoningId });
+            reasoningStarted = true;
+          }
+          ctrl.enqueue({
+            type: "reasoning-delta",
+            id: reasoningId,
+            delta: asText(delta.reasoning_content),
+          });
+        }
+
+        if (delta?.tool_calls?.length) {
+          ctrl.enqueue({
+            type: "data-openai-tool-calls",
+            data: normalizeToolCalls(delta.tool_calls),
+          });
+        }
+
+        if (finishReason) {
+          finalFinish = toFinishReason(finishReason);
+        }
+      },
+      flush(ctrl) {
+        if (textStarted) ctrl.enqueue({ type: "text-end", id: textId });
+        if (reasoningStarted) {
+          ctrl.enqueue({ type: "reasoning-end", id: reasoningId });
+        }
+        ctrl.enqueue({
+          type: "finish",
+          finishReason: finalFinish ?? "stop",
+        });
+      },
+    }),
+  );
 }
 
 function normalizeToolCalls(
@@ -287,4 +271,17 @@ function asText(
 function toFinishReason(raw: string | null | undefined): FinishReason {
   if (!raw || raw === "null") return "stop";
   return raw.replaceAll("_", "-") as FinishReason;
+}
+
+function toBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x80_00;
+  let binary = "";
+
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCodePoint(...chunk);
+  }
+
+  return btoa(binary);
 }
