@@ -2,7 +2,7 @@ import * as crypto from "node:crypto";
 
 import { ModelMessage, UserContent } from "ai";
 
-import { SignatureVerificationError } from "./errors";
+import { InvalidSignatureError } from "./errors";
 import { MessageContent, TextContent } from "./types";
 
 export function verifySignature(
@@ -10,13 +10,26 @@ export function verifySignature(
   signature: string,
   signingKey: string,
 ): void {
-  const expectedSignature = crypto
-    .createHmac("sha256", signingKey)
-    .update(body)
-    .digest("base64");
+  const hmac = crypto.createHmac("sha256", signingKey);
+  hmac.update(body);
+  const expectedSignature = hmac.digest("base64");
 
-  if (signature !== expectedSignature) {
-    throw new SignatureVerificationError("Signature mismatch.");
+  const expectedSignatureBuffer = Buffer.from(expectedSignature);
+  const receivedSignatureBuffer = Buffer.from(signature);
+
+  // Ensure buffers are the same length to prevent `timingSafeEqual` from throwing
+  if (expectedSignatureBuffer.length !== receivedSignatureBuffer.length) {
+    throw new InvalidSignatureError("Signature length mismatch.");
+  }
+
+  // Use a constant-time comparison to prevent timing attacks
+  const signaturesMatch = crypto.timingSafeEqual(
+    expectedSignatureBuffer,
+    receivedSignatureBuffer,
+  );
+
+  if (!signaturesMatch) {
+    throw new InvalidSignatureError("Signature mismatch.");
   }
 }
 

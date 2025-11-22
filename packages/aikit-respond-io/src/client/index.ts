@@ -154,6 +154,6 @@ export class RespondIoClient {
 export * from "./types";
 export * from "./errors";
 
-export const createRespondIoClient = (config: RespondIoClientConfig) => {
+export const client = (config: RespondIoClientConfig) => {
   return new RespondIoClient(config);
 };
