@@ -33,7 +33,7 @@ import {
 const app = new Hono();
 
 // 1. Create and configure a webhook handler for MessageReceived events.
-const messageReceivedHandler = webhook<MessageReceivedPayload>({
+const messageReceivedWebhook = webhook<MessageReceivedPayload>({
   signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
   handle: (payload) => {
     console.log("Got a new message:", payload.message.message.text);
@@ -46,7 +46,7 @@ const messageReceivedHandler = webhook<MessageReceivedPayload>({
 });
 
 // 2. Create and configure a webhook handler for ConversationClosed events.
-const conversationClosedHandler = webhook<ConversationClosedPayload>({
+const conversationClosedWebhook = webhook<ConversationClosedPayload>({
   signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
   handle: (payload) => {
     console.log(`Conversation ${payload.conversation.summary} was closed.`);
@@ -59,8 +59,11 @@ const conversationClosedHandler = webhook<ConversationClosedPayload>({
 });
 
 // 3. Mount the webhook handlers to their respective paths.
-app.mount("/webhook/respond-io/message-received", messageReceivedHandler);
-app.mount("/webhook/respond-io/conversation-closed", conversationClosedHandler);
+app.mount("/webhook/respond-io/message-received", messageReceivedWebhook.fetch);
+app.mount(
+  "/webhook/respond-io/conversation-closed",
+  conversationClosedWebhook.fetch,
+);
 
 // For Cloudflare Workers, Vercel, etc., Hono exports `app` directly.
 export default app;
@@ -85,7 +88,7 @@ export const handler = async (
   event: APIGatewayProxyEventV2,
 ): Promise<APIGatewayProxyResultV2> => {
   // 1. Create and configure a webhook handler for MessageReceived events.
-  const messageReceivedHandler = webhook<MessageReceivedPayload>({
+  const messageReceivedWebhook = webhook<MessageReceivedPayload>({
     signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
     handle: async (payload) => {
       console.log(`Verified message from ${payload.contact.id}.`);
@@ -104,7 +107,7 @@ export const handler = async (
   });
 
   // The fetch handler validates the signature and triggers any .on() handlers
-  const response = await messageReceivedHandler(request);
+  const response = await messageReceivedWebhook.fetch(request);
 
   // Convert the standard Response back to the format Lambda expects
   return {
@@ -221,5 +224,5 @@ const aiWebhookHandler = webhook<MessageReceivedPayload>({
 });
 
 // This handler can then be mounted to your framework, e.g., Hono or Lambda
-export default aiWebhookHandler;
+export default aiWebhookHandler.fetch;
 ```

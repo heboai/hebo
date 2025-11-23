@@ -16,10 +16,10 @@ const defaultErrorHandler: ErrorHandler = (err: unknown) => {
 
 export function webhook<T extends WebhookPayload>(
   options: WebhookHandlerOptions<T>,
-): (request: Request) => Promise<Response> {
+): { fetch: (request: Request) => Promise<Response> } {
   const errorHandler = options.onError || defaultErrorHandler;
 
-  return async (request: Request): Promise<Response> => {
+  const fetchHandler = async (request: Request): Promise<Response> => {
     try {
       const body = await request.text();
       const signature = request.headers.get("x-webhook-signature");
@@ -51,6 +51,10 @@ export function webhook<T extends WebhookPayload>(
       // return 200 OK to prevent webhook disruption.
       return new Response("OK", { status: 200 });
     }
+  };
+
+  return {
+    fetch: fetchHandler,
   };
 }
 export * from "./types";
