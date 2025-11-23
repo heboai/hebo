@@ -2,6 +2,10 @@ import { WebhookError, InvalidSignatureError } from "./errors";
 import { ErrorHandler, WebhookHandlerOptions, WebhookPayload } from "./types";
 import { verifySignature } from "./utils";
 
+const defaultErrorHandler: ErrorHandler = (err: unknown) => {
+  console.error("Webhook handler encountered an unhandled error:", err);
+};
+
 /**
  * Creates a standard Fetch API-compatible request handler for a specific webhook event.
  * This handler will automatically verify the signature, parse the request body,
@@ -10,10 +14,6 @@ import { verifySignature } from "./utils";
  * @param options Configuration for the webhook handler, including the signing key and event-specific logic.
  * @returns An object that encapsulates the webhook handler functionality.
  */
-const defaultErrorHandler: ErrorHandler = (err: unknown) => {
-  console.error("Webhook handler encountered an unhandled error:", err);
-};
-
 export function webhook<T extends WebhookPayload>(
   options: WebhookHandlerOptions<T>,
 ): { fetch: (request: Request) => Promise<Response> } {
