@@ -197,7 +197,7 @@ import {
   MessageReceivedPayload,
 } from "@hebo/aikit-respond-io/webhook";
 import { ModelMessage } from "ai";
-import { streamText } from "ai";
+import { streamText } from "ai"; // Assuming this is part of Vercel AI SDK
 
 // Create a webhook handler specifically for message received events
 const aiWebhookHandler = webhook<MessageReceivedPayload>({
