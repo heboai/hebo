@@ -8,7 +8,7 @@ import { verifySignature } from "./utils";
  * and execute the provided business logic.
  *
  * @param options Configuration for the webhook handler, including the signing key and event-specific logic.
- * @returns An async function that takes a Request object and returns a Promise resolving to a Response object.
+ * @returns An object that encapsulates the webhook handler functionality.
  */
 const defaultErrorHandler: ErrorHandler = (err: unknown) => {
   console.error("Webhook handler encountered an unhandled error:", err);

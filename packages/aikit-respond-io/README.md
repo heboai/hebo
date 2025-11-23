@@ -20,7 +20,7 @@ This library helps you build robust Respond.io integrations by providing simple,
 
 ### Webhook Example with Hono
 
-The `Webhook` handler now includes a `fetch` method to simplify integration, which can be used directly with Hono's `app.mount`.
+This section demonstrates how to create and mount a webhook handler using Hono.
 
 ```ts
 import { Hono } from "hono";
@@ -106,7 +106,7 @@ export const handler = async (
     body: event.body,
   });
 
-  // The fetch handler validates the signature and triggers any .on() handlers
+  // Process the incoming request using the webhook handler.
   const response = await messageReceivedWebhook.fetch(request);
 
   // Convert the standard Response back to the format Lambda expects
@@ -223,6 +223,6 @@ const aiWebhookHandler = webhook<MessageReceivedPayload>({
   },
 });
 
-// This handler can then be mounted to your framework, e.g., Hono or Lambda
+// The .fetch method of this handler object can then be mounted to your framework, e.g., Hono or Lambda
 export default aiWebhookHandler.fetch;
 ```

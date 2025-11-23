@@ -5,6 +5,15 @@ import { ModelMessage, UserContent } from "ai";
 import { InvalidSignatureError } from "./errors";
 import { MessageContent, TextContent } from "./types";
 
+/**
+ * Verifies the signature of a webhook request using HMAC SHA256.
+ * This function performs a constant-time comparison to prevent timing attacks.
+ *
+ * @param body The raw request body as a string.
+ * @param signature The 'x-webhook-signature' header value.
+ * @param signingKey The secret signing key for the webhook.
+ * @throws {InvalidSignatureError} If the signature is missing, invalid, or does not match.
+ */
 export function verifySignature(
   body: string,
   signature: string,
