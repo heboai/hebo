@@ -107,6 +107,11 @@ export function Chat({
       // reasoningEffort: "medium"
     }),
   });
+  useEffect(() => {
+    if (error) {
+      console.error("Chat error:", error);
+    }
+  }, [error]);
 
   // Shortcut: Ctrl/Cmd+i to focus chat input field
   useEffect(() => {
@@ -265,7 +270,6 @@ export function Chat({
                 </AlertDescription>
               </Alert>
             )}
-            {error && console.log(error)}
           </ConversationContent>
           <ConversationScrollButton />
         </Conversation>
