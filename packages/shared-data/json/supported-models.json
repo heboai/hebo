@@ -77,17 +77,6 @@
     "modality": "chat"
   },
   {
-    "name": "amazon/nova-2-multimodal-embeddings-v1",
-    "displayName": "Amazon Nova 2 Multimodal Embeddings v1",
-    "rateLimit": 400000000,
-    "providers": [
-      {
-        "bedrock": "amazon.nova-2-multimodal-embeddings-v1:0"
-      }
-    ],
-    "modality": "embedding"
-  },
-  {
     "name": "amazon/titan-embed-text-v2",
     "displayName": "Amazon Titan Embed Text v2",
     "rateLimit": 400000000,
