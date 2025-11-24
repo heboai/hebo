@@ -28,7 +28,7 @@ export class VertexProvider implements Provider {
         })();
   }
 
-  // FUTURE: Let google auth library handle this once they will start supporting WIF for ECS tasks: https://github.com/googleapis/google-auth-library-php/issues/496
+  // FUTURE: Let google auth library handle this once they will start supporting WIF for ECS tasks: https://github.com/googleapis/google-cloud-node-core/issues/523
   private static async injectAwsMetadataCredentials(): Promise<void> {
     if (!process.env.IS_REMOTE) return;
     const response = await fetch(
