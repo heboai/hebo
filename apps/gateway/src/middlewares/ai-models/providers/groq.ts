@@ -6,25 +6,17 @@ import { getSecret } from "@hebo/shared-api/utils/secrets";
 import type { Provider } from "./providers";
 import type { Provider as AiProvider } from "ai";
 
-const getGroqDefaultConfig = async (): Promise<ApiKeyProviderConfig> => ({
-  apiKey: await getSecret("GroqApiKey"),
-});
-
 export class GroqProvider implements Provider {
   private readonly configPromise: Promise<ApiKeyProviderConfig>;
 
   constructor(config?: ApiKeyProviderConfig) {
     this.configPromise = config
       ? Promise.resolve(config)
-      : getGroqDefaultConfig();
-  }
-
-  private async getConfig(): Promise<ApiKeyProviderConfig> {
-    return this.configPromise;
+      : getSecret("GroqApiKey").then((apiKey) => ({ apiKey }));
   }
 
   async create(): Promise<AiProvider> {
-    const cfg = await this.getConfig();
+    const cfg = await this.configPromise;
     return createGroq({ ...cfg });
   }
 
