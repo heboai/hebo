@@ -25,10 +25,10 @@ export const aiModelFactory = new Elysia({
         providerName,
         Boolean(customProvider),
       );
-      // FUTURE: memoize with TTL
-      // FUTURE: memoize (depends on provider config)
       const [provider, resolvedModelId] = await Promise.all([
+        // FUTURE: memoize with TTL
         providerAdapter.provider,
+        // FUTURE: memoize (depends on provider config)
         providerAdapter.resolveModelId(modelConfig),
       ]);
 
