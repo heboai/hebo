@@ -9,7 +9,7 @@ import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 
-import { createProvider } from "./ai-models/providers";
+import { createProvider } from "./providers";
 
 import type { EmbeddingModel, LanguageModel } from "ai";
 
@@ -73,7 +73,7 @@ export const aiModelFactory = new Elysia({
 })
   .use(dbClient)
   .resolve(({ dbClient }) => {
-    async function createBaseModel(
+    async function createModel(
       fullModelAlias: string,
       modality: "chat" | "embedding",
     ): Promise<LanguageModel | EmbeddingModel<string>> {
@@ -92,14 +92,15 @@ export const aiModelFactory = new Elysia({
 
     const createAIModel = {
       chat: async (fullModelAlias: string): Promise<LanguageModel> => {
-        const model = await createBaseModel(fullModelAlias, "chat");
-        return model as LanguageModel;
+        return (await createModel(fullModelAlias, "chat")) as LanguageModel;
       },
       embedding: async (
         fullModelAlias: string,
       ): Promise<EmbeddingModel<string>> => {
-        const model = await createBaseModel(fullModelAlias, "embedding");
-        return model as EmbeddingModel<string>;
+        return (await createModel(
+          fullModelAlias,
+          "embedding",
+        )) as EmbeddingModel<string>;
       },
     } as const;
 

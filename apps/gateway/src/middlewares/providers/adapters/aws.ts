@@ -33,7 +33,7 @@ export async function injectMetadataCredentials() {
     }
   }
 
-  // Fall back to session token for local development
+  // Fall back to session token command for local development
   const client = new STSClient();
   const session = await client.send(new GetSessionTokenCommand());
   if (!session.Credentials) throw new Error("Missing AWS credentials");
