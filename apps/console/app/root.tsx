@@ -8,7 +8,6 @@ import "./init";
 
 import "./styles/tailwind.css";
 import "./styles/global.css";
-import "./styles/stack.css";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
