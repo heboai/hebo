@@ -4,6 +4,7 @@ import { promisify } from "node:util";
 import { connectionString } from "../client";
 
 export const handler = async () => {
+  // FUTURE: remove when we upgrade to Prisma 7
   await promisify(exec)("npx prisma@6.17.0 migrate deploy", {
     env: { ...process.env, DATABASE_URL: connectionString },
   });
