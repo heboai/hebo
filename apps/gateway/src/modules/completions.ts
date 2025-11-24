@@ -47,7 +47,7 @@ export const completions = new Elysia({
           temperature,
         });
 
-        const responseStream = toOpenAICompatibleStream(result, model);
+        const responseStream = toOpenAICompatibleStream(result, fullModelAlias);
 
         return new Response(responseStream, {
           headers: {
