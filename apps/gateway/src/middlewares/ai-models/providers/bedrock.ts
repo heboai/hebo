@@ -3,23 +3,18 @@ import {
   BedrockClient,
   ListInferenceProfilesCommand,
 } from "@aws-sdk/client-bedrock";
-import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 
 import type { AwsProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
+import { assumeRole } from "./adapters/aws";
+
 import type { Provider } from "./providers";
 import type { Provider as AiProvider } from "ai";
 
-type AwsTemporaryCredentials = {
-  accessKeyId: string;
-  secretAccessKey: string;
-  sessionToken: string;
-};
-
 export class BedrockProvider implements Provider {
   private readonly configPromise: Promise<AwsProviderConfig>;
-  private credentialsPromise?: Promise<AwsTemporaryCredentials>;
+  private credentialsPromise?: ReturnType<typeof assumeRole>;
 
   constructor(config?: AwsProviderConfig) {
     this.configPromise = config
@@ -32,40 +27,29 @@ export class BedrockProvider implements Provider {
         })();
   }
 
-  private getCredentials(): Promise<AwsTemporaryCredentials> {
+  private async getCredentials() {
     if (!this.credentialsPromise) {
-      this.credentialsPromise = (async () => {
-        const cfg = await this.configPromise;
-        const sts = new STSClient({ region: cfg.region });
-        const resp = await sts.send(
-          new AssumeRoleCommand({
-            RoleArn: cfg.bedrockRoleArn,
-            RoleSessionName: "HeboBedrockSession",
-          }),
-        );
-        if (!resp.Credentials) throw new Error("Missing AWS credentials");
-        return {
-          accessKeyId: resp.Credentials.AccessKeyId!,
-          secretAccessKey: resp.Credentials.SecretAccessKey!,
-          sessionToken: resp.Credentials.SessionToken!,
-        };
-      })();
+      this.credentialsPromise = this.configPromise.then((cfg) =>
+        assumeRole(cfg.region, cfg.bedrockRoleArn),
+      );
     }
     return this.credentialsPromise;
   }
 
   async create(): Promise<AiProvider> {
-    const cfg = await this.configPromise;
-    const creds = await this.getCredentials();
-    return createAmazonBedrock({ ...creds, region: cfg.region });
+    const credentials = await this.getCredentials();
+    const { region } = await this.configPromise;
+    return createAmazonBedrock({
+      ...credentials,
+      region,
+    });
   }
 
   async resolveModelId(id: string): Promise<string> {
-    const cfg = await this.configPromise;
-    const creds = await this.getCredentials();
+    const { region } = await this.configPromise;
     const client = new BedrockClient({
-      region: cfg.region,
-      credentials: creds,
+      region,
+      credentials: await this.getCredentials(),
     });
     let nextToken: string | undefined;
     do {
