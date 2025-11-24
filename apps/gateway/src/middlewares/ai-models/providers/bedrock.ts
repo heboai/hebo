@@ -32,14 +32,10 @@ export class BedrockProvider implements Provider {
         })();
   }
 
-  private async getConfig(): Promise<AwsProviderConfig> {
-    return this.configPromise;
-  }
-
   private getCredentials(): Promise<AwsTemporaryCredentials> {
     if (!this.credentialsPromise) {
       this.credentialsPromise = (async () => {
-        const cfg = await this.getConfig();
+        const cfg = await this.configPromise;
         const sts = new STSClient({ region: cfg.region });
         const resp = await sts.send(
           new AssumeRoleCommand({
@@ -59,13 +55,13 @@ export class BedrockProvider implements Provider {
   }
 
   async create(): Promise<AiProvider> {
-    const cfg = await this.getConfig();
+    const cfg = await this.configPromise;
     const creds = await this.getCredentials();
     return createAmazonBedrock({ ...creds, region: cfg.region });
   }
 
   async resolveModelId(id: string): Promise<string> {
-    const cfg = await this.getConfig();
+    const cfg = await this.configPromise;
     const creds = await this.getCredentials();
     const client = new BedrockClient({
       region: cfg.region,
