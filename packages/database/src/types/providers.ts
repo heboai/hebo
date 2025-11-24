@@ -1,19 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 
-import supportedModels from "@hebo/shared-data/json/supported-models";
-
 export const ProviderNameEnum = Type.Enum(
-  Object.fromEntries(
-    [
-      ...new Set(
-        supportedModels.flatMap((model) =>
-          (model.providers ?? []).flatMap((providerObj) =>
-            Object.keys(providerObj),
-          ),
-        ),
-      ),
-    ].map((providerName) => [providerName, providerName]),
-  ),
+  { bedrock: "bedrock", vertex: "vertex", groq: "groq" },
   { error: "Invalid provider name" },
 );
 

@@ -192,7 +192,6 @@
       "name": "@hebo/database",
       "version": "0.0.1",
       "dependencies": {
-        "@hebo/shared-data": "workspace:*",
         "@prisma/adapter-pg": "^6.17.0",
         "@prisma/client": "^6.17.0",
         "@sinclair/typebox": "^0.34.41",
@@ -230,6 +229,7 @@
       "name": "@hebo/shared-data",
       "version": "0.0.1",
       "dependencies": {
+        "@hebo/database": "workspace:*",
         "@sinclair/typebox": "^0.34.41",
       },
       "devDependencies": {
