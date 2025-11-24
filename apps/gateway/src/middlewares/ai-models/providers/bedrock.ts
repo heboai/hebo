@@ -11,7 +11,7 @@ import { getSecret } from "@hebo/shared-api/utils/secrets";
 import type { Provider } from "./providers";
 import type { Provider as AiProvider } from "ai";
 
-export type AwsTemporaryCredentials = {
+type AwsTemporaryCredentials = {
   accessKeyId: string;
   secretAccessKey: string;
   sessionToken: string;
