@@ -1,5 +1,10 @@
 import { WebhookError, InvalidSignatureError } from "./errors";
-import { ErrorHandler, WebhookHandlerOptions, WebhookPayload } from "./types";
+import {
+  ErrorHandler,
+  WebhookHandlerOptions,
+  WebhookPayload,
+  WebhookHandler,
+} from "./types";
 import { verifySignature } from "./utils";
 
 const defaultErrorHandler: ErrorHandler = (err: unknown) => {
@@ -16,7 +21,7 @@ const defaultErrorHandler: ErrorHandler = (err: unknown) => {
  */
 export function webhook<T extends WebhookPayload>(
   options: WebhookHandlerOptions<T>,
-): { fetch: (request: Request) => Promise<Response> } {
+): WebhookHandler {
   const errorHandler = options.onError || defaultErrorHandler;
 
   const fetchHandler = async (request: Request): Promise<Response> => {

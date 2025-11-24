@@ -18,6 +18,10 @@ export type WebhookPayload =
   | ContactAssigneeUpdatedPayload
   | ConversationClosedPayload;
 
+export interface WebhookHandler {
+  fetch: (request: Request) => Promise<Response>;
+}
+
 // --- Common Base Interfaces ---
 
 interface BaseUser {
