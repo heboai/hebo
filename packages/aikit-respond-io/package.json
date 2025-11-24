@@ -7,10 +7,6 @@
     "dist"
   ],
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
     "./webhook": {
       "import": "./dist/webhook/index.js",
       "types": "./dist/webhook/index.d.ts"

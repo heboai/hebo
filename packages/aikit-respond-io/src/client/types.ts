@@ -1,9 +1,9 @@
-export interface TextMessage {
+export interface TextContent {
   type: "text";
   text: string;
 }
 
-export interface AttachmentMessage {
+export interface AttachmentContent {
   type: "attachment";
   url: string;
   fileName: string;
@@ -13,7 +13,7 @@ export interface AttachmentMessage {
 /**
  * Represents the content of a message to be sent.
  */
-export type MessageContent = TextMessage | AttachmentMessage;
+export type MessageContent = TextContent | AttachmentContent;
 
 /**
  * Represents the payload for sending a message to a contact.
@@ -67,4 +67,3 @@ export interface CreateCommentResponse {
   text: string;
   created_at: number;
 }
-

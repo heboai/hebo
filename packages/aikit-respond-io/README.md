@@ -134,7 +134,7 @@ const app = new Hono();
 
 // Initialize the client with your API key.
 // It's recommended to use environment variables for sensitive information.
-const client = client({
+const apiClient = client({
   apiKey: process.env.RESPOND_IO_API_KEY!,
 });
 
@@ -154,7 +154,7 @@ app.post("/send-message", async (c) => {
       message: message,
     };
 
-    const response: SendMessageResponse = await client.messaging.sendMessage(
+    const response: SendMessageResponse = await apiClient.messaging.sendMessage(
       contactIdentifier,
       payload,
     );

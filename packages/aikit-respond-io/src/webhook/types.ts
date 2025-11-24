@@ -121,7 +121,7 @@ export interface ConversationClosedPayload {
     openedTime: number;
     openedBySource: string;
     closedTime: number;
-    closedBy: BaseUser | null | Record<string, never>; // May be empt
+    closedBy: BaseUser | null | Record<string, never>;
     closedBySource: string;
     firstResponseTime: number;
     resolutionTime: number;
