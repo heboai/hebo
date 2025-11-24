@@ -81,11 +81,11 @@ type ModelsConfig = Array<{
 export function Chat({
   modelsConfig,
   name = "Hebo AI",
-  reasoning = false,
+  dev = false,
 }: {
   modelsConfig: ModelsConfig;
   name?: string;
-  reasoning?: boolean;
+  dev?: boolean;
 }) {
   const [selectedModelAlias, setSelectedModelAlias] = useState<
     string | undefined
@@ -197,7 +197,7 @@ export function Chat({
                     }
                     case "reasoning": {
                       return (
-                        reasoning && (
+                        dev && (
                           <Reasoning
                             key={`${message.id}-${i}`}
                             className="w-full"
