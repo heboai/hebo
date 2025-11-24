@@ -14,7 +14,6 @@ export const models = new Elysia({
         object: "list" as const,
         data: supportedModels
           .map((m) => m.name)
-          .sort()
           .map((id) => ({
             id,
             object: "model" as const,
