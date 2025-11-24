@@ -7,16 +7,19 @@ import {
 import type { AwsProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-import { assumeRole } from "./adapters/aws";
+import { assumeRole } from "~gateway/utils/host-adapters/aws";
 
-import type { Provider } from "./providers";
-import type { Provider as AiProvider } from "ai";
+import { ProviderAdapterBase, type ModelConfig } from "./providers";
 
-export class BedrockProvider implements Provider {
+import type { Provider } from "ai";
+
+export class BedrockProviderAdapter extends ProviderAdapterBase {
   private readonly configPromise: Promise<AwsProviderConfig>;
   private credentialsPromise?: ReturnType<typeof assumeRole>;
+  readonly provider: Promise<Provider>;
 
   constructor(config?: AwsProviderConfig) {
+    super("bedrock");
     this.configPromise = config
       ? Promise.resolve(config)
       : (async () => {
@@ -25,6 +28,7 @@ export class BedrockProvider implements Provider {
             region: await getSecret("BedrockRegion"),
           };
         })();
+    this.provider = this.buildAiProvider();
   }
 
   private async getCredentials() {
@@ -36,7 +40,7 @@ export class BedrockProvider implements Provider {
     return this.credentialsPromise;
   }
 
-  async create(): Promise<AiProvider> {
+  private async buildAiProvider(): Promise<Provider> {
     const credentials = await this.getCredentials();
     const { region } = await this.configPromise;
     return createAmazonBedrock({
@@ -45,7 +49,8 @@ export class BedrockProvider implements Provider {
     });
   }
 
-  async resolveModelId(id: string): Promise<string> {
+  async resolveModelId(model: ModelConfig) {
+    const modelId = this.getProviderModelId(model);
     const { region } = await this.configPromise;
     const client = new BedrockClient({
       region,
@@ -58,12 +63,12 @@ export class BedrockProvider implements Provider {
       );
       for (const prof of res.inferenceProfileSummaries ?? []) {
         const arn = prof.inferenceProfileArn ?? "";
-        if (arn.includes(id)) {
+        if (arn.includes(modelId)) {
           return arn;
         }
       }
       nextToken = res.nextToken;
     } while (nextToken);
-    return id;
+    return modelId;
   }
 }

@@ -3,15 +3,21 @@ import { createVertex } from "@ai-sdk/google-vertex";
 import type { GoogleProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-import { injectMetadataCredentials, buildWifOptions } from "./adapters/aws";
+import {
+  injectMetadataCredentials,
+  buildWifOptions,
+} from "~gateway/utils/host-adapters/aws";
 
-import type { Provider } from "./providers";
-import type { Provider as AiProvider } from "ai";
+import { ProviderAdapterBase, type ModelConfig } from "./providers";
 
-export class VertexProvider implements Provider {
+import type { Provider } from "ai";
+
+export class VertexProviderAdapter extends ProviderAdapterBase {
   private readonly configPromise: Promise<GoogleProviderConfig>;
+  readonly provider: Promise<Provider>;
 
   constructor(config?: GoogleProviderConfig) {
+    super("vertex");
     this.configPromise = config
       ? Promise.resolve(config)
       : (async () => {
@@ -22,9 +28,10 @@ export class VertexProvider implements Provider {
             project: await getSecret("VertexProject"),
           };
         })();
+    this.provider = this.buildAiProvider();
   }
 
-  async create(): Promise<AiProvider> {
+  private async buildAiProvider(): Promise<Provider> {
     const cfg = await this.configPromise;
     const { serviceAccountEmail, audience, location, project, baseURL } = cfg;
     await injectMetadataCredentials();
@@ -39,7 +46,7 @@ export class VertexProvider implements Provider {
     });
   }
 
-  async resolveModelId(id: string): Promise<string> {
-    return id;
+  async resolveModelId(model: ModelConfig) {
+    return this.getProviderModelId(model);
   }
 }
