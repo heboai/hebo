@@ -10,7 +10,7 @@ import { BedrockProvider } from "./bedrock";
 import { GroqProvider } from "./groq";
 import { VertexProvider } from "./vertex";
 
-import type { Provider } from "./types";
+import type { Provider } from "./providers";
 
 export const createProvider = (
   providerName: ProviderName,

@@ -8,7 +8,7 @@ import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 import type { AwsProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-import type { Provider } from "./types";
+import type { Provider } from "./providers";
 import type { Provider as AiProvider } from "ai";
 
 export type AwsTemporaryCredentials = {

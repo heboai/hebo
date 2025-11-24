@@ -4,7 +4,7 @@ import type { GoogleProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
 import type { AwsTemporaryCredentials } from "./bedrock";
-import type { Provider } from "./types";
+import type { Provider } from "./providers";
 import type { Provider as AiProvider } from "ai";
 
 type AwsContainerCredentialResponse = {
