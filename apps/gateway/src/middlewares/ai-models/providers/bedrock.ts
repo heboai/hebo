@@ -17,52 +17,6 @@ export type AwsTemporaryCredentials = {
   sessionToken: string;
 };
 
-const getInferenceProfileArn = async (
-  credentials: AwsTemporaryCredentials,
-  region: string,
-  modelId: string,
-): Promise<string> => {
-  const client = new BedrockClient({ region, credentials });
-  let nextToken: string | undefined;
-  do {
-    const res = await client.send(
-      new ListInferenceProfilesCommand({ nextToken }),
-    );
-    for (const prof of res.inferenceProfileSummaries ?? []) {
-      const arn = prof.inferenceProfileArn ?? "";
-      if (arn.includes(modelId)) {
-        return arn;
-      }
-    }
-    nextToken = res.nextToken;
-  } while (nextToken);
-  return modelId;
-};
-
-const getAwsCreds = async (
-  bedrockRoleArn: string,
-  region: string,
-): Promise<AwsTemporaryCredentials> => {
-  const sts = new STSClient({ region });
-  const resp = await sts.send(
-    new AssumeRoleCommand({
-      RoleArn: bedrockRoleArn,
-      RoleSessionName: "HeboBedrockSession",
-    }),
-  );
-  if (!resp.Credentials) throw new Error("Missing AWS credentials");
-  return {
-    accessKeyId: resp.Credentials.AccessKeyId!,
-    secretAccessKey: resp.Credentials.SecretAccessKey!,
-    sessionToken: resp.Credentials.SessionToken!,
-  };
-};
-
-const getBedrockDefaultConfig = async (): Promise<AwsProviderConfig> => ({
-  bedrockRoleArn: await getSecret("BedrockRoleArn"),
-  region: await getSecret("BedrockRegion"),
-});
-
 export class BedrockProvider implements Provider {
   private readonly configPromise: Promise<AwsProviderConfig>;
   private credentialsPromise?: Promise<AwsTemporaryCredentials>;
@@ -70,7 +24,14 @@ export class BedrockProvider implements Provider {
   constructor(config?: AwsProviderConfig) {
     this.configPromise = config
       ? Promise.resolve(config)
-      : getBedrockDefaultConfig();
+      : BedrockProvider.loadDefaultConfig();
+  }
+
+  private static async loadDefaultConfig(): Promise<AwsProviderConfig> {
+    return {
+      bedrockRoleArn: await getSecret("BedrockRoleArn"),
+      region: await getSecret("BedrockRegion"),
+    };
   }
 
   private async getConfig(): Promise<AwsProviderConfig> {
@@ -81,7 +42,19 @@ export class BedrockProvider implements Provider {
     if (!this.credentialsPromise) {
       this.credentialsPromise = (async () => {
         const cfg = await this.getConfig();
-        return getAwsCreds(cfg.bedrockRoleArn, cfg.region);
+        const sts = new STSClient({ region: cfg.region });
+        const resp = await sts.send(
+          new AssumeRoleCommand({
+            RoleArn: cfg.bedrockRoleArn,
+            RoleSessionName: "HeboBedrockSession",
+          }),
+        );
+        if (!resp.Credentials) throw new Error("Missing AWS credentials");
+        return {
+          accessKeyId: resp.Credentials.AccessKeyId!,
+          secretAccessKey: resp.Credentials.SecretAccessKey!,
+          sessionToken: resp.Credentials.SessionToken!,
+        };
       })();
     }
     return this.credentialsPromise;
@@ -96,6 +69,23 @@ export class BedrockProvider implements Provider {
   async resolveModelId(id: string): Promise<string> {
     const cfg = await this.getConfig();
     const creds = await this.getCredentials();
-    return getInferenceProfileArn(creds, cfg.region, id);
+    const client = new BedrockClient({
+      region: cfg.region,
+      credentials: creds,
+    });
+    let nextToken: string | undefined;
+    do {
+      const res = await client.send(
+        new ListInferenceProfilesCommand({ nextToken }),
+      );
+      for (const prof of res.inferenceProfileSummaries ?? []) {
+        const arn = prof.inferenceProfileArn ?? "";
+        if (arn.includes(id)) {
+          return arn;
+        }
+      }
+      nextToken = res.nextToken;
+    } while (nextToken);
+    return id;
   }
 }
