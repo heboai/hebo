@@ -24,14 +24,12 @@ export class BedrockProvider implements Provider {
   constructor(config?: AwsProviderConfig) {
     this.configPromise = config
       ? Promise.resolve(config)
-      : BedrockProvider.loadDefaultConfig();
-  }
-
-  private static async loadDefaultConfig(): Promise<AwsProviderConfig> {
-    return {
-      bedrockRoleArn: await getSecret("BedrockRoleArn"),
-      region: await getSecret("BedrockRegion"),
-    };
+      : (async () => {
+          return {
+            bedrockRoleArn: await getSecret("BedrockRoleArn"),
+            region: await getSecret("BedrockRegion"),
+          };
+        })();
   }
 
   private async getConfig(): Promise<AwsProviderConfig> {
