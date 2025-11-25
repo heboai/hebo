@@ -10,7 +10,7 @@ Integrating with third-party webhooks often requires repetitive boilerplate: ver
 
 - **[Webhook Handler](#webhook-handler)**: Securely process incoming webhooks with signature verification, automatic background processing, and type-safe payloads.
 - **[API Client](#api-client)**: A typed client for the Respond.io API, enabling seamless interaction with messaging, contacts, and comments.
-- **[Integrations](#integrations)**: Ready-to-use examples for popular platforms like AWS Lambda Function URLs and Vercel AI SDK.
+- **[Integrations](#integrations)**: Ready-to-use examples for popular platforms.
 
 ## Installation
 
@@ -108,7 +108,6 @@ await api.messaging.sendMessage(user, {
 Manage contact properties like tags.
 
 ```ts
-// Add tags to a contact
 await api.contact.tags.add(user, ["vip", "subscriber"]);
 ```
 
@@ -175,3 +174,10 @@ handle: async (payload) => {
   });
 };
 ```
+
+## Contributing
+
+We welcome contributions!
+
+- **Bug Reports & Feature Requests**: Please use the [issue tracker](https://github.com/heboai/hebo/issues) to report bugs or suggest features.
+- **Pull Requests**: Specific fixes and improvements are welcome. Please open a PR.
