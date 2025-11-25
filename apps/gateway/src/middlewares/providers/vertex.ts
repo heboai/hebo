@@ -8,7 +8,7 @@ import {
   buildWifOptions,
 } from "~gateway/middlewares/providers/adapters/aws";
 
-import { ProviderAdapterBase } from "./providers";
+import { ProviderAdapterBase } from "./provider";
 
 import type { Provider } from "ai";
 

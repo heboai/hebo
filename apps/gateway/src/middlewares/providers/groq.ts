@@ -3,7 +3,7 @@ import { createGroq } from "@ai-sdk/groq";
 import type { ApiKeyProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-import { ProviderAdapterBase } from "./providers";
+import { ProviderAdapterBase } from "./provider";
 
 import type { Provider } from "ai";
 

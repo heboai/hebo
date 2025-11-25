@@ -12,7 +12,7 @@ import { BedrockProviderAdapter } from "./bedrock";
 import { GroqProviderAdapter } from "./groq";
 import { VertexProviderAdapter } from "./vertex";
 
-import type { ProviderAdapter } from "./providers";
+import type { ProviderAdapter } from "./provider";
 
 export class ProviderAdapterFactory {
   constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
