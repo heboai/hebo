@@ -74,7 +74,7 @@ const messageWebhook = webhook<MessageReceivedPayload>({
 app.post("/webhook/message-received", messageWebhook.fetch);
 ```
 
-## Respond.io Client
+## API Client
 
 The `client` provides a typed interface for the Respond.io API.
 

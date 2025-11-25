@@ -122,7 +122,7 @@ class CommentClient {
   }
 }
 
-export class RespondIoClient {
+export class ApiClient {
   private readonly kyInstance: KyInstance;
   private readonly DEFAULT_BASE_URL = "https://api.respond.io/v2";
 
@@ -155,5 +155,5 @@ export * from "./types";
 export * from "./errors";
 
 export const client = (config: RespondIoClientConfig) => {
-  return new RespondIoClient(config);
+  return new ApiClient(config);
 };
