@@ -1,4 +1,4 @@
-import { WebhookError, InvalidSignatureError } from "./errors";
+import { InvalidSignatureError } from "./errors";
 import {
   ErrorHandler,
   WebhookHandlerOptions,
@@ -30,7 +30,9 @@ export function webhook<T extends WebhookPayload>(
       const signature = request.headers.get("x-webhook-signature");
 
       if (signature === null) {
-        throw new WebhookError("No signature found in request headers.");
+        throw new InvalidSignatureError(
+          "No signature found in request headers.",
+        );
       }
 
       verifySignature(body, signature, options.signingKey);
@@ -50,7 +52,7 @@ export function webhook<T extends WebhookPayload>(
 
       // Determine the HTTP response status based on the error type.
       if (error instanceof InvalidSignatureError) {
-        return new Response(error.message, { status: 400 });
+        return new Response("Bad Request", { status: 400 });
       }
 
       // return 200 OK to prevent webhook disruption.
