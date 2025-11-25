@@ -6,6 +6,12 @@ A library to help setup webhook for respond.io integration using a clean, event-
 
 Integrating with third-party webhooks often requires repetitive boilerplate: verifying signatures to ensure security, handling strict timeouts, and parsing untyped payloads. This library abstracts those complexities, providing a secure, type-safe, and resilient toolkit.
 
+## Features
+
+- **[Webhook Handler](#webhook-handler)**: Securely process incoming webhooks with signature verification, automatic background processing, and type-safe payloads.
+- **[API Client](#api-client)**: A typed client for the Respond.io API, enabling seamless interaction with messaging, contacts, and comments.
+- **[Integrations](#integrations)**: Ready-to-use examples for popular platforms like AWS Lambda Function URLs and Vercel AI SDK.
+
 ## Installation
 
 ```bash
