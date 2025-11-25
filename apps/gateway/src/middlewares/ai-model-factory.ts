@@ -26,6 +26,7 @@ export const aiModelFactory = new Elysia({
       modelAliasPath: string,
       modality: M,
     ): Promise<AiModelFor<M>> => {
+      // FUTURE: memoize with TTL
       const { modelConfig, providerName, useCustomProvider } =
         await modelConfigService.resolve(modelAliasPath);
 
