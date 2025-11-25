@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
+import z from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
@@ -9,6 +10,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -17,30 +19,36 @@ import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/
 import { Input } from "@hebo/shared-ui/components/Input";
 
 import { useFormErrorToast } from "~console/lib/errors";
-import { ApiKeyProviderConfigSchema, BedrockProviderConfigSchema, VertexProviderConfigSchema } from "./schema";
-import z from "zod";
+import { labelize } from "~console/lib/utils";
 
-
-function labelize(key: string) {
-  return key.replace(/^\w/, c => c.toUpperCase()); 
-}
 
 export const ProviderConfigureSchema = z.discriminatedUnion("slug", [
   z.object({
     slug: z.literal("bedrock"),
-    config: BedrockProviderConfigSchema,
+    config: z.object({
+      bedrockRoleArn: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid Bedrock ARN role"),
+      region: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid AWS region"),
+    }),
   }),
   z.object({
     slug: z.literal("vertex"),
-    config: VertexProviderConfigSchema,
+    config: z.object({
+      serviceAccountEmail: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid service account email"),
+      audience: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid audience"),
+      location: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid location"),
+      project: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid project"),
+    }),
   }),
   z.object({
     slug: z.literal("groq"),
-    config: ApiKeyProviderConfigSchema,
+    config: z.object({
+      apiKey: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid API key"), 
+    }),
   }),
 ]);
 
 type ProviderConfigureFormValues = z.infer<typeof ProviderConfigureSchema>;
+
 
 type ConfigureProviderDialogProps = {
   open: boolean;
@@ -56,7 +64,7 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
     lastResult: fetcher.data?.submission,
     constraint: getZodConstraint(ProviderConfigureSchema),
     defaultValue: { 
-        slug: provider?.slug,
+      slug: provider?.slug,
     }
   });
   useFormErrorToast(form.allErrors);
@@ -80,13 +88,13 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <fetcher.Form
-          key={provider?.slug ?? "configure-provider"}
           method="post"
           {...getFormProps(form)}
           className="contents"
         >
           <DialogHeader>
             <DialogTitle>Configure {provider?.name} Credentials</DialogTitle>
+            <DialogDescription>Learn how to retrieve the credentials in our documentation.</DialogDescription>
           </DialogHeader>
 
           <FormField field={fields.slug}>
@@ -101,7 +109,7 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
               <FormField key={key} field={field}>
                 <FormLabel>{labelize(key)}</FormLabel>
                 <FormControl>
-                  <Input placeholder={labelize(key)} autoComplete="off" />
+                  <Input placeholder={`Set ${labelize(key).toLowerCase()}`} autoComplete="off" />
                 </FormControl>
                 <FormMessage />
               </FormField>

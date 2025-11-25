@@ -33,3 +33,9 @@ export const formatDateTime = (date: Date) => {
     timeStyle: "short",
   });
 };
+
+export function labelize(value: string) {
+  return value
+    .replaceAll(/([a-z\d])([A-Z])/g, "$1 $2")
+    .replace(/^\w/, (c) => c.toUpperCase());
+}

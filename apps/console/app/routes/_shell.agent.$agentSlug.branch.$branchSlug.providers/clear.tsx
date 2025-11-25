@@ -10,6 +10,7 @@ import { Button } from "@hebo/shared-ui/components/Button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -56,10 +57,11 @@ export function ClearCredentialsDialog({open, onOpenChange, provider}: ClearCred
         <fetcher.Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
             <DialogTitle>Clear {provider?.name} Credentials</DialogTitle>
+            <DialogDescription>Are you sure you want to clear the credentials? </DialogDescription>
           </DialogHeader>
           <Alert variant="destructive">
             <AlertDescription>
-              Are you sure you want to clear the credentials? All gateway requests to {provider?.name} will now go back to their default behavior.
+              All gateway requests to {provider?.name} will immediately go back to using the default Hebo built-in provider.
             </AlertDescription>
           </Alert>
 

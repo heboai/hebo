@@ -103,7 +103,6 @@ export function ProvidersList({ providers }: { providers: Provider[] }) {
                 provider={selectedProvider}
                 onOpenChange={(open) => {
                     setConfigureOpen(open);
-                    if (!open) setSelectedProvider(undefined);
                 }}
                 />
 
@@ -112,7 +111,6 @@ export function ProvidersList({ providers }: { providers: Provider[] }) {
                 provider={selectedProvider}
                 onOpenChange={(open) => {
                     setClearOpen(open);
-                    if (!open) setSelectedProvider(undefined);
                 }}
             />
         </div>
