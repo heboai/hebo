@@ -26,3 +26,10 @@ export const kbs = (shortcut: string): string => {
       return map[lower] ?? match.toUpperCase();
     });
 };
+
+export const formatDateTime = (date: Date) => {
+  return date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+};

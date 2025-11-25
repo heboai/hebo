@@ -1,11 +1,12 @@
 import { parseWithZod } from "@conform-to/zod/v4";
-import z from "zod";
 
 import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
 import type { Route } from "./+types/route";
 import { ProvidersList } from "./list";
+import { ProviderConfigureSchema } from "./configure";
+import { CredentialsClearSchema } from "./clear";
 
 
 export async function clientLoader() {
@@ -17,9 +18,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   const intent = formData.get("intent");
 
   switch (intent) {
-    case "create": {
+    case "configure": {
       const submission = parseWithZod(formData, {
-        schema: z.object(), // FUTURE: create schema
+        schema: ProviderConfigureSchema, 
       });
 
       if (submission.status !== "success")
@@ -27,7 +28,10 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
       let provider;
       try {
-        // FUTURE: call API endpoint
+        await api.providers.post({
+          slug: submission.value.slug,
+          config: submission.value.config,
+        });
       } catch (error) {
         return { submission: submission.reply({
           formErrors: [parseError(error).message],
@@ -37,16 +41,16 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
       return { submission: submission.reply(), provider };
     }
 
-    case "delete": {
+    case "clear": {
       const submission = parseWithZod(formData, {
-        schema: z.object(), // FUTURE: create schema
+        schema: CredentialsClearSchema,
       });
 
       if (submission.status !== "success")
         return { submission: submission.reply() };
 
       try {
-        // FUTURE: call API endpoint
+        await api.providers({ slug: submission.value.providerSlug}).delete();
       } catch (error) {
         return { submission: submission.reply({
           formErrors: [parseError(error).message],
@@ -64,7 +68,7 @@ export default function ProviderRoute({ loaderData }: Route.ComponentProps) {
       <div>
         <h1>Providers</h1>
         <p className="text-muted-foreground text-sm">
-          Use your own provider API keys to access Hebo Gateway
+          Use your own provider API keys to access Hebo Gateway.
         </p>
       </div>
 

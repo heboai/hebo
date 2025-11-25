@@ -50,10 +50,10 @@ export const providerHandlers = [
     return HttpResponse.json(provider, { status: 201 });
   }),
 
-  http.delete<{ providerSlug: string }>(
-    "/api/v1/providers/:providerSlug",
+  http.delete<{ slug: string }>(
+    "/api/v1/providers/:slug",
     async ({ params }) => {
-      db.providers.delete((q) => q.where({ slug: params.providerSlug }));
+      db.providers.delete((q) => q.where({ slug: params.slug }));
 
       return new HttpResponse(undefined, { status: 200 });
     },

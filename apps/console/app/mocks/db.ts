@@ -40,10 +40,10 @@ const providerSchema = z.object({
   config: z.optional(z.unknown()),
 
   // Audit fields
-  created_by: z.optional(z.string()),
-  created_at: z.optional(z.date()),
-  updated_by: z.optional(z.string()),
-  updated_at: z.optional(z.date()),
+  created_by: z.string().default("Dummy User"),
+  created_at: z.date().default(() => new Date()),
+  updated_by: z.string().default("Dummy User"),
+  updated_at: z.date().default(() => new Date()),
 });
 
 export const createDb = () => {

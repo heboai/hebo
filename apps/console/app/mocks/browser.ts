@@ -1,11 +1,11 @@
 import { setupWorker } from "msw/browser";
 
-import { agentHandlers } from "~console/mocks/agents";
-import { branchHandlers } from "~console/mocks/branches";
-import { providerHandlers } from "~console/mocks/providers";
+import { agentHandlers } from "~console/mocks/routes/agents";
+import { branchHandlers } from "~console/mocks/routes/branches";
+import { providerHandlers } from "~console/mocks/routes/providers";
 
-import { addChaos } from "./chaos";
-import { addDelays } from "./delays";
+import { addChaos } from "./middleware/chaos";
+import { addDelays } from "./middleware/delays";
 
 let handlers = [...agentHandlers, ...branchHandlers, ...providerHandlers];
 
