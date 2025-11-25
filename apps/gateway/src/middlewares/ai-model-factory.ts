@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
 import { ModelConfigService } from "./model-config";
-import { ProviderAdapterService } from "./providers";
+import { ProviderAdapterFactory } from "./providers";
 import { BadRequestError } from "./providers/errors";
 
 import type { EmbeddingModel, LanguageModel } from "ai";
@@ -20,7 +20,7 @@ export const aiModelFactory = new Elysia({
   .use(dbClient)
   .resolve(({ dbClient }) => {
     const modelConfigService = new ModelConfigService(dbClient);
-    const providerAdapterService = new ProviderAdapterService(dbClient);
+    const providerAdapterFactory = new ProviderAdapterFactory(dbClient);
 
     const createAIModel = async <M extends Modality>(
       modelAliasPath: string,
@@ -36,7 +36,7 @@ export const aiModelFactory = new Elysia({
         );
 
       // FUTURE: Cache this
-      const { provider, modelId } = await providerAdapterService.resolve(
+      const { provider, modelId } = await providerAdapterFactory.create(
         modelConfig,
         customProviderName,
       );

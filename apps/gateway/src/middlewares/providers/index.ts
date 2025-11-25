@@ -13,10 +13,10 @@ import { VertexProviderAdapter } from "./vertex";
 
 import type { ModelConfig, ProviderAdapter } from "./providers";
 
-export class ProviderAdapterService {
+export class ProviderAdapterFactory {
   constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
 
-  async resolve(
+  async create(
     modelConfig: ModelConfig,
     customProviderName?: ProviderName,
   ): Promise<ProviderAdapter> {
@@ -30,7 +30,7 @@ export class ProviderAdapterService {
 
     for (const providerName of providerNames) {
       try {
-        const adapter = this.resolveAdapter(providerName, customProviderConfig);
+        const adapter = this.createAdapter(providerName, customProviderConfig);
         return await adapter.create(modelConfig);
       } catch {
         continue;
@@ -59,7 +59,7 @@ export class ProviderAdapterService {
     return provider.config as ProviderConfig;
   }
 
-  private resolveAdapter(
+  private createAdapter(
     providerName: ProviderName,
     config: ProviderConfig | undefined,
   ) {
