@@ -16,7 +16,6 @@ import type { Provider } from "ai";
 export class BedrockProviderAdapter extends ProviderAdapterBase {
   private readonly configPromise: Promise<AwsProviderConfig>;
   private credentialsPromise?: ReturnType<typeof assumeRole>;
-  private providerPromise?: Promise<Provider>;
 
   constructor(modelName: string, config?: AwsProviderConfig) {
     super("bedrock", modelName);
@@ -39,20 +38,13 @@ export class BedrockProviderAdapter extends ProviderAdapterBase {
     return this.credentialsPromise;
   }
 
-  private async buildAiProvider(): Promise<Provider> {
+  async getProvider(): Promise<Provider> {
     const credentials = await this.getCredentials();
     const { region } = await this.configPromise;
     return createAmazonBedrock({
       ...credentials,
       region,
     });
-  }
-
-  async getProvider(): Promise<Provider> {
-    if (!this.providerPromise) {
-      this.providerPromise = this.buildAiProvider();
-    }
-    return this.providerPromise;
   }
 
   async resolveModelId() {

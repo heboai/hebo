@@ -9,7 +9,6 @@ import type { Provider } from "ai";
 
 export class GroqProviderAdapter extends ProviderAdapterBase {
   private readonly configPromise: Promise<ApiKeyProviderConfig>;
-  private providerPromise?: Promise<Provider>;
 
   constructor(modelName: string, config?: ApiKeyProviderConfig) {
     super("groq", modelName);
@@ -18,16 +17,9 @@ export class GroqProviderAdapter extends ProviderAdapterBase {
       : getSecret("GroqApiKey").then((apiKey) => ({ apiKey }));
   }
 
-  private async buildAiProvider(): Promise<Provider> {
+  async getProvider(): Promise<Provider> {
     const cfg = await this.configPromise;
     return createGroq({ ...cfg });
-  }
-
-  async getProvider(): Promise<Provider> {
-    if (!this.providerPromise) {
-      this.providerPromise = this.buildAiProvider();
-    }
-    return this.providerPromise;
   }
 
   async resolveModelId() {

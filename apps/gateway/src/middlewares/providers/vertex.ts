@@ -14,7 +14,6 @@ import type { Provider } from "ai";
 
 export class VertexProviderAdapter extends ProviderAdapterBase {
   private readonly configPromise: Promise<GoogleProviderConfig>;
-  private providerPromise?: Promise<Provider>;
 
   constructor(modelName: string, config?: GoogleProviderConfig) {
     super("vertex", modelName);
@@ -30,7 +29,7 @@ export class VertexProviderAdapter extends ProviderAdapterBase {
         })();
   }
 
-  private async buildAiProvider(): Promise<Provider> {
+  async getProvider(): Promise<Provider> {
     const cfg = await this.configPromise;
     const { serviceAccountEmail, audience, location, project, baseURL } = cfg;
     await injectMetadataCredentials();
@@ -43,13 +42,6 @@ export class VertexProviderAdapter extends ProviderAdapterBase {
       project,
       baseURL,
     });
-  }
-
-  async getProvider(): Promise<Provider> {
-    if (!this.providerPromise) {
-      this.providerPromise = this.buildAiProvider();
-    }
-    return this.providerPromise;
   }
 
   async resolveModelId() {
