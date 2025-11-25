@@ -71,7 +71,7 @@ export function CreateApiKeyDialog() {
       <Dialog open={createOpen} onOpenChange={createSetOpen}>
         <div>
           <DialogTrigger asChild>
-            <Button type="button">+ Create API Key</Button>
+            <Button variant="outline" type="button">+ Create API Key</Button>
           </DialogTrigger>
         </div>
         <DialogContent>

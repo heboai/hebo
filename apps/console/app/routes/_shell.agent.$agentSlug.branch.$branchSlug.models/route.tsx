@@ -47,10 +47,12 @@ export default function ModelsConfigRoute() {
 
   return (
       <>
-        <h1>Model Configuration</h1>
-        <p className="text-muted-foreground text-sm">
-          Configure access for the agent to different models. Use our managed providers or connect your existing inference endpoints.
-        </p>
+        <div>
+          <h1>Model Configuration</h1>
+          <p className="text-muted-foreground text-sm">
+            Configure access for the agent to different models. Use our managed providers or connect your existing inference endpoints.
+          </p>
+        </div>
 
         <ModelsConfigForm
           agentSlug={agent.slug}

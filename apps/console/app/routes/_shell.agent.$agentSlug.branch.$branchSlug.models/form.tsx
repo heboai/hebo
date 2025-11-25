@@ -75,7 +75,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
   const modelItems = fields.models.getFieldList();
 
   return (
-    <fetcher.Form method="post" ref={formRef} {...getFormProps(form)} className="contents">
+    <fetcher.Form method="post" ref={formRef} {...getFormProps(form)} className="flex flex-col gap-4">
       {modelItems.map((model, index) => (
         <ModelCard
           key={model.key}
