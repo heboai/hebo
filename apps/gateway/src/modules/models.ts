@@ -12,15 +12,13 @@ export const models = new Elysia({
     () => {
       return {
         object: "list" as const,
-        data: supportedModels
-          .map((m) => m.name)
-          .map((id) => ({
-            id,
-            object: "model" as const,
-            // FUTURE implement real value in supported models
-            created: Math.floor(Date.now() / 1000),
-            owned_by: "gateway",
-          })),
+        data: supportedModels.map((model) => ({
+          id: model.name,
+          object: "model" as const,
+          // FUTURE implement real value in supported models
+          created: Math.floor(Date.now() / 1000),
+          owned_by: "gateway",
+        })),
       };
     },
     {
