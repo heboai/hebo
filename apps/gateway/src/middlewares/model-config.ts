@@ -18,7 +18,9 @@ export class ModelConfigService {
     if (!model) {
       throw new Error(`Missing model config for alias ${fullModelAlias}`);
     }
-    return { type: model.type, customProvider: model.customProvider };
+    // Currently, we only support routing to the first provider.
+    const customProvider = model.routing?.only?.[0];
+    return { type: model.type, customProvider };
   }
 
   private resolveModelConfig(type: Models[number]["type"]) {
@@ -30,6 +32,7 @@ export class ModelConfigService {
   }
 
   private resolveProviderName(modelConfig: (typeof supportedModels)[number]) {
+    // Currently, we only support routing to the first provider.
     const provider = modelConfig.providers[0];
     return Object.keys(provider)[0] as ProviderName;
   }
@@ -44,7 +47,7 @@ export class ModelConfigService {
     return {
       modelConfig,
       providerName,
-      customProvider,
+      useCustomProvider: !!customProvider,
     };
   }
 }

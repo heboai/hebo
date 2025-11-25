@@ -26,15 +26,13 @@ export const aiModelFactory = new Elysia({
       fullModelAlias: string,
       modality: M,
     ): Promise<AiModelFor<M>> => {
-      // TODO: rename to defaultProviderName and customProviderName
-      // TODO: It can return just the providerName and a boolean (useCustomProvider)
-      const { modelConfig, providerName, customProvider } =
+      const { modelConfig, providerName, useCustomProvider } =
         await modelConfigService.resolve(fullModelAlias);
 
       // TODO: providers fallback following the supportedModels order (first I try bedrock, then groq, ...)
       const providerAdapter = await providerAdapterService.create(
         providerName,
-        Boolean(customProvider),
+        useCustomProvider,
       );
 
       const [provider, resolvedModelId] = await Promise.all([

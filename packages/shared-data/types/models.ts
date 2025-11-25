@@ -13,7 +13,8 @@ export const ModelsSchema = Type.Array(
   Type.Object({
     alias: Type.String({ minLength: 1 }),
     type: SupportedModelsEnum,
-    customProvider: Type.Optional(ProviderNameEnum),
+    // Inspired from Vercel Provider Options: https://vercel.com/docs/ai-gateway/provider-options
+    routing: Type.Optional(Type.Object({ only: Type.Array(ProviderNameEnum) })),
   }),
 );
 

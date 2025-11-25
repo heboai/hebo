@@ -5,7 +5,8 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": "openai.gpt-oss-120b-1:0"
+        "bedrock": "openai.gpt-oss-120b-1:0",
+        "groq": "openai/gpt-oss-120b"
       }
     ],
     "modality": "chat"
@@ -16,7 +17,8 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": "openai.gpt-oss-20b-1:0"
+        "bedrock": "openai.gpt-oss-20b-1:0",
+        "groq": "openai/gpt-oss-20b"
       }
     ],
     "modality": "chat"
