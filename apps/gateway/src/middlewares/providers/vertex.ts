@@ -3,11 +3,7 @@ import { createVertex } from "@ai-sdk/google-vertex";
 import type { GoogleProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-import {
-  injectMetadataCredentials,
-  buildWifOptions,
-} from "~gateway/middlewares/providers/adapters/aws";
-
+import { injectMetadataCredentials, buildWifOptions } from "./adapters/aws";
 import { ProviderAdapterBase } from "./provider";
 
 import type { Provider } from "ai";
