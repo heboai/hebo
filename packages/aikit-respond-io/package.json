@@ -19,7 +19,8 @@
   "scripts": {
     "build": "tsc",
     "clean": "git clean -fdx -e '.env*' .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "bun test"
   },
   "type": "module",
   "dependencies": {
