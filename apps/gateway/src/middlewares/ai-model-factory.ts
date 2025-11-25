@@ -31,7 +31,9 @@ export const aiModelFactory = new Elysia({
         await modelConfigService.resolve(modelAliasPath);
 
       if (modelConfig.modality !== modality)
-        throw new BadRequestError(`Model is not a ${modality} model`);
+        throw new BadRequestError(
+          `Model ${modelAliasPath} is not a ${modality} model.`,
+        );
 
       // FUTURE: memoize with TTL
       const { provider, modelId } = await providerAdapterService.resolve(
