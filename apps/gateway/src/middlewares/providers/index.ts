@@ -46,7 +46,7 @@ export class ProviderAdapterFactory {
     return [
       ...new Set(
         supportedModels
-          .find((model) => model.name === modelType)
+          .find((model) => model.type === modelType)
           ?.providers.flatMap(
             (mapping) => Object.keys(mapping) as ProviderName[],
           ),

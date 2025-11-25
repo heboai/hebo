@@ -5,8 +5,8 @@ import { ProviderNameEnum } from "@hebo/database/src/types/providers";
 import supportedModels from "../json/supported-models.json";
 
 export const SupportedModelsEnum = Type.Enum(
-  Object.fromEntries(supportedModels.map(({ name }) => [name, name])),
-  { error: "Invalid model name" },
+  Object.fromEntries(supportedModels.map(({ type }) => [type, type])),
+  { error: "Invalid model type" },
 );
 
 export const ModelsSchema = Type.Array(

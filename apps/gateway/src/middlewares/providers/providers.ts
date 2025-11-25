@@ -27,7 +27,7 @@ export abstract class ProviderAdapterBase {
 
   async getProviderModelId(): Promise<string> {
     const entry = supportedModels
-      .find((model) => model.name === this.modelName)
+      .find((model) => model.type === this.modelName)
       ?.providers.find((provider) => this.providerName in provider) as
       | Record<ProviderName, string>
       | undefined;

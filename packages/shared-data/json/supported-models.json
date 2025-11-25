@@ -1,6 +1,6 @@
 [
   {
-    "name": "openai/gpt-oss-120b",
+    "type": "openai/gpt-oss-120b",
     "displayName": "OpenAI GPT OSS 120B",
     "rateLimit": 400000000,
     "providers": [
@@ -12,7 +12,7 @@
     "modality": "chat"
   },
   {
-    "name": "openai/gpt-oss-20b",
+    "type": "openai/gpt-oss-20b",
     "displayName": "OpenAI GPT OSS 20B",
     "rateLimit": 400000000,
     "providers": [
@@ -24,7 +24,7 @@
     "modality": "chat"
   },
   {
-    "name": "google/gemini-2.5-flash",
+    "type": "google/gemini-2.5-flash",
     "displayName": "Gemini 2.5 Flash",
     "rateLimit": 400000000,
     "providers": [
@@ -35,7 +35,7 @@
     "modality": "chat"
   },
   {
-    "name": "google/gemini-2.5-flash-lite",
+    "type": "google/gemini-2.5-flash-lite",
     "displayName": "Gemini 2.5 Flash Lite",
     "rateLimit": 400000000,
     "providers": [
@@ -46,7 +46,7 @@
     "modality": "chat"
   },
   {
-    "name": "anthropic/claude-sonnet-4-20250514-v1",
+    "type": "anthropic/claude-sonnet-4-20250514-v1",
     "displayName": "Anthropic Claude Sonnet 4 (20250514)",
     "rateLimit": 400000000,
     "providers": [
@@ -57,7 +57,7 @@
     "modality": "chat"
   },
   {
-    "name": "anthropic/claude-3-haiku-20240307-v1",
+    "type": "anthropic/claude-3-haiku-20240307-v1",
     "displayName": "Anthropic Claude Haiku 3 (20240307)",
     "rateLimit": 400000000,
     "providers": [
@@ -68,7 +68,7 @@
     "modality": "chat"
   },
   {
-    "name": "amazon/titan-embed-text-v2",
+    "type": "amazon/titan-embed-text-v2",
     "displayName": "Amazon Titan Embed Text v2",
     "rateLimit": 400000000,
     "providers": [

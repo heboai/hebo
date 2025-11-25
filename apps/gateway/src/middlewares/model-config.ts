@@ -23,7 +23,7 @@ export class ModelConfigService {
   }
 
   private resolveModelConfig(type: Models[number]["type"]) {
-    const config = supportedModels.find((model) => model.name === type);
+    const config = supportedModels.find((model) => model.type === type);
     if (!config) {
       throw new Error(`Unsupported model type ${type}`);
     }
@@ -36,7 +36,7 @@ export class ModelConfigService {
     const modelConfig = this.resolveModelConfig(type);
 
     return {
-      modelName: modelConfig.name,
+      modelType: modelConfig.type,
       modelModality: modelConfig.modality,
       customProviderName,
     };

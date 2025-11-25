@@ -27,18 +27,18 @@ export const aiModelFactory = new Elysia({
       modality: M,
     ): Promise<AiModelFor<M>> => {
       // FUTURE: Cache this
-      const { modelName, modelModality, customProviderName } =
+      const { modelType, modelModality, customProviderName } =
         await modelConfigService.resolve(modelAliasPath);
 
       if (modelModality !== modality)
         throw new BadRequestError(
-          `Model ${modelAliasPath} (${modelName}) is not a ${modality} model.`,
+          `Model ${modelAliasPath} (${modelType}) is not a ${modality} model.`,
         );
 
       // FUTURE: Cache this
       const providerAdapter = await (customProviderName
-        ? providerAdapterFactory.createCustom(modelName, customProviderName)
-        : providerAdapterFactory.createDefault(modelName));
+        ? providerAdapterFactory.createCustom(modelType, customProviderName)
+        : providerAdapterFactory.createDefault(modelType));
 
       // FUTURE: Cache this
       const modelId = await providerAdapter.resolveModelId();
