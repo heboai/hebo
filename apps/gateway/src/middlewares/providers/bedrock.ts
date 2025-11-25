@@ -4,11 +4,11 @@ import {
   ListInferenceProfilesCommand,
 } from "@aws-sdk/client-bedrock";
 
+
 import type { AwsProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-import { assumeRole } from "~gateway/middlewares/providers/adapters/aws";
-
+import { assumeRole } from "./adapters/aws";
 import { ProviderAdapterBase } from "./provider";
 
 import type { Provider } from "ai";
