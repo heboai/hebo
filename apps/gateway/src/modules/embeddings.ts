@@ -11,9 +11,9 @@ export const embeddings = new Elysia({
   .post(
     "/",
     async ({ body, aiModelFactory }) => {
-      const { model: fullModelAlias, input } = body;
+      const { model: modelAliasPath, input } = body;
 
-      const embeddingModel = await aiModelFactory(fullModelAlias, "embedding");
+      const embeddingModel = await aiModelFactory(modelAliasPath, "embedding");
 
       if (Array.isArray(input)) {
         const { embeddings, usage } = await embedMany({
@@ -27,7 +27,7 @@ export const embeddings = new Elysia({
             embedding: e,
             index: i,
           })),
-          model: fullModelAlias,
+          model: modelAliasPath,
           usage: usage && {
             prompt_tokens: usage.tokens ?? 0,
             total_tokens: usage.tokens ?? 0,
@@ -42,7 +42,7 @@ export const embeddings = new Elysia({
       return {
         object: "list",
         data: [{ object: "embedding", embedding, index: 0 }],
-        model: fullModelAlias,
+        model: modelAliasPath,
         usage: usage && {
           prompt_tokens: usage.tokens ?? 0,
           total_tokens: usage.tokens ?? 0,

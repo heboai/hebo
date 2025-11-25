@@ -23,31 +23,25 @@ export const aiModelFactory = new Elysia({
     const providerAdapterService = new ProviderAdapterService(dbClient);
 
     const createAIModel = async <M extends Modality>(
-      fullModelAlias: string,
+      modelAliasPath: string,
       modality: M,
     ): Promise<AiModelFor<M>> => {
       const { modelConfig, providerName, useCustomProvider } =
-        await modelConfigService.resolve(fullModelAlias);
+        await modelConfigService.resolve(modelAliasPath);
 
-      // TODO: providers fallback following the supportedModels order (first I try bedrock, then groq, ...)
-      const providerAdapter = await providerAdapterService.create(
+      // FUTURE: memoize with TTL
+      const { provider, modelId } = await providerAdapterService.resolve(
         providerName,
         useCustomProvider,
+        modelConfig,
       );
-
-      const [provider, resolvedModelId] = await Promise.all([
-        // FUTURE: memoize with TTL
-        providerAdapter.provider,
-        // FUTURE: memoize (depends on provider config)
-        providerAdapter.resolveModelId(modelConfig),
-      ]);
 
       if (modelConfig.modality !== modality)
         throw new BadRequestError(`Model is not a ${modality} model`);
 
       return modality === "chat"
-        ? (provider.languageModel(resolvedModelId) as AiModelFor<M>)
-        : (provider.textEmbeddingModel(resolvedModelId) as AiModelFor<M>);
+        ? (provider.languageModel(modelId) as AiModelFor<M>)
+        : (provider.textEmbeddingModel(modelId) as AiModelFor<M>);
     };
 
     return {

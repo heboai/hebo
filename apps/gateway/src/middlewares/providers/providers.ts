@@ -6,14 +6,24 @@ import type { Provider } from "ai";
 export type ModelConfig = (typeof supportedModels)[number];
 
 export interface ProviderAdapter {
-  provider: Promise<Provider>;
-  resolveModelId(model: ModelConfig): Promise<string>;
+  provider: Provider;
+  modelId: string;
 }
 
-export abstract class ProviderAdapterBase implements ProviderAdapter {
-  abstract readonly provider: Promise<Provider>;
-
+export abstract class ProviderAdapterBase {
   protected constructor(private readonly providerName: ProviderName) {}
+
+  protected abstract getProvider(): Promise<Provider>;
+
+  protected abstract resolveModelId(model: ModelConfig): Promise<string>;
+
+  async create(model: ModelConfig): Promise<ProviderAdapter> {
+    const [provider, modelId] = await Promise.all([
+      this.getProvider(),
+      this.resolveModelId(model),
+    ]);
+    return { provider, modelId };
+  }
 
   protected getProviderModelId(model: ModelConfig) {
     const entry = model.providers.find(
@@ -26,6 +36,4 @@ export abstract class ProviderAdapterBase implements ProviderAdapter {
     }
     return entry[this.providerName];
   }
-
-  abstract resolveModelId(model: ModelConfig): Promise<string>;
 }

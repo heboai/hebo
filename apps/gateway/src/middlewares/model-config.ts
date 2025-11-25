@@ -6,8 +6,8 @@ import type { Models } from "@hebo/shared-data/types/models";
 export class ModelConfigService {
   constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
 
-  private async resolveModelTypeAndCustomProvider(fullModelAlias: string) {
-    const [agentSlug, branchSlug, modelAlias] = fullModelAlias.split("/");
+  private async resolveModelTypeAndCustomProvider(modelAliasPath: string) {
+    const [agentSlug, branchSlug, modelAlias] = modelAliasPath.split("/");
     const branch = await this.dbClient.branches.findFirstOrThrow({
       where: { agent_slug: agentSlug, slug: branchSlug },
       select: { models: true },
@@ -16,7 +16,7 @@ export class ModelConfigService {
       ({ alias }) => alias === modelAlias,
     );
     if (!model) {
-      throw new Error(`Missing model config for alias ${fullModelAlias}`);
+      throw new Error(`Missing model config for alias path ${modelAliasPath}`);
     }
     // Currently, we only support routing to the first provider.
     const customProvider = model.routing?.only?.[0];
@@ -37,9 +37,9 @@ export class ModelConfigService {
     return Object.keys(provider)[0] as ProviderName;
   }
 
-  async resolve(fullModelAlias: string) {
+  async resolve(modelAliasPath: string) {
     const { type, customProvider } =
-      await this.resolveModelTypeAndCustomProvider(fullModelAlias);
+      await this.resolveModelTypeAndCustomProvider(modelAliasPath);
     const modelConfig = this.resolveModelConfig(type);
     const providerName =
       customProvider ?? this.resolveProviderName(modelConfig);

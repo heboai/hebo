@@ -24,7 +24,7 @@ export const completions = new Elysia({
     "/",
     async ({ body, aiModelFactory }) => {
       const {
-        model: fullModelAlias,
+        model: modelAliasPath,
         messages,
         tools,
         toolChoice,
@@ -32,7 +32,7 @@ export const completions = new Elysia({
         stream = false,
       } = body;
 
-      const chatModel = await aiModelFactory(fullModelAlias, "chat");
+      const chatModel = await aiModelFactory(modelAliasPath, "chat");
 
       const toolSet = toToolSet(tools);
       const modelMessages = toModelMessages(messages);
@@ -47,7 +47,7 @@ export const completions = new Elysia({
           temperature,
         });
 
-        const responseStream = toOpenAICompatibleStream(result, fullModelAlias);
+        const responseStream = toOpenAICompatibleStream(result, modelAliasPath);
 
         return new Response(responseStream, {
           headers: {
@@ -66,7 +66,7 @@ export const completions = new Elysia({
         temperature,
       });
 
-      return toOpenAICompatibleNonStreamResponse(result, fullModelAlias);
+      return toOpenAICompatibleNonStreamResponse(result, modelAliasPath);
     },
     {
       body: t.Object({
