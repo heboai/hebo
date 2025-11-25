@@ -1,5 +1,4 @@
 import type { createDbClient } from "@hebo/database/client";
-import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 
 export class ModelConfigService {
@@ -22,22 +21,12 @@ export class ModelConfigService {
     return { type: model.type, customProviderName };
   }
 
-  private resolveModelConfig(type: Models[number]["type"]) {
-    const config = supportedModels.find((model) => model.type === type);
-    if (!config) {
-      throw new Error(`Unsupported model type ${type}`);
-    }
-    return config;
-  }
-
   async resolve(modelAliasPath: string) {
     const { type, customProviderName } =
       await this.resolveModelTypeAndCustomProvider(modelAliasPath);
-    const modelConfig = this.resolveModelConfig(type);
 
     return {
-      modelType: modelConfig.type,
-      modelModality: modelConfig.modality,
+      modelType: type,
       customProviderName,
     };
   }

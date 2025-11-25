@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
+import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { ModelConfigService } from "./model-config";
 import { ProviderAdapterFactory } from "./providers";
@@ -27,9 +28,17 @@ export const aiModelFactory = new Elysia({
       modelAliasPath: string,
       modality: M,
     ): Promise<AiModelFor<M>> => {
-      const { modelType, modelModality, customProviderName } =
+      const { modelType, customProviderName } =
         await modelConfigService.resolve(modelAliasPath);
 
+      const modelModality = supportedModels.find(
+        (model) => model.type === modelType,
+      )?.modality;
+      if (!modelModality) {
+        throw new BadRequestError(
+          `Model ${modelAliasPath} (${modelType}) is not supported.`,
+        );
+      }
       if (modelModality !== modality)
         throw new BadRequestError(
           `Model ${modelAliasPath} (${modelType}) is not a ${modality} model.`,
