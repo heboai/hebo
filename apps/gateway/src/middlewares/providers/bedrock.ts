@@ -7,7 +7,7 @@ import {
 import type { AwsProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-import { assumeRole } from "~gateway/utils/host-adapters/aws";
+import { assumeRole } from "~gateway/middlewares/providers/adapters/aws";
 
 import { ProviderAdapterBase, type ModelConfig } from "./providers";
 

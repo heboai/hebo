@@ -6,7 +6,7 @@ import { getSecret } from "@hebo/shared-api/utils/secrets";
 import {
   injectMetadataCredentials,
   buildWifOptions,
-} from "~gateway/utils/host-adapters/aws";
+} from "~gateway/middlewares/providers/adapters/aws";
 
 import { ProviderAdapterBase, type ModelConfig } from "./providers";
 
