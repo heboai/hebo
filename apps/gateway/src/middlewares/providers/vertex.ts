@@ -6,8 +6,6 @@ import { getSecret } from "@hebo/shared-api/utils/secrets";
 import { injectMetadataCredentials, buildWifOptions } from "./adapters/aws";
 import { ProviderAdapterBase } from "./provider";
 
-import type { Provider } from "ai";
-
 export class VertexProviderAdapter extends ProviderAdapterBase {
   private config?: GoogleProviderConfig;
 
@@ -35,7 +33,7 @@ export class VertexProviderAdapter extends ProviderAdapterBase {
     return this.config;
   }
 
-  async getProvider(): Promise<Provider> {
+  async getProvider() {
     const cfg = await this.getConfig();
     const { serviceAccountEmail, audience, location, project, baseURL } = cfg;
     await injectMetadataCredentials();

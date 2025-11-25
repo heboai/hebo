@@ -4,14 +4,11 @@ import {
   ListInferenceProfilesCommand,
 } from "@aws-sdk/client-bedrock";
 
-
 import type { AwsProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
 import { assumeRole } from "./adapters/aws";
 import { ProviderAdapterBase } from "./provider";
-
-import type { Provider } from "ai";
 
 type BedrockCredentials =
   ReturnType<typeof assumeRole> extends Promise<infer T> ? T : never;
@@ -44,7 +41,7 @@ export class BedrockProviderAdapter extends ProviderAdapterBase {
     return this.credentials;
   }
 
-  async getProvider(): Promise<Provider> {
+  async getProvider() {
     const credentials = await this.getCredentials();
     const { region } = await this.getConfig();
     return createAmazonBedrock({

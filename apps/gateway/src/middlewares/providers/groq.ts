@@ -5,8 +5,6 @@ import { getSecret } from "@hebo/shared-api/utils/secrets";
 
 import { ProviderAdapterBase } from "./provider";
 
-import type { Provider } from "ai";
-
 export class GroqProviderAdapter extends ProviderAdapterBase {
   private config?: ApiKeyProviderConfig;
 
@@ -23,7 +21,7 @@ export class GroqProviderAdapter extends ProviderAdapterBase {
     return this.config;
   }
 
-  async getProvider(): Promise<Provider> {
+  async getProvider() {
     const cfg = await this.getConfig();
     return createGroq({ ...cfg });
   }

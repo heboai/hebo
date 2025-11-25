@@ -8,11 +8,15 @@ export interface ProviderAdapter {
   resolveModelId(): Promise<string>;
 }
 
-export abstract class ProviderAdapterBase {
+export abstract class ProviderAdapterBase implements ProviderAdapter {
   protected constructor(
     private readonly providerName: ProviderName,
     private readonly modelName: string,
   ) {}
+
+  abstract getProvider(): Promise<Provider>;
+
+  abstract resolveModelId(): Promise<string>;
 
   getProviderModelId(): string {
     const entry = supportedModels
