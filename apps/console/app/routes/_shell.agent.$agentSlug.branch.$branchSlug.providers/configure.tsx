@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
-import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
@@ -18,14 +17,28 @@ import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/
 import { Input } from "@hebo/shared-ui/components/Input";
 
 import { useFormErrorToast } from "~console/lib/errors";
+import { ApiKeyProviderConfigSchema, BedrockProviderConfigSchema, VertexProviderConfigSchema } from "./schema";
+import z from "zod";
 
 
-export const ProviderConfigureSchema = z.object({
-  slug: z.string(),
-  config: z.object({
-    apiKey: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid API key"),
-  })
-});
+function labelize(key: string) {
+  return key.replace(/^\w/, c => c.toUpperCase()); 
+}
+
+export const ProviderConfigureSchema = z.discriminatedUnion("slug", [
+  z.object({
+    slug: z.literal("bedrock"),
+    config: BedrockProviderConfigSchema,
+  }),
+  z.object({
+    slug: z.literal("vertex"),
+    config: VertexProviderConfigSchema,
+  }),
+  z.object({
+    slug: z.literal("groq"),
+    config: ApiKeyProviderConfigSchema,
+  }),
+]);
 
 type ProviderConfigureFormValues = z.infer<typeof ProviderConfigureSchema>;
 
@@ -46,7 +59,6 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
         slug: provider?.slug,
     }
   });
-  const config = fields.config.getFieldset();
   useFormErrorToast(form.allErrors);
   
   useEffect(() => {
@@ -55,53 +67,72 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
     }
   }, [fetcher.state, form.status]);
 
+  const providerFields = Object.fromEntries(
+    ProviderConfigureSchema.options.map((opt) => [
+      (opt.shape.slug as z.ZodLiteral).value,
+      Object.keys((opt.shape.config as z.ZodObject).shape),
+    ])
+  ) as Record<string, string[]>;
+  const configFieldset = fields.config.getFieldset();
+  const activeKeys = provider ? providerFields[provider.slug] : [];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent>
-            <fetcher.Form method="post" {...getFormProps(form)} className="contents">
-                <DialogHeader>
-                    <DialogTitle>Configure {provider?.name} Credentials</DialogTitle>
-                </DialogHeader>
-                <div className="flex flex-col gap-4">
-                    <FormField field={fields.slug}>
-                        <FormControl className="hidden">
-                            <input type="hidden" />
-                        </FormControl>
-                    </FormField>
+      <DialogContent>
+        <fetcher.Form
+          key={provider?.slug ?? "configure-provider"}
+          method="post"
+          {...getFormProps(form)}
+          className="contents"
+        >
+          <DialogHeader>
+            <DialogTitle>Configure {provider?.name} Credentials</DialogTitle>
+          </DialogHeader>
 
-                    <FormField field={config.apiKey}>
-                        <FormLabel>API Key</FormLabel>
-                        <FormControl>
-                            <Input placeholder="API Key" autoComplete="off" />
-                        </FormControl>
-                        <FormMessage />
-                    </FormField>
-                    
-                    <div className="text-sm">
-                        The configured provider will only handle requests after you enable it for a specific model. 
-                    </div>
-                </div>
-                <DialogFooter>
-                    <DialogClose asChild>
-                    <Button 
-                        type="button"
-                        variant="ghost"
-                        onClick={() => onOpenChange(false)}
-                        >
-                        Cancel
-                    </Button>
-                    </DialogClose>
-                    <Button
-                        type="submit"
-                        name="intent"
-                        value="configure"
-                        isLoading={fetcher.state !== "idle"}
-                        >
-                        Set
-                    </Button>
-                </DialogFooter>
-            </fetcher.Form>
-        </DialogContent>
+          <FormField field={fields.slug}>
+            <FormControl className="hidden">
+              <input type="hidden" value={provider?.slug} />
+            </FormControl>
+          </FormField>
+
+          {(activeKeys as (keyof typeof configFieldset)[]).map((key) => {
+            const field = configFieldset[key];
+            return (
+              <FormField key={key} field={field}>
+                <FormLabel>{labelize(key)}</FormLabel>
+                <FormControl>
+                  <Input placeholder={labelize(key)} autoComplete="off" />
+                </FormControl>
+                <FormMessage />
+              </FormField>
+            )
+          })}
+          
+          <div className="text-sm">
+            The configured provider will only handle requests after you enable it for a specific model. 
+          </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button 
+                  type="button"
+                  variant="ghost"
+                  onClick={() => onOpenChange(false)}
+                  >
+                  Cancel
+              </Button>
+            </DialogClose>
+              <Button
+                  type="submit"
+                  name="intent"
+                  value="configure"
+                  isLoading={fetcher.state !== "idle"}
+                  >
+                  Set
+              </Button>
+          </DialogFooter>
+        </fetcher.Form>
+      </DialogContent>
     </Dialog>
   );
 }
