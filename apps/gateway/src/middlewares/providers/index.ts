@@ -17,41 +17,71 @@ export class ProviderAdapterService {
   constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
 
   async resolve(
-    providerName: ProviderName,
-    useCustomConfig: boolean,
-    model: ModelConfig,
+    modelConfig: ModelConfig,
+    customProviderName?: ProviderName,
   ): Promise<ProviderAdapter> {
-    let config: ProviderConfig | undefined;
+    const providerNames = customProviderName
+      ? [customProviderName]
+      : this.resolveProviderNames(modelConfig);
 
-    if (useCustomConfig) {
-      const provider =
-        await this.dbClient.providers.getUnredacted(providerName);
-      config = provider.config as ProviderConfig;
-    }
+    const customProviderConfig = customProviderName
+      ? await this.resolveCustomProviderConfig(customProviderName)
+      : undefined;
 
-    const adapter = (() => {
-      switch (providerName) {
-        case "bedrock": {
-          return new BedrockProviderAdapter(
-            config as AwsProviderConfig | undefined,
-          );
-        }
-        case "vertex": {
-          return new VertexProviderAdapter(
-            config as GoogleProviderConfig | undefined,
-          );
-        }
-        case "groq": {
-          return new GroqProviderAdapter(
-            config as ApiKeyProviderConfig | undefined,
-          );
-        }
-        default: {
-          throw new Error(`Unsupported provider: ${providerName}`);
-        }
+    for (const providerName of providerNames) {
+      try {
+        const adapter = this.resolveAdapter(providerName, customProviderConfig);
+        return await adapter.create(modelConfig);
+      } catch {
+        continue;
       }
-    })();
+    }
+    throw new Error(
+      `Unable to create provider adapter: no providers available`,
+    );
+  }
 
-    return adapter.create(model);
+  private resolveProviderNames(modelConfig: ModelConfig): ProviderName[] {
+    return [
+      ...new Set(
+        modelConfig.providers.flatMap(
+          (mapping) => Object.keys(mapping) as ProviderName[],
+        ),
+      ),
+    ];
+  }
+
+  private async resolveCustomProviderConfig(
+    customProviderName: ProviderName,
+  ): Promise<ProviderConfig | undefined> {
+    const provider =
+      await this.dbClient.providers.getUnredacted(customProviderName);
+    return provider.config as ProviderConfig;
+  }
+
+  private resolveAdapter(
+    providerName: ProviderName,
+    config: ProviderConfig | undefined,
+  ) {
+    switch (providerName) {
+      case "bedrock": {
+        return new BedrockProviderAdapter(
+          config as AwsProviderConfig | undefined,
+        );
+      }
+      case "vertex": {
+        return new VertexProviderAdapter(
+          config as GoogleProviderConfig | undefined,
+        );
+      }
+      case "groq": {
+        return new GroqProviderAdapter(
+          config as ApiKeyProviderConfig | undefined,
+        );
+      }
+      default: {
+        throw new Error(`Unsupported provider: ${providerName}`);
+      }
+    }
   }
 }

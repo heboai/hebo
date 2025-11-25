@@ -1,5 +1,4 @@
 import type { createDbClient } from "@hebo/database/client";
-import type { ProviderName } from "@hebo/database/src/types/providers";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Models } from "@hebo/shared-data/types/models";
 
@@ -19,8 +18,8 @@ export class ModelConfigService {
       throw new Error(`Missing model config for alias path ${modelAliasPath}`);
     }
     // Currently, we only support routing to the first provider.
-    const customProvider = model.routing?.only?.[0];
-    return { type: model.type, customProvider };
+    const customProviderName = model.routing?.only?.[0];
+    return { type: model.type, customProviderName };
   }
 
   private resolveModelConfig(type: Models[number]["type"]) {
@@ -31,23 +30,14 @@ export class ModelConfigService {
     return config;
   }
 
-  private resolveProviderName(modelConfig: (typeof supportedModels)[number]) {
-    // Currently, we only support routing to the first provider.
-    const provider = modelConfig.providers[0];
-    return Object.keys(provider)[0] as ProviderName;
-  }
-
   async resolve(modelAliasPath: string) {
-    const { type, customProvider } =
+    const { type, customProviderName } =
       await this.resolveModelTypeAndCustomProvider(modelAliasPath);
     const modelConfig = this.resolveModelConfig(type);
-    const providerName =
-      customProvider ?? this.resolveProviderName(modelConfig);
 
     return {
       modelConfig,
-      providerName,
-      useCustomProvider: !!customProvider,
+      customProviderName,
     };
   }
 }

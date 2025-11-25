@@ -27,14 +27,13 @@ export const aiModelFactory = new Elysia({
       modality: M,
     ): Promise<AiModelFor<M>> => {
       // FUTURE: memoize with TTL
-      const { modelConfig, providerName, useCustomProvider } =
+      const { modelConfig, customProviderName } =
         await modelConfigService.resolve(modelAliasPath);
 
       // FUTURE: memoize with TTL
       const { provider, modelId } = await providerAdapterService.resolve(
-        providerName,
-        useCustomProvider,
         modelConfig,
+        customProviderName,
       );
 
       if (modelConfig.modality !== modality)

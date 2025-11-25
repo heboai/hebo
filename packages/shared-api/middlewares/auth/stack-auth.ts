@@ -5,8 +5,8 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 
 import { getSecret } from "../../utils/secrets";
 
-export const projectId = await getSecret("StackProjectId");
-export const secretServerKey = await getSecret("StackSecretServerKey");
+export const projectId = await getSecret("StackProjectId", false);
+export const secretServerKey = await getSecret("StackSecretServerKey", false);
 
 const jwks = createRemoteJWKSet(
   new URL(
