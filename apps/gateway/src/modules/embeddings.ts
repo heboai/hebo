@@ -13,7 +13,10 @@ export const embeddings = new Elysia({
     async ({ body, aiModelFactory }) => {
       const { model: modelAliasPath, input } = body;
 
-      const embeddingModel = await aiModelFactory(modelAliasPath, "embedding");
+      const embeddingModel = await aiModelFactory.create(
+        modelAliasPath,
+        "embedding",
+      );
 
       if (Array.isArray(input)) {
         const { embeddings, usage } = await embedMany({

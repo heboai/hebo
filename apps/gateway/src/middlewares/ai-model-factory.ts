@@ -47,7 +47,9 @@ export const aiModelFactory = new Elysia({
     };
 
     return {
-      aiModelFactory: createAIModel,
+      aiModelFactory: {
+        create: createAIModel,
+      },
     };
   })
   .as("scoped");

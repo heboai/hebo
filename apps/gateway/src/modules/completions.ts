@@ -32,7 +32,7 @@ export const completions = new Elysia({
         stream = false,
       } = body;
 
-      const chatModel = await aiModelFactory(modelAliasPath, "chat");
+      const chatModel = await aiModelFactory.create(modelAliasPath, "chat");
 
       const toolSet = toToolSet(tools);
       const modelMessages = toModelMessages(messages);
