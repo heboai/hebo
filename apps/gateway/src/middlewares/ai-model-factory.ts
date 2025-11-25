@@ -30,14 +30,14 @@ export const aiModelFactory = new Elysia({
       const { modelConfig, customProviderName } =
         await modelConfigService.resolve(modelAliasPath);
 
+      if (modelConfig.modality !== modality)
+        throw new BadRequestError(`Model is not a ${modality} model`);
+
       // FUTURE: memoize with TTL
       const { provider, modelId } = await providerAdapterService.resolve(
         modelConfig,
         customProviderName,
       );
-
-      if (modelConfig.modality !== modality)
-        throw new BadRequestError(`Model is not a ${modality} model`);
 
       return modality === "chat"
         ? (provider.languageModel(modelId) as AiModelFor<M>)
