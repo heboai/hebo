@@ -54,7 +54,7 @@ export class BedrockProviderAdapter extends ProviderAdapterBase {
   }
 
   async resolveModelId() {
-    const modelId = await this.getProviderModelId();
+    const modelId = this.getProviderModelId();
     const { region } = await this.getConfig();
     const client = new BedrockClient({
       region,

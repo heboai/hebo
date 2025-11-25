@@ -14,7 +14,7 @@ export abstract class ProviderAdapterBase {
     private readonly modelName: string,
   ) {}
 
-  async getProviderModelId(): Promise<string> {
+  getProviderModelId(): string {
     const entry = supportedModels
       .find((model) => model.type === this.modelName)
       ?.providers.find((provider) => this.providerName in provider) as
