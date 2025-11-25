@@ -45,13 +45,13 @@ mock.module("ky", () => {
 
 import { HTTPError, TimeoutError } from "ky";
 
-import { ApiClient } from "../src/client";
+import { RespondIoClient } from "../src/client";
 import {
   RespondIoClientFailureError,
   RespondIoClientNetworkError,
 } from "../src/client/errors";
 
-describe("ApiClient", () => {
+describe("RespondIoClient", () => {
   const config = { apiKey: "test-api-key" };
 
   beforeEach(() => {
@@ -60,12 +60,14 @@ describe("ApiClient", () => {
   });
 
   test("should throw if apiKey is missing", () => {
-    expect(() => new ApiClient({} as any)).toThrow("API Key is required.");
+    expect(() => new RespondIoClient({} as any)).toThrow(
+      "API Key is required.",
+    );
   });
 
   describe("MessagingClient", () => {
     test("sendMessage should call correct endpoint", async () => {
-      const client = new ApiClient(config);
+      const client = new RespondIoClient(config);
       const identifier = "id:123";
       const payload = {
         message: { type: "text", text: "Hello" },
@@ -76,7 +78,7 @@ describe("ApiClient", () => {
     });
 
     test("sendMessage should handle API errors", async () => {
-      const client = new ApiClient(config);
+      const client = new RespondIoClient(config);
 
       mockPost.mockImplementationOnce(() => {
         const response = {
@@ -93,7 +95,7 @@ describe("ApiClient", () => {
     });
 
     test("sendMessage should handle Timeout errors", async () => {
-      const client = new ApiClient(config);
+      const client = new RespondIoClient(config);
 
       mockPost.mockImplementationOnce(() => {
         throw new TimeoutError("Request timed out");
@@ -107,7 +109,7 @@ describe("ApiClient", () => {
 
   describe("ContactClient", () => {
     test("add tags should call correct endpoint", async () => {
-      const client = new ApiClient(config);
+      const client = new RespondIoClient(config);
       const identifier = "phone:+123";
       const payload = { tags: ["new"] };
 
@@ -118,7 +120,7 @@ describe("ApiClient", () => {
 
   describe("CommentClient", () => {
     test("create comment should call correct endpoint", async () => {
-      const client = new ApiClient(config);
+      const client = new RespondIoClient(config);
       const identifier = "email:test@example.com";
       const payload = { text: "Note" };
 
