@@ -14,6 +14,7 @@ type AiModelFor<M extends Modality> = M extends "chat"
   ? LanguageModel
   : EmbeddingModel<string>;
 
+// FUTURE: Implement caching for expensive operations
 export const aiModelFactory = new Elysia({
   name: "ai-model-factory",
 })
@@ -26,7 +27,6 @@ export const aiModelFactory = new Elysia({
       modelAliasPath: string,
       modality: M,
     ): Promise<AiModelFor<M>> => {
-      // FUTURE: Cache this
       const { modelType, modelModality, customProviderName } =
         await modelConfigService.resolve(modelAliasPath);
 
@@ -38,11 +38,9 @@ export const aiModelFactory = new Elysia({
       const providerAdapter = await (customProviderName
         ? providerAdapterFactory.createCustom(modelType, customProviderName)
         : providerAdapterFactory.createDefault(modelType));
-
-      // FUTURE: Cache this
       const provider = await providerAdapter.getProvider();
-      // FUTURE: Cache this
       const modelId = await providerAdapter.resolveModelId();
+
       return modality === "chat"
         ? (provider.languageModel(modelId) as AiModelFor<M>)
         : (provider.textEmbeddingModel(modelId) as AiModelFor<M>);
