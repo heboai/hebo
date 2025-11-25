@@ -66,17 +66,6 @@
     "modality": "chat"
   },
   {
-    "name": "meta/llama-4-scout-17b-16e-instruct",
-    "displayName": "Meta Llama 4 Scout 17B 16E Instruct",
-    "rateLimit": 400000000,
-    "providers": [
-      {
-        "groq": "meta-llama/llama-4-scout-17b-16e-instruct"
-      }
-    ],
-    "modality": "chat"
-  },
-  {
     "name": "amazon/titan-embed-text-v2",
     "displayName": "Amazon Titan Embed Text v2",
     "rateLimit": 400000000,
