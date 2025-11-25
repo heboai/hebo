@@ -32,7 +32,7 @@ export const aiModelFactory = new Elysia({
 
       if (modelConfig.modality !== modality)
         throw new BadRequestError(
-          `Model ${modelAliasPath} is not a ${modality} model.`,
+          `Model ${modelAliasPath} (${modelConfig.name}) is not a ${modality} model.`,
         );
 
       // FUTURE: Cache this
