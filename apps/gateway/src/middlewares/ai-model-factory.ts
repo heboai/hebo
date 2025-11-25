@@ -8,6 +8,12 @@ import { BadRequestError } from "./providers/errors";
 
 import type { EmbeddingModel, LanguageModel } from "ai";
 
+type Modality = "chat" | "embedding";
+
+type AiModelFor<M extends Modality> = M extends "chat"
+  ? LanguageModel
+  : EmbeddingModel<string>;
+
 export const aiModelFactory = new Elysia({
   name: "ai-model-factory",
 })
@@ -16,19 +22,21 @@ export const aiModelFactory = new Elysia({
     const modelConfigService = new ModelConfigService(dbClient);
     const providerAdapterService = new ProviderAdapterService(dbClient);
 
-    const createBaseAiModel = async (
+    const createAIModel = async <M extends Modality>(
       fullModelAlias: string,
-      modality: "chat" | "embedding",
-    ) => {
+      modality: M,
+    ): Promise<AiModelFor<M>> => {
       // TODO: rename to defaultProviderName and customProviderName
       // TODO: It can return just the providerName and a boolean (useCustomProvider)
       const { modelConfig, providerName, customProvider } =
         await modelConfigService.resolve(fullModelAlias);
+
       // TODO: providers fallback following the supportedModels order (first I try bedrock, then groq, ...)
       const providerAdapter = await providerAdapterService.create(
         providerName,
         Boolean(customProvider),
       );
+
       const [provider, resolvedModelId] = await Promise.all([
         // FUTURE: memoize with TTL
         providerAdapter.provider,
@@ -36,29 +44,13 @@ export const aiModelFactory = new Elysia({
         providerAdapter.resolveModelId(modelConfig),
       ]);
 
-      if (modelConfig.modality !== modality) {
+      if (modelConfig.modality !== modality)
         throw new BadRequestError(`Model is not a ${modality} model`);
-      }
 
       return modality === "chat"
-        ? provider.languageModel(resolvedModelId)
-        : provider.textEmbeddingModel(resolvedModelId);
+        ? (provider.languageModel(resolvedModelId) as AiModelFor<M>)
+        : (provider.textEmbeddingModel(resolvedModelId) as AiModelFor<M>);
     };
-    // TODO: Remove the 2 methods below
-    const createAIModel = {
-      chat: async (fullModelAlias: string) => {
-        return (await createBaseAiModel(
-          fullModelAlias,
-          "chat",
-        )) as LanguageModel;
-      },
-      embedding: async (fullModelAlias: string) => {
-        return (await createBaseAiModel(
-          fullModelAlias,
-          "embedding",
-        )) as EmbeddingModel<string>;
-      },
-    } as const;
 
     return {
       aiModelFactory: createAIModel,
