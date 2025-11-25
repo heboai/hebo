@@ -6,32 +6,24 @@ import type {
   ProviderConfig,
   ProviderName,
 } from "@hebo/database/src/types/providers";
+import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { BedrockProviderAdapter } from "./bedrock";
 import { GroqProviderAdapter } from "./groq";
 import { VertexProviderAdapter } from "./vertex";
 
-import type { ModelConfig, ProviderAdapter } from "./providers";
+import type { ProviderAdapter } from "./providers";
 
 export class ProviderAdapterFactory {
   constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
 
-  async create(
-    modelConfig: ModelConfig,
-    customProviderName?: ProviderName,
-  ): Promise<ProviderAdapter> {
-    const providerNames = customProviderName
-      ? [customProviderName]
-      : this.resolveProviderNames(modelConfig);
-
-    const customProviderConfig = customProviderName
-      ? await this.resolveCustomProviderConfig(customProviderName)
-      : undefined;
+  async createDefault(modelType: string): Promise<ProviderAdapter> {
+    const providerNames = this.resolveProviderNames(modelType);
 
     for (const providerName of providerNames) {
       try {
-        const adapter = this.createAdapter(providerName, customProviderConfig);
-        return await adapter.create(modelConfig);
+        const adapter = this.createAdapter(providerName, modelType);
+        return await adapter.create();
       } catch {
         continue;
       }
@@ -41,12 +33,23 @@ export class ProviderAdapterFactory {
     );
   }
 
-  private resolveProviderNames(modelConfig: ModelConfig): ProviderName[] {
+  async createCustom(
+    modelType: string,
+    providerName: ProviderName,
+  ): Promise<ProviderAdapter> {
+    const providerConfig = await this.resolveCustomProviderConfig(providerName);
+    const adapter = this.createAdapter(providerName, modelType, providerConfig);
+    return await adapter.create();
+  }
+
+  private resolveProviderNames(modelType: string): ProviderName[] {
     return [
       ...new Set(
-        modelConfig.providers.flatMap(
-          (mapping) => Object.keys(mapping) as ProviderName[],
-        ),
+        supportedModels
+          .find((model) => model.name === modelType)
+          ?.providers.flatMap(
+            (mapping) => Object.keys(mapping) as ProviderName[],
+          ),
       ),
     ];
   }
@@ -61,21 +64,25 @@ export class ProviderAdapterFactory {
 
   private createAdapter(
     providerName: ProviderName,
-    config: ProviderConfig | undefined,
+    modelType: string,
+    config?: ProviderConfig,
   ) {
     switch (providerName) {
       case "bedrock": {
         return new BedrockProviderAdapter(
+          modelType,
           config as AwsProviderConfig | undefined,
         );
       }
       case "vertex": {
         return new VertexProviderAdapter(
+          modelType,
           config as GoogleProviderConfig | undefined,
         );
       }
       case "groq": {
         return new GroqProviderAdapter(
+          modelType,
           config as ApiKeyProviderConfig | undefined,
         );
       }

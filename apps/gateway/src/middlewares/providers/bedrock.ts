@@ -9,7 +9,7 @@ import { getSecret } from "@hebo/shared-api/utils/secrets";
 
 import { assumeRole } from "~gateway/middlewares/providers/adapters/aws";
 
-import { ProviderAdapterBase, type ModelConfig } from "./providers";
+import { ProviderAdapterBase } from "./providers";
 
 import type { Provider } from "ai";
 
@@ -18,8 +18,8 @@ export class BedrockProviderAdapter extends ProviderAdapterBase {
   private credentialsPromise?: ReturnType<typeof assumeRole>;
   private providerPromise?: Promise<Provider>;
 
-  constructor(config?: AwsProviderConfig) {
-    super("bedrock");
+  constructor(modelName: string, config?: AwsProviderConfig) {
+    super("bedrock", modelName);
     this.configPromise = config
       ? Promise.resolve(config)
       : (async () => {
@@ -55,8 +55,8 @@ export class BedrockProviderAdapter extends ProviderAdapterBase {
     return this.providerPromise;
   }
 
-  protected async resolveModelId(model: ModelConfig) {
-    const modelId = this.getProviderModelId(model);
+  protected async resolveModelId() {
+    const modelId = await this.getProviderModelId();
     const { region } = await this.configPromise;
     const client = new BedrockClient({
       region,

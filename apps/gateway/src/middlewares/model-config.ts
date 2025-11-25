@@ -36,7 +36,8 @@ export class ModelConfigService {
     const modelConfig = this.resolveModelConfig(type);
 
     return {
-      modelConfig,
+      modelName: modelConfig.name,
+      modelModality: modelConfig.modality,
       customProviderName,
     };
   }

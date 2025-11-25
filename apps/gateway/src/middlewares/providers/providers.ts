@@ -3,35 +3,37 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import type { Provider } from "ai";
 
-export type ModelConfig = (typeof supportedModels)[number];
-
 export interface ProviderAdapter {
   provider: Provider;
-  modelId: string;
+  resolveModelId(): Promise<string>;
 }
 
 export abstract class ProviderAdapterBase {
-  protected constructor(private readonly providerName: ProviderName) {}
+  protected constructor(
+    private readonly providerName: ProviderName,
+    private readonly modelName: string,
+  ) {}
 
   protected abstract getProvider(): Promise<Provider>;
 
-  protected abstract resolveModelId(model: ModelConfig): Promise<string>;
+  protected abstract resolveModelId(): Promise<string>;
 
-  async create(model: ModelConfig): Promise<ProviderAdapter> {
-    const [provider, modelId] = await Promise.all([
-      this.getProvider(),
-      this.resolveModelId(model),
-    ]);
-    return { provider, modelId };
+  async create(): Promise<ProviderAdapter> {
+    return {
+      provider: await this.getProvider(),
+      resolveModelId: () => this.resolveModelId(),
+    };
   }
 
-  protected getProviderModelId(model: ModelConfig) {
-    const entry = model.providers.find(
-      (provider) => this.providerName in provider,
-    ) as Record<ProviderName, string> | undefined;
+  async getProviderModelId(): Promise<string> {
+    const entry = supportedModels
+      .find((model) => model.name === this.modelName)
+      ?.providers.find((provider) => this.providerName in provider) as
+      | Record<ProviderName, string>
+      | undefined;
     if (!entry) {
       throw new Error(
-        `Missing provider ${this.providerName} for model ${model.name}`,
+        `Missing provider ${this.providerName} for model ${this.modelName}`,
       );
     }
     return entry[this.providerName];

@@ -8,7 +8,7 @@ import {
   buildWifOptions,
 } from "~gateway/middlewares/providers/adapters/aws";
 
-import { ProviderAdapterBase, type ModelConfig } from "./providers";
+import { ProviderAdapterBase } from "./providers";
 
 import type { Provider } from "ai";
 
@@ -16,8 +16,8 @@ export class VertexProviderAdapter extends ProviderAdapterBase {
   private readonly configPromise: Promise<GoogleProviderConfig>;
   private providerPromise?: Promise<Provider>;
 
-  constructor(config?: GoogleProviderConfig) {
-    super("vertex");
+  constructor(modelName: string, config?: GoogleProviderConfig) {
+    super("vertex", modelName);
     this.configPromise = config
       ? Promise.resolve(config)
       : (async () => {
@@ -52,7 +52,7 @@ export class VertexProviderAdapter extends ProviderAdapterBase {
     return this.providerPromise;
   }
 
-  protected async resolveModelId(model: ModelConfig) {
-    return this.getProviderModelId(model);
+  protected async resolveModelId() {
+    return this.getProviderModelId();
   }
 }
