@@ -34,9 +34,22 @@ const branchSchema = z.object({
   updated_at: z.date().default(() => new Date()),
 });
 
+const providerSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  config: z.optional(z.unknown()),
+
+  // Audit fields
+  created_by: z.optional(z.string()),
+  created_at: z.optional(z.date()),
+  updated_by: z.optional(z.string()),
+  updated_at: z.optional(z.date()),
+});
+
 export const createDb = () => {
   const agents = new Collection({ schema: agentSchema });
   const branches = new Collection({ schema: branchSchema });
+  const providers = new Collection({ schema: providerSchema });
 
   agents.defineRelations(({ many }) => ({
     branches: many(branches, { onDelete: "cascade" }),
@@ -45,6 +58,7 @@ export const createDb = () => {
   return {
     agents,
     branches,
+    providers,
   } as const;
 };
 
