@@ -1,5 +1,7 @@
 import { Elysia, status } from "elysia";
 
+import { BadRequestError } from "./providers/errors";
+
 function upstreamResponse(e: unknown): Response | undefined {
   const r = (e as { response?: unknown })?.response;
   return r instanceof Response ? r : undefined;
@@ -35,6 +37,10 @@ export const oaiErrors = new Elysia({ name: "oai-error" })
           },
         });
       }
+    }
+
+    if (error instanceof BadRequestError) {
+      return status(error.status, { error: error.toJSON() });
     }
 
     if (
