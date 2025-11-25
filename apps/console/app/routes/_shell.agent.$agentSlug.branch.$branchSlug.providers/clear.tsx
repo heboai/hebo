@@ -65,8 +65,8 @@ export function ClearCredentialsDialog({open, onOpenChange, provider}: ClearCred
             </AlertDescription>
           </Alert>
 
-          <FormField field={fields.providerSlug}>
-            <FormControl className="hidden">
+          <FormField field={fields.providerSlug} className="hidden">
+            <FormControl>
               <input type="hidden" />
             </FormControl>
             <FormMessage />

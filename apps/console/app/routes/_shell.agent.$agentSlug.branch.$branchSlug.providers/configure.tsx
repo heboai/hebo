@@ -97,8 +97,8 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
             <DialogDescription>Learn how to retrieve the credentials in our documentation.</DialogDescription>
           </DialogHeader>
 
-          <FormField field={fields.slug}>
-            <FormControl className="hidden">
+          <FormField field={fields.slug} className="hidden">
+            <FormControl>
               <input type="hidden" value={provider?.slug} />
             </FormControl>
           </FormField>
@@ -119,7 +119,7 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
           <div className="text-sm">
             The configured provider will only handle requests after you enable it for a specific model. 
           </div>
-
+          
           <DialogFooter>
             <DialogClose asChild>
               <Button 
