@@ -4,7 +4,7 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Provider } from "ai";
 
 export interface ProviderAdapter {
-  provider: Provider;
+  getProvider(): Promise<Provider>;
   resolveModelId(): Promise<string>;
 }
 
@@ -13,17 +13,6 @@ export abstract class ProviderAdapterBase {
     private readonly providerName: ProviderName,
     private readonly modelName: string,
   ) {}
-
-  protected abstract getProvider(): Promise<Provider>;
-
-  protected abstract resolveModelId(): Promise<string>;
-
-  async create(): Promise<ProviderAdapter> {
-    return {
-      provider: await this.getProvider(),
-      resolveModelId: () => this.resolveModelId(),
-    };
-  }
 
   async getProviderModelId(): Promise<string> {
     const entry = supportedModels

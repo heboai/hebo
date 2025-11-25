@@ -48,14 +48,14 @@ export class BedrockProviderAdapter extends ProviderAdapterBase {
     });
   }
 
-  protected async getProvider(): Promise<Provider> {
+  async getProvider(): Promise<Provider> {
     if (!this.providerPromise) {
       this.providerPromise = this.buildAiProvider();
     }
     return this.providerPromise;
   }
 
-  protected async resolveModelId() {
+  async resolveModelId() {
     const modelId = await this.getProviderModelId();
     const { region } = await this.configPromise;
     const client = new BedrockClient({

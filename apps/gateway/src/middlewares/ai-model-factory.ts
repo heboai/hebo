@@ -35,18 +35,17 @@ export const aiModelFactory = new Elysia({
           `Model ${modelAliasPath} (${modelType}) is not a ${modality} model.`,
         );
 
-      // FUTURE: Cache this
       const providerAdapter = await (customProviderName
         ? providerAdapterFactory.createCustom(modelType, customProviderName)
         : providerAdapterFactory.createDefault(modelType));
 
       // FUTURE: Cache this
+      const provider = await providerAdapter.getProvider();
+      // FUTURE: Cache this
       const modelId = await providerAdapter.resolveModelId();
       return modality === "chat"
-        ? (providerAdapter.provider.languageModel(modelId) as AiModelFor<M>)
-        : (providerAdapter.provider.textEmbeddingModel(
-            modelId,
-          ) as AiModelFor<M>);
+        ? (provider.languageModel(modelId) as AiModelFor<M>)
+        : (provider.textEmbeddingModel(modelId) as AiModelFor<M>);
     };
 
     return {

@@ -18,12 +18,19 @@ export class ProviderAdapterFactory {
   constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
 
   async createDefault(modelType: string): Promise<ProviderAdapter> {
-    const providerNames = this.resolveProviderNames(modelType);
+    const providerNames = [
+      ...new Set(
+        supportedModels
+          .find((model) => model.type === modelType)
+          ?.providers.flatMap(
+            (mapping) => Object.keys(mapping) as ProviderName[],
+          ),
+      ),
+    ];
 
     for (const providerName of providerNames) {
       try {
-        const adapter = this.createAdapter(providerName, modelType);
-        return await adapter.create();
+        return this.createAdapter(providerName, modelType);
       } catch {
         continue;
       }
@@ -37,29 +44,13 @@ export class ProviderAdapterFactory {
     modelType: string,
     providerName: ProviderName,
   ): Promise<ProviderAdapter> {
-    const providerConfig = await this.resolveCustomProviderConfig(providerName);
-    const adapter = this.createAdapter(providerName, modelType, providerConfig);
-    return await adapter.create();
-  }
-
-  private resolveProviderNames(modelType: string): ProviderName[] {
-    return [
-      ...new Set(
-        supportedModels
-          .find((model) => model.type === modelType)
-          ?.providers.flatMap(
-            (mapping) => Object.keys(mapping) as ProviderName[],
-          ),
-      ),
-    ];
-  }
-
-  private async resolveCustomProviderConfig(
-    customProviderName: ProviderName,
-  ): Promise<ProviderConfig | undefined> {
-    const provider =
-      await this.dbClient.providers.getUnredacted(customProviderName);
-    return provider.config as ProviderConfig;
+    const { config } =
+      await this.dbClient.providers.getUnredacted(providerName);
+    return this.createAdapter(
+      providerName,
+      modelType,
+      config as ProviderConfig,
+    );
   }
 
   private createAdapter(

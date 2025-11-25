@@ -23,14 +23,14 @@ export class GroqProviderAdapter extends ProviderAdapterBase {
     return createGroq({ ...cfg });
   }
 
-  protected async getProvider(): Promise<Provider> {
+  async getProvider(): Promise<Provider> {
     if (!this.providerPromise) {
       this.providerPromise = this.buildAiProvider();
     }
     return this.providerPromise;
   }
 
-  protected async resolveModelId() {
+  async resolveModelId() {
     return this.getProviderModelId();
   }
 }
