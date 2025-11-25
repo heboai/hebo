@@ -28,9 +28,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
       let provider;
       try {
-        await api.providers.post({
-          slug: submission.value.slug,
-          config: submission.value.config,
+        await api.providers({ slug: submission.value.slug }).config.put({
+          ...submission.value.config
         });
       } catch (error) {
         return { submission: submission.reply({
@@ -50,7 +49,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
         return { submission: submission.reply() };
 
       try {
-        await api.providers({ slug: submission.value.providerSlug}).delete();
+        await api.providers({ slug: submission.value.providerSlug}).config.delete();
       } catch (error) {
         return { submission: submission.reply({
           formErrors: [parseError(error).message],

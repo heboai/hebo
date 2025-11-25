@@ -35,23 +35,23 @@ export const providerHandlers = [
     return HttpResponse.json(providers);
   }),
 
-  http.post("/api/v1/providers", async ({ request }) => {
-    const body = (await request.json()) as {
-      slug: string;
-      config: unknown;
-    };
+  http.put<{ slug: string }>(
+    "/api/v1/providers/:slug/config",
+    async ({ params, request }) => {
+      const body = (await request.json()) as unknown;
 
-    const provider = await db.providers.create({
-      slug: body.slug,
-      name: SUPPORTED_PROVIDERS[body.slug].name,
-      config: body.config,
-    });
+      const provider = await db.providers.create({
+        slug: params.slug,
+        name: SUPPORTED_PROVIDERS[params.slug].name,
+        config: body,
+      });
 
-    return HttpResponse.json(provider, { status: 201 });
-  }),
+      return HttpResponse.json(provider, { status: 201 });
+    },
+  ),
 
   http.delete<{ slug: string }>(
-    "/api/v1/providers/:slug",
+    "/api/v1/providers/:slug/config",
     async ({ params }) => {
       db.providers.delete((q) => q.where({ slug: params.slug }));
 

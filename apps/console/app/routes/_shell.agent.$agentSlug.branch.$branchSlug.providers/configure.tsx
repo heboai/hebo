@@ -22,7 +22,9 @@ import { useFormErrorToast } from "~console/lib/errors";
 
 export const ProviderConfigureSchema = z.object({
   slug: z.string(),
-  config: ((msg) => z.string(msg).trim().min(1, msg))("Please provide valid credentials"),
+  config: z.object({
+    apiKey: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid API key"),
+  })
 });
 
 type ProviderConfigureFormValues = z.infer<typeof ProviderConfigureSchema>;
@@ -44,6 +46,7 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
         slug: provider?.slug,
     }
   });
+  const config = fields.config.getFieldset();
   useFormErrorToast(form.allErrors);
   
   useEffect(() => {
@@ -66,10 +69,10 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
                         </FormControl>
                     </FormField>
 
-                    <FormField field={fields.config}>
-                        <FormLabel>Credentials</FormLabel>
+                    <FormField field={config.apiKey}>
+                        <FormLabel>API Key</FormLabel>
                         <FormControl>
-                            <Input placeholder="Credentials" autoComplete="off" />
+                            <Input placeholder="API Key" autoComplete="off" />
                         </FormControl>
                         <FormMessage />
                     </FormField>

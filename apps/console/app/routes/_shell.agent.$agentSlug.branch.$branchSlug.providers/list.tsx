@@ -28,7 +28,7 @@ const ProviderIcons = {
 type Provider = {
   slug: string;
   name: string;
-  config?: unknown;
+  config?: Record<string, unknown>;
   updated_at: Date;
 };
 

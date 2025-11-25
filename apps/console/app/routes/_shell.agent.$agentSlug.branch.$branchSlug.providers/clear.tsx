@@ -10,7 +10,6 @@ import { Button } from "@hebo/shared-ui/components/Button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
