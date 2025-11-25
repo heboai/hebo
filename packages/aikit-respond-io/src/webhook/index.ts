@@ -52,7 +52,7 @@ export function webhook<T extends WebhookPayload>(
 
       // Determine the HTTP response status based on the error type.
       if (error instanceof InvalidSignatureError) {
-        return new Response("Bad Request", { status: 400 });
+        return new Response("Unauthorized", { status: 401 });
       }
 
       // return 200 OK to prevent webhook disruption.
