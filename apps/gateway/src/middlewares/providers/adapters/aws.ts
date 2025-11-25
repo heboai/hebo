@@ -1,8 +1,4 @@
-import {
-  AssumeRoleCommand,
-  GetSessionTokenCommand,
-  STSClient,
-} from "@aws-sdk/client-sts";
+import { AssumeRoleCommand, STSClient } from "@aws-sdk/client-sts";
 
 type AwsContainerCredentialResponse = {
   AccessKeyId: string;
@@ -32,15 +28,25 @@ export async function injectMetadataCredentials() {
       return;
     }
   }
+}
 
-  // Fall back to session token command for local development
-  const client = new STSClient();
-  const session = await client.send(new GetSessionTokenCommand());
-  if (!session.Credentials) throw new Error("Missing AWS credentials");
-  process.env.AWS_ACCESS_KEY_ID = session.Credentials.AccessKeyId!;
-  process.env.AWS_SECRET_ACCESS_KEY = session.Credentials.SecretAccessKey!;
-  process.env.AWS_SESSION_TOKEN = session.Credentials.SessionToken!;
-  process.env.AWS_REGION = await client.config.region();
+/**
+ * Builds the configuration object required to exchange AWS credentials for a
+ * Google service account token via Workload Identity Federation.
+ */
+export function buildWifOptions(audience: string, serviceAccountEmail: string) {
+  return {
+    type: "external_account",
+    audience,
+    subject_token_type: "urn:ietf:params:aws:token-type:aws4_request",
+    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+    credential_source: {
+      environment_id: "aws1",
+      regional_cred_verification_url:
+        "https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
+    },
+    service_account_impersonation_url: `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${serviceAccountEmail}:generateAccessToken`,
+  };
 }
 
 /*
@@ -61,22 +67,3 @@ export const assumeRole = async (region: string, roleArn: string) => {
     sessionToken: resp.Credentials.SessionToken!,
   };
 };
-
-/**
- * Builds the configuration object required to exchange AWS credentials for a
- * Google service account token via Workload Identity Federation.
- */
-export function buildWifOptions(audience: string, serviceAccountEmail: string) {
-  return {
-    type: "external_account",
-    audience,
-    subject_token_type: "urn:ietf:params:aws:token-type:aws4_request",
-    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-    credential_source: {
-      environment_id: "aws1",
-      regional_cred_verification_url:
-        "https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
-    },
-    service_account_impersonation_url: `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${serviceAccountEmail}:generateAccessToken`,
-  };
-}
