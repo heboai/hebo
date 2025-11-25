@@ -13,24 +13,34 @@ import { ProviderAdapterBase } from "./provider";
 import type { Provider } from "ai";
 
 export class VertexProviderAdapter extends ProviderAdapterBase {
-  private readonly configPromise: Promise<GoogleProviderConfig>;
+  private config?: GoogleProviderConfig;
 
   constructor(modelName: string, config?: GoogleProviderConfig) {
     super("vertex", modelName);
-    this.configPromise = config
-      ? Promise.resolve(config)
-      : (async () => {
-          return {
-            serviceAccountEmail: await getSecret("VertexServiceAccountEmail"),
-            audience: await getSecret("VertexAwsProviderAudience"),
-            location: await getSecret("VertexLocation"),
-            project: await getSecret("VertexProject"),
-          };
-        })();
+    this.config = config;
+  }
+
+  private async getConfig(): Promise<GoogleProviderConfig> {
+    if (!this.config) {
+      const [serviceAccountEmail, audience, location, project] =
+        await Promise.all([
+          getSecret("VertexServiceAccountEmail"),
+          getSecret("VertexAwsProviderAudience"),
+          getSecret("VertexLocation"),
+          getSecret("VertexProject"),
+        ]);
+      this.config = {
+        serviceAccountEmail,
+        audience,
+        location,
+        project,
+      };
+    }
+    return this.config;
   }
 
   async getProvider(): Promise<Provider> {
-    const cfg = await this.configPromise;
+    const cfg = await this.getConfig();
     const { serviceAccountEmail, audience, location, project, baseURL } = cfg;
     await injectMetadataCredentials();
     return createVertex({

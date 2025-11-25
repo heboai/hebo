@@ -8,17 +8,23 @@ import { ProviderAdapterBase } from "./provider";
 import type { Provider } from "ai";
 
 export class GroqProviderAdapter extends ProviderAdapterBase {
-  private readonly configPromise: Promise<ApiKeyProviderConfig>;
+  private config?: ApiKeyProviderConfig;
 
   constructor(modelName: string, config?: ApiKeyProviderConfig) {
     super("groq", modelName);
-    this.configPromise = config
-      ? Promise.resolve(config)
-      : getSecret("GroqApiKey").then((apiKey) => ({ apiKey }));
+    this.config = config;
+  }
+
+  private async getConfig(): Promise<ApiKeyProviderConfig> {
+    if (!this.config) {
+      const apiKey = await getSecret("GroqApiKey");
+      this.config = { apiKey };
+    }
+    return this.config;
   }
 
   async getProvider(): Promise<Provider> {
-    const cfg = await this.configPromise;
+    const cfg = await this.getConfig();
     return createGroq({ ...cfg });
   }
 

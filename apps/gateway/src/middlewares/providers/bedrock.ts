@@ -13,34 +13,40 @@ import { ProviderAdapterBase } from "./provider";
 
 import type { Provider } from "ai";
 
+type BedrockCredentials =
+  ReturnType<typeof assumeRole> extends Promise<infer T> ? T : never;
+
 export class BedrockProviderAdapter extends ProviderAdapterBase {
-  private readonly configPromise: Promise<AwsProviderConfig>;
-  private credentialsPromise?: ReturnType<typeof assumeRole>;
+  private config?: AwsProviderConfig;
+  private credentials?: BedrockCredentials;
 
   constructor(modelName: string, config?: AwsProviderConfig) {
     super("bedrock", modelName);
-    this.configPromise = config
-      ? Promise.resolve(config)
-      : (async () => {
-          return {
-            bedrockRoleArn: await getSecret("BedrockRoleArn"),
-            region: await getSecret("BedrockRegion"),
-          };
-        })();
+    this.config = config;
+  }
+
+  private async getConfig(): Promise<AwsProviderConfig> {
+    if (!this.config) {
+      const [bedrockRoleArn, region] = await Promise.all([
+        getSecret("BedrockRoleArn"),
+        getSecret("BedrockRegion"),
+      ]);
+      this.config = { bedrockRoleArn, region };
+    }
+    return this.config;
   }
 
   private async getCredentials() {
-    if (!this.credentialsPromise) {
-      this.credentialsPromise = this.configPromise.then((cfg) =>
-        assumeRole(cfg.region, cfg.bedrockRoleArn),
-      );
+    if (!this.credentials) {
+      const cfg = await this.getConfig();
+      this.credentials = await assumeRole(cfg.region, cfg.bedrockRoleArn);
     }
-    return this.credentialsPromise;
+    return this.credentials;
   }
 
   async getProvider(): Promise<Provider> {
     const credentials = await this.getCredentials();
-    const { region } = await this.configPromise;
+    const { region } = await this.getConfig();
     return createAmazonBedrock({
       ...credentials,
       region,
@@ -49,7 +55,7 @@ export class BedrockProviderAdapter extends ProviderAdapterBase {
 
   async resolveModelId() {
     const modelId = await this.getProviderModelId();
-    const { region } = await this.configPromise;
+    const { region } = await this.getConfig();
     const client = new BedrockClient({
       region,
       credentials: await this.getCredentials(),
