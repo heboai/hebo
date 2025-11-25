@@ -3,9 +3,12 @@ import { createGroq } from "@ai-sdk/groq";
 import type { ApiKeyProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
-import { ProviderAdapterBase } from "./provider";
+import { ProviderAdapterBase, type ProviderAdapter } from "./provider";
 
-export class GroqProviderAdapter extends ProviderAdapterBase {
+export class GroqProviderAdapter
+  extends ProviderAdapterBase
+  implements ProviderAdapter
+{
   private config?: ApiKeyProviderConfig;
 
   constructor(modelName: string, config?: ApiKeyProviderConfig) {

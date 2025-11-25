@@ -4,9 +4,12 @@ import type { GoogleProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
 import { injectMetadataCredentials, buildWifOptions } from "./adapters/aws";
-import { ProviderAdapterBase } from "./provider";
+import { ProviderAdapterBase, type ProviderAdapter } from "./provider";
 
-export class VertexProviderAdapter extends ProviderAdapterBase {
+export class VertexProviderAdapter
+  extends ProviderAdapterBase
+  implements ProviderAdapter
+{
   private config?: GoogleProviderConfig;
 
   constructor(modelName: string, config?: GoogleProviderConfig) {
