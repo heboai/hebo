@@ -13,6 +13,7 @@ export class ModelConfigService {
 
   async getCustomProviderName(modelAliasPath: string) {
     const model = await this.getModel(modelAliasPath);
+    // Currently, we only support routing to the first provider.
     return model.routing?.only?.[0];
   }
 
