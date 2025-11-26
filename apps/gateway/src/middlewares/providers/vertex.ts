@@ -34,7 +34,7 @@ export class VertexProviderAdapter
 
   async getProvider() {
     const cfg = this.config!;
-    const { serviceAccountEmail, audience, location, project, baseURL } = cfg;
+    const { serviceAccountEmail, audience, location, project } = cfg;
     await injectMetadataCredentials();
     return createVertex({
       googleAuthOptions: {
@@ -43,7 +43,6 @@ export class VertexProviderAdapter
       },
       location,
       project,
-      baseURL,
     });
   }
 

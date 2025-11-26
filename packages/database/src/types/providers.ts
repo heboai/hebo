@@ -8,7 +8,6 @@ export const ProviderNameEnum = Type.Enum(
 const BedrockProviderConfigSchema = Type.Object({
   bedrockRoleArn: Type.String(),
   region: Type.String(),
-  baseURL: Type.Optional(Type.String()),
 });
 
 const VertexProviderConfigSchema = Type.Object({
@@ -16,12 +15,10 @@ const VertexProviderConfigSchema = Type.Object({
   audience: Type.String(),
   location: Type.String(),
   project: Type.String(),
-  baseURL: Type.Optional(Type.String()),
 });
 
 const ApiKeyProviderConfigSchema = Type.Object({
   apiKey: Type.String({ "x-redact": true }),
-  baseURL: Type.Optional(Type.String()),
 });
 
 export const ProviderConfig = Type.Union([
