@@ -9,6 +9,7 @@ import {
   supportedProviders,
 } from "@hebo/database/src/types/providers";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
+import { type Models } from "@hebo/shared-data/types/models";
 
 export const providersModule = new Elysia({
   prefix: "/providers",
@@ -68,12 +69,45 @@ export const providersModule = new Elysia({
     },
   )
   .delete(
-    "/:providerSlug",
+    "/:providerSlug/config",
     async ({ dbClient, params }) => {
-      const { id } = await dbClient.providers.findFirstOrThrow({
+      const existing = await dbClient.providers.findFirst({
         where: { slug: params.providerSlug },
+        select: { id: true },
       });
-      await dbClient.providers.softDelete({ id });
+
+      if (existing) {
+        const branches = await dbClient.branches.findMany();
+
+        const affectedBranches = branches.filter((branch) => {
+          const models = branch.models as Models;
+          return models.some((model) =>
+            model.routing?.only?.includes(params.providerSlug),
+          );
+        });
+
+        // Batch update all affected branches + delete provider in a single transaction
+        await dbClient.$transaction([
+          ...affectedBranches.map((branch) => {
+            const models = branch.models as Models;
+            return dbClient.branches.update({
+              where: { id: branch.id },
+              data: {
+                models: models.map((model) =>
+                  model.routing?.only?.includes(params.providerSlug)
+                    ? { ...model, routing: undefined }
+                    : model,
+                ),
+              },
+            });
+          }),
+          dbClient.providers.update({
+            where: { id: existing.id },
+            data: { deleted_at: new Date() },
+          }),
+        ]);
+      }
+
       return status(204);
     },
     {
