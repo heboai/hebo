@@ -71,7 +71,6 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
             <FormControl>
               <input type="hidden" />
             </FormControl>
-            <FormMessage />
           </FormField>
 
           <DialogFooter>

@@ -69,7 +69,6 @@ export function ClearCredentialsDialog({open, onOpenChange, provider}: ClearCred
             <FormControl>
               <input type="hidden" />
             </FormControl>
-            <FormMessage />
           </FormField>
 
           <DialogFooter>
