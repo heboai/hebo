@@ -2,7 +2,6 @@ import { Elysia, status, t } from "elysia";
 
 import {
   Provider,
-  ProviderConfig,
   type ProviderName,
   ProviderNameEnum,
   ProvidersWithDisplayName,
@@ -49,43 +48,6 @@ export const providersModule = new Elysia({
     {
       body: Provider,
       response: { 201: Provider },
-    },
-  )
-  .get(
-    "/:providerName",
-    async ({ dbClient, params }) => {
-      return status(
-        200,
-        await dbClient.providers.findFirstOrThrow({
-          where: { name: params.providerName },
-        }),
-      );
-    },
-    {
-      params: t.Object({ providerName: ProviderNameEnum }),
-      response: { 200: Provider },
-    },
-  )
-  .patch(
-    "/:providerName",
-    async ({ body, dbClient, params }) => {
-      const { id } = await dbClient.providers.findFirstOrThrow({
-        where: { name: params.providerName },
-      });
-      return status(
-        200,
-        await dbClient.providers.update({
-          where: { id },
-          data: body,
-        }),
-      );
-    },
-    {
-      body: t.Object({
-        config: ProviderConfig,
-      }),
-      params: t.Object({ providerName: ProviderNameEnum }),
-      response: { 200: Provider },
     },
   )
   .delete(

@@ -8,9 +8,7 @@ export const supportedProviders = {
 } as const;
 
 export const ProviderNameEnum = Type.Enum(
-  Object.fromEntries(Object.keys(supportedProviders).map((k) => [k, k])) as {
-    [K in ProviderName]: K;
-  },
+  Object.fromEntries(Object.keys(supportedProviders).map((k) => [k, k])),
   { error: "Invalid provider name" },
 );
 
