@@ -5,13 +5,13 @@ export const ProviderNameEnum = Type.Enum(
   { error: "Invalid provider name" },
 );
 
-const AwsProviderConfigSchema = Type.Object({
+const BedrockProviderConfigSchema = Type.Object({
   bedrockRoleArn: Type.String(),
   region: Type.String(),
   baseURL: Type.Optional(Type.String()),
 });
 
-const GoogleProviderConfigSchema = Type.Object({
+const VertexProviderConfigSchema = Type.Object({
   serviceAccountEmail: Type.String(),
   audience: Type.String(),
   location: Type.String(),
@@ -25,8 +25,8 @@ const ApiKeyProviderConfigSchema = Type.Object({
 });
 
 export const ProviderConfig = Type.Union([
-  AwsProviderConfigSchema,
-  GoogleProviderConfigSchema,
+  BedrockProviderConfigSchema,
+  VertexProviderConfigSchema,
   ApiKeyProviderConfigSchema,
 ]);
 
@@ -35,8 +35,8 @@ export const Provider = Type.Object({
   config: ProviderConfig,
 });
 
-export type AwsProviderConfig = Static<typeof AwsProviderConfigSchema>;
-export type GoogleProviderConfig = Static<typeof GoogleProviderConfigSchema>;
+export type BedrockProviderConfig = Static<typeof BedrockProviderConfigSchema>;
+export type VertexProviderConfig = Static<typeof VertexProviderConfigSchema>;
 export type ApiKeyProviderConfig = Static<typeof ApiKeyProviderConfigSchema>;
 
 export type Provider = Static<typeof Provider>;

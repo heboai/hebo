@@ -1,6 +1,6 @@
 import { createVertex } from "@ai-sdk/google-vertex";
 
-import type { GoogleProviderConfig } from "@hebo/database/src/types/providers";
+import type { VertexProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
 import { injectMetadataCredentials, buildWifOptions } from "./adapters/aws";
@@ -10,14 +10,14 @@ export class VertexProviderAdapter
   extends ProviderAdapterBase
   implements ProviderAdapter
 {
-  private config?: GoogleProviderConfig;
+  private config?: VertexProviderConfig;
 
-  constructor(modelName: string, config?: GoogleProviderConfig) {
+  constructor(modelName: string, config?: VertexProviderConfig) {
     super("vertex", modelName);
     this.config = config;
   }
 
-  private async getConfig(): Promise<GoogleProviderConfig> {
+  private async getConfig(): Promise<VertexProviderConfig> {
     if (!this.config) {
       const [serviceAccountEmail, audience, location, project] =
         await Promise.all([

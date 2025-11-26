@@ -1,9 +1,8 @@
-
 import type { createDbClient } from "@hebo/database/client";
 import type {
   ApiKeyProviderConfig,
-  AwsProviderConfig,
-  GoogleProviderConfig,
+  BedrockProviderConfig,
+  VertexProviderConfig,
   ProviderConfig,
   ProviderName,
 } from "@hebo/database/src/types/providers";
@@ -63,13 +62,13 @@ export class ProviderAdapterFactory {
       case "bedrock": {
         return new BedrockProviderAdapter(
           modelType,
-          config as AwsProviderConfig | undefined,
+          config as BedrockProviderConfig | undefined,
         );
       }
       case "vertex": {
         return new VertexProviderAdapter(
           modelType,
-          config as GoogleProviderConfig | undefined,
+          config as VertexProviderConfig | undefined,
         );
       }
       case "groq": {
