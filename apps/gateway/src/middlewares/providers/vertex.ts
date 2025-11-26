@@ -12,13 +12,23 @@ export class VertexProviderAdapter
 {
   private config?: VertexProviderConfig;
 
-  constructor(modelName: string, config?: VertexProviderConfig) {
+  constructor(modelName: string) {
     super("vertex", modelName);
-    this.config = config;
   }
 
   private async getConfig(): Promise<VertexProviderConfig> {
     if (!this.config) {
+      throw new Error(
+        "Missing Vertex provider config. Call initialize() first.",
+      );
+    }
+    return this.config;
+  }
+
+  async initialize(config?: VertexProviderConfig): Promise<this> {
+    if (config) {
+      this.config = config;
+    } else {
       const [serviceAccountEmail, audience, location, project] =
         await Promise.all([
           getSecret("VertexServiceAccountEmail"),
@@ -26,14 +36,9 @@ export class VertexProviderAdapter
           getSecret("VertexLocation"),
           getSecret("VertexProject"),
         ]);
-      this.config = {
-        serviceAccountEmail,
-        audience,
-        location,
-        project,
-      };
+      this.config = { serviceAccountEmail, audience, location, project };
     }
-    return this.config;
+    return this;
   }
 
   async getProvider() {

@@ -30,7 +30,7 @@ export class ProviderAdapterFactory {
 
     for (const providerName of providerNames) {
       try {
-        return this.createAdapter(providerName, modelType);
+        return await this.createAdapter(providerName, modelType);
       } catch {
         continue;
       }
@@ -46,34 +46,31 @@ export class ProviderAdapterFactory {
   ): Promise<ProviderAdapter> {
     const { config } =
       await this.dbClient.providers.getUnredacted(providerName);
-    return this.createAdapter(
+    return await this.createAdapter(
       providerName,
       modelType,
       config as ProviderConfig,
     );
   }
 
-  private createAdapter(
+  private async createAdapter(
     providerName: ProviderName,
     modelType: string,
     config?: ProviderConfig,
   ) {
     switch (providerName) {
       case "bedrock": {
-        return new BedrockProviderAdapter(
-          modelType,
+        return new BedrockProviderAdapter(modelType).initialize(
           config as BedrockProviderConfig | undefined,
         );
       }
       case "vertex": {
-        return new VertexProviderAdapter(
-          modelType,
+        return new VertexProviderAdapter(modelType).initialize(
           config as VertexProviderConfig | undefined,
         );
       }
       case "groq": {
-        return new GroqProviderAdapter(
-          modelType,
+        return new GroqProviderAdapter(modelType).initialize(
           config as ApiKeyProviderConfig | undefined,
         );
       }

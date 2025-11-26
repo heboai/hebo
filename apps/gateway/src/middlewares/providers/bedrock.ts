@@ -20,20 +20,8 @@ export class BedrockProviderAdapter
   private config?: BedrockProviderConfig;
   private credentials?: BedrockCredentials;
 
-  constructor(modelName: string, config?: BedrockProviderConfig) {
+  constructor(modelName: string) {
     super("bedrock", modelName);
-    this.config = config;
-  }
-
-  private async getConfig(): Promise<BedrockProviderConfig> {
-    if (!this.config) {
-      const [bedrockRoleArn, region] = await Promise.all([
-        getSecret("BedrockRoleArn"),
-        getSecret("BedrockRegion"),
-      ]);
-      this.config = { bedrockRoleArn, region };
-    }
-    return this.config;
   }
 
   private async getCredentials() {
@@ -42,6 +30,28 @@ export class BedrockProviderAdapter
       this.credentials = await assumeRole(cfg.region, cfg.bedrockRoleArn);
     }
     return this.credentials;
+  }
+
+  async initialize(config?: BedrockProviderConfig): Promise<this> {
+    if (config) {
+      this.config = config;
+    } else {
+      const [bedrockRoleArn, region] = await Promise.all([
+        getSecret("BedrockRoleArn"),
+        getSecret("BedrockRegion"),
+      ]);
+      this.config = { bedrockRoleArn, region };
+    }
+    return this;
+  }
+
+  private async getConfig(): Promise<BedrockProviderConfig> {
+    if (!this.config) {
+      throw new Error(
+        "Missing Bedrock provider config. Call initialize() first.",
+      );
+    }
+    return this.config;
   }
 
   async getProvider() {

@@ -11,17 +11,25 @@ export class GroqProviderAdapter
 {
   private config?: ApiKeyProviderConfig;
 
-  constructor(modelName: string, config?: ApiKeyProviderConfig) {
+  constructor(modelName: string) {
     super("groq", modelName);
-    this.config = config;
   }
 
   private async getConfig(): Promise<ApiKeyProviderConfig> {
     if (!this.config) {
+      throw new Error("Missing Groq provider config. Call initialize() first.");
+    }
+    return this.config;
+  }
+
+  async initialize(config?: ApiKeyProviderConfig): Promise<this> {
+    if (config) {
+      this.config = config;
+    } else {
       const apiKey = await getSecret("GroqApiKey");
       this.config = { apiKey };
     }
-    return this.config;
+    return this;
   }
 
   async getProvider() {
