@@ -2,9 +2,9 @@ import type { createDbClient } from "@hebo/database/client";
 import type { Models } from "@hebo/shared-data/types/models";
 
 export class ModelConfigService {
-  constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
-
   private model?: Models[number];
+
+  constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
 
   async getModelType(modelAliasPath: string) {
     const model = await this.getModel(modelAliasPath);
