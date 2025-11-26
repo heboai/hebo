@@ -4,7 +4,7 @@ import { Resource } from "sst";
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 import { redactProviderConfig } from "./src/utils/redact-provider";
 
-import type { ProviderConfig, ProviderName } from "./src/types/providers";
+import type { ProviderConfig, ProviderSlug } from "./src/types/providers";
 
 export const connectionString = (() => {
   try {
@@ -75,9 +75,9 @@ export const createDbClient = (userId: string) => {
         },
       },
       providers: {
-        async getUnredacted(name: string) {
+        async getUnredacted(slug: string) {
           return _prisma.providers.findFirstOrThrow({
-            where: { name, created_by: userId, deleted_at: dbNull },
+            where: { slug, created_by: userId, deleted_at: dbNull },
           });
         },
       },
@@ -90,10 +90,10 @@ export const createDbClient = (userId: string) => {
             return redactProviderConfig(config);
           },
         },
-        name: {
-          needs: { name: true },
-          compute({ name }): ProviderName {
-            return name as ProviderName;
+        slug: {
+          needs: { slug: true },
+          compute({ slug }): ProviderSlug {
+            return slug as ProviderSlug;
           },
         },
       },

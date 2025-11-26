@@ -1,4 +1,5 @@
 import type { createDbClient } from "@hebo/database/client";
+import type { ProviderSlug } from "@hebo/database/src/types/providers";
 import type { Models } from "@hebo/shared-data/types/models";
 
 export class ModelConfigService {
@@ -11,10 +12,12 @@ export class ModelConfigService {
     return model.type;
   }
 
-  async getCustomProviderName(modelAliasPath: string) {
+  async getCustomProviderSlug(
+    modelAliasPath: string,
+  ): Promise<ProviderSlug | undefined> {
     const model = await this.getModel(modelAliasPath);
     // Currently, we only support routing to the first provider.
-    return model.routing?.only?.[0];
+    return model.routing?.only?.[0] as ProviderSlug | undefined;
   }
 
   private async getModel(modelAliasPath: string) {

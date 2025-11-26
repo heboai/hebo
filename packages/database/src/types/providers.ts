@@ -1,15 +1,15 @@
 import { Type, type Static } from "@sinclair/typebox";
 
 export const supportedProviders = {
-  bedrock: { displayName: "Amazon Bedrock" },
-  cohere: { displayName: "Cohere" },
-  groq: { displayName: "Groq" },
-  vertex: { displayName: "Google Vertex AI" },
+  bedrock: { name: "Amazon Bedrock" },
+  cohere: { name: "Cohere" },
+  groq: { name: "Groq" },
+  vertex: { name: "Google Vertex AI" },
 } as const;
 
-export const ProviderNameEnum = Type.Enum(
+export const ProviderSlugEnum = Type.Enum(
   Object.fromEntries(Object.keys(supportedProviders).map((k) => [k, k])),
-  { error: "Invalid provider name" },
+  { error: "Invalid provider slug" },
 );
 
 const BedrockProviderConfigSchema = Type.Object({
@@ -35,14 +35,14 @@ export const ProviderConfig = Type.Union([
 ]);
 
 export const Provider = Type.Object({
-  name: ProviderNameEnum,
+  slug: ProviderSlugEnum,
   config: ProviderConfig,
 });
 
 export const ProvidersWithDisplayName = Type.Array(
   Type.Object({
-    name: ProviderNameEnum,
-    displayName: Type.String(),
+    slug: ProviderSlugEnum,
+    name: Type.String(),
     config: Type.Optional(ProviderConfig),
   }),
 );
@@ -53,4 +53,4 @@ export type ApiKeyProviderConfig = Static<typeof ApiKeyProviderConfigSchema>;
 
 export type Provider = Static<typeof Provider>;
 export type ProviderConfig = Static<typeof ProviderConfig>;
-export type ProviderName = keyof typeof supportedProviders;
+export type ProviderSlug = keyof typeof supportedProviders;

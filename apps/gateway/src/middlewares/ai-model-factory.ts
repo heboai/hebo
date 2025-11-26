@@ -43,10 +43,10 @@ export const aiModelFactory = new Elysia({
           `Model ${modelAliasPath} (${modelType}) is not a ${modality} model.`,
         );
 
-      const customProviderName =
-        await modelConfigService.getCustomProviderName(modelAliasPath);
-      const providerAdapter = await (customProviderName
-        ? providerAdapterFactory.createCustom(modelType, customProviderName)
+      const customProviderSlug =
+        await modelConfigService.getCustomProviderSlug(modelAliasPath);
+      const providerAdapter = await (customProviderSlug
+        ? providerAdapterFactory.createCustom(modelType, customProviderSlug)
         : providerAdapterFactory.createDefault(modelType));
       const provider = await providerAdapter.getProvider();
       const modelId = await providerAdapter.resolveModelId();

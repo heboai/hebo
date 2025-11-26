@@ -4,7 +4,7 @@ import type {
   BedrockProviderConfig,
   VertexProviderConfig,
   ProviderConfig,
-  ProviderName,
+  ProviderSlug,
 } from "@hebo/database/src/types/providers";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
@@ -19,19 +19,19 @@ export class ProviderAdapterFactory {
   constructor(private readonly dbClient: ReturnType<typeof createDbClient>) {}
 
   async createDefault(modelType: string): Promise<ProviderAdapter> {
-    const providerNames = [
+    const providerSlugs = [
       ...new Set(
         supportedModels
           .find((model) => model.type === modelType)
           ?.providers.flatMap(
-            (mapping) => Object.keys(mapping) as ProviderName[],
+            (mapping) => Object.keys(mapping) as ProviderSlug[],
           ),
       ),
     ];
 
-    for (const providerName of providerNames) {
+    for (const providerSlug of providerSlugs) {
       try {
-        return await this.createAdapter(providerName, modelType);
+        return await this.createAdapter(providerSlug, modelType);
       } catch {
         continue;
       }
@@ -43,23 +43,23 @@ export class ProviderAdapterFactory {
 
   async createCustom(
     modelType: string,
-    providerName: ProviderName,
+    providerSlug: ProviderSlug,
   ): Promise<ProviderAdapter> {
     const { config } =
-      await this.dbClient.providers.getUnredacted(providerName);
+      await this.dbClient.providers.getUnredacted(providerSlug);
     return await this.createAdapter(
-      providerName,
+      providerSlug,
       modelType,
       config as ProviderConfig,
     );
   }
 
   private async createAdapter(
-    providerName: ProviderName,
+    providerSlug: ProviderSlug,
     modelType: string,
     config?: ProviderConfig,
   ) {
-    switch (providerName) {
+    switch (providerSlug) {
       case "bedrock": {
         return new BedrockProviderAdapter(modelType).initialize(
           config as BedrockProviderConfig | undefined,
@@ -81,7 +81,7 @@ export class ProviderAdapterFactory {
         );
       }
       default: {
-        throw new Error(`Unsupported provider: ${providerName}`);
+        throw new Error(`Unsupported provider: ${providerSlug}`);
       }
     }
   }

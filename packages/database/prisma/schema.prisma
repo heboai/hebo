@@ -77,7 +77,7 @@ model branches {
 model providers {
   /// @prismabox.hide
   id     String @id @default(uuid(7)) @db.Uuid
-  name   String
+  slug   String
   config Json
 
   // Common audit fields across entities
