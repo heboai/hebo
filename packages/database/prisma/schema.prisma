@@ -53,7 +53,6 @@ model branches {
   /// @prismabox.input.hide
   agent_slug String
   name       String
-  // FUTURE: hide api_key from models
   models     Json[] @default([])
   /// @prismabox.hide
   agent      agents @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
@@ -73,4 +72,25 @@ model branches {
   deleted_at DateTime?
 
   @@unique([agent_slug, slug])
+}
+
+model provider_configs {
+  /// @prismabox.hide
+  id            String @id @default(uuid(7)) @db.Uuid
+  provider_slug String
+  value         Json
+
+  // Common audit fields across entities
+  /// @prismabox.hide
+  created_by String
+  /// @prismabox.hide
+  created_at DateTime  @default(now())
+  /// @prismabox.hide
+  updated_by String
+  /// @prismabox.hide
+  updated_at DateTime  @updatedAt
+  /// @prismabox.hide
+  deleted_by String?
+  /// @prismabox.hide
+  deleted_at DateTime?
 }

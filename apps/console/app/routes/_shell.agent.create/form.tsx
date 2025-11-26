@@ -40,7 +40,7 @@ export function AgentCreateForm() {
     lastResult,
     constraint: getZodConstraint(AgentCreateSchema),
     defaultValue: {
-      defaultModel: supportedModels[0].name,
+      defaultModel: supportedModels[0].type,
     }
   });
   useFormErrorToast(form.allErrors);
@@ -75,7 +75,7 @@ export function AgentCreateForm() {
               <FormControl>
                 <Select
                   items={supportedModels.map((m) => ({
-                    value: m.name,
+                    value: m.type,
                     name: (
                         <>
                           {m.displayName}{" "}

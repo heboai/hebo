@@ -160,7 +160,7 @@ function ModelCard(props: {
 
             <Badge variant="outline">
               <Brain />
-              {supportedModels.find((m) => m.name === modelFieldset.type.value)?.displayName || "undefined"}
+              {supportedModels.find((m) => m.type === modelFieldset.type.value)?.displayName || "undefined"}
             </Badge>
 
             <CollapsibleTrigger asChild>
@@ -200,7 +200,7 @@ function ModelCard(props: {
                   <FormControl>
                     <Select
                       items={supportedModels.map((item) => ({
-                        value: item.name,
+                        value: item.type,
                         name: item.displayName,
                       }))}
                       placeholder="Select the model"

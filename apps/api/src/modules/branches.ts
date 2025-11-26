@@ -2,7 +2,7 @@ import { Elysia, status, t } from "elysia";
 
 import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-import { modelsSchema } from "@hebo/shared-data/types/models";
+import { Models } from "@hebo/shared-data/types/models";
 
 import {
   branches,
@@ -41,7 +41,7 @@ export const branchesModule = new Elysia({
             agent_slug: params.agentSlug,
             name: body.name,
             slug: createSlug(body.name),
-            models: models,
+            models,
           } as any,
         }),
       );
@@ -78,17 +78,14 @@ export const branchesModule = new Elysia({
         200,
         await dbClient.branches.update({
           where: { id },
-          data: {
-            name: body.name,
-            models: body.models,
-          },
+          data: { name: body.name, models: body.models },
         }),
       );
     },
     {
       body: t.Object({
         name: branchesInputUpdate.properties.name,
-        models: t.Optional(modelsSchema),
+        models: t.Optional(Models),
       }),
       response: { 200: branches, 404: t.String() },
     },
