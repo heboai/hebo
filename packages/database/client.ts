@@ -4,8 +4,7 @@ import { Resource } from "sst";
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
 import { redactProviderConfig } from "./src/utils/redact-provider";
 
-import type { ProviderConfig } from "./src/types/providers";
-
+import type { ProviderConfig, ProviderName } from "./src/types/providers";
 
 export const connectionString = (() => {
   try {
@@ -89,6 +88,12 @@ export const createDbClient = (userId: string) => {
           needs: { config: true },
           compute({ config }: { config: ProviderConfig }) {
             return redactProviderConfig(config);
+          },
+        },
+        name: {
+          needs: { name: true },
+          compute({ name }): ProviderName {
+            return name as ProviderName;
           },
         },
       },
