@@ -9,6 +9,7 @@ import type {
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { BedrockProviderAdapter } from "./bedrock";
+import { CohereProviderAdapter } from "./cohere";
 import { GroqProviderAdapter } from "./groq";
 import { VertexProviderAdapter } from "./vertex";
 
@@ -64,14 +65,19 @@ export class ProviderAdapterFactory {
           config as BedrockProviderConfig | undefined,
         );
       }
-      case "vertex": {
-        return new VertexProviderAdapter(modelType).initialize(
-          config as VertexProviderConfig | undefined,
+      case "cohere": {
+        return new CohereProviderAdapter(modelType).initialize(
+          config as ApiKeyProviderConfig | undefined,
         );
       }
       case "groq": {
         return new GroqProviderAdapter(modelType).initialize(
           config as ApiKeyProviderConfig | undefined,
+        );
+      }
+      case "vertex": {
+        return new VertexProviderAdapter(modelType).initialize(
+          config as VertexProviderConfig | undefined,
         );
       }
       default: {

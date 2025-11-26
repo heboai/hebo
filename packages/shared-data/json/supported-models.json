@@ -68,12 +68,12 @@
     "modality": "chat"
   },
   {
-    "type": "amazon/titan-embed-text-v2",
-    "displayName": "Amazon Titan Embed Text v2",
+    "type": "cohere/embed-v4.0",
+    "displayName": "Cohere Embed v4.0",
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": "amazon.titan-embed-text-v2:0"
+        "cohere": "embed-v4.0"
       }
     ],
     "modality": "embedding"

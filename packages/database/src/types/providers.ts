@@ -1,7 +1,7 @@
 import { Type, type Static } from "@sinclair/typebox";
 
 export const ProviderNameEnum = Type.Enum(
-  { bedrock: "bedrock", vertex: "vertex", groq: "groq" },
+  { bedrock: "bedrock", cohere: "cohere", groq: "groq", vertex: "vertex" },
   { error: "Invalid provider name" },
 );
 
