@@ -58,53 +58,51 @@ export const providersModule = new Elysia({
     {
       body: ProviderConfig,
       params: t.Object({ providerSlug: ProviderSlugEnum }),
-      response: { 200: Provider, 201: Provider },
+      response: { 201: Provider },
     },
   )
   .delete(
     "/:providerSlug/config",
     async ({ dbClient, params }) => {
-      const existing = await dbClient.providers.findFirst({
+      const { id } = await dbClient.providers.findFirstOrThrow({
         where: { slug: params.providerSlug },
         select: { id: true },
       });
 
-      if (existing) {
-        const branches = await dbClient.branches.findMany();
+      const branches = await dbClient.branches.findMany();
 
-        const affectedBranches = branches.filter((branch) => {
+      const affectedBranches = branches.filter((branch) => {
+        const models = branch.models as Models;
+        return models.some((model) =>
+          model.routing?.only?.includes(params.providerSlug),
+        );
+      });
+
+      // Batch update all affected branches + delete provider in a single transaction
+      await dbClient.$transaction([
+        ...affectedBranches.map((branch) => {
           const models = branch.models as Models;
-          return models.some((model) =>
-            model.routing?.only?.includes(params.providerSlug),
-          );
-        });
-
-        // Batch update all affected branches + delete provider in a single transaction
-        await dbClient.$transaction([
-          ...affectedBranches.map((branch) => {
-            const models = branch.models as Models;
-            return dbClient.branches.update({
-              where: { id: branch.id },
-              data: {
-                models: models.map((model) =>
-                  model.routing?.only?.includes(params.providerSlug)
-                    ? { ...model, routing: undefined }
-                    : model,
-                ),
-              },
-            });
-          }),
-          dbClient.providers.update({
-            where: { id: existing.id },
-            data: { deleted_at: new Date() },
-          }),
-        ]);
-      }
+          return dbClient.branches.update({
+            where: { id: branch.id },
+            data: {
+              models: models.map((model) =>
+                model.routing?.only?.includes(params.providerSlug)
+                  ? { ...model, routing: undefined }
+                  : model,
+              ),
+            },
+          });
+        }),
+        dbClient.providers.update({
+          where: { id },
+          data: { deleted_at: new Date() },
+        }),
+      ]);
 
       return status(204);
     },
     {
       params: t.Object({ providerSlug: ProviderSlugEnum }),
-      response: { 204: t.Void() },
+      response: { 204: t.Void(), 404: t.String() },
     },
   );
