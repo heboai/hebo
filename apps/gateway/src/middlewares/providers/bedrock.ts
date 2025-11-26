@@ -26,7 +26,7 @@ export class BedrockProviderAdapter
 
   private async getCredentials() {
     if (!this.credentials) {
-      const cfg = await this.getConfig();
+      const cfg = this.config!;
       this.credentials = await assumeRole(cfg.region, cfg.bedrockRoleArn);
     }
     return this.credentials;
@@ -45,18 +45,9 @@ export class BedrockProviderAdapter
     return this;
   }
 
-  private async getConfig(): Promise<BedrockProviderConfig> {
-    if (!this.config) {
-      throw new Error(
-        "Missing Bedrock provider config. Call initialize() first.",
-      );
-    }
-    return this.config;
-  }
-
   async getProvider() {
     const credentials = await this.getCredentials();
-    const { region } = await this.getConfig();
+    const { region } = this.config!;
     return createAmazonBedrock({
       ...credentials,
       region,
@@ -65,7 +56,7 @@ export class BedrockProviderAdapter
 
   async resolveModelId() {
     const modelId = this.getProviderModelId();
-    const { region } = await this.getConfig();
+    const { region } = this.config!;
     const client = new BedrockClient({
       region,
       credentials: await this.getCredentials(),

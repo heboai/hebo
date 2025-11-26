@@ -16,15 +16,6 @@ export class VertexProviderAdapter
     super("vertex", modelName);
   }
 
-  private async getConfig(): Promise<VertexProviderConfig> {
-    if (!this.config) {
-      throw new Error(
-        "Missing Vertex provider config. Call initialize() first.",
-      );
-    }
-    return this.config;
-  }
-
   async initialize(config?: VertexProviderConfig): Promise<this> {
     if (config) {
       this.config = config;
@@ -42,7 +33,7 @@ export class VertexProviderAdapter
   }
 
   async getProvider() {
-    const cfg = await this.getConfig();
+    const cfg = this.config!;
     const { serviceAccountEmail, audience, location, project, baseURL } = cfg;
     await injectMetadataCredentials();
     return createVertex({

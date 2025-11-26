@@ -15,13 +15,6 @@ export class GroqProviderAdapter
     super("groq", modelName);
   }
 
-  private async getConfig(): Promise<ApiKeyProviderConfig> {
-    if (!this.config) {
-      throw new Error("Missing Groq provider config. Call initialize() first.");
-    }
-    return this.config;
-  }
-
   async initialize(config?: ApiKeyProviderConfig): Promise<this> {
     if (config) {
       this.config = config;
@@ -33,7 +26,7 @@ export class GroqProviderAdapter
   }
 
   async getProvider() {
-    const cfg = await this.getConfig();
+    const cfg = this.config!;
     return createGroq({ ...cfg });
   }
 
