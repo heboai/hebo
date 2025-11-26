@@ -2,7 +2,7 @@ import { Elysia, status, t } from "elysia";
 
 import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-import { SupportedModelsEnum } from "@hebo/shared-data/types/models";
+import { SupportedModelType } from "@hebo/shared-data/types/models";
 
 import {
   agentsInclude,
@@ -59,7 +59,7 @@ export const agentsModule = new Elysia({
     {
       body: t.Object({
         ...agentsInputCreate.properties,
-        defaultModel: SupportedModelsEnum,
+        defaultModel: SupportedModelType,
       }),
       response: { 201: agents, 409: t.String() },
     },

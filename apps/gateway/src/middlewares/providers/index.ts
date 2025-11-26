@@ -1,9 +1,9 @@
 import type { createDbClient } from "@hebo/database/client";
 import type {
-  ApiKeyProviderConfig,
-  BedrockProviderConfig,
-  VertexProviderConfig,
-  ProviderConfig,
+  ApiKeyProviderConfigValue,
+  BedrockProviderConfigValue,
+  VertexProviderConfigValue,
+  ProviderConfigValue,
   ProviderSlug,
 } from "@hebo/database/src/types/providers";
 import supportedModels from "@hebo/shared-data/json/supported-models";
@@ -45,39 +45,39 @@ export class ProviderAdapterFactory {
     modelType: string,
     providerSlug: ProviderSlug,
   ): Promise<ProviderAdapter> {
-    const { config } =
-      await this.dbClient.providers.getUnredacted(providerSlug);
+    const { value: config } =
+      await this.dbClient.provider_configs.getUnredacted(providerSlug);
     return await this.createAdapter(
       providerSlug,
       modelType,
-      config as ProviderConfig,
+      config as ProviderConfigValue,
     );
   }
 
   private async createAdapter(
     providerSlug: ProviderSlug,
     modelType: string,
-    config?: ProviderConfig,
+    config?: ProviderConfigValue,
   ) {
     switch (providerSlug) {
       case "bedrock": {
         return new BedrockProviderAdapter(modelType).initialize(
-          config as BedrockProviderConfig | undefined,
+          config as BedrockProviderConfigValue | undefined,
         );
       }
       case "cohere": {
         return new CohereProviderAdapter(modelType).initialize(
-          config as ApiKeyProviderConfig | undefined,
+          config as ApiKeyProviderConfigValue | undefined,
         );
       }
       case "groq": {
         return new GroqProviderAdapter(modelType).initialize(
-          config as ApiKeyProviderConfig | undefined,
+          config as ApiKeyProviderConfigValue | undefined,
         );
       }
       case "vertex": {
         return new VertexProviderAdapter(modelType).initialize(
-          config as VertexProviderConfig | undefined,
+          config as VertexProviderConfigValue | undefined,
         );
       }
       default: {

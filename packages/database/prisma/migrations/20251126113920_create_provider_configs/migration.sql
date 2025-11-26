@@ -1,8 +1,8 @@
 -- CreateTable
-CREATE TABLE "providers" (
+CREATE TABLE "provider_configs" (
     "id" UUID NOT NULL,
-    "slug" TEXT NOT NULL,
-    "config" JSONB NOT NULL,
+    "provider_slug" TEXT NOT NULL,
+    "value" JSONB NOT NULL,
     "created_by" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_by" TEXT NOT NULL,
@@ -10,5 +10,5 @@ CREATE TABLE "providers" (
     "deleted_by" TEXT,
     "deleted_at" TIMESTAMP(3),
 
-    CONSTRAINT "providers_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "provider_configs_pkey" PRIMARY KEY ("id")
 );

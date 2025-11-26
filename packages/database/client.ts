@@ -2,9 +2,9 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
-import { redactProviderConfig } from "./src/utils/redact-provider";
+import { redactProviderConfigValue } from "./src/utils/redact-provider";
 
-import type { ProviderConfig, ProviderSlug } from "./src/types/providers";
+import type { ProviderConfigValue } from "./src/types/providers";
 
 export const connectionString = (() => {
   try {
@@ -74,26 +74,24 @@ export const createDbClient = (userId: string) => {
           });
         },
       },
-      providers: {
+      provider_configs: {
         async getUnredacted(slug: string) {
-          return _prisma.providers.findFirstOrThrow({
-            where: { slug, created_by: userId, deleted_at: dbNull },
+          return _prisma.provider_configs.findFirstOrThrow({
+            where: {
+              provider_slug: slug,
+              created_by: userId,
+              deleted_at: dbNull,
+            },
           });
         },
       },
     },
     result: {
-      providers: {
-        config: {
-          needs: { config: true },
-          compute({ config }: { config: ProviderConfig }) {
-            return redactProviderConfig(config);
-          },
-        },
-        slug: {
-          needs: { slug: true },
-          compute({ slug }): ProviderSlug {
-            return slug as ProviderSlug;
+      provider_configs: {
+        value: {
+          needs: { value: true },
+          compute({ value }: { value: ProviderConfigValue }) {
+            return redactProviderConfigValue(value);
           },
         },
       },

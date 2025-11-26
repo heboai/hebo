@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
-import { SupportedModelsEnum } from "@hebo/shared-data/types/models";
+import { SupportedModelType } from "@hebo/shared-data/types/models";
 
 export const models = new Elysia({
   name: "models",
@@ -49,7 +49,7 @@ export const models = new Elysia({
     },
     {
       params: t.Object({
-        id: SupportedModelsEnum,
+        id: SupportedModelType,
       }),
       response: t.Object({
         id: t.String(),
