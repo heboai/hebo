@@ -42,25 +42,18 @@ export const providersModule = new Elysia({
         select: { id: true },
       });
 
+      const newProvider = await dbClient.providers.create({
+        data: {
+          slug: params.providerSlug,
+          config: body,
+        } as any,
+      });
+
       if (existing) {
-        return status(
-          200,
-          await dbClient.providers.update({
-            where: { id: existing.id },
-            data: { config: body },
-          }),
-        );
+        await dbClient.providers.softDelete({ id: existing.id });
       }
 
-      return status(
-        201,
-        await dbClient.providers.create({
-          data: {
-            slug: params.providerSlug,
-            config: body,
-          } as any,
-        }),
-      );
+      return status(201, newProvider);
     },
     {
       body: ProviderConfig,
