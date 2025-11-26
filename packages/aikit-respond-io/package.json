@@ -1,7 +1,7 @@
 {
   "name": "@hebo/aikit-respond-io",
   "version": "0.0.1",
-  "description": "A library to help setup webhook for respond.io integration using a clean, event-based API.",
+  "description": "A type-safe toolkit for Respond.io integration, featuring a secure webhook handler and a fully-typed API client.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/heboai/hebo.git",
