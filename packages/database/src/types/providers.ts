@@ -1,7 +1,16 @@
 import { Type, type Static } from "@sinclair/typebox";
 
+export const supportedProviders = {
+  bedrock: { displayName: "Amazon Bedrock" },
+  cohere: { displayName: "Cohere" },
+  groq: { displayName: "Groq" },
+  vertex: { displayName: "Google Vertex AI" },
+} as const;
+
 export const ProviderNameEnum = Type.Enum(
-  { bedrock: "bedrock", cohere: "cohere", groq: "groq", vertex: "vertex" },
+  Object.fromEntries(Object.keys(supportedProviders).map((k) => [k, k])) as {
+    [K in ProviderName]: K;
+  },
   { error: "Invalid provider name" },
 );
 
@@ -32,10 +41,18 @@ export const Provider = Type.Object({
   config: ProviderConfig,
 });
 
+export const ProvidersWithDisplayName = Type.Array(
+  Type.Object({
+    name: ProviderNameEnum,
+    displayName: Type.String(),
+    config: Type.Optional(ProviderConfig),
+  }),
+);
+
 export type BedrockProviderConfig = Static<typeof BedrockProviderConfigSchema>;
 export type VertexProviderConfig = Static<typeof VertexProviderConfigSchema>;
 export type ApiKeyProviderConfig = Static<typeof ApiKeyProviderConfigSchema>;
 
 export type Provider = Static<typeof Provider>;
 export type ProviderConfig = Static<typeof ProviderConfig>;
-export type ProviderName = Static<typeof ProviderNameEnum>;
+export type ProviderName = keyof typeof supportedProviders;

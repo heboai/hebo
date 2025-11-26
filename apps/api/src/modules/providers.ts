@@ -3,7 +3,10 @@ import { Elysia, status, t } from "elysia";
 import {
   Provider,
   ProviderConfig,
+  type ProviderName,
   ProviderNameEnum,
+  ProvidersWithDisplayName,
+  supportedProviders,
 } from "@hebo/database/src/types/providers";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 
@@ -14,10 +17,20 @@ export const providersModule = new Elysia({
   .get(
     "/",
     async ({ dbClient }) => {
-      return status(200, await dbClient.providers.findMany());
+      const configuredProviders = await dbClient.providers.findMany();
+
+      const providers = Object.entries(supportedProviders).map(
+        ([name, { displayName }]) => ({
+          name: name as ProviderName,
+          displayName,
+          config: configuredProviders.find((p) => p.name === name)?.config,
+        }),
+      );
+
+      return status(200, providers);
     },
     {
-      response: { 200: t.Array(Provider) },
+      response: { 200: ProvidersWithDisplayName },
     },
   )
   .post(
