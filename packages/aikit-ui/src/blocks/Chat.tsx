@@ -202,7 +202,7 @@ export function Chat({
                         mode === "full" && (
                           <Reasoning
                             key={`${message.id}-${i}`}
-                            className="w-full"
+                            className="w-full px-2"
                             isStreaming={
                               status === "streaming" &&
                               i === message.parts.length - 1 &&
