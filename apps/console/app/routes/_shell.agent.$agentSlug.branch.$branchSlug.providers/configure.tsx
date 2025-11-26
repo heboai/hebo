@@ -24,14 +24,14 @@ import { labelize } from "~console/lib/utils";
 
 export const ProviderConfigureSchema = z.discriminatedUnion("slug", [
   z.object({
-    slug: z.literal("bedrock"),
+    slug: z.enum(["bedrock"]),
     config: z.object({
       bedrockRoleArn: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid Bedrock ARN role"),
       region: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid AWS region"),
     }),
   }),
   z.object({
-    slug: z.literal("vertex"),
+    slug: z.enum(["vertex"]),
     config: z.object({
       serviceAccountEmail: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid service account email"),
       audience: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid audience"),
@@ -40,7 +40,7 @@ export const ProviderConfigureSchema = z.discriminatedUnion("slug", [
     }),
   }),
   z.object({
-    slug: z.literal("groq"),
+    slug: z.enum(["cohere", "groq"]),
     config: z.object({
       apiKey: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid API key"), 
     }),
@@ -76,11 +76,14 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
   }, [fetcher.state, form.status]);
 
   const providerFields = Object.fromEntries(
-    ProviderConfigureSchema.options.map((opt) => [
-      (opt.shape.slug as z.ZodLiteral).value,
-      Object.keys((opt.shape.config as z.ZodObject).shape),
-    ])
-  ) as Record<string, string[]>;
+    ProviderConfigureSchema.options.flatMap((opt) => {
+      const slugEnum = opt.shape.slug as z.ZodEnum<any>;
+      const configSchema = opt.shape.config as z.ZodObject<any>;
+      const fields = Object.keys(configSchema.shape);
+      return slugEnum.options.map((value: string) => [value, fields]);
+    })
+  );
+    
   const configFieldset = fields.config.getFieldset();
   const activeKeys = provider ? providerFields[provider.slug] : [];
 

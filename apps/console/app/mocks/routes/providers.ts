@@ -4,7 +4,8 @@ import { db } from "~console/mocks/db";
 
 const SUPPORTED_PROVIDERS: Record<string, { name: string }> = {
   bedrock: { name: "Amazon Bedrock" },
-  vertex: { name: "Google Vertex" },
+  cohere: { name: "Cohere" },
+  vertex: { name: "Google Vertex AI" },
   groq: { name: "Groq" },
 };
 

@@ -12,7 +12,7 @@ import {
   ItemTitle
 } from "@hebo/shared-ui/components/Item";
 
-import { Bedrock, Groq, Vertex } from "~console/components/ui/Icons";
+import { Bedrock, Cohere, Groq, Vertex } from "~console/components/ui/Icons";
 
 import { ConfigureProviderDialog } from "./configure";
 import { ClearCredentialsDialog } from "./clear";
@@ -20,6 +20,7 @@ import { formatDateTime } from "~console/lib/utils";
 
 const ProviderIcons = {
   bedrock: Bedrock,
+  cohere: Cohere,
   vertex: Vertex,
   groq: Groq,
 } as const;
