@@ -1,9 +1,9 @@
 import type { createDbClient } from "@hebo/database/client";
 import type {
-  ApiKeyProviderConfigValue,
-  BedrockProviderConfigValue,
-  VertexProviderConfigValue,
-  ProviderConfigValue,
+  ApiKeyProviderConfig,
+  BedrockProviderConfig,
+  VertexProviderConfig,
+  ProviderConfig,
   ProviderSlug,
 } from "@hebo/database/src/types/providers";
 import supportedModels from "@hebo/shared-data/json/supported-models";
@@ -50,34 +50,34 @@ export class ProviderAdapterFactory {
     return await this.createAdapter(
       providerSlug,
       modelType,
-      config as ProviderConfigValue,
+      config as ProviderConfig,
     );
   }
 
   private async createAdapter(
     providerSlug: ProviderSlug,
     modelType: string,
-    config?: ProviderConfigValue,
+    config?: ProviderConfig,
   ) {
     switch (providerSlug) {
       case "bedrock": {
         return new BedrockProviderAdapter(modelType).initialize(
-          config as BedrockProviderConfigValue | undefined,
+          config as BedrockProviderConfig | undefined,
         );
       }
       case "cohere": {
         return new CohereProviderAdapter(modelType).initialize(
-          config as ApiKeyProviderConfigValue | undefined,
+          config as ApiKeyProviderConfig | undefined,
         );
       }
       case "groq": {
         return new GroqProviderAdapter(modelType).initialize(
-          config as ApiKeyProviderConfigValue | undefined,
+          config as ApiKeyProviderConfig | undefined,
         );
       }
       case "vertex": {
         return new VertexProviderAdapter(modelType).initialize(
-          config as VertexProviderConfigValue | undefined,
+          config as VertexProviderConfig | undefined,
         );
       }
       default: {

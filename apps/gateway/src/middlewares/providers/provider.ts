@@ -1,5 +1,5 @@
 import type {
-  ProviderConfigValue,
+  ProviderConfig,
   ProviderSlug,
 } from "@hebo/database/src/types/providers";
 import supportedModels from "@hebo/shared-data/json/supported-models";
@@ -7,7 +7,7 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 import type { Provider } from "ai";
 
 export interface ProviderAdapter {
-  initialize(config?: ProviderConfigValue): Promise<this>;
+  initialize(config?: ProviderConfig): Promise<this>;
   getProvider(): Promise<Provider>;
   resolveModelId(): Promise<string>;
 }

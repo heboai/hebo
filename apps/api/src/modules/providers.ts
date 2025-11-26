@@ -2,7 +2,7 @@ import { Elysia, status, t } from "elysia";
 
 import {
   Provider,
-  ProviderConfigValue,
+  ProviderConfig,
   ProviderSlug,
   supportedProviders,
 } from "@hebo/database/src/types/providers";
@@ -63,9 +63,9 @@ export const providersModule = new Elysia({
       return status(201, providerConfig.value);
     },
     {
-      body: ProviderConfigValue,
+      body: ProviderConfig,
       params: t.Object({ slug: ProviderSlug }),
-      response: { 201: ProviderConfigValue },
+      response: { 201: ProviderConfig },
     },
   )
   .delete(

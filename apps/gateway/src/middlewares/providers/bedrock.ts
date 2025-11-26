@@ -4,7 +4,7 @@ import {
   ListInferenceProfilesCommand,
 } from "@aws-sdk/client-bedrock";
 
-import type { BedrockProviderConfigValue } from "@hebo/database/src/types/providers";
+import type { BedrockProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
 import { assumeRole } from "./adapters/aws";
@@ -17,7 +17,7 @@ export class BedrockProviderAdapter
   extends ProviderAdapterBase
   implements ProviderAdapter
 {
-  private config?: BedrockProviderConfigValue;
+  private config?: BedrockProviderConfig;
   private credentials?: BedrockCredentials;
 
   constructor(modelName: string) {
@@ -32,7 +32,7 @@ export class BedrockProviderAdapter
     return this.credentials;
   }
 
-  async initialize(config?: BedrockProviderConfigValue): Promise<this> {
+  async initialize(config?: BedrockProviderConfig): Promise<this> {
     if (config) {
       this.config = config;
     } else {

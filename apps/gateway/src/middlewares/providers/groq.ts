@@ -1,6 +1,6 @@
 import { createGroq } from "@ai-sdk/groq";
 
-import type { ApiKeyProviderConfigValue } from "@hebo/database/src/types/providers";
+import type { ApiKeyProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
 
 import { ProviderAdapterBase, type ProviderAdapter } from "./provider";
@@ -9,13 +9,13 @@ export class GroqProviderAdapter
   extends ProviderAdapterBase
   implements ProviderAdapter
 {
-  private config?: ApiKeyProviderConfigValue;
+  private config?: ApiKeyProviderConfig;
 
   constructor(modelName: string) {
     super("groq", modelName);
   }
 
-  async initialize(config?: ApiKeyProviderConfigValue): Promise<this> {
+  async initialize(config?: ApiKeyProviderConfig): Promise<this> {
     if (config) {
       this.config = config;
     } else {

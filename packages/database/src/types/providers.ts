@@ -12,43 +12,37 @@ export const ProviderSlug = Type.Enum(
   { error: "Invalid provider slug" },
 );
 
-const BedrockProviderConfigValue = Type.Object({
+const BedrockProviderConfig = Type.Object({
   bedrockRoleArn: Type.String(),
   region: Type.String(),
 });
 
-const VertexProviderConfigValue = Type.Object({
+const VertexProviderConfig = Type.Object({
   serviceAccountEmail: Type.String(),
   audience: Type.String(),
   location: Type.String(),
   project: Type.String(),
 });
 
-const ApiKeyProviderConfigValue = Type.Object({
+const ApiKeyProviderConfig = Type.Object({
   apiKey: Type.String({ "x-redact": true }),
 });
 
-export const ProviderConfigValue = Type.Union([
-  BedrockProviderConfigValue,
-  VertexProviderConfigValue,
-  ApiKeyProviderConfigValue,
+export const ProviderConfig = Type.Union([
+  BedrockProviderConfig,
+  VertexProviderConfig,
+  ApiKeyProviderConfig,
 ]);
 
 export const Provider = Type.Object({
   slug: ProviderSlug,
   name: Type.String(),
-  config: Type.Optional(ProviderConfigValue),
+  config: Type.Optional(ProviderConfig),
 });
 
-export type BedrockProviderConfigValue = Static<
-  typeof BedrockProviderConfigValue
->;
-export type VertexProviderConfigValue = Static<
-  typeof VertexProviderConfigValue
->;
-export type ApiKeyProviderConfigValue = Static<
-  typeof ApiKeyProviderConfigValue
->;
+export type BedrockProviderConfig = Static<typeof BedrockProviderConfig>;
+export type VertexProviderConfig = Static<typeof VertexProviderConfig>;
+export type ApiKeyProviderConfig = Static<typeof ApiKeyProviderConfig>;
 export type Provider = Static<typeof Provider>;
-export type ProviderConfigValue = Static<typeof ProviderConfigValue>;
+export type ProviderConfig = Static<typeof ProviderConfig>;
 export type ProviderSlug = Static<typeof ProviderSlug>;
