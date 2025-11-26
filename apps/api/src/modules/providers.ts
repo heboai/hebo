@@ -15,10 +15,10 @@ export const providersModule = new Elysia({
   .use(dbClient)
   .get(
     "/",
-    async ({ dbClient }) => {
+    async ({ dbClient, query }) => {
       const providerConfigs = await dbClient.provider_configs.findMany();
 
-      const providers = Object.entries(supportedProviders).map(
+      let providers = Object.entries(supportedProviders).map(
         ([slug, { name }]) =>
           ({
             slug: slug as ProviderSlug,
@@ -28,9 +28,16 @@ export const providersModule = new Elysia({
           }) as Provider,
       );
 
+      if (query.configured) {
+        providers = providers.filter((p) => p.config !== undefined);
+      }
+
       return status(200, providers);
     },
     {
+      query: t.Object({
+        configured: t.Optional(t.Boolean({ default: false })),
+      }),
       response: { 200: t.Array(Provider) },
     },
   )
