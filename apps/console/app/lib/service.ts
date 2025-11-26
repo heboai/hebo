@@ -46,6 +46,16 @@ export const kyFetch = ky.extend({
 
         if (typeof body === "object" && body && "message" in body)
           err.message = String(body.message);
+        // OpenAI Compatible error messages
+        else if (
+          typeof body === "object" &&
+          body &&
+          "error" in body &&
+          typeof body.error === "object" &&
+          body.error &&
+          "message" in body.error
+        )
+          err.message = String(body.error.message);
 
         throw err;
       },
