@@ -87,7 +87,6 @@ export class OpenAIHttpChatTransport<
   }
 }
 
-// ---- helpers ----
 async function toOpenAIMessage(
   message: UIMessage,
   fetchImpl: typeof fetch,

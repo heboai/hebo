@@ -78,14 +78,16 @@ type ModelsConfig = Array<{
   };
 }>;
 
+export type ChatMode = "simple" | "full";
+
 export function Chat({
   modelsConfig,
   name = "Hebo AI",
-  dev = false,
+  mode = "simple",
 }: {
   modelsConfig: ModelsConfig;
   name?: string;
-  dev?: boolean;
+  mode?: ChatMode;
 }) {
   const [selectedModelAlias, setSelectedModelAlias] = useState<
     string | undefined
@@ -197,7 +199,7 @@ export function Chat({
                     }
                     case "reasoning": {
                       return (
-                        dev && (
+                        mode === "full" && (
                           <Reasoning
                             key={`${message.id}-${i}`}
                             className="w-full"
@@ -264,7 +266,7 @@ export function Chat({
             {error && (
               <Alert variant="destructive">
                 <TriangleAlert />
-                <AlertTitle>Something went wrong :(</AlertTitle>
+                <AlertTitle>Something went wrong 🙉</AlertTitle>
                 <AlertDescription>
                   <p>{error.message}</p>
                 </AlertDescription>
