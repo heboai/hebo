@@ -9,11 +9,13 @@ import {
   SelectItem,
 } from "../_shadcn/ui/select";
 
+// FUTURE: derive from radix props
 type SelectProps = {
   name?: string;
   items: Array<{ name: React.ReactNode; value: string }>;
   placeholder?: string;
   defaultValue?: string;
+  disabled?: boolean;
   ["aria-describedby"]?: string;
 };
 
@@ -22,6 +24,7 @@ function Select({
   items,
   placeholder,
   defaultValue,
+  disabled,
   ...props
 }: SelectProps) {
   const selectRef = useRef<React.ComponentRef<typeof SelectTrigger>>(null);
@@ -47,6 +50,7 @@ function Select({
             control.blur();
           }
         }}
+        disabled={disabled}
       >
         <SelectTrigger
           className="bg-background w-full min-w-0 truncate"

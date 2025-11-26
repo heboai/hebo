@@ -9,6 +9,13 @@ import { modelsConfigFormSchema } from "./schema";
 
 import type { Route } from "./+types/route";
 
+export async function clientLoader() {
+  // FUTURE: only query configured ones; should this be somewhere else?
+  const providers = (await api.providers.get()).data ?? [];
+
+  return { providers };
+}
+
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
 
   const formData = await request.formData();
@@ -41,7 +48,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 }
 
 
-export default function ModelsConfigRoute() {
+export default function ModelsConfigRoute({ loaderData }: Route.ComponentProps) {
 
   const { agent, branch } = useRoute("routes/_shell.agent.$agentSlug")!.loaderData!;
 
@@ -58,6 +65,7 @@ export default function ModelsConfigRoute() {
           agentSlug={agent.slug}
           branchSlug={branch!.slug}
           models={branch!.models}
+          providers={loaderData.providers}
         />
       </>
   );

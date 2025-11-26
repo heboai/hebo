@@ -2,7 +2,7 @@ import { useFetcher } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { useForm, getFormProps, type FieldMetadata } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
-import { Brain, Edit } from "lucide-react";
+import { Brain, ChevronsUpDown, Edit } from "lucide-react";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import {
@@ -22,6 +22,7 @@ import { Select } from "@hebo/shared-ui/components/Select";
 import { Separator } from "@hebo/shared-ui/components/Separator";
 import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 import { Badge } from "@hebo/shared-ui/components/Badge";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@hebo/shared-ui/components/Item";
 import {
   Dialog,
   DialogClose,
@@ -51,15 +52,23 @@ type ModelsConfigProps = {
   agentSlug: string;
   branchSlug: string;
   models?: ModelsConfigFormValues["models"];
+  providers: Array<{ slug: string; name: string }>;
 };
 
-export default function ModelsConfigForm({ agentSlug, branchSlug, models }: ModelsConfigProps) {
-  
+export default function ModelsConfigForm({ agentSlug, branchSlug, models, providers }: ModelsConfigProps) {
   const fetcher = useFetcher();
+
   const [form, fields] = useForm<ModelsConfigFormValues>({
     lastResult: fetcher.data,
     constraint: getZodConstraint(modelsConfigFormSchema),
-    defaultValue: { models: models }
+    defaultValue: { 
+      models: models?.map((model) => ({
+        ...model,
+        routing: model.routing?.only?.length
+          ? { only: [model.routing.only[0]] }
+          : { only: [""] },
+      }))
+    }
   });
   useFormErrorToast(form.allErrors);
 
@@ -83,6 +92,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           agentSlug={agentSlug}
           branchSlug={branchSlug}
           isExpanded={expandedCardId === index}
+          providers={providers}
           onOpenChange={(open) => { 
             form.dirty && form.reset({ name: fields.models.name  });
             open && setExpandedCardId(index);
@@ -107,7 +117,10 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           type="button"
           variant="outline"
           onClick={() => {
-            form.insert({ name: fields.models.name });
+            form.insert({
+              name: fields.models.name,
+              defaultValue: { routing: { only: [""] } },
+            });
             setExpandedCardId(modelItems.length);
           }}
           disabled={expandedCardId !== null}
@@ -129,6 +142,7 @@ function ModelCard(props: {
   onRemove: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
+  providers: ModelsConfigProps["providers"];
 }) {
   const {
     model,
@@ -139,11 +153,15 @@ function ModelCard(props: {
     onRemove,
     onCancel,
     isSubmitting,
+    providers,
   } = props;
 
   const modelFieldset = model.getFieldset();
+  const routingOnlyField = modelFieldset.routing.getFieldset().only.getFieldList()[0]!;
 
   const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
+
+  const [routingEnabled, setRoutingEnabled] = useState(Boolean(routingOnlyField.value));
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onOpenChange}>
@@ -186,7 +204,7 @@ function ModelCard(props: {
             <CardContent className="flex flex-col gap-4 my-4">
 
               {/* FUTURE: follow layout pattern of new shadcn fields components */}
-              <div className="grid gap-4 grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                 <FormField field={modelFieldset.alias} className="flex flex-col gap-2">
                   <FormLabel>Alias</FormLabel>
                   <FormControl>
@@ -209,10 +227,61 @@ function ModelCard(props: {
                   <FormMessage />
                 </FormField>
               </div>
+
+              {/* FUTURE: deal with forceMount */}
+              <Collapsible>
+                <div className="flex items-center">
+                  <h4 className="text-sm font-medium">Advanced options</h4>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="icon"  className="size-8" type="button">
+                      <ChevronsUpDown />
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+                <CollapsibleContent>
+                  <FormField field={routingOnlyField}>
+                    <Item variant="outline" size="sm">
+                      <ItemMedia className="pt-1">
+                        <input
+                          type="checkbox"
+                          checked={routingEnabled}
+                          onChange={(event) => {
+                            const enabled = event.target.checked;
+                            setRoutingEnabled(enabled);
+                          }}
+                          className="h-4 w-4 accent-primary"
+                          aria-label="Enable bring your own provider routing"
+                        />
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>
+                          <FormLabel className="mb-0">Bring Your Own Provider</FormLabel>
+                        </ItemTitle>
+                        <ItemDescription className="line-clamp-1">Setup your own credentials using providers settings</ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <FormControl>
+                          <Select
+                            disabled={!routingEnabled}
+                            defaultValue={routingEnabled ? routingOnlyField.value ?? "" : ""}
+                            items={[
+                              ...providers.map((provider) => ({
+                                value: provider.slug,
+                                name: provider.name,
+                              })),
+                            ]}
+                            placeholder="Select provider"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </ItemActions>
+                    </Item>
+                  </FormField>
+                </CollapsibleContent>
+              </Collapsible>
             </CardContent>
 
             <CardFooter className="pb-1">
-
               <Dialog>
                 <DialogTrigger asChild>
                   <Button
