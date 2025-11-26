@@ -1,8 +1,23 @@
 {
   "name": "@hebo/aikit-respond-io",
   "version": "0.0.1",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "description": "A library to help setup webhook for respond.io integration using a clean, event-based API.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heboai/hebo.git",
+    "directory": "packages/aikit-respond-io"
+  },
+  "homepage": "https://github.com/heboai/hebo/tree/main/packages/aikit-respond-io#readme",
+  "keywords": [
+    "respond.io",
+    "webhook",
+    "ai",
+    "sdk",
+    "integration",
+    "bot"
+  ],
+  "author": "Hebo",
+  "license": "MIT",
   "files": [
     "dist"
   ],

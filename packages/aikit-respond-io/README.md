@@ -18,6 +18,10 @@ Integrating with third-party webhooks often requires repetitive boilerplate: ver
 bun add @hebo/aikit-respond-io
 ```
 
+## Compatibility
+
+This package is published as an ESM-only module. It is optimized for use with modern frameworks and bundlers (e.g., Next.js, Vite, Bun) that handle module resolution. If you are using it in a pure Node.js environment, ensure your runtime configuration supports ESM and the appropriate module resolution strategy.
+
 ## Webhook Handler
 
 The `webhook` factory creates secure handlers that verify signatures and process events in the background.
