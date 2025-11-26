@@ -28,8 +28,9 @@ export const aiModelFactory = new Elysia({
       modelAliasPath: string,
       modality: M,
     ): Promise<AiModelFor<M>> => {
-      const { modelType, customProviderName } =
-        await modelConfigService.resolve(modelAliasPath);
+      const modelType = await modelConfigService.getModelType(modelAliasPath);
+      const customProviderName =
+        await modelConfigService.getCustomProviderName(modelAliasPath);
 
       const modelModality = supportedModels.find(
         (model) => model.type === modelType,
