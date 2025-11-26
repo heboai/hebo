@@ -2,6 +2,7 @@ import { Elysia, status, t } from "elysia";
 
 import {
   Provider,
+  ProviderConfig,
   type ProviderName,
   ProviderNameEnum,
   ProvidersWithDisplayName,
@@ -32,22 +33,38 @@ export const providersModule = new Elysia({
       response: { 200: ProvidersWithDisplayName },
     },
   )
-  .post(
-    "/",
-    async ({ body, dbClient }) => {
+  .put(
+    "/:providerName/config",
+    async ({ body, dbClient, params }) => {
+      const existing = await dbClient.providers.findFirst({
+        where: { name: params.providerName },
+        select: { id: true },
+      });
+
+      if (existing) {
+        return status(
+          200,
+          await dbClient.providers.update({
+            where: { id: existing.id },
+            data: { config: body },
+          }),
+        );
+      }
+
       return status(
         201,
         await dbClient.providers.create({
           data: {
-            name: body.name,
-            config: body.config,
+            name: params.providerName,
+            config: body,
           } as any,
         }),
       );
     },
     {
-      body: Provider,
-      response: { 201: Provider },
+      body: ProviderConfig,
+      params: t.Object({ providerName: ProviderNameEnum }),
+      response: { 200: Provider, 201: Provider },
     },
   )
   .delete(
