@@ -94,3 +94,9 @@ server
 
 # prisma client
 **/generated/**
+
+# Vim backup files
+*.swp
+*.swo
+*~
+*.un~

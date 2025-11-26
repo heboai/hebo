@@ -1,25 +1,16 @@
 // packages/aikit-respond-io/src/webhook/types.ts
-export enum WebhookEvents {
-  MessageReceived = "message.received",
-  MessageSent = "message.sent",
-  ContactAssigneeUpdated = "contact.assignee.updated",
-  ConversationClosed = "conversation.closed",
-}
 
-export interface WebhookEventConfig {
+export type EventHandler<T extends WebhookPayload> = (
+  payload: T,
+) => void | Promise<void>;
+
+export type ErrorHandler = (error: unknown) => void | Promise<void>;
+
+export interface WebhookHandlerOptions<T extends WebhookPayload> {
   signingKey: string;
+  handle: EventHandler<T>;
+  onError?: ErrorHandler;
 }
-
-export interface WebhookConfig {
-  events: Partial<Record<WebhookEvents, WebhookEventConfig>>;
-}
-
-export type EventPayloadMap = {
-  [WebhookEvents.MessageReceived]: MessageReceivedPayload;
-  [WebhookEvents.MessageSent]: MessageSentPayload;
-  [WebhookEvents.ContactAssigneeUpdated]: ContactAssigneeUpdatedPayload;
-  [WebhookEvents.ConversationClosed]: ConversationClosedPayload;
-};
 
 export type WebhookPayload =
   | MessageReceivedPayload
@@ -27,11 +18,9 @@ export type WebhookPayload =
   | ContactAssigneeUpdatedPayload
   | ConversationClosedPayload;
 
-export type EventHandler<T extends WebhookPayload = WebhookPayload> = (
-  payload: T,
-) => void | Promise<void>;
-
-export type ErrorHandler = (error: unknown) => void | Promise<void>;
+export interface WebhookHandler {
+  fetch: (request: Request) => Promise<Response>;
+}
 
 // --- Common Base Interfaces ---
 
@@ -136,7 +125,7 @@ export interface ConversationClosedPayload {
     openedTime: number;
     openedBySource: string;
     closedTime: number;
-    closedBy: BaseUser | null | Record<string, never>; // May be empt
+    closedBy: BaseUser | null | Record<string, never>;
     closedBySource: string;
     firstResponseTime: number;
     resolutionTime: number;
