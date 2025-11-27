@@ -69,7 +69,7 @@ import { OpenAIHttpChatTransport } from "../lib/openai-transport";
 import { cn } from "../lib/utils";
 
 // Types based on models.schema.json
-type ModelsConfig = Array<{
+export type ModelsConfig = Array<{
   alias: string;
   type?: string;
   endpoint?: {
