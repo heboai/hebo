@@ -138,6 +138,8 @@ import {
   webhook,
   MessageReceivedPayload,
 } from "@hebo/aikit-respond-io/webhook";
+
+import { createMiddleware } from "@hattip/adapter-node";
 import express from "express";
 
 const onMessage = webhook<MessageReceivedPayload>({
@@ -146,28 +148,9 @@ const onMessage = webhook<MessageReceivedPayload>({
 });
 
 const app = express();
+app.use("/webhook/message-received", createMiddleware(onMessage.fetch));
 
-// Use text parser to preserve the raw body for signature verification
-app.post(
-  "/webhook/message-received",
-  express.text({ type: "application/json" }),
-  async (req, res) => {
-    const url = `http://${req.headers.host}${req.url}`;
-    const response = await onMessage.fetch(
-      new Request(url, {
-        method: req.method,
-        headers: req.headers as HeadersInit,
-        body: req.body,
-      }),
-    );
-
-    res.status(response.status).send(await response.text());
-  },
-);
-
-app.listen(3000, () => {
-  console.log("Express server listening on port 3000");
-});
+app.listen(3000);
 ```
 
 ### Hono
@@ -187,7 +170,6 @@ const onMessage = webhook<MessageReceivedPayload>({
 });
 
 const app = new Hono();
-
 app.mount("/webhook/message-received", onMessage.fetch);
 
 export default app;
@@ -225,7 +207,8 @@ import {
   webhook,
   MessageReceivedPayload,
 } from "@hebo/aikit-respond-io/webhook";
-import { APIGatewayProxyEventV2 } from "aws-lambda";
+
+import awsLambdaAdapter from "@hattip/adapter-aws-lambda";
 
 const onMessage = webhook<MessageReceivedPayload>({
   signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
@@ -234,21 +217,7 @@ const onMessage = webhook<MessageReceivedPayload>({
   waitForCompletion: true,
 });
 
-export const handler = async (event: APIGatewayProxyEventV2) => {
-  const url = `https://${event.requestContext.domainName}${event.rawPath}`;
-  const req = new Request(url, {
-    method: event.requestContext.http.method,
-    headers: event.headers as HeadersInit,
-    body: event.body,
-  });
-
-  const res = await onMessage.fetch(req);
-
-  return {
-    statusCode: res.status,
-    body: await res.text(),
-  };
-};
+export const handler = awsLambdaAdapter(onMessage.fetch);
 ```
 
 ## Contributing
