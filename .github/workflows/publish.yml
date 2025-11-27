@@ -12,12 +12,10 @@ permissions:
 jobs:
   publish-aikit-respond-io:
     name: Publish aikit-respond-io to NPM
-    needs: quality
     runs-on: ubuntu-latest
-    if: success()
     defaults:
       run:
-        working-directory: .
+        working-directory: packages/aikit-respond-io
 
     steps:
       - name: Checkout
@@ -30,16 +28,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd packages/aikit-respond-io
           bun install --frozen-lockfile
 
       - name: Build & Test
         run: |
-          cd packages/aikit-respond-io
           bun run build
           bun run test
 
       - name: Publish
         run: |
-          cd packages/aikit-respond-io
           bun publish
