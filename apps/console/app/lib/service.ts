@@ -40,12 +40,26 @@ export const kyFetch = ky.extend({
 
         if (typeof body === "string") err.message = body;
 
-        // Extract ElysiaJS structured errors
-        if (typeof body === "object" && body && "stack" in body)
-          err.stack = String(body.stack);
+        if (typeof body === "object" && body) {
+          // ElysiaJS structured errors
+          if ("stack" in body) {
+            err.stack = String(body.stack);
+          }
 
-        if (typeof body === "object" && body && "message" in body)
-          err.message = String(body.message);
+          // Direct message (common error format)
+          if ("message" in body) {
+            err.message = String(body.message);
+          }
+          // OpenAI-style: { error: { message: string } }
+          else if (
+            "error" in body &&
+            typeof body.error === "object" &&
+            body.error &&
+            "message" in body.error
+          ) {
+            err.message = String(body.error.message);
+          }
+        }
 
         throw err;
       },

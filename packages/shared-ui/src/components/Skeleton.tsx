@@ -26,7 +26,7 @@ export function TableSkeleton() {
       <TableBody>
         {Array.from({ length: 4 }).map((_, index) => (
           <TableRow key={index}>
-            <TableCell>
+            <TableCell className="h-13">
               <Skeleton className="h-5" />
             </TableCell>
           </TableRow>
