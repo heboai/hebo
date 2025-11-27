@@ -14,7 +14,7 @@ export const authService = new Elysia({ name: "auth-service" })
   .use(await createAuthService())
   .macro({
     isSignedIn: {
-      beforeHandle({ userId }) {
+      resolve({ userId }) {
         if (!userId) throw status(401, "Unauthorized");
       },
     },
