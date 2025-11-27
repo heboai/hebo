@@ -6,7 +6,7 @@ import Elysia from "elysia";
 import { authService } from "@hebo/shared-api/middlewares/auth/auth-service";
 import { corsConfig } from "@hebo/shared-api/middlewares/cors-config";
 
-import { oaiErrors } from "./middlewares/oai-errors";
+import { errorHandler } from "./middlewares/error-handler";
 import { completions } from "./modules/completions";
 import { embeddings } from "./modules/embeddings";
 import { models } from "./modules/models";
@@ -32,7 +32,7 @@ export const createApp = () =>
       }),
     )
     .use(authService)
-    .use(oaiErrors)
+    .use(errorHandler)
     .group(
       "/v1",
       {

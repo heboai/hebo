@@ -1,5 +1,6 @@
-import { Elysia, status } from "elysia";
+import { Elysia } from "elysia";
 
+import { AuthError } from "./errors";
 import { authServiceStackAuth, projectId } from "./stack-auth";
 
 const createAuthService = async () => {
@@ -15,7 +16,7 @@ export const authService = new Elysia({ name: "auth-service" })
   .macro({
     isSignedIn: {
       resolve({ userId }) {
-        if (!userId) throw status(401, "Unauthorized");
+        if (!userId) throw new AuthError("Unauthorized");
       },
     },
   })
