@@ -6,15 +6,13 @@ import { oaiErrorBody } from "~gateway/utils/converters";
 
 import { BadRequestError } from "./providers/errors";
 
-function oaiError(
+const oaiError = (
   message: string,
   type: "invalid_request_error" | "server_error",
   code?: string,
-) {
-  return {
-    error: oaiErrorBody(message, type, code),
-  };
-}
+) => {
+  return { error: oaiErrorBody(message, type, code) };
+};
 
 const upstreamRes = (e: unknown) =>
   (e as { response?: unknown })?.response instanceof Response
