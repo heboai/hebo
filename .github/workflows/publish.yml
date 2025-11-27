@@ -1,0 +1,45 @@
+name: Publish Aikit Packages to NPM
+
+on:
+  push:
+    tags:
+      - "packages/*/*"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish-aikit-respond-io:
+    name: Publish aikit-respond-io to NPM
+    needs: quality
+    runs-on: ubuntu-latest
+    if: success()
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: "1.3.1"
+
+      - name: Install dependencies
+        run: |
+          cd packages/aikit-respond-io
+          bun install --frozen-lockfile
+
+      - name: Build & Test
+        run: |
+          cd packages/aikit-respond-io
+          bun run build
+          bun run test
+
+      - name: Publish
+        run: |
+          cd packages/aikit-respond-io
+          bun publish
