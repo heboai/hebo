@@ -10,7 +10,7 @@ Integrating with third-party webhooks often requires repetitive boilerplate: ver
 
 - **[Webhook Handler](#webhook-handler)**: Securely process incoming webhooks with signature verification, automatic background processing, and type-safe payloads.
 - **[API Client](#api-client)**: A typed client for the Respond.io API, enabling seamless interaction with [messaging](#messaging), [contacts](#contacts), and [comments](#comments).
-- **[Integrations](#integrations)**: Ready-to-use examples for popular platforms, including [AWS Lambda Function URL](#aws-lambda-function-url), [Vercel AI SDK](#vercel-ai-sdk), [Express](#express), [Hono](#hono), and [ElysiaJS](#elysiajs).
+- **[Integrations](#integrations)**: Ready-to-use examples for popular platforms, including [Vercel AI SDK](#vercel-ai-sdk), [Express](#express), [Hono](#hono), [ElysiaJS](#elysiajs) and [AWS Lambda Function URL](#aws-lambda-function-url).
 
 ## Installation
 
@@ -191,11 +191,7 @@ const onMessage = webhook<MessageReceivedPayload>({
   handle: async ({ contact }) => console.log(`Message from ${contact.id}`),
 });
 
-new Elysia()
-  .mount("/webhook/message-received", onMessage.fetch)
-  .listen(3000, ({ hostname, port }) => {
-    console.log(`Elysia server listening on http://${hostname}:${port}`);
-  });
+new Elysia().mount("/webhook/message-received", onMessage.fetch).listen(3000);
 ```
 
 ### AWS Lambda Function URL
