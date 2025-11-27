@@ -28,7 +28,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
       let provider;
       try {
-        await api.providers({ slug: submission.value.slug }).config.put({
+        provider = await api.providers({ slug: submission.value.slug }).config.put({
           ...submission.value.config
         });
       } catch (error) {

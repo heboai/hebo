@@ -61,7 +61,6 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models, provid
   const fetcher = useFetcher();
 
   const [form, fields] = useForm<ModelsConfigFormValues>({
-    // FUTURE: reintroduce id for recomputation after load?
     id: objectId(models),
     lastResult: fetcher.data,
     constraint: getZodConstraint(modelsConfigFormSchema),
@@ -167,9 +166,10 @@ function ModelCard(props: {
 
   const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
 
-  const [routingEnabled, setRoutingEnabled] = useState(Boolean(routingOnlyField.value));
-  
+  const [routingEnabled, setRoutingEnabled] = useState(Boolean(routingOnlyField.value)); 
+
   const [advancedOpen, setAdvancedOpen] = useState(false);
+ 
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onOpenChange}>

@@ -43,6 +43,8 @@ export const providerHandlers = [
     async ({ params, request }) => {
       const body = (await request.json()) as unknown;
 
+      db.providers.delete((q) => q.where({ slug: params.slug }));
+
       const provider = await db.providers.create({
         slug: params.slug,
         name: SUPPORTED_PROVIDERS[params.slug].name,
