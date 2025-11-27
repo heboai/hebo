@@ -191,6 +191,7 @@ function handleSSEStream(
       transform(result, ctrl) {
         if (hasError) return;
         if (!result?.success) {
+          hasError = true;
           ctrl.enqueue({
             type: "error",
             errorText: result?.error?.message ?? "Stream parse error",
