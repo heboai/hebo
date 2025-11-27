@@ -1,4 +1,5 @@
 import { useControl } from "@conform-to/react/future";
+import * as SelectPrimitive from "@radix-ui/react-select";
 import { useRef } from "react";
 
 import {
@@ -9,15 +10,11 @@ import {
   SelectItem,
 } from "../_shadcn/ui/select";
 
-// FUTURE: derive from radix props
-type SelectProps = {
-  name?: string;
+interface SelectProps
+  extends React.ComponentProps<typeof SelectPrimitive.Root> {
   items: Array<{ name: React.ReactNode; value: string }>;
   placeholder?: string;
-  defaultValue?: string;
-  disabled?: boolean;
-  ["aria-describedby"]?: string;
-};
+}
 
 function Select({
   name,

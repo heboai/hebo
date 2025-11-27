@@ -10,7 +10,9 @@ const SUPPORTED_PROVIDERS: Record<string, { name: string }> = {
 };
 
 export const providerHandlers = [
-  http.get("/api/v1/providers", async () => {
+  http.get("/api/v1/providers", async ({ request }) => {
+    const configured = new URL(request.url).searchParams.get("configured");
+
     const providers = [];
 
     for (const slug in SUPPORTED_PROVIDERS) {
@@ -20,7 +22,7 @@ export const providerHandlers = [
 
       if (configuredProvider) {
         providers.push(configuredProvider);
-      } else {
+      } else if (configured !== "true") {
         providers.push({
           slug,
           name: SUPPORTED_PROVIDERS[slug].name,

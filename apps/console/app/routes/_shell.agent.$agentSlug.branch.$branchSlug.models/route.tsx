@@ -10,8 +10,7 @@ import { modelsConfigFormSchema } from "./schema";
 import type { Route } from "./+types/route";
 
 export async function clientLoader() {
-  // FUTURE: only query configured ones; should this be somewhere else?
-  const providers = (await api.providers.get()).data ?? [];
+  const providers = (await api.providers.get({ query: { configured: true } })).data ?? [];
 
   return { providers };
 }

@@ -11,7 +11,7 @@ export const modelConfigSchema = z.object({
   ),
   routing: z
     .object({
-      only: z.array(z.string().trim()),
+      only: z.array(z.string().optional()),
     })
     .optional(),
 });

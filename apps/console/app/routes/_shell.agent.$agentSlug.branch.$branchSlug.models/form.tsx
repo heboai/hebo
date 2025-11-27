@@ -59,6 +59,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models, provid
   const fetcher = useFetcher();
 
   const [form, fields] = useForm<ModelsConfigFormValues>({
+    // FUTURE: reintroduce id for recomputation after load?
     lastResult: fetcher.data,
     constraint: getZodConstraint(modelsConfigFormSchema),
     defaultValue: { 
@@ -91,8 +92,8 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models, provid
           model={model}
           agentSlug={agentSlug}
           branchSlug={branchSlug}
-          isExpanded={expandedCardId === index}
           providers={providers}
+          isExpanded={expandedCardId === index}
           onOpenChange={(open) => { 
             form.dirty && form.reset({ name: fields.models.name  });
             open && setExpandedCardId(index);
@@ -162,6 +163,8 @@ function ModelCard(props: {
   const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
 
   const [routingEnabled, setRoutingEnabled] = useState(Boolean(routingOnlyField.value));
+  
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onOpenChange}>
@@ -228,25 +231,27 @@ function ModelCard(props: {
                 </FormField>
               </div>
 
-              {/* FUTURE: deal with forceMount */}
-              <Collapsible>
-                <div className="flex items-center">
+              <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
+                <div className="flex items-center gap-1 mb-2">
                   <h4 className="text-sm font-medium">Advanced options</h4>
                   <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="icon"  className="size-8" type="button">
+                    <Button variant="ghost" size="icon" className="size-6" type="button">
                       <ChevronsUpDown />
                     </Button>
                   </CollapsibleTrigger>
                 </div>
-                <CollapsibleContent>
+                <CollapsibleContent forceMount inert={!advancedOpen}  className="overflow-hidden data-[state=closed]:h-0">
                   <FormField field={routingOnlyField}>
                     <Item variant="outline" size="sm">
                       <ItemMedia className="pt-1">
                         <input
+                          id={`byo-${aliasPath}`}
                           type="checkbox"
                           checked={routingEnabled}
                           onChange={(event) => {
                             const enabled = event.target.checked;
+                            // FUTURE: this doesn't work yet
+                            if (!enabled) routingOnlyField.value = "";
                             setRoutingEnabled(enabled);
                           }}
                           className="h-4 w-4 accent-primary"
@@ -255,9 +260,9 @@ function ModelCard(props: {
                       </ItemMedia>
                       <ItemContent>
                         <ItemTitle>
-                          <FormLabel className="mb-0">Bring Your Own Provider</FormLabel>
+                          <FormLabel htmlFor={`byo-${aliasPath}`} className="mb-0">Bring Your Own Provider</FormLabel>
                         </ItemTitle>
-                        <ItemDescription className="line-clamp-1">Setup your own credentials using providers settings</ItemDescription>
+                        <ItemDescription className="line-clamp-1">Setup your credentials first in providers settings</ItemDescription>
                       </ItemContent>
                       <ItemActions>
                         <FormControl>
@@ -270,7 +275,7 @@ function ModelCard(props: {
                                 name: provider.name,
                               })),
                             ]}
-                            placeholder="Select provider"
+                            placeholder={providers?.length ? "Select provider" : "No providers configured"}
                           />
                         </FormControl>
                         <FormMessage />
