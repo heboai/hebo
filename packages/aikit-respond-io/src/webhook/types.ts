@@ -10,6 +10,12 @@ export interface WebhookHandlerOptions<T extends WebhookPayload> {
   signingKey: string;
   handle: EventHandler<T>;
   onError?: ErrorHandler;
+  /**
+   * If true, the response will not be sent until the handler has completed.
+   * Useful for serverless environments (e.g., AWS Lambda) to ensure execution completes.
+   * @default false
+   */
+  waitForCompletion?: boolean;
 }
 
 export type WebhookPayload =

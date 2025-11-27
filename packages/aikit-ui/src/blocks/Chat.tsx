@@ -1,8 +1,14 @@
 "use client";
 
-import { createOpenAI } from "@ai-sdk/openai";
-import { generateText, type UIMessage } from "ai";
-import { Bot, Edit } from "lucide-react";
+import { useChat } from "@ai-sdk/react";
+import {
+  Brain,
+  Download,
+  Edit,
+  FileUp,
+  Paperclip,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -10,28 +16,60 @@ import {
   ConversationContent,
   ConversationScrollButton,
 } from "../_ai-elements/conversation";
-import { Message as Message, MessageContent } from "../_ai-elements/message";
+import { Loader } from "../_ai-elements/loader";
+import {
+  Message,
+  MessageContent,
+  MessageResponse,
+} from "../_ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
-  PromptInputMessage,
-  PromptInputModelSelect,
-  PromptInputModelSelectContent,
-  PromptInputModelSelectItem,
-  PromptInputModelSelectTrigger,
-  PromptInputModelSelectValue,
+  type PromptInputMessage,
+  PromptInputSelect,
+  PromptInputSelectContent,
+  PromptInputSelectItem,
+  PromptInputSelectTrigger,
+  PromptInputSelectValue,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputToolbar,
+  PromptInputFooter,
   PromptInputTools,
+  PromptInputAttachment,
+  PromptInputHeader,
+  PromptInputAttachments,
+  PromptInputButton,
+  PromptInputProvider,
+  usePromptInputAttachments,
 } from "../_ai-elements/prompt-input";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "../_ai-elements/reasoning";
+import { Alert, AlertDescription, AlertTitle } from "../_shadcn/ui/alert";
+import { Avatar, AvatarFallback } from "../_shadcn/ui/avatar";
 import { Button } from "../_shadcn/ui/button";
-
-const kbdStyles =
-  "inline-flex w-fit rounded-md border border-gray-300 bg-gray-50 px-2 py-1 text-sm font-mono font-medium text-muted-foreground shadow-sm";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "../_shadcn/ui/empty";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "../_shadcn/ui/item";
+import { OpenAIHttpChatTransport } from "../lib/openai-transport";
+import { cn } from "../lib/utils";
 
 // Types based on models.schema.json
-type ModelsConfig = Array<{
+export type ModelsConfig = Array<{
   alias: string;
   type?: string;
   endpoint?: {
@@ -40,33 +78,42 @@ type ModelsConfig = Array<{
   };
 }>;
 
-export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
-  const [currentModelAlias, setCurrentModelAlias] = useState("");
-  const [messages, setMessages] = useState<UIMessage[]>([]);
-  const [text, setText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+export type ChatMode = "simple" | "full";
 
-  // Set default model alias if non has been selected
+export function Chat({
+  modelsConfig,
+  name = "Hebo AI",
+  mode = "simple",
+}: {
+  modelsConfig: ModelsConfig;
+  name?: string;
+  mode?: ChatMode;
+}) {
+  const [selectedModelAlias, setSelectedModelAlias] = useState<
+    string | undefined
+  >();
+  const aliases = modelsConfig.map((m) => m.alias);
+  const currentModelAlias =
+    selectedModelAlias && aliases.includes(selectedModelAlias)
+      ? selectedModelAlias
+      : (aliases[0] ?? "");
+  const currentModel = modelsConfig.find((m) => m.alias === currentModelAlias);
+
+  const [input, setInput] = useState("");
+  const { messages, sendMessage, setMessages, status, error, stop } = useChat({
+    transport: new OpenAIHttpChatTransport({
+      api: currentModel?.endpoint?.baseUrl + "/chat/completions",
+      fetch: currentModel?.endpoint?.fetch || fetch,
+      model: currentModelAlias,
+      // FUTURE: enable once gateway supports it
+      // reasoningEffort: "medium"
+    }),
+  });
   useEffect(() => {
-    const aliases = modelsConfig.map((m) => m.alias);
-    if (!currentModelAlias || !aliases.includes(currentModelAlias)) {
-      setCurrentModelAlias(aliases[0] ?? "");
+    if (error) {
+      console.error("Chat error:", error);
     }
-  }, [modelsConfig, currentModelAlias]);
-
-  // Get current model config for the selected alias
-  const currentModel = currentModelAlias
-    ? modelsConfig.find((m) => m.alias === currentModelAlias)
-    : undefined;
-
-  // Create OpenAI client based on current model
-  const openai = currentModel
-    ? createOpenAI({
-        apiKey: "",
-        baseURL: currentModel.endpoint?.baseUrl || "",
-        fetch: currentModel.endpoint?.fetch || fetch,
-      })
-    : undefined;
+  }, [error]);
 
   // Shortcut: Ctrl/Cmd+i to focus chat input field
   useEffect(() => {
@@ -81,55 +128,15 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
     return () => document.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
-  const renderMessagePart = (part: UIMessage["parts"][0]) => {
-    if (part.type === "text") return part.text;
-    if (part.type === "dynamic-tool" && "input" in part) {
-      return JSON.stringify(part.input);
-    }
-    return "";
-  };
-
   const handleSubmit = async (message: PromptInputMessage) => {
-    if (!message.text || isLoading || !currentModel || !openai) return;
+    if (status === "streaming") stop();
+    if (!message.text && !message.files) return;
 
-    setIsLoading(true);
-
-    const userMessage: UIMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      parts: [{ type: "text", text: message.text }],
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setText("");
-
-    try {
-      const { text } = await generateText({
-        model: openai.chat(currentModel.type ?? currentModel.alias),
-        messages: [...messages, userMessage].map((msg) => ({
-          role: msg.role,
-          content: renderMessagePart(msg.parts[0]),
-        })),
-      });
-
-      const assistantMessage: UIMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        parts: [{ type: "text", text: text }],
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch {
-      const errorMessage: UIMessage = {
-        id: crypto.randomUUID(),
-        role: "system",
-        metadata: { error: true },
-        parts: [{ type: "text", text: "⚠️ Sorry, I encountered an error" }],
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
+    sendMessage({
+      text: message.text,
+      files: message.files,
+    });
+    setInput("");
   };
 
   return (
@@ -149,115 +156,220 @@ export function Chat({ modelsConfig }: { modelsConfig: ModelsConfig }) {
         </Button>
       </div>
 
-      {/* Conversation area */}
-      <Conversation>
-        <ConversationContent
-          className="px-0 pt-0"
-          aria-label="Chat conversation"
-          tabIndex={-1}
-        >
-          {messages.length === 0 ? (
-            <div className="text-muted-foreground m-auto flex flex-col justify-center gap-2 pt-10 text-center">
-              <div className="text-7xl">🐵</div>
-              Open an agent and start chatting
-              <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-                <kbd className={kbdStyles}>⌘</kbd>/{" "}
-                <kbd className={kbdStyles}>Ctrl</kbd>+{" "}
-                <kbd className={kbdStyles}>I</kbd>
+      {messages.length === 0 ? (
+        // Empty Placeholder
+        <Empty className={cn(currentModelAlias ? "" : "opacity-50", "-mt-12")}>
+          <EmptyHeader>
+            <EmptyMedia variant="default">
+              <Avatar className="size-28">
+                <AvatarFallback className="text-7xl">🐵</AvatarFallback>
+              </Avatar>
+            </EmptyMedia>
+            <EmptyTitle className="text-3xl">{name}</EmptyTitle>
+            <EmptyDescription>Hi, how can I help you today?</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        // Conversation area
+        <Conversation className="h-full">
+          <ConversationContent
+            className="gap-6 px-0"
+            aria-label="Chat conversation"
+            tabIndex={-1}
+          >
+            {messages.map((message) => (
+              <div key={message.id}>
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case "text": {
+                      return (
+                        <Message
+                          from={message.role}
+                          key={`${message.id}-${i}`}
+                          tabIndex={-1}
+                          role="article"
+                          aria-label={`Message from ${message.role}`}
+                          className="px-2"
+                        >
+                          <MessageContent>
+                            <MessageResponse>{part.text}</MessageResponse>
+                          </MessageContent>
+                        </Message>
+                      );
+                    }
+                    case "reasoning": {
+                      return (
+                        mode === "full" && (
+                          <Reasoning
+                            key={`${message.id}-${i}`}
+                            className="w-full px-2"
+                            isStreaming={
+                              status === "streaming" &&
+                              i === message.parts.length - 1 &&
+                              message.id === messages.at(-1)?.id
+                            }
+                          >
+                            <ReasoningTrigger />
+                            <ReasoningContent>{part.text}</ReasoningContent>
+                          </Reasoning>
+                        )
+                      );
+                    }
+                    case "file": {
+                      const IMAGE_TYPES = [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp",
+                        "image/gif",
+                      ];
+                      return IMAGE_TYPES.includes(part.mediaType) ? (
+                        <img
+                          key={`${message.id}-${i}`}
+                          className="m-2 ml-auto h-auto w-24 rounded-lg"
+                          src={part.url}
+                          alt={part.filename}
+                        />
+                      ) : (
+                        // FUTURE: currently non image file types break in the gateway
+                        <Item
+                          key={`${message.id}-${i}`}
+                          variant="outline"
+                          asChild
+                          className="bg-card m-2 ml-auto w-3xs py-2"
+                        >
+                          <a href={part.url} download={part.filename}>
+                            <ItemMedia className="translate-y-0! self-center!">
+                              <FileUp size={24} className="text-foreground" />
+                            </ItemMedia>
+                            <ItemContent className="gap-0 truncate">
+                              <ItemTitle>{part.filename}</ItemTitle>
+                              <ItemDescription>
+                                {part.mediaType}
+                              </ItemDescription>
+                            </ItemContent>
+                            <ItemActions>
+                              <Download className="size-4" />
+                            </ItemActions>
+                          </a>
+                        </Item>
+                      );
+                    }
+                    default: {
+                      // FUTURE: add tool support
+                      return;
+                    }
+                  }
+                })}
               </div>
-            </div>
-          ) : (
-            <>
-              {messages.map((message) => (
-                <Message
-                  from={message.role}
-                  key={message.id}
-                  tabIndex={-1}
-                  role="article"
-                  aria-label={`Message from ${message.role}`}
-                  className="p-1"
-                >
-                  <MessageContent className="px-3 py-2">
-                    <div>{renderMessagePart(message.parts[0])}</div>
-                  </MessageContent>
-                </Message>
-              ))}
-              {isLoading && (
-                <Message from="assistant" key="loading" className="p-1">
-                  <MessageContent className="px-3 py-2">
-                    <div aria-live="polite">
-                      <span className="animate-pulse">Thinking...</span>
-                    </div>
-                  </MessageContent>
-                </Message>
-              )}
-            </>
-          )}
-        </ConversationContent>
-        <ConversationScrollButton />
-      </Conversation>
+            ))}
+            {status === "submitted" && <Loader />}
+            {error && (
+              <Alert variant="destructive">
+                <TriangleAlert />
+                <AlertTitle>Something went wrong 🙉</AlertTitle>
+                <AlertDescription>
+                  <p>{error.message}</p>
+                </AlertDescription>
+              </Alert>
+            )}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+      )}
 
       {/* Input area */}
-      <PromptInput onSubmit={handleSubmit} role="form">
-        <PromptInputBody>
-          <PromptInputTextarea
-            id="chat-input"
-            disabled={!currentModelAlias}
-            onChange={(e) => setText(e.target.value)}
-            value={text}
-            placeholder="Start prompting..."
-            aria-label="Chat message input"
-            aria-describedby="input-help"
-          />
+      <PromptInputProvider>
+        <PromptInput
+          onSubmit={handleSubmit}
+          role="form"
+          className="bg-background mt-4"
+          globalDrop
+          multiple
+        >
+          <PromptInputHeader className="p-0">
+            <PromptInputAttachments className="max-w-full pb-0">
+              {(attachment) => (
+                <PromptInputAttachment data={attachment} className="truncate" />
+              )}
+            </PromptInputAttachments>
+          </PromptInputHeader>
+          <PromptInputBody>
+            <PromptInputTextarea
+              id="chat-input"
+              disabled={!currentModelAlias}
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
+              placeholder="Ask anything …"
+              aria-label="Chat message input"
+              aria-describedby="input-help"
+              className="min-h-0 pb-0"
+            />
 
-          {/* Hidden help text */}
-          <div id="input-help" className="sr-only">
-            Press Enter to send message, Shift+Enter for new line
-          </div>
-        </PromptInputBody>
+            {/* Hidden help text */}
+            <div id="input-help" className="sr-only">
+              Press Enter to send message, Shift+Enter for new line
+            </div>
+          </PromptInputBody>
 
-        <PromptInputToolbar>
-          <PromptInputTools>
-            {/* Model selector */}
-            <PromptInputModelSelect
-              onValueChange={(alias) => setCurrentModelAlias(alias)}
-              value={currentModelAlias}
-              disabled={isLoading || modelsConfig.length === 0}
-              aria-label="Select AI model"
-            >
-              <PromptInputModelSelectTrigger
-                aria-label={`Current model: ${currentModelAlias}`}
-              >
-                <Bot />
-                {modelsConfig.length > 0 ? (
-                  <PromptInputModelSelectValue />
-                ) : (
-                  "No agent opened"
-                )}
-              </PromptInputModelSelectTrigger>
-              <PromptInputModelSelectContent>
-                {modelsConfig.map((model) => (
-                  <PromptInputModelSelectItem
-                    key={model.alias}
-                    value={model.alias}
-                  >
-                    {model.alias}
-                  </PromptInputModelSelectItem>
-                ))}
-              </PromptInputModelSelectContent>
-            </PromptInputModelSelect>
-          </PromptInputTools>
+          <PromptInputFooter className="pb-2">
+            <PromptInputTools className="h-6 w-full">
+              {/* File upload */}
+              <PromptInputActionAddAttachment />
 
-          {/* Submit button - disable when no model is selected */}
-          <PromptInputSubmit
-            disabled={!text || isLoading || !currentModel}
-            aria-label={
-              isLoading ? "Sending message..." : "Send message (Enter)"
-            }
-            title={isLoading ? "Sending message..." : "Send message (Enter)"}
-          />
-        </PromptInputToolbar>
-      </PromptInput>
+              {/* Model selector */}
+              {modelsConfig.length > 1 && (
+                <PromptInputSelect
+                  onValueChange={(alias) => setSelectedModelAlias(alias)}
+                  value={currentModelAlias}
+                  disabled={status === "submitted" || modelsConfig.length === 0}
+                  aria-label="Select model"
+                >
+                  <PromptInputSelectTrigger className="ml-auto max-w-3xs">
+                    <>
+                      <Brain />
+                      <PromptInputSelectValue className="truncate" />
+                    </>
+                  </PromptInputSelectTrigger>
+                  <PromptInputSelectContent>
+                    {modelsConfig.map((model) => (
+                      <PromptInputSelectItem
+                        key={model.alias}
+                        value={model.alias}
+                      >
+                        {model.alias.split("/").pop()}
+                      </PromptInputSelectItem>
+                    ))}
+                  </PromptInputSelectContent>
+                </PromptInputSelect>
+              )}
+            </PromptInputTools>
+
+            {/* Submit button - disable when no model is selected */}
+            <PromptInputSubmit
+              disabled={
+                !currentModelAlias || (!input && status !== "streaming")
+              }
+              status={status}
+            />
+          </PromptInputFooter>
+        </PromptInput>
+      </PromptInputProvider>
     </div>
+  );
+}
+
+export function PromptInputActionAddAttachment() {
+  const attachments = usePromptInputAttachments();
+
+  return (
+    <PromptInputButton
+      className="-ml-1.5"
+      onClick={() => {
+        attachments.openFileDialog();
+      }}
+      aria-label="Add attachment"
+    >
+      <Paperclip className="size-4" />
+    </PromptInputButton>
   );
 }

@@ -9,8 +9,8 @@ Integrating with third-party webhooks often requires repetitive boilerplate: ver
 ## Features
 
 - **[Webhook Handler](#webhook-handler)**: Securely process incoming webhooks with signature verification, automatic background processing, and type-safe payloads.
-- **[API Client](#api-client)**: A typed client for the Respond.io API, enabling seamless interaction with messaging, contacts, and comments.
-- **[Integrations](#integrations)**: Ready-to-use examples for popular platforms.
+- **[API Client](#api-client)**: A typed client for the Respond.io API, enabling seamless interaction with [messaging](#messaging), [contacts](#contacts), and [comments](#comments).
+- **[Integrations](#integrations)**: Ready-to-use examples for popular platforms, including [Vercel AI SDK](#vercel-ai-sdk), [Express](#express), [Hono](#hono), [ElysiaJS](#elysiajs) and [AWS Lambda Function URL](#aws-lambda-function-url).
 
 ## Installation
 
@@ -40,7 +40,7 @@ import {
 const onMessage = webhook<MessageReceivedPayload>({
   signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
   handle: async (payload) => {
-    console.log("New message:", payload.message.message.text);
+    console.log("New message from contact", payload.contact.id);
     // Your logic here...
   },
   onError: (err) => console.error("Webhook failed:", err),
@@ -48,7 +48,7 @@ const onMessage = webhook<MessageReceivedPayload>({
 
 // 2. Use it in your server (e.g., Hono, Next.js, Workers)
 // It exposes a standard Fetch API compatible method
-app.post("/webhook", onMessage.fetch);
+app.mount("/webhook/message-received", onMessage.fetch);
 ```
 
 ### Supported Events
@@ -60,28 +60,15 @@ The `webhook` handler supports various event types from Respond.io. Here are som
 - `MessageSentPayload`: When a message is successfully sent to a contact.
 - `ContactAssigneeUpdatedPayload`: When a contact's assignee changes.
 
-To handle a specific event, specify its payload type:
+To handle a specific event, specify its payload type, example for new incoming message event:
 
 ```ts
-import {
-  webhook,
-  MessageReceivedPayload,
-} from "@hebo/aikit-respond-io/webhook";
-
-const messageWebhook = webhook<MessageReceivedPayload>({
+const onMessage = webhook<MessageReceivedPayload>({
   signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
   handle: async (payload) => {
-    console.log(
-      `Received message from contact ${payload.contact.id}: ${payload.message.message.text}`,
-    );
-  },
-  onError: (error) => {
-    console.error("Error processing message webhook:", error);
+    console.log("New message from contact", payload.contact.id);
   },
 });
-
-// Mount this handler to its specific endpoint
-app.post("/webhook/message-received", messageWebhook.fetch);
 ```
 
 ## API Client
@@ -127,6 +114,90 @@ await api.comment.create(user, {
 
 ## Integrations
 
+### Vercel AI SDK
+
+Easily convert Respond.io payloads into AI SDK messages.
+
+```ts
+import { toModelMessage } from "@hebo/aikit-respond-io/vercel-ai";
+import { generateText } from "ai";
+
+// Inside your webhook handle function:
+handle: async (payload) => {
+  const userMessage = toModelMessage(payload.message.message, "user");
+
+  const { text } = await generateText({
+    model: yourModel,
+    messages: [userMessage],
+  });
+};
+```
+
+### Express
+
+Integrate with an Express.js application.
+
+```ts
+import {
+  webhook,
+  MessageReceivedPayload,
+} from "@hebo/aikit-respond-io/webhook";
+
+import { createMiddleware } from "@hattip/adapter-node";
+import express from "express";
+
+const onMessage = webhook<MessageReceivedPayload>({
+  signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
+  handle: async ({ contact }) => console.log(`Message from ${contact.id}`),
+});
+
+const app = express();
+app.use("/webhook/message-received", createMiddleware(onMessage.fetch));
+
+app.listen(3000);
+```
+
+### Hono
+
+Integrate with a Hono application.
+
+```ts
+import {
+  webhook,
+  MessageReceivedPayload,
+} from "@hebo/aikit-respond-io/webhook";
+import { Hono } from "hono";
+
+const onMessage = webhook<MessageReceivedPayload>({
+  signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
+  handle: async ({ contact }) => console.log(`Message from ${contact.id}`),
+});
+
+const app = new Hono();
+app.mount("/webhook/message-received", onMessage.fetch);
+
+export default app;
+```
+
+### ElysiaJS
+
+Integrate with an ElysiaJS application.
+
+```ts
+import {
+  webhook,
+  MessageReceivedPayload,
+} from "@hebo/aikit-respond-io/webhook";
+import { Elysia } from "elysia";
+
+const onMessage = webhook<MessageReceivedPayload>({
+  signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
+  handle: async ({ contact }) => console.log(`Message from ${contact.id}`),
+});
+
+new Elysia().mount("/webhook/message-received", onMessage.fetch).listen(3000);
+```
+
 ### AWS Lambda Function URL
 
 Deploy your webhook handler as a standalone AWS Lambda function.
@@ -136,47 +207,17 @@ import {
   webhook,
   MessageReceivedPayload,
 } from "@hebo/aikit-respond-io/webhook";
-import { APIGatewayProxyEventV2 } from "aws-lambda";
+
+import awsLambdaAdapter from "@hattip/adapter-aws-lambda";
 
 const onMessage = webhook<MessageReceivedPayload>({
   signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
   handle: async ({ contact }) => console.log(`Message from ${contact.id}`),
+  // In serverless, we should wait for the handler to finish before returning the response
+  waitForCompletion: true,
 });
 
-export const handler = async (event: APIGatewayProxyEventV2) => {
-  const url = `https://${event.requestContext.domainName}${event.rawPath}`;
-  const req = new Request(url, {
-    method: event.requestContext.http.method,
-    headers: event.headers as HeadersInit,
-    body: event.body,
-  });
-
-  const res = await onMessage.fetch(req);
-
-  return {
-    statusCode: res.status,
-    body: await res.text(),
-  };
-};
-```
-
-### Vercel AI SDK
-
-Easily convert Respond.io payloads into AI SDK messages.
-
-```ts
-import { toAiModelMessage } from "@hebo/aikit-respond-io/webhook";
-import { generateText } from "ai";
-
-// Inside your webhook handle function:
-handle: async (payload) => {
-  const userMessage = toAiModelMessage(payload.message.message, "user");
-
-  const { text } = await generateText({
-    model: yourModel,
-    messages: [userMessage],
-  });
-};
+export const handler = awsLambdaAdapter(onMessage.fetch);
 ```
 
 ## Contributing

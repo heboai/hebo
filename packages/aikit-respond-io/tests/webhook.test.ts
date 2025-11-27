@@ -97,4 +97,30 @@ describe("webhook", () => {
     expect(handleMock).toHaveBeenCalled();
     expect(onErrorMock).toHaveBeenCalled();
   });
+
+  test("should wait for handle to complete if waitForCompletion is true", async () => {
+    let finished = false;
+    const handleMock = mock(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      finished = true;
+    });
+
+    const handler = webhook({
+      signingKey,
+      handle: handleMock,
+      waitForCompletion: true,
+    });
+
+    const req = new Request("http://localhost", {
+      method: "POST",
+      body,
+      headers: {
+        "x-webhook-signature": validSignature,
+      },
+    });
+
+    const res = await handler.fetch(req);
+    expect(res.status).toBe(200);
+    expect(finished).toBe(true);
+  });
 });

@@ -47,7 +47,7 @@
   },
   {
     "type": "anthropic/claude-sonnet-4-20250514-v1",
-    "displayName": "Anthropic Claude Sonnet 4 (20250514)",
+    "displayName": "Anthropic Claude Sonnet 4",
     "rateLimit": 400000000,
     "providers": [
       {
@@ -58,7 +58,7 @@
   },
   {
     "type": "anthropic/claude-3-haiku-20240307-v1",
-    "displayName": "Anthropic Claude Haiku 3 (20240307)",
+    "displayName": "Anthropic Claude Haiku 3",
     "rateLimit": 400000000,
     "providers": [
       {
