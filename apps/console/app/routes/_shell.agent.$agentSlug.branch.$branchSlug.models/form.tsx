@@ -97,7 +97,6 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models, provid
           providers={providers}
           isExpanded={expandedCardId === index}
           onOpenChange={(open) => { 
-            console.log(form.dirty);
             form.dirty && form.reset({ name: fields.models.name  });
             open && setExpandedCardId(index);
           }}
@@ -273,13 +272,13 @@ function ModelCard(props: {
                           <Select
                             disabled={!routingEnabled}
                             defaultValue={routingEnabled ? routingOnlyField.value ?? "" : ""}
-                            items={[
-                              ...providers.map((provider) => ({
+                            items={
+                              providers.map((provider) => ({
                                 value: provider.slug,
                                 name: provider.name,
-                              })),
-                            ]}
-                            placeholder={providers?.length ? "Select provider" : "No providers configured"}
+                              }))
+                            }
+                            placeholder={providers.length ? "Select provider" : "No providers configured"}
                           />
                         </FormControl>
                         <FormMessage />

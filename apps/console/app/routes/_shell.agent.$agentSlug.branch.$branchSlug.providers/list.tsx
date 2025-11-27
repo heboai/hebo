@@ -46,7 +46,7 @@ export function ProvidersList({ providers }: { providers: Provider[] }) {
                         <ItemMedia>
                             <Avatar>
                                 {(() => {
-                                    const Icon = ProviderIcons[provider.slug as (keyof typeof ProviderIcons)] ?? HelpCircle;
+                                    const Icon = ProviderIcons[provider.slug as keyof typeof ProviderIcons] ?? HelpCircle;
                                     return <Icon size={32} />;
                                 })()}
                             </Avatar>

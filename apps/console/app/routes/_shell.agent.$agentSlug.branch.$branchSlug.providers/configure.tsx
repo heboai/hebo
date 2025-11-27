@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
-import z from "zod";
+import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
