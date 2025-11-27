@@ -1,6 +1,6 @@
 import { useFetcher } from "react-router";
 import { useEffect, useRef, useState } from "react";
-import { useForm, getFormProps, type FieldMetadata, type FieldName, useInputControl } from "@conform-to/react";
+import { useForm, getFormProps, type FieldMetadata, useInputControl } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
 import { Brain, ChevronsUpDown, Edit } from "lucide-react";
 
@@ -40,6 +40,8 @@ import {
 } from "@hebo/shared-ui/components/Collapsible";
 
 import { useFormErrorToast } from "~console/lib/errors";
+import { objectId } from "~console/lib/utils";
+
 import {
   modelsConfigFormSchema,
   supportedModels,
@@ -60,6 +62,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models, provid
 
   const [form, fields] = useForm<ModelsConfigFormValues>({
     // FUTURE: reintroduce id for recomputation after load?
+    id: objectId(models),
     lastResult: fetcher.data,
     constraint: getZodConstraint(modelsConfigFormSchema),
     defaultValue: { 
@@ -76,7 +79,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models, provid
   // Close the active card on successful submit
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
-    if (fetcher.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status !== "error") {
       setExpandedCardId(null);
     }
   }, [fetcher.state, form.status]);
@@ -95,6 +98,7 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models, provid
           providers={providers}
           isExpanded={expandedCardId === index}
           onOpenChange={(open) => { 
+            console.log(form.dirty);
             form.dirty && form.reset({ name: fields.models.name  });
             open && setExpandedCardId(index);
           }}

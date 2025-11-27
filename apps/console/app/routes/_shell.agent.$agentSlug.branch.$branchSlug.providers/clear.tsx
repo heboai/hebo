@@ -46,7 +46,7 @@ export function ClearCredentialsDialog({open, onOpenChange, provider}: ClearCred
   useFormErrorToast(form.allErrors);
 
   useEffect(() => {
-    if (fetcher.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status !== "error") {
       onOpenChange(false);
     }
   }, [fetcher.state, form.status]);

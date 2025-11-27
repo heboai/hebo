@@ -70,7 +70,7 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
   useFormErrorToast(form.allErrors);
   
   useEffect(() => {
-    if (fetcher.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status !== "error") {
       onOpenChange(false);
     }
   }, [fetcher.state, form.status]);

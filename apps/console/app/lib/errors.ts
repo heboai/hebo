@@ -59,7 +59,7 @@ export const dontRevalidateOnFormErrors: ShouldRevalidateFunction = ({
     actionResult &&
     typeof actionResult === "object" &&
     "status" in actionResult &&
-    (actionResult as { status?: string }).status === "error"
+    (actionResult as { status?: string }).status !== "success"
   ) {
     return false;
   }

@@ -60,7 +60,7 @@ export function CreateApiKeyDialog() {
   const [createOpen, createSetOpen] = useState(false);
   const [revealOpen, setRevealOpen] = useState(false);
   useEffect(() => {
-    if (fetcher.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status !== "error") {
       createSetOpen(false);
       setRevealOpen(true);
     }

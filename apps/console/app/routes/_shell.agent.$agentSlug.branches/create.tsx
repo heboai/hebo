@@ -52,7 +52,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
 
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (fetcher.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status !== "error") {
       setOpen(false);
     }
   }, [fetcher.state, form.status]);
