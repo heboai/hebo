@@ -85,7 +85,7 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
   );
     
   const configFieldset = fields.config.getFieldset();
-  const activeKeys = provider ? providerFields[provider.slug] : [];
+  const activeKeys = provider ? providerFields[provider.slug] ?? [] : [];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

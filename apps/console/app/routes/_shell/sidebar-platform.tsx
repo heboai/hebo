@@ -30,14 +30,7 @@ export const SidebarPlatform = ({ activeAgent, activeBranch }: SidebarPlatformPr
             <SidebarMenuButton 
               asChild 
               isActive={active}
-              tooltip={{
-                children: (
-                  <span>
-                    {label}{" "}
-                  </span>
-                )
-              }}
-              >
+              tooltip={label}>
               <Link to={path} viewTransition>
                 <Icon aria-hidden="true" />
                 {label}
