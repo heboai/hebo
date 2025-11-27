@@ -225,6 +225,12 @@ export const toToolChoice = (
   };
 };
 
+export const oaiErrorBody = (
+  message: string,
+  type: "invalid_request_error" | "server_error" = "server_error",
+  code?: string,
+) => ({ message, type, param: undefined, code });
+
 export function toOpenAICompatibleStream(
   result: StreamTextResult<any, any>,
   model: string,
@@ -239,113 +245,132 @@ export function toOpenAICompatibleStream(
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };
 
+      const enqueueError = (error: unknown) => {
+        const msg =
+          error instanceof Error
+            ? error.message
+            : "An error occurred during streaming";
+        const e = error as { code?: string; status?: number };
+        enqueue({
+          error: oaiErrorBody(
+            msg,
+            e.status && e.status < 500
+              ? "invalid_request_error"
+              : "server_error",
+            e.code,
+          ),
+        });
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      };
+
       let toolCallIndexCounter = 0;
 
-      for await (const part of result.fullStream) {
-        switch (part.type) {
-          case "text-delta": {
-            const delta = {
-              role: "assistant",
-              content: part.text,
-            };
-            enqueue({
-              id: streamId,
-              object: "chat.completion.chunk",
-              created: creationTime,
-              model,
-              // eslint-disable-next-line unicorn/no-null
-              choices: [{ index: 0, delta, finish_reason: null }],
-            });
-            break;
-          }
+      try {
+        for await (const part of result.fullStream) {
+          switch (part.type) {
+            case "text-delta": {
+              const delta = {
+                role: "assistant",
+                content: part.text,
+              };
+              enqueue({
+                id: streamId,
+                object: "chat.completion.chunk",
+                created: creationTime,
+                model,
+                // eslint-disable-next-line unicorn/no-null
+                choices: [{ index: 0, delta, finish_reason: null }],
+              });
+              break;
+            }
 
-          case "reasoning-delta": {
-            const delta = {
-              reasoning_content: part.text,
-            };
-            enqueue({
-              id: streamId,
-              object: "chat.completion.chunk",
-              created: creationTime,
-              model,
-              // eslint-disable-next-line unicorn/no-null
-              choices: [{ index: 0, delta, finish_reason: null }],
-            });
-            break;
-          }
+            case "reasoning-delta": {
+              const delta = {
+                reasoning_content: part.text,
+              };
+              enqueue({
+                id: streamId,
+                object: "chat.completion.chunk",
+                created: creationTime,
+                model,
+                // eslint-disable-next-line unicorn/no-null
+                choices: [{ index: 0, delta, finish_reason: null }],
+              });
+              break;
+            }
 
-          case "tool-call": {
-            const { toolCallId, toolName, input } = part;
+            case "tool-call": {
+              const { toolCallId, toolName, input } = part;
 
-            const toolCall: OpenAICompatibleToolCallDelta = {
-              id: toolCallId,
-              index: toolCallIndexCounter++,
-              type: "function",
-              function: { name: toolName, arguments: JSON.stringify(input) },
-            };
+              const toolCall: OpenAICompatibleToolCallDelta = {
+                id: toolCallId,
+                index: toolCallIndexCounter++,
+                type: "function",
+                function: { name: toolName, arguments: JSON.stringify(input) },
+              };
 
-            enqueue({
-              id: streamId,
-              object: "chat.completion.chunk",
-              created: creationTime,
-              model,
-              choices: [
-                {
-                  index: 0,
-                  delta: { tool_calls: [toolCall] },
-                  // eslint-disable-next-line unicorn/no-null
-                  finish_reason: null,
+              enqueue({
+                id: streamId,
+                object: "chat.completion.chunk",
+                created: creationTime,
+                model,
+                choices: [
+                  {
+                    index: 0,
+                    delta: { tool_calls: [toolCall] },
+                    // eslint-disable-next-line unicorn/no-null
+                    finish_reason: null,
+                  },
+                ],
+              });
+              break;
+            }
+
+            case "finish": {
+              const { finishReason, totalUsage } = part;
+              enqueue({
+                id: streamId,
+                object: "chat.completion.chunk",
+                created: creationTime,
+                model,
+                choices: [
+                  {
+                    index: 0,
+                    delta: {},
+                    finish_reason: toOpenAICompatibleFinishReason(finishReason),
+                  },
+                ],
+                usage: totalUsage && {
+                  prompt_tokens: totalUsage.inputTokens ?? 0,
+                  completion_tokens: totalUsage.outputTokens ?? 0,
+                  total_tokens:
+                    totalUsage.totalTokens ??
+                    (totalUsage.inputTokens ?? 0) +
+                      (totalUsage.outputTokens ?? 0),
+                  completion_tokens_details: {
+                    reasoning_tokens: totalUsage.reasoningTokens ?? 0,
+                  },
+                  prompt_tokens_details: {
+                    cached_tokens: totalUsage.cachedInputTokens ?? 0,
+                  },
                 },
-              ],
-            });
-            break;
-          }
+              });
+              break;
+            }
 
-          case "finish": {
-            const { finishReason, totalUsage } = part;
-            enqueue({
-              id: streamId,
-              object: "chat.completion.chunk",
-              created: creationTime,
-              model,
-              choices: [
-                {
-                  index: 0,
-                  delta: {},
-                  finish_reason: toOpenAICompatibleFinishReason(finishReason),
-                },
-              ],
-              usage: totalUsage && {
-                prompt_tokens: totalUsage.inputTokens ?? 0,
-                completion_tokens: totalUsage.outputTokens ?? 0,
-                total_tokens:
-                  totalUsage.totalTokens ??
-                  (totalUsage.inputTokens ?? 0) +
-                    (totalUsage.outputTokens ?? 0),
-                completion_tokens_details: {
-                  reasoning_tokens: totalUsage.reasoningTokens ?? 0,
-                },
-                prompt_tokens_details: {
-                  cached_tokens: totalUsage.cachedInputTokens ?? 0,
-                },
-              },
-            });
-            break;
-          }
-
-          case "error": {
-            console.error(
-              "[toOpenAICompatibleStream] Stream error:",
-              part.error,
-            );
-            controller.close();
-            return;
+            case "error": {
+              enqueueError(part.error);
+              return;
+            }
           }
         }
-      }
 
-      controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-      controller.close();
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      } catch (error) {
+        enqueueError(error);
+      }
     },
   });
 }

@@ -34,6 +34,11 @@ type OpenAIChatDelta = {
     };
     finish_reason?: string | null;
   }>;
+  error?: {
+    message?: string;
+    type?: string;
+    code?: string;
+  };
 };
 
 type ToolCall = {
@@ -192,6 +197,16 @@ function handleSSEStream(
         }
 
         const parsed = result.value;
+
+        if (parsed.error) {
+          ctrl.enqueue({
+            type: "error",
+            errorText:
+              parsed.error.message ?? "An error occurred during streaming",
+          });
+          return;
+        }
+
         const delta = parsed.choices?.[0]?.delta;
         const finishReason = parsed.choices?.[0]?.finish_reason;
 
