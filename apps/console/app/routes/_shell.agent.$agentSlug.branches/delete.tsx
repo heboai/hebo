@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
@@ -11,7 +11,7 @@ import { Button } from "@hebo/shared-ui/components/Button";
 import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 export function createBranchDeleteSchema(branchSlug: string) {
@@ -28,28 +28,25 @@ type DeleteBranchDialogProps = {
 };
 
 export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: DeleteBranchDialogProps) {
-  const lastResult = useActionData();
-
-  useActionDataErrorToast();
-
+  
+  const fetcher = useFetcher();
   const [form, fields] = useForm<BranchDeleteFormValues>({
-    lastResult,
     id: branchSlug,
+    lastResult: fetcher.data,
     constraint: getZodConstraint(createBranchDeleteSchema(branchSlug)),
   });
-
-  const navigation = useNavigation();
+  useFormErrorToast(form.allErrors);
 
   useEffect(() => {
-    if (navigation.state === "idle" && lastResult?.status === "success") {
+    if (fetcher.state === "idle" && form.status === "success") {
       onOpenChange(false);
     }
-  }, [navigation.state, lastResult?.status]);
+  }, [fetcher.state, form.status]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-sidebar">
-        <Form method="post" {...getFormProps(form)} className="contents">
+        <fetcher.Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
             <DialogTitle>Delete Branch</DialogTitle>
             <DialogDescription>
@@ -62,7 +59,7 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
             </AlertTitle>
           </Alert>
 
-          <input type="hidden" name="branchSlug" value={branchSlug ?? ""} />
+          <input type="hidden" name="branchSlug" value={branchSlug} />
 
           <FormField field={fields.slugConfirm}>
             <FormLabel>
@@ -90,12 +87,12 @@ export default function DeleteBranchDialog({ open, onOpenChange, branchSlug }: D
               variant="destructive"
               name="intent"
               value="delete"
-              isLoading={navigation.state !== "idle"}
+              isLoading={fetcher.state !== "idle"}
             >
               Delete
             </Button>
           </DialogFooter>
-        </Form>
+        </fetcher.Form>
       </DialogContent>
     </Dialog>
   );

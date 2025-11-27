@@ -1,9 +1,7 @@
 import { Elysia, t } from "elysia";
 
-import {
-  SUPPORTED_MODELS,
-  supportedOrThrow,
-} from "~gateway/middlewares/provider";
+import supportedModels from "@hebo/shared-data/json/supported-models";
+import { SupportedModelType } from "@hebo/shared-data/types/models";
 
 export const models = new Elysia({
   name: "models",
@@ -14,8 +12,8 @@ export const models = new Elysia({
     () => {
       return {
         object: "list" as const,
-        data: SUPPORTED_MODELS.map((id) => ({
-          id,
+        data: supportedModels.map((model) => ({
+          id: model.type,
           object: "model" as const,
           // FUTURE implement real value in supported models
           created: Math.floor(Date.now() / 1000),
@@ -41,12 +39,8 @@ export const models = new Elysia({
   .get(
     "/:id",
     ({ params }) => {
-      const { id } = params;
-
-      supportedOrThrow(id);
-
       return {
-        id,
+        id: params.id,
         object: "model",
         // FUTURE implement real value in supported models
         created: Math.floor(Date.now() / 1000),
@@ -55,7 +49,7 @@ export const models = new Elysia({
     },
     {
       params: t.Object({
-        id: t.String({ enum: [...SUPPORTED_MODELS] }),
+        id: SupportedModelType,
       }),
       response: t.Object({
         id: t.String(),

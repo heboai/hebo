@@ -24,7 +24,7 @@ import {
   Select
 } from "@hebo/shared-ui/components/Select";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 export const AgentCreateSchema = z.object({
@@ -34,17 +34,16 @@ export const AgentCreateSchema = z.object({
 export type AgentCreateFormValues = z.infer<typeof AgentCreateSchema>;
 
 export function AgentCreateForm() {
+  
   const lastResult = useActionData();
-  
-  useActionDataErrorToast();
-  
   const [form, fields] = useForm<AgentCreateFormValues>({
     lastResult,
     constraint: getZodConstraint(AgentCreateSchema),
     defaultValue: {
-      defaultModel: supportedModels[0].name,
+      defaultModel: supportedModels[0].type,
     }
   });
+  useFormErrorToast(form.allErrors);
 
   const navigation = useNavigation();
 
@@ -76,7 +75,7 @@ export function AgentCreateForm() {
               <FormControl>
                 <Select
                   items={supportedModels.map((m) => ({
-                    value: m.name,
+                    value: m.type,
                     name: (
                         <>
                           {m.displayName}{" "}
@@ -102,7 +101,7 @@ export function AgentCreateForm() {
         <CardFooter className="flex justify-end">
           <Button
             type="submit"
-            isLoading={navigation.state !== "idle"}
+            isLoading={navigation.state !== "idle" && navigation.formData != null}
           >
             Create
           </Button>

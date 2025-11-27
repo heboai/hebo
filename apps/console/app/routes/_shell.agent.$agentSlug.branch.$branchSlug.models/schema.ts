@@ -6,7 +6,7 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 export const modelConfigSchema = z.object({
   alias: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a unique alias name"),
   type: z.literal(
-    supportedModels.map((model) => model.name),
+    supportedModels.map(({ type }) => type),
     "Select one of the supported models"
   )
 });

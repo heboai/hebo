@@ -2,6 +2,9 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Resource } from "sst";
 
 import { PrismaClient, Prisma } from "./src/generated/prisma/client";
+import { redactProviderConfigValue } from "./src/utils/redact-provider";
+
+import type { ProviderConfig } from "./src/types/providers";
 
 export const connectionString = (() => {
   try {
@@ -13,6 +16,9 @@ export const connectionString = (() => {
     return "postgresql://postgres:password@localhost:5432/local";
   }
 })();
+
+// eslint-disable-next-line unicorn/no-null
+const dbNull = null;
 
 const _prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString, max: 25 }),
@@ -27,9 +33,8 @@ export const createDbClient = (userId: string) => {
       $allModels: {
         async $allOperations({ args, query, operation }) {
           if (operation !== "create") {
-            const a = args as unknown as { where?: Record<string, unknown> };
-            // eslint-disable-next-line unicorn/no-null
-            a.where = { ...a.where, created_by: userId, deleted_at: null };
+            const a = args as { where?: Record<string, unknown> };
+            a.where = { ...a.where, created_by: userId, deleted_at: dbNull };
           }
 
           return query(args);
@@ -48,7 +53,6 @@ export const createDbClient = (userId: string) => {
               updated_by: userId,
             };
           }
-
           return query(args);
         },
         async update({ args, query }) {
@@ -56,7 +60,6 @@ export const createDbClient = (userId: string) => {
             ...args.data,
             updated_by: userId,
           };
-
           return query(args);
         },
       },
@@ -65,10 +68,31 @@ export const createDbClient = (userId: string) => {
       $allModels: {
         async softDelete<T>(where: T) {
           const context = Prisma.getExtensionContext(this);
-          return await context.update({
+          return context.update({
             where,
             data: { deleted_by: userId, deleted_at: new Date() },
           });
+        },
+      },
+      provider_configs: {
+        async getUnredacted(slug: string) {
+          return _prisma.provider_configs.findFirstOrThrow({
+            where: {
+              provider_slug: slug,
+              created_by: userId,
+              deleted_at: dbNull,
+            },
+          });
+        },
+      },
+    },
+    result: {
+      provider_configs: {
+        value: {
+          needs: { value: true },
+          compute({ value }: { value: ProviderConfig }) {
+            return redactProviderConfigValue(value);
+          },
         },
       },
     },

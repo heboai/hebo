@@ -1,5 +1,5 @@
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@hebo/shared-ui/components/Sidebar";
-import { BrainCog, Home } from "lucide-react";
+import { BrainCog, Home, KeyRound } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useHotkeys } from "react-hotkeys-hook";
 import { kbs } from "~console/lib/utils";
@@ -8,18 +8,22 @@ const navItems = [
   {
     label: "Overview",
     icon: Home,
-    getPath: (agentSlug: string, branchSlug: string) => `/agent/${agentSlug}/branch/${branchSlug}`,
-    isActive: (pathname: string, agentSlug: string, branchSlug: string) => pathname === `/agent/${agentSlug}/branch/${branchSlug}`,
+    postfix: "",
     shortcut: "mod+O",
   },
   {
     label: "Models",
     icon: BrainCog,
-    getPath: (agentSlug: string, branchSlug: string) => `/agent/${agentSlug}/branch/${branchSlug}/models`,
-    isActive: (pathname: string, agentSlug: string, branchSlug: string) => pathname === `/agent/${agentSlug}/branch/${branchSlug}/models`,
+    postfix: "/models",
     shortcut: "mod+M",
   },
-];
+  {
+    label: "API Keys",
+    icon: KeyRound,
+    postfix: "/api-keys",
+    shortcut: "mod+K",
+  },
+] as const;
 
 type SidebarNavProps = {
   activeAgent: { slug: string };
@@ -29,23 +33,24 @@ type SidebarNavProps = {
 export const SidebarNav = ({ activeAgent, activeBranch }: SidebarNavProps) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const basePath = `/agent/${activeAgent.slug}/branch/${activeBranch.slug}`;
 
-  navItems.forEach(({ shortcut, getPath }) => {
+  navItems.forEach(({ shortcut, postfix }) => {
     useHotkeys(
       shortcut,
       () => {
-        navigate(getPath(activeAgent.slug, activeBranch.slug), { viewTransition: true });
+        navigate(`${basePath}${postfix}`, { viewTransition: true });
       },
       { preventDefault: true },
-      [activeAgent.slug, activeBranch.slug, navigate],
+      [activeAgent.slug, activeBranch.slug, basePath, navigate],
     );
   });
 
   return (
     <SidebarMenu>
-      {navItems.map(({ label, icon: Icon, getPath, isActive, shortcut }) => {
-        const path = getPath(activeAgent.slug, activeBranch.slug);
-        const active = isActive ? isActive(pathname, activeAgent.slug, activeBranch.slug) : pathname === path;
+      {navItems.map(({ label, icon: Icon, postfix, shortcut }) => {
+        const path = `${basePath}${postfix}`;
+        const active = pathname === path;
 
         return (
           <SidebarMenuItem key={label} className="group-data-[state=expanded]:mx-0.5 transition-[margin]">

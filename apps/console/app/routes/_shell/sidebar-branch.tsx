@@ -57,7 +57,7 @@ export function BranchSelect({
             <SidebarMenuButton className="bg-background border-input border-1" aria-label="Select branch">
               <GitBranch aria-hidden="true" />
               <span className="truncate">
-                  {activeBranch?.name ?? activeBranch?.slug ?? "Select branch"}
+                  {activeBranch?.name ?? activeBranch?.slug ?? <span className="text-muted-foreground">Select …</span>}
               </span>
               <span className="ml-auto text-muted-foreground">
                   {kbs("mod+J")}

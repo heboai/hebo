@@ -1,6 +1,6 @@
 import { GitBranch } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import { useFetcher } from "react-router";
 import { z } from "zod";
 
 import { getFormProps, useForm } from "@conform-to/react";
@@ -21,7 +21,7 @@ import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/
 import { Input } from "@hebo/shared-ui/components/Input";
 import { Select } from "@hebo/shared-ui/components/Select";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 export const BranchCreateSchema = z.object({
@@ -40,26 +40,22 @@ type CreateBranchProps = {
 
 export default function CreateBranch({ branches }: CreateBranchProps) {
 
-  const lastResult = useActionData();
-  const [open, setOpen] = useState(false);
-
-  useActionDataErrorToast();
-
+  const fetcher = useFetcher();
   const [form, fields] = useForm<BranchCreateFormValues>({
-    lastResult,
+    lastResult: fetcher.data,
     constraint: getZodConstraint(BranchCreateSchema),
     defaultValue: {
       sourceBranchSlug: branches[0].slug,
     },
   });
+  useFormErrorToast(form.allErrors)
 
-  const navigation = useNavigation();
-
+  const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (navigation.state === "idle" && lastResult?.status === "success") {
+    if (fetcher.state === "idle" && form.status === "success") {
       setOpen(false);
     }
-  }, [navigation.state, lastResult?.status]);
+  }, [fetcher.state, form.status]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -74,7 +70,7 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
         </DialogTrigger>
       </div>
       <DialogContent>
-        <Form method="post" {...getFormProps(form)} className="contents">
+        <fetcher.Form method="post" {...getFormProps(form)} className="contents">
           <DialogHeader>
             <DialogTitle>Create Banch</DialogTitle>
             <DialogDescription>
@@ -121,12 +117,12 @@ export default function CreateBranch({ branches }: CreateBranchProps) {
               type="submit"
               name="intent"
               value="create"
-              isLoading={navigation.state !== "idle"}
+              isLoading={fetcher.state !== "idle"}
             >
               Create
             </Button>
           </DialogFooter>
-        </Form>
+        </fetcher.Form>
       </DialogContent>
     </Dialog>
   );
