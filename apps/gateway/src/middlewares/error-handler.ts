@@ -56,11 +56,12 @@ export const errorHandler = new Elysia({ name: "error-handler" })
     if (error instanceof BadRequestError)
       return status(error.status, { error: error.toJSON() });
 
+    // Prisma errors
     if (
       error &&
       typeof error === "object" &&
       "code" in error &&
-      (error as any).code === "P2025"
+      error.code === "P2025"
     )
       return status(
         404,
