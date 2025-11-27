@@ -1,6 +1,6 @@
 import { useFetcher } from "react-router";
 import { useEffect, useRef, useState } from "react";
-import { useForm, getFormProps, type FieldMetadata } from "@conform-to/react";
+import { useForm, getFormProps, type FieldMetadata, type FieldName, useInputControl } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
 import { Brain, ChevronsUpDown, Edit } from "lucide-react";
 
@@ -159,6 +159,7 @@ function ModelCard(props: {
 
   const modelFieldset = model.getFieldset();
   const routingOnlyField = modelFieldset.routing.getFieldset().only.getFieldList()[0]!;
+  const routingOnlyValue = useInputControl(routingOnlyField);
 
   const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
 
@@ -250,8 +251,7 @@ function ModelCard(props: {
                           checked={routingEnabled}
                           onChange={(event) => {
                             const enabled = event.target.checked;
-                            // FUTURE: this doesn't work yet
-                            if (!enabled) routingOnlyField.value = "";
+                            if (!enabled) routingOnlyValue.change("")
                             setRoutingEnabled(enabled);
                           }}
                           className="h-4 w-4 accent-primary"
