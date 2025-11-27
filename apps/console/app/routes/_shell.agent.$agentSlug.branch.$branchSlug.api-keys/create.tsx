@@ -62,7 +62,9 @@ export function CreateApiKeyDialog() {
   useEffect(() => {
     if (fetcher.state === "idle" && form.status !== "error") {
       createSetOpen(false);
-      setRevealOpen(true);
+      if (fetcher.data?.apiKey) {
+        setRevealOpen(true);
+      }
     }
   }, [fetcher.state, form.status]);
 
