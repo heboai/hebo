@@ -177,6 +177,7 @@ function handleSSEStream(
   let textStarted = false;
   let reasoningStarted = false;
   let finalFinish: FinishReason | undefined;
+  let hasError = false;
 
   return parseJsonEventStream<OpenAIChatDelta>({
     stream,
@@ -188,6 +189,7 @@ function handleSSEStream(
         ctrl.enqueue({ type: "start", messageId });
       },
       transform(result, ctrl) {
+        if (hasError) return;
         if (!result?.success) {
           ctrl.enqueue({
             type: "error",
@@ -199,6 +201,7 @@ function handleSSEStream(
         const parsed = result.value;
 
         if (parsed.error) {
+          hasError = true;
           ctrl.enqueue({
             type: "error",
             errorText:
