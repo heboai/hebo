@@ -73,7 +73,7 @@ export default function Branches() {
   const agent = useRoute("routes/_shell.agent.$agentSlug")!.loaderData!.agent!;
 
   return (
-    <div className="flex flex-col gap-6">
+    <>
       <div>
         <h1>Branches</h1>
         <p className="text-muted-foreground text-sm">
@@ -85,6 +85,6 @@ export default function Branches() {
 
       <CreateBranch branches={agent.branches!} />
 
-    </div>
+    </>
   );
 }

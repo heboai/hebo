@@ -1,0 +1,197 @@
+import { useEffect, useState } from "react";
+import { useFetcher } from "react-router";
+import { z } from "zod";
+
+import { getFormProps, useForm } from "@conform-to/react";
+import { getZodConstraint } from "@conform-to/zod/v4";
+
+import { Button } from "@hebo/shared-ui/components/Button";
+import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@hebo/shared-ui/components/Dialog";
+import { FormControl, FormField, FormLabel, FormMessage } from "@hebo/shared-ui/components/Form";
+import { Input } from "@hebo/shared-ui/components/Input";
+import { Select } from "@hebo/shared-ui/components/Select";
+
+import { useFormErrorToast } from "~console/lib/errors";
+import { Info } from "lucide-react";
+
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+export const API_KEY_EXPIRATION_OPTIONS = [
+  { label: "1 day", value: "1d", durationMs: 1 * DAY_IN_MS },
+  { label: "7 days", value: "7d", durationMs: 7 * DAY_IN_MS },
+  { label: "30 days", value: "30d", durationMs: 30 * DAY_IN_MS },
+  { label: "90 days", value: "90d", durationMs: 90 * DAY_IN_MS },
+  { label: "1 year", value: "365d", durationMs: 365 * DAY_IN_MS },
+] as const;
+
+export const ApiKeyCreateSchema = z.object({
+  description: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a description"),
+  expiresIn: z.literal(
+    API_KEY_EXPIRATION_OPTIONS.map((option) => option.value),
+    "Select an expiration window",
+  ),
+});
+
+type ApiKeyCreateFormValues = z.infer<typeof ApiKeyCreateSchema>;
+
+export function CreateApiKeyDialog() {
+  const fetcher = useFetcher();
+
+  const [form, fields] = useForm<ApiKeyCreateFormValues>({
+    lastResult: fetcher.data?.submission,
+    constraint: getZodConstraint(ApiKeyCreateSchema),
+    defaultValue: {
+      expiresIn: "30d",
+    },
+  });
+  useFormErrorToast(form.allErrors);
+
+  const [createOpen, createSetOpen] = useState(false);
+  const [revealOpen, setRevealOpen] = useState(false);
+  useEffect(() => {
+    if (fetcher.state === "idle" && form.status === "success") {
+      createSetOpen(false);
+      setRevealOpen(true);
+    }
+  }, [fetcher.state, form.status]);
+
+  return (
+    <>
+      <Dialog open={createOpen} onOpenChange={createSetOpen}>
+        <div>
+          <DialogTrigger asChild>
+            <Button type="button">+ Create API Key</Button>
+          </DialogTrigger>
+        </div>
+        <DialogContent>
+          <fetcher.Form method="post" {...getFormProps(form)} className="contents">
+            <DialogHeader>
+              <DialogTitle>Create API key</DialogTitle>
+              <DialogDescription>
+                Provide a brief description and expiration window for this key.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4">
+              <FormField field={fields.description}>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Input placeholder="API key description" autoComplete="off" />
+                </FormControl>
+                <FormMessage />
+              </FormField>
+              <FormField field={fields.expiresIn}>
+                <FormLabel>Expires in</FormLabel>
+                <FormControl>
+                  <Select
+                    items={API_KEY_EXPIRATION_OPTIONS.map((option) => ({
+                      value: option.value,
+                      name: option.label,
+                    }))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormField>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="ghost">
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                type="submit"
+                name="intent"
+                value="create"
+                isLoading={fetcher.state !== "idle"}
+              >
+                Create
+              </Button>
+            </DialogFooter>
+          </fetcher.Form>
+        </DialogContent>
+      </Dialog>
+
+      <ApiKeyRevealDialog
+        open={revealOpen}
+        onOpenChange={setRevealOpen}
+        apiKey={fetcher.data?.apiKey.value || ""}
+      />
+    </>
+  );
+}
+
+
+type ApiKeyRevealDialogProps = {
+  apiKey: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
+function ApiKeyRevealDialog({ apiKey, open, onOpenChange }: ApiKeyRevealDialogProps) {
+  const [acknowledged, setAcknowledged] = useState(false);
+
+  useEffect(() => {
+    if (open) setAcknowledged(false);
+  }, [open]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Info className="size-4" aria-hidden="true" />
+            API Key
+          </DialogTitle>
+          <DialogDescription>
+            Here is your API key.{" "}
+            <span className="font-semibold">
+              Copy it to a safe place—you will not be able to view it again.
+            </span>
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            Secret API Key
+          </span>
+          <div className="flex items-center gap-2">
+            <Input readOnly value={apiKey} className="font-mono" />
+            <CopyToClipboardButton textToCopy={apiKey} />
+          </div>
+        </div>
+
+        <label className="flex items-center gap-3 rounded-md border border-border p-3 text-sm">
+          <input
+            type="checkbox"
+            className="size-4 accent-foreground"
+            checked={acknowledged}
+            onChange={(event) => setAcknowledged(event.target.checked)}
+          />
+          <span>I understand that I will not be able to view this key again.</span>
+        </label>
+
+        <DialogFooter>
+          <DialogClose>
+            <Button
+              type="button"
+              disabled={!acknowledged}
+            >
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

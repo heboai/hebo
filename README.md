@@ -35,7 +35,7 @@ This is the monorepo for Hebo, containing all our applications and shared packag
 
 ## Prerequisites
 
-- Bun >= 1.2.22
+- Bun >= 1.3.1
 - Docker >= 28
 - AWS CLI (only required for deployment)
 
@@ -97,12 +97,41 @@ bun run db:reset
 bun run clean
 ```
 
+## Secrets (local and remote)
+
+We use Bun secrets for local development and SST secrets for remote deployments. Code reads values via `getSecret(name)` (see `packages/shared-api/utils/get-secret.ts`), which resolves from SST first and falls back to Bun secrets locally.
+
+Secret names:
+
+- LLM:
+  - Bedrock: `BedrockRoleArn`, `BedrockRegion`
+  - Vertex: `VertexServiceAccountEmail`, `VertexAwsProviderAudience`, `VertexProject`, `VertexLocation`
+  - Others: `CohereApiKey`, `GroqApiKey`
+- Auth (Stack Auth): `StackSecretServerKey`, `StackPublishableClientKey`, `StackProjectId`
+
+Local (Bun) examples:
+
+```bash
+# set / get / delete
+bun run secret set StackSecretServerKey <value>
+bun run secret get StackSecretServerKey
+bun run secret delete StackSecretServerKey
+```
+
+Remote (SST) examples:
+
+```bash
+# set / remove (choose your <stage>)
+bun run sst secret set StackSecretServerKey <value> --stage <stage>
+bun run sst secret remove StackSecretServerKey --stage <stage>
+```
+
 ## Run modes
 
 | #   | Mode                         | Command                          | Database              | API availability                        |
 |-----|------------------------------|----------------------------------|-----------------------|-----------------------------------------|
-| 1   | **Frontend-only** (offline)  | `bun run -F @hebo/console dev`    | —                     | none – UI relies on MSW / MSW data       |
-| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | URLs from env              |
+| 1   | **Frontend-only** (offline)  | `bun run -F @hebo/console dev`   | —                     | none – UI relies on MSW / MSW data      |
+| 2   | **Local full-stack**         | `bun run dev`                    | Dockerized PostgreSQL | URLs from env                           |
 | 3   | **Remote full-stack**        | `bun run sst deploy`             | Aurora PostgreSQL     | HTTPS URLs exported by SST              |
 
 ## Building
@@ -140,33 +169,6 @@ The repository uses GitHub Actions for CI/CD:
 ### Manual deployments
 
 For deployments, we utilize the SST framework ([sst.dev](https://sst.dev/)).
-
-#### Secrets
-
-Set each secret individually.
-
-Secrets to set:
-
-##### LLM keys
-
-- `GroqApiKey`
-- `VoyageApiKey`
-
-##### Auth secrets
-
-Get these by creating a project on [Stack Auth](https://app.stack-auth.com).
-
-- `StackSecretServerKey`
-- `StackPublishableClientKey`
-- `StackProjectId`
-
-##### Examples usage:
-
-Replace `<value>`. Omit `--stage` for local development (defaults to your dev stage).
-
-```bash
-bun run sst secret set GroqApiKey <value> --stage <stage>
-```
 
 #### Launch and Clean up
 
