@@ -57,7 +57,7 @@ export function ProvidersList({ providers }: { providers: Provider[] }) {
                         <ItemActions>
                             {provider.config ? (
                                 <>
-                                    Last updated {formatDateTime(provider.updated_at)}
+                                    Last updated {formatDateTime(provider.updated_at ?? new Date(0))}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <Button
@@ -70,7 +70,7 @@ export function ProvidersList({ providers }: { providers: Provider[] }) {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuItem
-                                                className="text-destructive hover:text-destructive!"
+                                                className="text-destructive hover:!text-destructive"
                                                 onSelect={() => {
                                                     setSelectedProvider(provider);
                                                     setClearOpen(true);

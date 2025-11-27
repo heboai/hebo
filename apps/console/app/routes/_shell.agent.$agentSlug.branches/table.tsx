@@ -20,6 +20,7 @@ import {
 } from "@hebo/shared-ui/components/Table";
 
 import DeleteBranchDialog from "./delete";
+import { formatDateTime } from "~console/lib/utils";
 
 
 type BranchesTableProps = {
@@ -70,7 +71,7 @@ export default function BranchesTable({ agent }: BranchesTableProps) {
                     </div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-muted-foreground">
-                    {`${branch.updated_by ?? "Dummy User"} (${(branch.updated_at ?? new Date(0)).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })})`}
+                    {`${branch.updated_by ?? "Dummy User"} (${formatDateTime(branch.updated_at ?? new Date(0))})`}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>

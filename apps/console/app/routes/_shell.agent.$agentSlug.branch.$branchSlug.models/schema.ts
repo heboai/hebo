@@ -11,7 +11,8 @@ export const modelConfigSchema = z.object({
   ),
   routing: z
     .object({
-      only: z.array(z.string().optional()),
+      only: z.array(z.string().optional())
+        .transform((value) => (value[0] === undefined ? [] : value))
     })
     .optional(),
 });
