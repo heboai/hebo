@@ -36,7 +36,7 @@ import {
 const onMessage = webhook<MessageReceivedPayload>({
   signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
   handle: async (payload) => {
-    console.log("New message:", payload.message.message.text);
+    console.log("New message from contact", payload.contact.id);
     // Your logic here...
   },
   onError: (err) => console.error("Webhook failed:", err),
@@ -62,7 +62,7 @@ To handle a specific event, specify its payload type, example for new incoming m
 const onMessage = webhook<MessageReceivedPayload>({
   signingKey: process.env.RESPOND_IO_SIGNING_KEY!,
   handle: async (payload) => {
-    console.log("New message:", payload.message.message.text);
+    console.log("New message from contact", payload.contact.id);
   },
 });
 ```
