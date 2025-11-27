@@ -161,12 +161,12 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
 Easily convert Respond.io payloads into AI SDK messages.
 
 ```ts
-import { toAiModelMessage } from "@hebo/aikit-respond-io/webhook";
+import { toModelMessage } from "@hebo/aikit-respond-io/vercel-ai";
 import { generateText } from "ai";
 
 // Inside your webhook handle function:
 handle: async (payload) => {
-  const userMessage = toAiModelMessage(payload.message.message, "user");
+  const userMessage = toModelMessage(payload.message.message, "user");
 
   const { text } = await generateText({
     model: yourModel,
