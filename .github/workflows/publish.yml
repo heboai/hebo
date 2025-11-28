@@ -1,25 +1,46 @@
-name: Publish Aikit Packages to NPM
+name: Publish AiKit Packages to NPM
 
 on:
-  push:
+  release:
+    types: [published]
     tags:
-      - "packages/*/*"
+      - "@heboai/aikit-*@*"
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  publish-aikit-respond-io:
-    name: Publish aikit-respond-io to NPM
+  publish:
+    name: Publish to NPM
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packages/aikit-respond-io
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Determine Package Directory
+        id: pkg
+        run: |
+          # Tag format: @heboai/aikit-name@version
+          TAG=${{ github.ref_name }}
+          echo "Processing tag: $TAG"
+
+          # Remove scope prefix (@heboai/)
+          NO_SCOPE=${TAG#@heboai/}
+
+          # Extract package name (remove version starting from last @)
+          PKG_NAME=${NO_SCOPE%@*}
+
+          PKG_DIR="packages/$PKG_NAME"
+          echo "Identified package directory: $PKG_DIR"
+
+          if [ ! -d "$PKG_DIR" ]; then
+            echo "Error: Directory $PKG_DIR does not exist."
+            exit 1
+          fi
+
+          echo "dir=$PKG_DIR" >> $GITHUB_OUTPUT
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
@@ -27,14 +48,17 @@ jobs:
           bun-version: "1.3.1"
 
       - name: Install dependencies
+        working-directory: ${{ steps.pkg.outputs.dir }}
         run: |
           bun install --frozen-lockfile
 
       - name: Build & Test
+        working-directory: ${{ steps.pkg.outputs.dir }}
         run: |
           bun run build
           bun run test
 
       - name: Publish
+        working-directory: ${{ steps.pkg.outputs.dir }}
         run: |
           bun publish
