@@ -1,25 +1,16 @@
 // packages/aikit-respond-io/src/webhook/types.ts
-export enum WebhookEvents {
-  MessageReceived = "message.received",
-  MessageSent = "message.sent",
-  ContactAssigneeUpdated = "contact.assignee.updated",
-  ConversationClosed = "conversation.closed",
-}
 
-export interface WebhookEventConfig {
+export type EventHandler<T extends WebhookPayload> = (
+  payload: T,
+) => void | Promise<void>;
+
+export type ErrorHandler = (error: unknown) => void | Promise<void>;
+
+export interface WebhookHandlerOptions<T extends WebhookPayload> {
   signingKey: string;
+  handle: EventHandler<T>;
+  onError?: ErrorHandler;
 }
-
-export interface WebhookConfig {
-  events: Partial<Record<WebhookEvents, WebhookEventConfig>>;
-}
-
-export type EventPayloadMap = {
-  [WebhookEvents.MessageReceived]: MessageReceivedPayload;
-  [WebhookEvents.MessageSent]: MessageSentPayload;
-  [WebhookEvents.ContactAssigneeUpdated]: ContactAssigneeUpdatedPayload;
-  [WebhookEvents.ConversationClosed]: ConversationClosedPayload;
-};
 
 export type WebhookPayload =
   | MessageReceivedPayload
@@ -27,11 +18,9 @@ export type WebhookPayload =
   | ContactAssigneeUpdatedPayload
   | ConversationClosedPayload;
 
-export type EventHandler<T extends WebhookPayload = WebhookPayload> = (
-  payload: T,
-) => void | Promise<void>;
-
-export type ErrorHandler = (error: unknown) => void | Promise<void>;
+export interface WebhookHandler {
+  fetch: (request: Request) => Promise<Response>;
+}
 
 // --- Common Base Interfaces ---
 
@@ -44,17 +33,27 @@ interface BaseUser {
 
 interface BaseContact {
   id: number;
+  status: "open" | "closed";
+  lifecycle: string | null;
   firstName: string;
-  lastName: string;
-  email?: string;
-  phone?: string;
+  lastName: string | null;
+  email: string | null;
+  phone: string | null;
+  language: string | null;
+  profilePic: string | null;
+  countryCode: string | null;
+  assignee: BaseUser | null;
   created_at: number;
+  tags?: string[];
+  custom_fields?: { name: string; value: string | null }[] | null;
 }
 
 interface BaseChannel {
   id: number;
   name: string;
   source: string;
+  meta: string;
+  created_at: number;
 }
 
 // --- Message Content Types ---
@@ -62,6 +61,7 @@ interface BaseChannel {
 export interface TextContent {
   type: "text";
   text: string;
+  messageTag?: string;
 }
 
 export interface AttachmentContent {
@@ -77,66 +77,55 @@ export interface AttachmentContent {
   };
 }
 
+export interface BaseMessage {
+  messageId: number;
+  channelMessageId: number;
+  contactId: number;
+  channelId: number;
+  traffic: "incoming" | "outgoing";
+  message: MessageContent;
+  timestamp: number;
+  status?: { value: string; timestamp: number; message: string }[];
+}
+
 export type MessageContent = TextContent | AttachmentContent;
 
 export interface MessageReceivedPayload {
+  event_id: string;
   event_type: "message.received";
-  timestamp: number;
-  contact: BaseContact & { assignee: BaseUser };
+  contact: BaseContact;
   channel: BaseChannel;
-  message: {
-    channelMessageId: number;
-    contactId: number;
-    traffic: "incoming";
-    message: MessageContent;
-    timestamp: number;
-  };
+  message: BaseMessage;
 }
 
 export interface MessageSentPayload {
+  event_id: string;
   event_type: "message.sent";
-  traffic: "outgoing";
-  channelMessageId: number;
-  timestamp: number;
-  contact: BaseContact & { assignee: BaseUser };
+  contact: BaseContact;
   channel: BaseChannel & {
     lastMessageTime: number;
     lastIncomingMessageTime: number;
   };
-  message: TextContent;
-  user: BaseUser;
+  message: BaseMessage;
 }
 
 export interface ContactAssigneeUpdatedPayload {
-  event_type: "contact.assignee.updated";
   event_id: string;
-  contact: BaseContact & {
-    language: string;
-    profilePic: string;
-    countryCode: string;
-    status: string;
-    assignee: BaseUser;
-  };
-  channel: BaseChannel & { meta: null };
+  event_type: "contact.assignee.updated";
+  contact: BaseContact;
 }
 
 export interface ConversationClosedPayload {
-  event_type: "conversation.closed";
   event_id: string;
-  contact: BaseContact & {
-    language: string;
-    profilePic: string;
-    countryCode: string;
-    status: string;
-    assignee: BaseUser | null | Record<string, never>; // May be empty
-  };
+  event_type: "conversation.closed";
+  contact: BaseContact;
   conversation: {
     category: string;
     summary: string;
     openedTime: number;
     openedBySource: string;
     closedTime: number;
-    closedBy: BaseUser | null | Record<string, never>; // May be empt
+    closedBy: BaseUser | null | Record<string, never>;
     closedBySource: string;
     firstResponseTime: number;
     resolutionTime: number;

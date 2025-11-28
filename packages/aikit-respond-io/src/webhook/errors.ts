@@ -5,9 +5,9 @@ export class WebhookError extends Error {
   }
 }
 
-export class SignatureVerificationError extends WebhookError {
+export class InvalidSignatureError extends WebhookError {
   constructor(message: string) {
     super(message);
-    this.name = "SignatureVerificationError";
+    this.name = "InvalidSignatureError";
   }
 }

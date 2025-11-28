@@ -1,24 +1,21 @@
 import { Type, type Static } from "@sinclair/typebox";
 
+import { ProviderSlug } from "@hebo/database/src/types/providers";
+
 import supportedModels from "../json/supported-models.json";
 
-export const supportedModelsEnum = Type.Enum(
-  Object.fromEntries(supportedModels.map(({ name }) => [name, name])),
-  { error: "Invalid model name" },
+export const SupportedModelType = Type.Enum(
+  Object.fromEntries(supportedModels.map(({ type }) => [type, type])),
+  { error: "Invalid model type" },
 );
 
-// FUTURE: infer from models.schema.json
-export const modelsSchema = Type.Array(
+export const Models = Type.Array(
   Type.Object({
-    alias: Type.String(),
-    type: supportedModelsEnum,
-    endpoint: Type.Optional(
-      Type.Object({
-        baseUrl: Type.String(),
-        apiKey: Type.String(),
-      }),
-    ),
+    alias: Type.String({ minLength: 1 }),
+    type: SupportedModelType,
+    // Inspired from Vercel Provider Options: https://vercel.com/docs/ai-gateway/provider-options
+    routing: Type.Optional(Type.Object({ only: Type.Array(ProviderSlug) })),
   }),
 );
 
-export type Models = Static<typeof modelsSchema>;
+export type Models = Static<typeof Models>;

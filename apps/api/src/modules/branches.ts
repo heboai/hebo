@@ -2,7 +2,7 @@ import { Elysia, status, t } from "elysia";
 
 import { createSlug } from "@hebo/database/src/utils/create-slug";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-import { modelsSchema } from "@hebo/shared-data/types/models";
+import { Models } from "@hebo/shared-data/types/models";
 
 import {
   branches,
@@ -25,7 +25,7 @@ export const branchesModule = new Elysia({
       );
     },
     {
-      response: { 200: t.Array(branches) },
+      response: { 200: t.Array(branches), 404: t.String() },
     },
   )
   .post(
@@ -41,7 +41,7 @@ export const branchesModule = new Elysia({
             agent_slug: params.agentSlug,
             name: body.name,
             slug: createSlug(body.name),
-            models: models,
+            models,
           } as any,
         }),
       );
@@ -51,7 +51,7 @@ export const branchesModule = new Elysia({
         name: branchesInputCreate.properties.name,
         sourceBranchSlug: t.String(),
       }),
-      response: { 201: branches },
+      response: { 201: branches, 404: t.String(), 409: t.String() },
     },
   )
   .get(
@@ -65,7 +65,7 @@ export const branchesModule = new Elysia({
       );
     },
     {
-      response: { 200: branches },
+      response: { 200: branches, 404: t.String() },
     },
   )
   .patch(
@@ -78,31 +78,45 @@ export const branchesModule = new Elysia({
         200,
         await dbClient.branches.update({
           where: { id },
-          data: {
-            name: body.name,
-            models: body.models,
-          },
+          data: { name: body.name, models: body.models },
         }),
       );
     },
     {
       body: t.Object({
         name: branchesInputUpdate.properties.name,
-        models: t.Optional(modelsSchema),
+        models: t.Optional(Models),
       }),
-      response: { 200: branches },
+      response: { 200: branches, 404: t.String() },
     },
   )
   .delete(
     "/:branchSlug",
     async ({ dbClient, params }) => {
-      const { id } = await dbClient.branches.findFirstOrThrow({
-        where: { agent_slug: params.agentSlug, slug: params.branchSlug },
-      });
+      const [totalBranches, { id }] = await dbClient.$transaction([
+        dbClient.branches.count({
+          where: { agent_slug: params.agentSlug },
+        }),
+        dbClient.branches.findFirstOrThrow({
+          where: {
+            agent_slug: params.agentSlug,
+            slug: params.branchSlug,
+          },
+          select: { id: true },
+        }),
+      ]);
+
+      if (totalBranches <= 1) {
+        return status(
+          409,
+          "Each agent must keep at least one branch. Create a new branch before deleting this one.",
+        );
+      }
+
       await dbClient.branches.softDelete({ id });
       return status(204);
     },
     {
-      response: { 204: t.Void() },
+      response: { 204: t.Void(), 404: t.String(), 409: t.String() },
     },
   );

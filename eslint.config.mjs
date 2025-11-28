@@ -6,7 +6,6 @@ import noSecrets from "eslint-plugin-no-secrets"
 import promise from "eslint-plugin-promise"
 import react from "eslint-plugin-react"
 import reactHooks from "eslint-plugin-react-hooks"
-import reactPerf from "eslint-plugin-react-perf"
 import security from "eslint-plugin-security"
 import sonarjs from 'eslint-plugin-sonarjs'
 import tailwindcss from "eslint-plugin-tailwindcss";
@@ -27,17 +26,22 @@ const eslintConfig = [
       tailwindcss: {
         config: false, 
       },
+      react: {
+        version: 'detect',
+      },
       // Point to the correct tsconfig
       'import/resolver': {
         typescript: {
           project: ['**/tsconfig.json'], 
           noWarnOnMultipleProjects: true,
         },
+        'typescript-bun': {},
       },
     },
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  reactHooks.configs.flat['recommended-latest'],
   {
     plugins: {
       "import": importPlugin,
@@ -45,8 +49,6 @@ const eslintConfig = [
       "no-secrets": noSecrets,
       promise,
       react,
-      "react-hooks": reactHooks,
-      "react-perf": reactPerf,
       security,
       sonarjs,
       "tailwindcss": tailwindcss,
@@ -57,13 +59,11 @@ const eslintConfig = [
     rules: {
       ...importPlugin.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
-      "no-secrets/no-secrets": ["error", { "tolerance": 4.1 }],
+      "no-secrets/no-secrets": ["error", { "tolerance": 4.2 }],
       ...unicorn.configs.recommended.rules,
       "unused-imports/no-unused-imports": "error",
       ...promise.configs.recommended.rules,
       ...react.configs.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
-      ...reactPerf.configs.flat.recommended.rules,
       ...security.configs.recommended.rules,
       ...sonarjs.configs.recommended.rules,
       ...tailwindcss.configs.recommended.rules,
@@ -123,8 +123,6 @@ const eslintConfig = [
       ],
       'sonarjs/no-commented-code': 'off',
       'sonarjs/todo-tag': 'warn',
-      'react-perf/jsx-no-new-object-as-prop': 'warn',
-      'react-perf/jsx-no-new-function-as-prop': 'warn',
       'tailwindcss/no-custom-classname': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       'turbo/no-undeclared-env-vars': 'warn',

@@ -1,5 +1,5 @@
-import { redirect, useRouteLoaderData } from "react-router";
-import { parseWithValibot } from "@conform-to/valibot";
+import { redirect, unstable_useRoute as useRoute } from "react-router";
+import { parseWithZod } from "@conform-to/zod/v4";
 
 import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
@@ -13,7 +13,7 @@ import { GeneralSettings } from "./general";
 export async function clientAction({ request, params }: Route.ClientActionArgs ) {
   const formData = await request.formData();
 
-  const submission = parseWithValibot(formData, {
+  const submission = parseWithZod(formData, {
      schema: createAgentDeleteSchema(params.agentSlug)
   });
   
@@ -35,7 +35,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs )
 
 
 export default function Settings() {
-  const { agent } = useRouteLoaderData("routes/_shell.agent.$agentSlug");
+  const agent = useRoute("routes/_shell.agent.$agentSlug")!.loaderData!.agent;
  
   return (
     <>

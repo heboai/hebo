@@ -2,22 +2,11 @@ import { type Logger } from "@bogeychan/elysia-logger/types";
 import { bearer } from "@elysiajs/bearer";
 import { Elysia, status } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { Resource } from "sst";
 
-export const projectId = (() => {
-  try {
-    return Resource.StackProjectId.value;
-  } catch {
-    return process.env.VITE_STACK_PROJECT_ID;
-  }
-})() as string;
-export const secretServerKey = (() => {
-  try {
-    return Resource.StackSecretServerKey.value;
-  } catch {
-    return process.env.STACK_SECRET_SERVER_KEY;
-  }
-})() as string;
+import { getSecret } from "../../utils/secrets";
+
+export const projectId = await getSecret("StackProjectId", false);
+export const secretServerKey = await getSecret("StackSecretServerKey", false);
 
 const jwks = createRemoteJWKSet(
   new URL(
@@ -60,6 +49,7 @@ const checkApiKey = async (
   } else log.info(res, "API Key check failed");
 };
 
+// FUTURE: Cache the user id lookup
 export const authServiceStackAuth = new Elysia({
   name: "authenticate-user-stack-auth",
 })

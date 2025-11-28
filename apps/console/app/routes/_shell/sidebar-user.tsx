@@ -32,7 +32,7 @@ type User = {
 export function UserMenu({ user }: { user?: User}) {
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className="group-data-[state=collapsed]:my-2 transition-[margin]">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg">
@@ -70,13 +70,6 @@ export function UserMenu({ user }: { user?: User}) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/user/account" viewTransition>
-                  <Settings aria-hidden="true" />
-                  Manage Account
-                </Link>
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link to="/handler/sign-out" viewTransition>

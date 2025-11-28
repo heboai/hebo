@@ -3,7 +3,6 @@ import { HTTPError, TimeoutError } from "ky";
 import { useEffect } from "react";
 import {
   isRouteErrorResponse,
-  useActionData,
   type ShouldRevalidateFunction,
 } from "react-router";
 import { toast } from "sonner";
@@ -40,21 +39,16 @@ export function parseError(error: unknown) {
   return { message, status, stack, retryable };
 }
 
-export function useActionDataErrorToast() {
-  const lastResult = useActionData();
-
+export function useFormErrorToast(formErrors: Record<string, string[]>) {
   useEffect(() => {
-    const formErrors =
-      lastResult?.error && Array.isArray(lastResult.error[""])
-        ? lastResult.error[""]
-        : [];
+    const errors = Array.isArray(formErrors[""]) ? formErrors[""] : [];
 
-    if (formErrors.length > 0) {
-      for (const msg of formErrors) {
+    if (errors.length > 0) {
+      for (const msg of errors) {
         toast.error(msg);
       }
     }
-  }, [lastResult]);
+  }, [formErrors]);
 }
 
 export const dontRevalidateOnFormErrors: ShouldRevalidateFunction = ({

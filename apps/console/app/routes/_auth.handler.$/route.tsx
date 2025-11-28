@@ -1,4 +1,4 @@
-import { lazy, useLayoutEffect, useState, Suspense } from "react";
+import { lazy, useState, Suspense } from "react";
 import { useLocation, Navigate } from "react-router";
 
 const StackHandler = lazy(() =>
@@ -17,13 +17,8 @@ import { isStackAuthEnabled } from "~console/lib/env";
 export default function AuthHandler() {
   const location = useLocation();
 
-  // Prevent rendering during redirect and static export
-  const [isClient, setIsClient] = useState(false);
-  useLayoutEffect(() => {
-    if (globalThis.window !== undefined) {
-      setIsClient(true);
-    }
-  }, []);
+  // Prevent rendering during redirect & static export
+  const [isClient] = useState(() => globalThis.window !== undefined);
   if (!isClient) return <></>;
 
   if (isStackAuthEnabled && isClient) {

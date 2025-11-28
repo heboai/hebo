@@ -2,15 +2,20 @@
   "name": "@hebo/shared-data",
   "version": "0.0.1",
   "devDependencies": {
-    "bun-types": "^1.2.22"
+    "bun-types": "^1.3.1"
   },
   "exports": {
     "./json/*": "./json/*.json",
-    "./types/*": "./types/*.ts"
+    "./types/*": "./types/*.ts",
+    "./utils/*": "./utils/*.ts"
+  },
+  "scripts": {
+    "generate": "bun run scripts/generate-schemas.ts"
   },
   "private": true,
   "type": "module",
   "dependencies": {
-    "@sinclair/typebox": "^0.34.41"
+    "@sinclair/typebox": "^0.34.41",
+    "@hebo/database": "workspace:*"
   }
 }

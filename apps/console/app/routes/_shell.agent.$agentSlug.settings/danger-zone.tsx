@@ -1,7 +1,7 @@
 import { Form, useActionData, useNavigation } from "react-router";
-import { object, literal, type InferOutput } from "valibot";
+import { z } from "zod";
 import { useForm, getFormProps } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 
 import { Alert, AlertTitle } from "@hebo/shared-ui/components/Alert";
 import { Button } from "@hebo/shared-ui/components/Button";
@@ -30,26 +30,26 @@ import {
 } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
 export function createAgentDeleteSchema(agentSlug: string) {
-  return object({
-    slugConfirm: literal(agentSlug, "You must type your EXACT agent slug"),
+  return z.object({
+    slugConfirm: z.literal(agentSlug, "You must type your EXACT agent slug")
   });
 }
-export type AgentDeleteFormValues = InferOutput<ReturnType<typeof createAgentDeleteSchema>>;
+
+export type AgentDeleteFormValues = z.infer<ReturnType<typeof createAgentDeleteSchema>>;
 
 export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
   const lastResult = useActionData();
-
-  useActionDataErrorToast();
-
   const [form, fields] = useForm<AgentDeleteFormValues>({
+    id: agent.slug,
     lastResult,
-    constraint: getValibotConstraint(createAgentDeleteSchema(agent.slug)),
+    constraint: getZodConstraint(createAgentDeleteSchema(agent.slug)),
   });
+  useFormErrorToast(form.allErrors);
 
   const navigation = useNavigation();
 
@@ -59,7 +59,7 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
       <Card className="border-destructive border-dashed">
         <CardHeader>
-          <CardTitle>Delete this agent</CardTitle>
+          <CardTitle>Delete Agent</CardTitle>
           <CardDescription>
             Once you delete an agent, there is no going back. Be certain.
           </CardDescription>
@@ -67,7 +67,7 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="destructive">Delete Agent</Button>
+                <Button variant="destructive">Delete agent</Button>
               </DialogTrigger>
 
               <DialogContent className="sm:max-w-md bg-sidebar">
@@ -103,8 +103,8 @@ export function DangerSettings({ agent }: { agent: { slug: string }}) {
                     <DialogClose asChild>
                       <Button variant="outline" type="button">Cancel</Button>
                     </DialogClose>
-                    <Button isLoading={navigation.state !== "idle"} type="submit">
-                      Delete Agent
+                    <Button isLoading={navigation.state !== "idle" && navigation.formData != null} type="submit">
+                      Delete
                     </Button>
                   </DialogFooter>
                 </Form>

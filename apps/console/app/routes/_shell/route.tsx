@@ -1,5 +1,5 @@
 import { XCircle, SquareChevronRight } from "lucide-react";
-import { Outlet, useLocation, useRouteLoaderData } from "react-router";
+import { Outlet, unstable_useRoute as useRoute, useLocation } from "react-router";
 import { useRef, useEffect } from "react";
 import { Toaster } from "sonner";
 import { useSnapshot } from "valtio";
@@ -23,6 +23,7 @@ import { getCookie, kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
 
 import { AgentSelect } from "./sidebar-agent";
+import { BranchSelect } from "./sidebar-branch";
 import { PlaygroundSidebar } from "./sidebar-playground";
 import { UserMenu } from "./sidebar-user";
 import { SidebarNav } from "./sidebar-nav";
@@ -45,20 +46,23 @@ export { dontRevalidateOnFormErrors as shouldRevalidate }
 
 
 export default function ShellLayout({ loaderData: { agents } }: Route.ComponentProps) { 
-
   const { user } = useSnapshot(authStore);
-  const { agent: activeAgent = null } = useRouteLoaderData("routes/_shell.agent.$agentSlug") ?? {};
 
-  // FUTURE replace with session storage
-  const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
-  const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
-
+  const { 
+    agent: activeAgent, 
+    branch: activeBranch
+  } = useRoute("routes/_shell.agent.$agentSlug")?.loaderData ?? {};
+  
   // Focus main element on route change for keyboard nav
   const location = useLocation();
   const mainRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     mainRef.current?.focus();
   }, [location]);
+
+  // FUTURE replace with session storage
+  const leftSidebarDefaultOpen = getCookie("left_sidebar_state") === "true";
+  const rightSidebarDefaultOpen = getCookie("right_sidebar_state") === "true";
 
   return (
     <SidebarProvider
@@ -75,14 +79,22 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
     >
 
       <Sidebar collapsible="icon">
-        <div className="h-full flex flex-col transition-[padding] group-data-[state=collapsed]:p-2">
+        <div className="h-full flex flex-col group-data-[state=collapsed]:px-2 transition-[padding]">
           <SidebarHeader>
             <AgentSelect agents={agents} activeAgent={activeAgent} />
+            {activeAgent && (
+              <BranchSelect
+                activeAgent={activeAgent}
+                activeBranch={activeBranch}
+              />
+            )}
           </SidebarHeader>
           <SidebarContent>
+            {activeAgent && activeBranch && (
             <SidebarGroup>
-              <SidebarNav activeAgent={activeAgent} />
+              <SidebarNav activeAgent={activeAgent} activeBranch={activeBranch} />
             </SidebarGroup>
+            )}
           </SidebarContent>
           <SidebarFooter>
               <StaticContent />
@@ -130,7 +142,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
           />
         <Sidebar side="right" collapsible="offcanvas">
           <SidebarContent>
-            <PlaygroundSidebar activeBranch={activeAgent?.branches?.[0]} />
+            <PlaygroundSidebar activeAgent={activeAgent} activeBranch={activeBranch} />
           </SidebarContent>
         </Sidebar>
       </SidebarProvider>

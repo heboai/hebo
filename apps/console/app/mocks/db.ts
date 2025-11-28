@@ -1,21 +1,52 @@
-import { factory, primaryKey, manyOf } from "@mswjs/data";
+import { Collection } from "@msw/data";
+import z from "zod";
 
-const createDb = () =>
-  factory({
-    agent: {
-      slug: primaryKey(String),
-      name: String,
-      defaultModel: String,
-      branches: manyOf("branch"),
-    },
-    branch: {
-      id: primaryKey(() => crypto.randomUUID()),
-      agent_slug: String,
-      slug: String,
-      name: String,
-      models: Array,
-    },
-  });
+const agentSchema = z.object({
+  // Core fields
+  slug: z.string(),
+  name: z.string(),
+
+  // Relations
+  get branches() {
+    return z.array(branchSchema);
+  },
+
+  // Audit fields
+  created_by: z.string().default("Dummy User"),
+  created_at: z.date().default(() => new Date()),
+  updated_by: z.string().default("Dummy User"),
+  updated_at: z.date().default(() => new Date()),
+});
+
+const branchSchema = z.object({
+  // Core fields
+  slug: z.string(),
+  name: z.string(),
+  models: z.array(z.unknown()),
+
+  // Relations
+  agent_slug: z.string(),
+
+  // Audit fields
+  created_by: z.string().default("Dummy User"),
+  created_at: z.date().default(() => new Date()),
+  updated_by: z.string().default("Dummy User"),
+  updated_at: z.date().default(() => new Date()),
+});
+
+export const createDb = () => {
+  const agents = new Collection({ schema: agentSchema });
+  const branches = new Collection({ schema: branchSchema });
+
+  agents.defineRelations(({ many }) => ({
+    branches: many(branches, { onDelete: "cascade" }),
+  }));
+
+  return {
+    agents,
+    branches,
+  } as const;
+};
 
 type DB = ReturnType<typeof createDb>;
 

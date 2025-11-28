@@ -1,24 +1,22 @@
 import { embed, embedMany } from "ai";
 import { Elysia, t } from "elysia";
 
-import { dbClient } from "@hebo/shared-api/middlewares/db-client";
-
-import { provider } from "~gateway/middlewares/provider";
-import { getModelType } from "~gateway/utils/get-model-type";
+import { aiModelFactory } from "~gateway/middlewares/ai-model-factory";
 
 export const embeddings = new Elysia({
   name: "embeddings",
   prefix: "/embeddings",
 })
-  .use(dbClient)
-  .use(provider)
+  .use(aiModelFactory)
   .post(
     "/",
-    async ({ body, dbClient, provider }) => {
-      const { model, input } = body;
+    async ({ body, aiModelFactory }) => {
+      const { model: modelAliasPath, input } = body;
 
-      const modelType = await getModelType(dbClient, model);
-      const embeddingModel = provider.embedding(modelType);
+      const embeddingModel = await aiModelFactory.create(
+        modelAliasPath,
+        "embedding",
+      );
 
       if (Array.isArray(input)) {
         const { embeddings, usage } = await embedMany({
@@ -27,12 +25,12 @@ export const embeddings = new Elysia({
         });
         return {
           object: "list",
-          data: embeddings.map((e: number[], i: number) => ({
+          data: embeddings.map((e, i) => ({
             object: "embedding",
             embedding: e,
             index: i,
           })),
-          model,
+          model: modelAliasPath,
           usage: usage && {
             prompt_tokens: usage.tokens ?? 0,
             total_tokens: usage.tokens ?? 0,
@@ -47,7 +45,7 @@ export const embeddings = new Elysia({
       return {
         object: "list",
         data: [{ object: "embedding", embedding, index: 0 }],
-        model,
+        model: modelAliasPath,
         usage: usage && {
           prompt_tokens: usage.tokens ?? 0,
           total_tokens: usage.tokens ?? 0,

@@ -1,7 +1,7 @@
 import { Form, useActionData, useNavigation } from "react-router";
-import { message, nonEmpty, object, string, pipe, trim, type InferOutput } from "valibot";
+import { z } from "zod";
 import { useForm, getFormProps } from "@conform-to/react";
-import { getValibotConstraint } from "@conform-to/valibot";
+import { getZodConstraint } from "@conform-to/zod/v4";
 
 import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Button } from "@hebo/shared-ui/components/Button";
@@ -24,27 +24,26 @@ import {
   Select
 } from "@hebo/shared-ui/components/Select";
 
-import { useActionDataErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";
 
 
-export const AgentCreateSchema = object({
-  agentName: message(pipe(string(), trim(), nonEmpty()), "Please enter an agent name"),
-  defaultModel: string(),
+export const AgentCreateSchema = z.object({
+  agentName: ((msg) => z.string(msg).trim().min(1, msg))("Please enter an agent name"),
+  defaultModel: z.string(),
 });
-export type AgentCreateFormValues = InferOutput<typeof AgentCreateSchema>;
+export type AgentCreateFormValues = z.infer<typeof AgentCreateSchema>;
 
 export function AgentCreateForm() {
+  
   const lastResult = useActionData();
-  
-  useActionDataErrorToast();
-  
   const [form, fields] = useForm<AgentCreateFormValues>({
     lastResult,
-    constraint: getValibotConstraint(AgentCreateSchema),
+    constraint: getZodConstraint(AgentCreateSchema),
     defaultValue: {
-      defaultModel: supportedModels[0].name,
+      defaultModel: supportedModels[0].type,
     }
   });
+  useFormErrorToast(form.allErrors);
 
   const navigation = useNavigation();
 
@@ -76,7 +75,7 @@ export function AgentCreateForm() {
               <FormControl>
                 <Select
                   items={supportedModels.map((m) => ({
-                    value: m.name,
+                    value: m.type,
                     name: (
                         <>
                           {m.displayName}{" "}
@@ -102,7 +101,7 @@ export function AgentCreateForm() {
         <CardFooter className="flex justify-end">
           <Button
             type="submit"
-            isLoading={navigation.state !== "idle"}
+            isLoading={navigation.state !== "idle" && navigation.formData != null}
           >
             Create
           </Button>

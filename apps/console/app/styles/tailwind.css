@@ -62,7 +62,7 @@
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: theme("colors.slate.100");
+  --accent: theme("colors.blue.100");
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: theme("colors.slate.300");
@@ -136,7 +136,7 @@
   }
 
   /* Underline links by default */
-  a:not([href^="/"]) {
+  a:not([href^="/"]):not(:has(*)) {
     @apply text-indigo-700 underline decoration-dotted;
   }
 

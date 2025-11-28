@@ -183,7 +183,6 @@ export const toOpenAICompatibleMessage = (
   }
 
   if (result.reasoningText) {
-    message.reasoning = result.reasoningText; // GPT-OSS
     message.reasoning_content = result.reasoningText;
   }
 
@@ -262,7 +261,6 @@ export function toOpenAICompatibleStream(
 
           case "reasoning-delta": {
             const delta = {
-              reasoning: part.text,
               reasoning_content: part.text,
             };
             enqueue({

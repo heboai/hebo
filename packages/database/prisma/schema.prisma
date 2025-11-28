@@ -31,13 +31,13 @@ model agents {
   branches branches[]
 
   // Common audit fields across entities
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   created_by String
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   created_at DateTime  @default(now())
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   updated_by String
-  /// @prismabox.hide
+  /// @prismabox.input.hide
   updated_at DateTime  @updatedAt
   /// @prismabox.hide
   deleted_by String?
@@ -53,10 +53,32 @@ model branches {
   /// @prismabox.input.hide
   agent_slug String
   name       String
-  // FUTURE: hide api_key from models
   models     Json[] @default([])
   /// @prismabox.hide
   agent      agents @relation(fields: [agent_slug], references: [slug], onDelete: Cascade)
+
+  // Common audit fields across entities
+  /// @prismabox.input.hide
+  created_by String
+  /// @prismabox.input.hide
+  created_at DateTime  @default(now())
+  /// @prismabox.input.hide
+  updated_by String
+  /// @prismabox.input.hide
+  updated_at DateTime  @updatedAt
+  /// @prismabox.hide
+  deleted_by String?
+  /// @prismabox.hide
+  deleted_at DateTime?
+
+  @@unique([agent_slug, slug])
+}
+
+model provider_configs {
+  /// @prismabox.hide
+  id            String @id @default(uuid(7)) @db.Uuid
+  provider_slug String
+  value         Json
 
   // Common audit fields across entities
   /// @prismabox.hide
@@ -71,6 +93,4 @@ model branches {
   deleted_by String?
   /// @prismabox.hide
   deleted_at DateTime?
-
-  @@unique([agent_slug, slug])
 }
