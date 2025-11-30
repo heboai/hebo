@@ -184,7 +184,7 @@ function ApiKeyRevealDialog({ apiKey, open, onOpenChange }: ApiKeyRevealDialogPr
         </label>
 
         <DialogFooter>
-          <DialogClose>
+          <DialogClose asChild>
             <Button
               type="button"
               disabled={!acknowledged}

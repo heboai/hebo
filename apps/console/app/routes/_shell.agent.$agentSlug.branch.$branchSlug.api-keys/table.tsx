@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import { Badge } from "@hebo/shared-ui/components/Badge";
 import { Button } from "@hebo/shared-ui/components/Button";
-import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,7 +85,6 @@ export function ApiKeysTable({ apiKeys }: { apiKeys: ApiKey[] }) {
                   <TableCell>
                     <div className="flex items-center gap-2 font-mono text-sm">
                       <span className="truncate">{key.value}</span>
-                      <CopyToClipboardButton textToCopy={key.value} />
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
