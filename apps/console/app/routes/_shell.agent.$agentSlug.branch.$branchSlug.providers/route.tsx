@@ -3,11 +3,11 @@ import { parseWithZod } from "@conform-to/zod/v4";
 import { api } from "~console/lib/service";
 import { parseError } from "~console/lib/errors";
 
-import type { Route } from "./+types/route";
-import { ProvidersList } from "./list";
-import { ProviderConfigureSchema } from "./configure";
 import { CredentialsClearSchema } from "./clear";
+import { ProviderConfigureSchema } from "./configure";
+import { ProvidersList } from "./list";
 
+import type { Route } from "./+types/route";
 
 export async function clientLoader() {
   return { providers: (await api.providers.get()).data ?? [] };

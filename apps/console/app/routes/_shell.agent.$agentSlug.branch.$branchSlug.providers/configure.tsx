@@ -133,14 +133,14 @@ export function ConfigureProviderDialog({open, onOpenChange, provider}: Configur
                   Cancel
               </Button>
             </DialogClose>
-              <Button
-                  type="submit"
-                  name="intent"
-                  value="configure"
-                  isLoading={fetcher.state !== "idle"}
-                  >
-                  Set
-              </Button>
+            <Button
+                type="submit"
+                name="intent"
+                value="configure"
+                isLoading={fetcher.state !== "idle"}
+                >
+                Set
+            </Button>
           </DialogFooter>
         </fetcher.Form>
       </DialogContent>
