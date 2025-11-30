@@ -12,7 +12,7 @@ import {
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   items: Array<{ name: React.ReactNode; value: string }>;
   placeholder?: string;
-  defaultValue: string;
+  defaultValue?: string;
 }
 
 function Select({
