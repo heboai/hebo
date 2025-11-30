@@ -66,7 +66,7 @@ export function CreateApiKeyDialog() {
         setRevealOpen(true);
       }
     }
-  }, [fetcher.state, form.status]);
+  }, [fetcher.state, form.status, fetcher.data?.apiKey]);
 
   return (
     <>

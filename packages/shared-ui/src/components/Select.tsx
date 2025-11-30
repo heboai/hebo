@@ -1,5 +1,4 @@
 import { useControl } from "@conform-to/react/future";
-import * as SelectPrimitive from "@radix-ui/react-select";
 import { useRef } from "react";
 
 import {
@@ -10,19 +9,18 @@ import {
   SelectItem,
 } from "../_shadcn/ui/select";
 
-interface SelectProps
-  extends React.ComponentProps<typeof SelectPrimitive.Root> {
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   items: Array<{ name: React.ReactNode; value: string }>;
   placeholder?: string;
+  defaultValue: string;
 }
 
 function Select({
   name,
+  disabled,
   items,
   placeholder,
   defaultValue,
-  disabled,
-  ...props
 }: SelectProps) {
   const selectRef = useRef<React.ComponentRef<typeof SelectTrigger>>(null);
   const control = useControl({
@@ -47,12 +45,11 @@ function Select({
             control.blur();
           }
         }}
-        disabled={disabled}
       >
         <SelectTrigger
           className="bg-background w-full min-w-0 truncate"
           ref={selectRef}
-          {...props}
+          disabled={disabled}
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

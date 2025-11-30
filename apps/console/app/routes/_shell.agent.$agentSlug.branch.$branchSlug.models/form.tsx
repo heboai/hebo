@@ -202,7 +202,7 @@ function ModelCard(props: {
           inert={!isExpanded}
           className="
             overflow-hidden
-            data-[state=closed]:[animation:collapsible-up_300ms_ease-in]
+            data-[state=closed]:animate-[collapsible-up_300ms_ease-in]
             data-[state=closed]:h-0
             "
           >
