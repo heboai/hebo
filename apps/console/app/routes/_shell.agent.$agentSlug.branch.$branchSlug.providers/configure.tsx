@@ -42,7 +42,7 @@ export const ProviderConfigureSchema = z.discriminatedUnion("slug", [
   z.object({
     slug: z.enum(["cohere", "groq"]),
     config: z.object({
-      apiKey: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid API key"), 
+      apiKey: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid API key"),
     }),
   }),
 ]);
@@ -56,7 +56,7 @@ type ConfigureProviderDialogProps = {
   provider?: { name: string; slug: string; };
 };
 
-export function ConfigureProviderDialog({open, onOpenChange, provider}: ConfigureProviderDialogProps) {
+export function ConfigureProviderDialog({ open, onOpenChange, provider }: ConfigureProviderDialogProps) {
   const fetcher = useFetcher();
 
   const [form, fields] = useForm<ProviderConfigureFormValues>({
