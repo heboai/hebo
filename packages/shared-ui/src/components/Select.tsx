@@ -45,11 +45,11 @@ function Select({
             control.blur();
           }
         }}
+        disabled={disabled}
       >
         <SelectTrigger
           className="bg-background w-full min-w-0 truncate"
           ref={selectRef}
-          disabled={disabled}
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
