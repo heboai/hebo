@@ -6,20 +6,20 @@ export const stackPublishableClientKey = new sst.Secret(
 export const stackProjectId = new sst.Secret("StackProjectId");
 
 // LLMs
-export const bedrockRoleArn = new sst.Secret("BedrockRoleArn", "n/a");
-export const bedrockRegion = new sst.Secret("BedrockRegion", "n/a");
-export const cohereApiKey = new sst.Secret("CohereApiKey", "n/a");
-export const groqApiKey = new sst.Secret("GroqApiKey", "n/a");
+export const bedrockRoleArn = new sst.Secret("BedrockRoleArn", "undefined");
+export const bedrockRegion = new sst.Secret("BedrockRegion", "undefined");
+export const cohereApiKey = new sst.Secret("CohereApiKey", "undefined");
+export const groqApiKey = new sst.Secret("GroqApiKey", "undefined");
 export const vertexServiceAccountEmail = new sst.Secret(
   "VertexServiceAccountEmail",
-  "n/a",
+  "undefined",
 );
 export const vertexAwsProviderAudience = new sst.Secret(
   "VertexAwsProviderAudience",
-  "n/a",
+  "undefined",
 );
-export const vertexProject = new sst.Secret("VertexProject", "n/a");
-export const vertexLocation = new sst.Secret("VertexLocation", "n/a");
+export const vertexProject = new sst.Secret("VertexProject", "undefined");
+export const vertexLocation = new sst.Secret("VertexLocation", "undefined");
 
 export const allSecrets = [
   stackSecretServerKey,
