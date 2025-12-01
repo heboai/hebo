@@ -49,7 +49,6 @@ export class OpenAIHttpChatTransport<
   UI_MESSAGE extends UIMessage = UIMessage,
 > extends HttpChatTransport<UI_MESSAGE> {
   constructor(options: OpenAIHttpChatTransportOptions) {
-    console.log("hello");
     super({
       ...options,
       prepareSendMessagesRequest: async ({ messages, body }) => {
