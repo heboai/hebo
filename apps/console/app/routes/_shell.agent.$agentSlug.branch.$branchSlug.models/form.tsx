@@ -79,7 +79,9 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models, provid
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
     if (fetcher.state === "idle" && form.status !== "error") {
-      setExpandedCardId(null);
+      if (!form.dirty) {
+        setExpandedCardId(null);
+      }
     }
   }, [fetcher.state, form.status]);
 
