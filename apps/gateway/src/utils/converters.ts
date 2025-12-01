@@ -3,6 +3,7 @@ import {
   tool,
   type FinishReason,
   type GenerateTextResult,
+  type LanguageModel,
   type ModelMessage,
   type StreamTextResult,
   type ToolChoice,
@@ -16,7 +17,81 @@ import {
   type OpenAICompatibleTool,
   type OpenAICompatibleToolChoice,
   type OpenAICompatibleToolCallDelta,
+  type OpenAICompatibleReasoning,
 } from "./openai-compatible-api-schemas";
+
+type ReasoningMapper = (
+  reasoning: OpenAICompatibleReasoning,
+  modelId: string,
+) => Record<string, any> | undefined;
+
+const reasoningMappers: Record<string, ReasoningMapper> = {
+  anthropic: (reasoning, modelId) => {
+    if (reasoning.max_tokens && modelId.startsWith("claude-3-7-sonnet")) {
+      return {
+        anthropic: {
+          thinking: {
+            type: "enabled",
+            budget_tokens: reasoning.max_tokens,
+          },
+        },
+      };
+    }
+  },
+  openai: (reasoning, modelId) => {
+    if (
+      reasoning.effort &&
+      (modelId.startsWith("o1") || modelId.startsWith("o3-mini"))
+    ) {
+      return {
+        openai: {
+          reasoningEffort: reasoning.effort,
+        },
+      };
+    }
+  },
+  groq: (reasoning, modelId) => {
+    if (modelId.startsWith("openai")) {
+      return {
+        groq: {
+          reasoningEffort: reasoning.effort,
+        },
+      };
+    }
+    if (modelId.startsWith("qwen")) {
+      return reasoning.enabled === false
+        ? {
+            groq: {
+              reasoningEffort: "none",
+            },
+          }
+        : {
+            groq: {
+              reasoningEffort: "default",
+              reasoningFormat: reasoning.exclude ? "hidden" : "parsed",
+            },
+          };
+    }
+  },
+};
+
+export function toProviderOptions(
+  model: LanguageModel,
+  reasoning?: OpenAICompatibleReasoning,
+) {
+  if (!reasoning || !reasoning.enabled) {
+    return;
+  }
+
+  if (typeof model === "string") {
+    return;
+  }
+
+  const mapper = reasoningMappers[model.provider];
+  if (mapper) {
+    return mapper(reasoning, model.modelId);
+  }
+}
 
 function convertToModelContent(content: OpenAICompatibleContentPart[]) {
   return content.map((part) => {
