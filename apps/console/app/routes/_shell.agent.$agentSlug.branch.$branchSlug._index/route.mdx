@@ -34,14 +34,14 @@ Then, create the following code:
 import { generateText } from 'ai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 
-const provider = createOpenAICompatible({
+const hebo = createOpenAICompatible({
     name: 'hebo',
     apiKey: 'sk_pf***',  // Replace with your real hebo api key
     baseURL: 'https://gateway.hebo.ai/v1',
 });
 
 const { text } = await generateText({
-    model: provider('my-agent/main/default'),  // Replace with your real model alias
+    model: hebo('my-agent/main/default'),  // Replace with your real model alias
     prompt: 'Tell me a joke about AI.'
 });
 
@@ -51,13 +51,13 @@ console.log(text);
 ```python Langchain
 from langchain_openai import ChatOpenAI
 
-llm = ChatOpenAI(
+hebo = ChatOpenAI(
     model="my-agent/main/default",  # Replace with your real model alias
     api_key="sk_pf***",  # Replace with your real hebo api key
     base_url="https://gateway.hebo.ai/v1",
 )
 
-response = llm.invoke("Tell me a joke about AI.")
+response = hebo.invoke("Tell me a joke about AI.")
 print(response.content)
 ```
 </CodeGroup>
