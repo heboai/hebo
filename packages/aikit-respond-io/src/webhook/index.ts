@@ -39,10 +39,15 @@ export function webhook<T extends WebhookPayload>(
 
       const payload: T = JSON.parse(body);
 
-      // Dispatch the user's handler and immediately return 200 OK.
-      Promise.resolve(options.handle(payload)).catch((error) => {
-        errorHandler(error);
-      });
+      const processing = Promise.resolve(options.handle(payload)).catch(
+        (error) => {
+          errorHandler(error);
+        },
+      );
+
+      if (options.waitForCompletion) {
+        await processing;
+      }
 
       return new Response("OK", { status: 200 });
     } catch (error: unknown) {

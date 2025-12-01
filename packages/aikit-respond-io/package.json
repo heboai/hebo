@@ -14,12 +14,17 @@
     "./client": {
       "import": "./dist/client/index.js",
       "types": "./dist/client/index.d.ts"
+    },
+    "./vercel-ai": {
+      "import": "./dist/vercel-ai/index.js",
+      "types": "./dist/vercel-ai/index.d.ts"
     }
   },
   "scripts": {
     "build": "tsc",
     "clean": "git clean -fdx -e '.env*' .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "bun test"
   },
   "type": "module",
   "dependencies": {
