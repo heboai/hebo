@@ -4,7 +4,7 @@ on:
   release:
     types: [published]
     tags:
-      - "@heboai/aikit-*@*"
+      - "@hebo/aikit-*@*"
 
 permissions:
   id-token: write
@@ -22,12 +22,12 @@ jobs:
       - name: Determine Package Directory
         id: pkg
         run: |
-          # Tag format: @heboai/aikit-name@version
+          # Tag format: @hebo/aikit-name@version
           TAG=${{ github.ref_name }}
           echo "Processing tag: $TAG"
 
-          # Remove scope prefix (@heboai/)
-          NO_SCOPE=${TAG#@heboai/}
+          # Remove scope prefix (@hebo/)
+          NO_SCOPE=${TAG#@hebo/}
 
           # Extract package name (remove version starting from last @)
           PKG_NAME=${NO_SCOPE%@*}
