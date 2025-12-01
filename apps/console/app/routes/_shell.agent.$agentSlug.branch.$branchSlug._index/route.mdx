@@ -19,7 +19,7 @@ First, install the required package:
 
 <CodeGroup>
 ```bash Vercel AI SDK
-npm install ai
+npm install ai @ai-sdk/openai-compatible
 ```
 
 ```bash Langchain
@@ -31,31 +31,33 @@ Then, create the following code:
 
 <CodeGroup>
 ```ts Vercel AI SDK
-import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { generateText } from 'ai';
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 
-const provider = createOpenAICompatible({
-    apiKey: 'YOUR_API_KEY',
+const hebo = createOpenAICompatible({
+    name: 'hebo',
+    apiKey: 'sk_pf***',  // Replace with your real hebo api key
     baseURL: 'https://gateway.hebo.ai/v1',
 });
 
 const { text } = await generateText({
-    model: provider('YOUR_MODEL_ALIAS'),
+    model: hebo('my-agent/main/default'),  // Replace with your real agent slug
     prompt: 'Tell me a joke about AI.'
 });
+
 console.log(text);
 ```
 
 ```python Langchain
 from langchain_openai import ChatOpenAI
-import os
 
-llm = ChatOpenAI(
+hebo = ChatOpenAI(
+    model="my-agent/main/default",  # Replace with your real agent slug
+    api_key="sk_pf***",  # Replace with your real hebo api key
     base_url="https://gateway.hebo.ai/v1",
-    model="YOUR_MODEL_ALIAS"
 )
 
-response = llm.invoke("Tell me a joke about AI.")
+response = hebo.invoke("Tell me a joke about AI.")
 print(response.content)
 ```
 </CodeGroup>
