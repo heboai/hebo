@@ -168,7 +168,9 @@ function ModelCard(props: {
   const [routingEnabled, setRoutingEnabled] = useState(Boolean(routingOnlyField.value)); 
 
   const [advancedOpen, setAdvancedOpen] = useState(false);
- 
+  const supportedProviders = Object.fromEntries(
+    supportedModels.map(m => [m.type, Object.keys(m.providers[0])])
+  );
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onOpenChange}>
@@ -269,17 +271,27 @@ function ModelCard(props: {
                       </ItemContent>
                       <ItemActions>
                         <FormControl>
-                          <Select
-                            disabled={!routingEnabled}
-                            defaultValue={routingEnabled ? routingOnlyField.value ?? "" : ""}
-                            items={
-                              providers.map((provider) => ({
-                                value: provider.slug,
-                                name: provider.name,
-                              }))
-                            }
-                            placeholder={providers.length ? "Select provider" : "No providers configured"}
-                          />
+                          {(() => {
+                            const availableProviders = providers.filter((p) => supportedProviders[modelFieldset.type.value ?? ""]?.includes(p.slug));
+                            return (
+                              <Select
+                                disabled={!routingEnabled}
+                                defaultValue={routingEnabled ? routingOnlyField.value ?? "" : ""}
+                                items={
+                                  availableProviders
+                                    .map((provider) => ({
+                                      value: provider.slug,
+                                      name: provider.name,
+                                    }))
+                                  }
+                                placeholder={
+                                  availableProviders.length
+                                    ? "Select provider"
+                                    : "No supported providers configured"
+                                }
+                              />
+                            )
+                          })()}
                         </FormControl>
                         <FormMessage />
                       </ItemActions>

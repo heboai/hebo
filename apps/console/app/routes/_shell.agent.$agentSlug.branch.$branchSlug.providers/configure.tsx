@@ -33,7 +33,7 @@ export const ProviderConfigureSchema = z.discriminatedUnion("slug", [
   z.object({
     slug: z.enum(["vertex"]),
     config: z.object({
-      serviceAccountEmail: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid service account email"),
+      serviceAccountEmail: ((msg) => z.email(msg).trim().min(1, msg))("Please enter a valid service account email"),
       audience: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid audience"),
       location: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid location"),
       project: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a valid project"),
