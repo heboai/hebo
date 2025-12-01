@@ -24,6 +24,17 @@
     "modality": "chat"
   },
   {
+    "type": "google/gemini-2.5-flash-preview-09-2025",
+    "displayName": "Gemini 2.5 Flash Preview (Sep 2025)",
+    "rateLimit": 400000000,
+    "providers": [
+      {
+        "vertex": "gemini-2.5-flash-preview-09-2025"
+      }
+    ],
+    "modality": "chat"
+  },
+  {
     "type": "google/gemini-2.5-flash",
     "displayName": "Gemini 2.5 Flash",
     "rateLimit": 400000000,
