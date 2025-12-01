@@ -225,11 +225,11 @@ export const toToolChoice = (
   };
 };
 
-export const openAiCompatibleErrorBody = (
+export const toOpenAiCompatibleError = (
   message: string,
   type: "invalid_request_error" | "server_error" = "server_error",
   code?: string,
-) => ({ message, type, param: undefined, code });
+) => ({ error: { message, type, param: undefined, code } });
 
 export function toOpenAICompatibleStream(
   result: StreamTextResult<any, any>,
@@ -251,15 +251,15 @@ export function toOpenAICompatibleStream(
             ? error.message
             : "An error occurred during streaming";
         const e = error as { code?: string; status?: number };
-        enqueue({
-          error: openAiCompatibleErrorBody(
+        enqueue(
+          toOpenAiCompatibleError(
             msg,
             e.status && e.status < 500
               ? "invalid_request_error"
               : "server_error",
             e.code,
           ),
-        });
+        );
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));
         controller.close();
       };

@@ -2,17 +2,9 @@ import { Elysia, status } from "elysia";
 
 import { AuthError } from "@hebo/shared-api/middlewares/auth/errors";
 
-import { openAiCompatibleErrorBody } from "~gateway/utils/converters";
+import { toOpenAiCompatibleError } from "~gateway/utils/converters";
 
 import { BadRequestError } from "./providers/errors";
-
-const openAiCompatibleError = (
-  message: string,
-  type: "invalid_request_error" | "server_error",
-  code?: string,
-) => {
-  return { error: openAiCompatibleErrorBody(message, type, code) };
-};
 
 const upstreamRes = (e: unknown) =>
   (e as { response?: unknown })?.response instanceof Response
@@ -24,7 +16,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
     if (error instanceof AuthError)
       return status(
         error.status,
-        openAiCompatibleError(
+        toOpenAiCompatibleError(
           error.message,
           "invalid_request_error",
           error.status === 401 ? "invalid_api_key" : "invalid_request",
@@ -34,7 +26,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
     if (code === "VALIDATION")
       return status(
         400,
-        openAiCompatibleError(
+        toOpenAiCompatibleError(
           error?.message ?? "Invalid request",
           "invalid_request_error",
           "validation_error",
@@ -49,7 +41,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
         const text = await res.text().catch(() => "");
         return status(
           res.status,
-          openAiCompatibleError(
+          toOpenAiCompatibleError(
             text || `Upstream error (${res.status})`,
             res.status >= 500 ? "server_error" : "invalid_request_error",
           ),
@@ -60,7 +52,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
     if (error instanceof BadRequestError)
       return status(
         error.status,
-        openAiCompatibleError(
+        toOpenAiCompatibleError(
           error.message,
           "invalid_request_error",
           error.code,
@@ -76,7 +68,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
     )
       return status(
         404,
-        openAiCompatibleError(
+        toOpenAiCompatibleError(
           "Resource not found",
           "invalid_request_error",
           "not_found",
@@ -85,7 +77,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
 
     return status(
       500,
-      openAiCompatibleError(
+      toOpenAiCompatibleError(
         error instanceof Error ? error.message : "Internal Server Error",
         "server_error",
         "internal",
