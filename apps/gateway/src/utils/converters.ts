@@ -79,11 +79,7 @@ export function toProviderOptions(
   model: LanguageModel,
   reasoning?: OpenAICompatibleReasoning,
 ) {
-  if (!reasoning || !reasoning.enabled) {
-    return;
-  }
-
-  if (typeof model === "string") {
+  if (!reasoning || typeof model === "string") {
     return;
   }
 
