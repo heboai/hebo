@@ -71,7 +71,6 @@ import { cn } from "../lib/utils";
 // Types based on models.schema.json
 export type ModelsConfig = Array<{
   alias: string;
-  type: string;
   endpoint: {
     baseUrl: string;
     fetch?: typeof fetch;
@@ -103,10 +102,10 @@ export function Chat({
   const transport = useMemo(
     () =>
       new OpenAIHttpChatTransport({
-        api: currentModel!.endpoint.baseUrl + "/chat/completions",
-        fetch: currentModel!.endpoint.fetch || fetch,
+        api: currentModel?.endpoint.baseUrl + "/chat/completions",
+        fetch: currentModel?.endpoint.fetch || fetch,
       }),
-    [currentModel!.endpoint.baseUrl],
+    [currentModel?.endpoint.baseUrl],
   );
   const { messages, sendMessage, setMessages, status, error, stop } = useChat({
     transport,
@@ -142,7 +141,7 @@ export function Chat({
       },
       {
         body: {
-          model: currentModel!.alias,
+          model: currentModel?.alias,
           // reasoningEffort: "medium"
         },
       },
