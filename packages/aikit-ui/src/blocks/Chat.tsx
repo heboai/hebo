@@ -360,7 +360,7 @@ export function Chat({
               disabled={
                 !currentModelAlias || (!input && status !== "streaming")
               }
-              status={status}
+              status={status === "error" ? "ready" : status}
             />
           </PromptInputFooter>
         </PromptInput>
