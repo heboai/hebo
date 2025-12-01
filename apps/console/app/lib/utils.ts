@@ -34,6 +34,7 @@ export const formatDateTime = (date: Date) => {
   });
 };
 
+// Create human readable labels, e.g. "serviceAccount" => "Service Account"
 export function labelize(value: string) {
   return value
     .replaceAll(/([a-z\d])([A-Z])/g, "$1 $2")
