@@ -225,7 +225,7 @@ export const toToolChoice = (
   };
 };
 
-export const oaiErrorBody = (
+export const openAiCompatibleErrorBody = (
   message: string,
   type: "invalid_request_error" | "server_error" = "server_error",
   code?: string,
@@ -252,7 +252,7 @@ export function toOpenAICompatibleStream(
             : "An error occurred during streaming";
         const e = error as { code?: string; status?: number };
         enqueue({
-          error: oaiErrorBody(
+          error: openAiCompatibleErrorBody(
             msg,
             e.status && e.status < 500
               ? "invalid_request_error"
