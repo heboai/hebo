@@ -83,7 +83,7 @@ export default function ApiKeysRoute({ loaderData }: Route.ComponentProps) {
         </Await>
       </Suspense>
 
-      <div className="self-end">
+      <div>
         <CreateApiKeyDialog />
       </div>
     </div>

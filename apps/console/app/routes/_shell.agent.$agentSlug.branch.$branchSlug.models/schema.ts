@@ -8,7 +8,13 @@ export const modelConfigSchema = z.object({
   type: z.literal(
     supportedModels.map(({ type }) => type),
     "Select one of the supported models"
-  )
+  ),
+  routing: z
+    .object({
+      only: z.array(z.string().optional())
+        .transform((value) => (value[0] === undefined ? [] : value))
+    })
+    .optional(),
 });
 
 export const modelsConfigFormSchema = z.object({

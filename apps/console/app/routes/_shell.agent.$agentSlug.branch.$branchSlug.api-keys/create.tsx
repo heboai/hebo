@@ -60,18 +60,20 @@ export function CreateApiKeyDialog() {
   const [createOpen, createSetOpen] = useState(false);
   const [revealOpen, setRevealOpen] = useState(false);
   useEffect(() => {
-    if (fetcher.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status !== "error") {
       createSetOpen(false);
-      setRevealOpen(true);
+      if (fetcher.data?.apiKey) {
+        setRevealOpen(true);
+      }
     }
-  }, [fetcher.state, form.status]);
+  }, [fetcher.state, form.status, fetcher.data?.apiKey]);
 
   return (
     <>
       <Dialog open={createOpen} onOpenChange={createSetOpen}>
         <div>
           <DialogTrigger asChild>
-            <Button type="button">+ Create API Key</Button>
+            <Button variant="outline" type="button">+ Create API Key</Button>
           </DialogTrigger>
         </div>
         <DialogContent>
@@ -182,7 +184,7 @@ function ApiKeyRevealDialog({ apiKey, open, onOpenChange }: ApiKeyRevealDialogPr
         </label>
 
         <DialogFooter>
-          <DialogClose>
+          <DialogClose asChild>
             <Button
               type="button"
               disabled={!acknowledged}

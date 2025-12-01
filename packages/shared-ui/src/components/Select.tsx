@@ -9,20 +9,18 @@ import {
   SelectItem,
 } from "../_shadcn/ui/select";
 
-type SelectProps = {
-  name?: string;
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   items: Array<{ name: React.ReactNode; value: string }>;
   placeholder?: string;
   defaultValue?: string;
-  ["aria-describedby"]?: string;
-};
+}
 
 function Select({
   name,
+  disabled,
   items,
   placeholder,
   defaultValue,
-  ...props
 }: SelectProps) {
   const selectRef = useRef<React.ComponentRef<typeof SelectTrigger>>(null);
   const control = useControl({
@@ -47,11 +45,11 @@ function Select({
             control.blur();
           }
         }}
+        disabled={disabled}
       >
         <SelectTrigger
           className="bg-background w-full min-w-0 truncate"
           ref={selectRef}
-          {...props}
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

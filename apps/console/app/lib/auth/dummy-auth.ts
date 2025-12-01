@@ -1,5 +1,5 @@
 import { Collection } from "@msw/data";
-import z from "zod";
+import { z } from "zod";
 
 import { authStore } from "~console/state/auth";
 
@@ -61,5 +61,4 @@ export const authService = {
   async signInWithMagicLink() {
     throw new Error("Magic Link not implemented");
   },
-
 } satisfies AuthService;

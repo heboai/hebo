@@ -1,8 +1,8 @@
 import { useFetcher } from "react-router";
 import { useEffect, useRef, useState } from "react";
-import { useForm, getFormProps, type FieldMetadata } from "@conform-to/react";
+import { useForm, getFormProps, type FieldMetadata, useInputControl } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
-import { Brain, Edit } from "lucide-react";
+import { Brain, ChevronsUpDown, Edit } from "lucide-react";
 
 import { Button } from "@hebo/shared-ui/components/Button";
 import {
@@ -22,6 +22,7 @@ import { Select } from "@hebo/shared-ui/components/Select";
 import { Separator } from "@hebo/shared-ui/components/Separator";
 import { CopyToClipboardButton } from "@hebo/shared-ui/components/code/CopyToClipboardButton";
 import { Badge } from "@hebo/shared-ui/components/Badge";
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@hebo/shared-ui/components/Item";
 import {
   Dialog,
   DialogClose,
@@ -39,6 +40,8 @@ import {
 } from "@hebo/shared-ui/components/Collapsible";
 
 import { useFormErrorToast } from "~console/lib/errors";
+import { objectId } from "~console/lib/utils";
+
 import {
   modelsConfigFormSchema,
   supportedModels,
@@ -51,23 +54,34 @@ type ModelsConfigProps = {
   agentSlug: string;
   branchSlug: string;
   models?: ModelsConfigFormValues["models"];
+  providers: Array<{ slug: string; name: string }>;
 };
 
-export default function ModelsConfigForm({ agentSlug, branchSlug, models }: ModelsConfigProps) {
-  
+export default function ModelsConfigForm({ agentSlug, branchSlug, models, providers }: ModelsConfigProps) {
   const fetcher = useFetcher();
+
   const [form, fields] = useForm<ModelsConfigFormValues>({
+    id: objectId(models),
     lastResult: fetcher.data,
     constraint: getZodConstraint(modelsConfigFormSchema),
-    defaultValue: { models: models }
+    defaultValue: { 
+      models: models?.map((model) => ({
+        ...model,
+        routing: model.routing?.only?.length
+          ? { only: [model.routing.only[0]] }
+          : { only: [""] },
+      }))
+    }
   });
   useFormErrorToast(form.allErrors);
 
   // Close the active card on successful submit
   const [expandedCardId, setExpandedCardId] = useState<number | null>(null);
   useEffect(() => {
-    if (fetcher.state === "idle" && form.status === "success") {
-      setExpandedCardId(null);
+    if (fetcher.state === "idle" && form.status !== "error") {
+      if (!form.dirty) {
+        setExpandedCardId(null);
+      }
     }
   }, [fetcher.state, form.status]);
 
@@ -75,13 +89,14 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
   const modelItems = fields.models.getFieldList();
 
   return (
-    <fetcher.Form method="post" ref={formRef} {...getFormProps(form)} className="contents">
+    <fetcher.Form method="post" ref={formRef} {...getFormProps(form)} className="flex flex-col gap-4">
       {modelItems.map((model, index) => (
         <ModelCard
           key={model.key}
           model={model}
           agentSlug={agentSlug}
           branchSlug={branchSlug}
+          providers={providers}
           isExpanded={expandedCardId === index}
           onOpenChange={(open) => { 
             form.dirty && form.reset({ name: fields.models.name  });
@@ -107,7 +122,10 @@ export default function ModelsConfigForm({ agentSlug, branchSlug, models }: Mode
           type="button"
           variant="outline"
           onClick={() => {
-            form.insert({ name: fields.models.name });
+            form.insert({
+              name: fields.models.name,
+              defaultValue: { routing: { only: [""] } },
+            });
             setExpandedCardId(modelItems.length);
           }}
           disabled={expandedCardId !== null}
@@ -129,6 +147,7 @@ function ModelCard(props: {
   onRemove: () => void;
   onCancel: () => void;
   isSubmitting: boolean;
+  providers: ModelsConfigProps["providers"];
 }) {
   const {
     model,
@@ -139,11 +158,21 @@ function ModelCard(props: {
     onRemove,
     onCancel,
     isSubmitting,
+    providers,
   } = props;
 
   const modelFieldset = model.getFieldset();
+  const routingOnlyField = modelFieldset.routing.getFieldset().only.getFieldList()[0]!;
+  const routingOnlyValue = useInputControl(routingOnlyField);
 
   const aliasPath = [agentSlug, branchSlug, modelFieldset.alias.value || "alias"].join("/");
+
+  const [routingEnabled, setRoutingEnabled] = useState(Boolean(routingOnlyField.value)); 
+
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const supportedProviders = Object.fromEntries(
+    supportedModels.map(m => [m.type, Object.keys(m.providers[0])])
+  );
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onOpenChange}>
@@ -177,7 +206,7 @@ function ModelCard(props: {
           inert={!isExpanded}
           className="
             overflow-hidden
-            data-[state=closed]:[animation:collapsible-up_300ms_ease-in]
+            data-[state=closed]:animate-[collapsible-up_300ms_ease-in]
             data-[state=closed]:h-0
             "
           >
@@ -186,7 +215,7 @@ function ModelCard(props: {
             <CardContent className="flex flex-col gap-4 my-4">
 
               {/* FUTURE: follow layout pattern of new shadcn fields components */}
-              <div className="grid gap-4 grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                 <FormField field={modelFieldset.alias} className="flex flex-col gap-2">
                   <FormLabel>Alias</FormLabel>
                   <FormControl>
@@ -209,10 +238,72 @@ function ModelCard(props: {
                   <FormMessage />
                 </FormField>
               </div>
+
+              <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
+                <div className="flex items-center gap-1 mb-2">
+                  <h4 className="text-sm font-medium">Advanced options</h4>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="icon" className="size-6" type="button">
+                      <ChevronsUpDown />
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+                <CollapsibleContent forceMount inert={!advancedOpen}  className="overflow-hidden data-[state=closed]:h-0">
+                  <FormField field={routingOnlyField}>
+                    <Item variant="outline" size="sm">
+                      <ItemMedia className="pt-1">
+                        <input
+                          id={`byo-${aliasPath}`}
+                          type="checkbox"
+                          checked={routingEnabled}
+                          onChange={(event) => {
+                            const enabled = event.target.checked;
+                            if (!enabled) routingOnlyValue.change("")
+                            setRoutingEnabled(enabled);
+                          }}
+                          className="h-4 w-4 accent-primary"
+                          aria-label="Enable bring your own provider routing"
+                        />
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>
+                          <FormLabel htmlFor={`byo-${aliasPath}`} className="mb-0">Bring Your Own Provider</FormLabel>
+                        </ItemTitle>
+                        <ItemDescription className="line-clamp-1">Setup your credentials first in providers settings</ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <FormControl>
+                          {(() => {
+                            const availableProviders = providers.filter((p) => supportedProviders[modelFieldset.type.value ?? ""]?.includes(p.slug));
+                            return (
+                              <Select
+                                disabled={!routingEnabled}
+                                defaultValue={routingEnabled ? routingOnlyField.value ?? "" : ""}
+                                items={
+                                  availableProviders
+                                    .map((provider) => ({
+                                      value: provider.slug,
+                                      name: provider.name,
+                                    }))
+                                  }
+                                placeholder={
+                                  availableProviders.length
+                                    ? "Select provider"
+                                    : "No supported providers configured"
+                                }
+                              />
+                            )
+                          })()}
+                        </FormControl>
+                        <FormMessage />
+                      </ItemActions>
+                    </Item>
+                  </FormField>
+                </CollapsibleContent>
+              </Collapsible>
             </CardContent>
 
             <CardFooter className="pb-1">
-
               <Dialog>
                 <DialogTrigger asChild>
                   <Button
