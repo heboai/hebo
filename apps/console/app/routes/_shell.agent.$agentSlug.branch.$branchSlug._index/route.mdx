@@ -41,7 +41,7 @@ const hebo = createOpenAICompatible({
 });
 
 const { text } = await generateText({
-    model: hebo('my-agent/main/default'),  // Replace with your real model alias
+    model: hebo('my-agent/main/default'),  // Replace with your real agent slug
     prompt: 'Tell me a joke about AI.'
 });
 
@@ -52,7 +52,7 @@ console.log(text);
 from langchain_openai import ChatOpenAI
 
 hebo = ChatOpenAI(
-    model="my-agent/main/default",  # Replace with your real model alias
+    model="my-agent/main/default",  # Replace with your real agent slug
     api_key="sk_pf***",  # Replace with your real hebo api key
     base_url="https://gateway.hebo.ai/v1",
 )
