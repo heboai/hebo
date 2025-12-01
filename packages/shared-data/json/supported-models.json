@@ -35,17 +35,6 @@
     "modality": "chat"
   },
   {
-    "type": "google/gemini-2.5-flash",
-    "displayName": "Gemini 2.5 Flash",
-    "rateLimit": 400000000,
-    "providers": [
-      {
-        "vertex": "gemini-2.5-flash"
-      }
-    ],
-    "modality": "chat"
-  },
-  {
     "type": "google/gemini-2.5-flash-lite",
     "displayName": "Gemini 2.5 Flash Lite",
     "rateLimit": 400000000,
