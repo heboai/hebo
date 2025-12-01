@@ -9,7 +9,7 @@ import {
   Paperclip,
   TriangleAlert,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Conversation,
@@ -71,8 +71,8 @@ import { cn } from "../lib/utils";
 // Types based on models.schema.json
 export type ModelsConfig = Array<{
   alias: string;
-  type?: string;
-  endpoint?: {
+  type: string;
+  endpoint: {
     baseUrl: string;
     fetch?: typeof fetch;
   };
@@ -100,15 +100,18 @@ export function Chat({
   const currentModel = modelsConfig.find((m) => m.alias === currentModelAlias);
 
   const [input, setInput] = useState("");
+  const transport = useMemo(
+    () =>
+      new OpenAIHttpChatTransport({
+        api: currentModel!.endpoint.baseUrl + "/chat/completions",
+        fetch: currentModel!.endpoint.fetch || fetch,
+      }),
+    [currentModel!.endpoint.baseUrl],
+  );
   const { messages, sendMessage, setMessages, status, error, stop } = useChat({
-    transport: new OpenAIHttpChatTransport({
-      api: currentModel?.endpoint?.baseUrl + "/chat/completions",
-      fetch: currentModel?.endpoint?.fetch || fetch,
-      model: currentModelAlias,
-      // FUTURE: enable once gateway supports it
-      // reasoningEffort: "medium"
-    }),
+    transport,
   });
+
   useEffect(() => {
     if (error) {
       console.error("Chat error:", error);
@@ -132,10 +135,19 @@ export function Chat({
     if (status === "streaming") stop();
     if (!message.text && !message.files) return;
 
-    sendMessage({
-      text: message.text,
-      files: message.files,
-    });
+    sendMessage(
+      {
+        text: message.text,
+        files: message.files,
+      },
+      {
+        body: {
+          model: currentModel!.alias,
+          // reasoningEffort: "medium"
+        },
+      },
+    );
+
     setInput("");
   };
 
