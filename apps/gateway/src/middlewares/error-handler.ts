@@ -37,13 +37,15 @@ export const errorHandler = new Elysia({ name: "error-handler" })
     const res = upstreamRes(error);
     if (res) {
       try {
-        return status(res.status, (await res.json()) as { error: unknown });
+        return status(
+          res.status,
+          (await res.clone().json()) as { error: unknown },
+        );
       } catch {
-        const text = await res.text().catch(() => "");
         return status(
           res.status,
           toOpenAiCompatibleError(
-            text || `Upstream error (${res.status})`,
+            await res.text().catch(() => ""),
             res.status >= 500 ? "server_error" : "invalid_request_error",
           ),
         );
