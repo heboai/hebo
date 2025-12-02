@@ -1,72 +1,87 @@
 import { Elysia, status } from "elysia";
 
+import { getPrismaError } from "@hebo/database/src/errors";
+import { AuthError } from "@hebo/shared-api/middlewares/auth/errors";
+
+import { toOpenAiCompatibleError } from "~gateway/utils/converters";
+
 import { BadRequestError } from "./providers/errors";
 
-function upstreamResponse(e: unknown): Response | undefined {
-  const r = (e as { response?: unknown })?.response;
-  return r instanceof Response ? r : undefined;
-}
+const upstreamRes = (e: unknown) =>
+  (e as { response?: unknown })?.response instanceof Response
+    ? (e as { response: Response }).response
+    : undefined;
 
-export const oaiErrors = new Elysia({ name: "oai-error" })
+export const errorHandler = new Elysia({ name: "error-handler" })
   .onError(async ({ code, error }) => {
-    // 400 in OpenAI shape
-    if (code === "VALIDATION") {
-      return status(400, {
-        error: {
-          message: error?.message ?? "Invalid request",
-          type: "invalid_request_error",
-          param: undefined,
-          code: "validation_error",
-        },
-      });
-    }
+    if (error instanceof AuthError)
+      return status(
+        error.status,
+        toOpenAiCompatibleError(
+          error.message,
+          "invalid_request_error",
+          error.status === 401 ? "invalid_api_key" : "invalid_request",
+        ),
+      );
 
-    // Error from AI SDK (err.response is a fetch Response)
-    const res = upstreamResponse(error);
+    // Elysia validation errors
+    if (code === "VALIDATION")
+      return status(
+        400,
+        toOpenAiCompatibleError(
+          error?.message ?? "Invalid request",
+          "invalid_request_error",
+          "validation_error",
+        ),
+      );
+
+    // Upstream errors
+    const res = upstreamRes(error);
     if (res) {
       try {
-        return status(res.status, (await res.json()) as { error: unknown });
+        return status(
+          res.status,
+          (await res.clone().json()) as { error: unknown },
+        );
       } catch {
-        const text = await res.text().catch(() => "");
-        return status(res.status, {
-          error: {
-            message: text || `Upstream error (${res.status})`,
-            type: res.status >= 500 ? "server_error" : "invalid_request_error",
-            param: undefined,
-            code: undefined,
-          },
-        });
+        return status(
+          res.status,
+          toOpenAiCompatibleError(
+            await res.text().catch(() => ""),
+            res.status >= 500 ? "server_error" : "invalid_request_error",
+          ),
+        );
       }
     }
 
-    if (error instanceof BadRequestError) {
-      return status(error.status, { error: error.toJSON() });
-    }
+    if (error instanceof BadRequestError)
+      return status(
+        error.status,
+        toOpenAiCompatibleError(
+          error.message,
+          "invalid_request_error",
+          error.code,
+        ),
+      );
 
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      (error as any).code === "P2025"
-    ) {
-      return status(404, {
-        error: {
-          message: "Resource not found",
-          type: "invalid_request_error",
-          param: undefined,
-          code: "not_found",
-        },
-      });
-    }
+    const prismaError = getPrismaError(error);
+    if (prismaError)
+      return status(
+        prismaError.status,
+        toOpenAiCompatibleError(
+          prismaError.message,
+          "invalid_request_error",
+          "not_found",
+        ),
+      );
 
-    return status(500, {
-      error: {
-        message:
-          error instanceof Error ? error.message : "Internal Server Error",
-        type: "server_error",
-        param: undefined,
-        code: "internal",
-      },
-    });
+    return status(
+      500,
+      toOpenAiCompatibleError(
+        error instanceof Error ? error.message : "Internal Server Error",
+        "server_error",
+        "internal",
+      ),
+    );
   })
   .as("scoped");
