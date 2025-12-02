@@ -225,6 +225,12 @@ export const toToolChoice = (
   };
 };
 
+export const toOpenAiCompatibleError = (
+  message: string,
+  type: "invalid_request_error" | "server_error" = "server_error",
+  code?: string,
+) => ({ error: { message, type, param: undefined, code } });
+
 export function toOpenAICompatibleStream(
   result: StreamTextResult<any, any>,
   model: string,
@@ -239,9 +245,44 @@ export function toOpenAICompatibleStream(
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };
 
+      const enqueueError = (error: unknown) => {
+        const msg =
+          error instanceof Error
+            ? error.message
+            : "An error occurred during streaming";
+        const e = error as { code?: string; status?: number };
+        enqueue(
+          toOpenAiCompatibleError(
+            msg,
+            e.status && e.status < 500
+              ? "invalid_request_error"
+              : "server_error",
+            e.code,
+          ),
+        );
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      };
+
       let toolCallIndexCounter = 0;
 
-      for await (const part of result.fullStream) {
+      const iterator = result.fullStream[Symbol.asyncIterator]();
+
+      while (true) {
+        let iterResult;
+        try {
+          iterResult = await iterator.next();
+        } catch (error) {
+          enqueueError(error);
+          return;
+        }
+
+        if (iterResult.done) {
+          break;
+        }
+
+        const part = iterResult.value;
+
         switch (part.type) {
           case "text-delta": {
             const delta = {
@@ -334,11 +375,7 @@ export function toOpenAICompatibleStream(
           }
 
           case "error": {
-            console.error(
-              "[toOpenAICompatibleStream] Stream error:",
-              part.error,
-            );
-            controller.close();
+            enqueueError(part.error);
             return;
           }
         }

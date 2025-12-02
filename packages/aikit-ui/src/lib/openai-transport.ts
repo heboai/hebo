@@ -34,6 +34,11 @@ type OpenAIChatDelta = {
     };
     finish_reason?: string | null;
   }>;
+  error?: {
+    message?: string;
+    type?: string;
+    code?: string;
+  };
 };
 
 type ToolCall = {
@@ -162,6 +167,7 @@ function handleSSEStream(
   let textStarted = false;
   let reasoningStarted = false;
   let finalFinish: FinishReason | undefined;
+  let hasError = false;
 
   return parseJsonEventStream<OpenAIChatDelta>({
     stream,
@@ -173,7 +179,9 @@ function handleSSEStream(
         ctrl.enqueue({ type: "start", messageId });
       },
       transform(result, ctrl) {
+        if (hasError) return;
         if (!result?.success) {
+          hasError = true;
           ctrl.enqueue({
             type: "error",
             errorText: result?.error?.message ?? "Stream parse error",
@@ -182,6 +190,17 @@ function handleSSEStream(
         }
 
         const parsed = result.value;
+
+        if (parsed.error) {
+          hasError = true;
+          ctrl.enqueue({
+            type: "error",
+            errorText:
+              parsed.error.message ?? "An error occurred during streaming",
+          });
+          return;
+        }
+
         const delta = parsed.choices?.[0]?.delta;
         const finishReason = parsed.choices?.[0]?.finish_reason;
 
