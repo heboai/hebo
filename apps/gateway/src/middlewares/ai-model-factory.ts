@@ -1,11 +1,11 @@
 import { Elysia } from "elysia";
 
+import { BadRequestError } from "@hebo/shared-api/errors";
 import { dbClient } from "@hebo/shared-api/middlewares/db-client";
 import supportedModels from "@hebo/shared-data/json/supported-models";
 
 import { ModelConfigService } from "./model-config";
 import { ProviderAdapterFactory } from "./providers";
-import { BadRequestError } from "./providers/errors";
 
 import type { EmbeddingModel, LanguageModel } from "ai";
 

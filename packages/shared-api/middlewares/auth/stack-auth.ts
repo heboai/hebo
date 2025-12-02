@@ -1,8 +1,9 @@
 import { type Logger } from "@bogeychan/elysia-logger/types";
 import { bearer } from "@elysiajs/bearer";
-import { Elysia, ValidationError, t } from "elysia";
+import { Elysia } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
+import { BadRequestError } from "../../errors";
 import { getSecret } from "../../utils/secrets";
 
 export const projectId = await getSecret("StackProjectId", false);
@@ -60,19 +61,8 @@ export const authServiceStackAuth = new Elysia({
     const log = (ctx as unknown as { log: Logger }).log;
 
     if (apiKey && jwt) {
-      throw new ValidationError(
-        "headers",
-        t.Object(
-          {
-            Authorization: t.Optional(t.String()),
-            "x-stack-access-token": t.Optional(t.String()),
-          },
-          {
-            error:
-              "Provide exactly one credential: Bearer API Key or JWT Header",
-          },
-        ),
-        { Authorization: apiKey, "x-stack-access-token": jwt },
+      throw new BadRequestError(
+        "Provide exactly one credential: Bearer API Key or JWT Header",
       );
     }
 

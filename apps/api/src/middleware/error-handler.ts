@@ -1,11 +1,11 @@
 import { Elysia, status } from "elysia";
 
 import { identifyPrismaError } from "@hebo/database/src/errors";
-import { AuthError } from "@hebo/shared-api/middlewares/auth/errors";
+import { AuthError, BadRequestError } from "@hebo/shared-api/errors";
 
 export const errorHandler = new Elysia({ name: "error-handler" })
   .onError(({ error }) => {
-    if (error instanceof AuthError) {
+    if (error instanceof AuthError || error instanceof BadRequestError) {
       return status(error.status, error.message);
     }
     const prismaError = identifyPrismaError(error);

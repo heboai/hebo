@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 
-import { AuthError } from "./errors";
 import { authServiceStackAuth, projectId } from "./stack-auth";
+import { AuthError } from "../../errors";
 
 const createAuthService = async () => {
   if (!projectId) {
