@@ -1,8 +1,8 @@
+import { type Logger } from "@bogeychan/elysia-logger/types";
 import { bearer } from "@elysiajs/bearer";
 import { Elysia } from "elysia";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-import { AuthError } from "./errors";
 import { getSecret } from "../../utils/secrets";
 
 export const projectId = await getSecret("StackProjectId", false);
@@ -14,16 +14,22 @@ const jwks = createRemoteJWKSet(
   ),
 );
 
-const verifyJwt = async (token: string): Promise<string | undefined> => {
+const verifyJwt = async (
+  token: string,
+  log: Logger,
+): Promise<string | undefined> => {
   try {
     const { payload } = await jwtVerify(token, jwks);
     return payload.sub;
-  } catch {
-    throw new AuthError("Invalid JWT", 401);
+  } catch (error) {
+    log.info({ err: error }, "JWT verification failed");
   }
 };
 
-const checkApiKey = async (key: string): Promise<string | undefined> => {
+const checkApiKey = async (
+  key: string,
+  log: Logger,
+): Promise<string | undefined> => {
   const res = await fetch(
     "https://api.stack-auth.com/api/v1/user-api-keys/check",
     {
@@ -40,7 +46,7 @@ const checkApiKey = async (key: string): Promise<string | undefined> => {
   if (res.status === 200) {
     const { user_id } = await res.json();
     return user_id;
-  } else throw new AuthError("Invalid API key", 401);
+  } else log.info(res, "API Key check failed");
 };
 
 // FUTURE: Cache the user id lookup
@@ -51,16 +57,17 @@ export const authServiceStackAuth = new Elysia({
   .resolve(async (ctx) => {
     const jwt = ctx.headers["x-stack-access-token"] as string | undefined;
     const apiKey = ctx.bearer;
+    const log = (ctx as unknown as { log: Logger }).log;
 
-    if (apiKey && jwt)
-      throw new AuthError(
-        "Provide exactly one credential: Bearer API Key or JWT Header",
-        400,
-      );
+    if (apiKey && jwt) {
+      log.info("User provided both API Key and JWT Header");
+      return { userId: undefined } as const;
+    }
 
-    if (apiKey) return { userId: await checkApiKey(apiKey) } as const;
-    if (jwt) return { userId: await verifyJwt(jwt) } as const;
+    if (apiKey) return { userId: await checkApiKey(apiKey, log) } as const;
+    if (jwt) return { userId: await verifyJwt(jwt, log) } as const;
 
-    throw new AuthError("No credentials provided", 400);
+    log.info("No credentials provided");
+    return { userId: undefined } as const;
   })
   .as("scoped");
