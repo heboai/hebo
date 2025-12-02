@@ -20,60 +20,92 @@ import {
   type OpenAICompatibleReasoning,
 } from "./openai-compatible-api-schemas";
 
-type ReasoningMapper = (
+type ReasoningMatcher = (model: Exclude<LanguageModel, string>) => boolean;
+type ReasoningTransformer = (
   reasoning: OpenAICompatibleReasoning,
-  modelId: string,
 ) => Record<string, any> | undefined;
 
-const reasoningMappers: Record<string, ReasoningMapper> = {
-  anthropic: (reasoning, modelId) => {
-    if (reasoning.max_tokens && modelId.startsWith("claude-3-7-sonnet")) {
+interface ReasoningStrategy {
+  matches: ReasoningMatcher;
+  transform: ReasoningTransformer;
+}
+
+const reasoningStrategies: ReasoningStrategy[] = [
+  // Bedrock
+  {
+    matches: (model) =>
+      model.provider === "bedrock" &&
+      model.modelId.startsWith("anthropic.claude"),
+    transform: (reasoning) => {
+      if (reasoning.max_tokens) {
+        return {
+          bedrock: {
+            reasoningConfig: {
+              type: reasoning.enabled ? "enabled" : "disabled",
+              budgetTokens: reasoning.max_tokens,
+            },
+          },
+        };
+      }
+    },
+  },
+  {
+    matches: (model) =>
+      model.provider === "bedrock" &&
+      model.modelId.startsWith("openai.gpt-oss"),
+    transform: (reasoning) => {
       return {
-        anthropic: {
-          thinking: {
-            type: "enabled",
-            budget_tokens: reasoning.max_tokens,
+        bedrock: {
+          additionalModelRequestFields: {
+            reasoningEffort: reasoning.enabled ? reasoning.effort : "none",
           },
         },
       };
-    }
+    },
   },
-  openai: (reasoning, modelId) => {
-    if (
-      reasoning.effort &&
-      (modelId.startsWith("o1") || modelId.startsWith("o3-mini"))
-    ) {
-      return {
-        openai: {
-          reasoningEffort: reasoning.effort,
-        },
-      };
-    }
+  // Google Vertex
+  {
+    matches: (model) =>
+      model.provider === "vertex" && model.modelId.startsWith("gemini"),
+    transform: (reasoning) => {
+      if (reasoning.max_tokens) {
+        return {
+          google: {
+            thinkingConfig: {
+              includeThoughts: reasoning.exclude ? false : true,
+              thinkingBudget: reasoning.max_tokens,
+            },
+          },
+        };
+      }
+    },
   },
-  groq: (reasoning, modelId) => {
-    if (modelId.startsWith("openai")) {
+  // Groq
+  {
+    matches: (model) =>
+      model.provider === "groq" && model.modelId.startsWith("openai/gpt-oss"),
+    transform: (reasoning) => {
       return {
+        // cannot disable reasoning due to ai sdk lacking include_reasoning option
         groq: {
           reasoningEffort: reasoning.effort,
         },
       };
-    }
-    if (modelId.startsWith("qwen")) {
-      return reasoning.enabled === false
-        ? {
-            groq: {
-              reasoningEffort: "none",
-            },
-          }
-        : {
-            groq: {
-              reasoningEffort: "default",
-              reasoningFormat: reasoning.exclude ? "hidden" : "parsed",
-            },
-          };
-    }
+    },
   },
-};
+  {
+    matches: (model) =>
+      model.provider === "groq" && !model.modelId.startsWith("openai/gpt-oss"),
+    transform: (reasoning) => {
+      return {
+        groq: {
+          reasoningEffort: reasoning.enabled ? "default" : "none",
+          reasoningFormat: reasoning.exclude ? "hidden" : "parsed",
+        },
+      };
+    },
+  },
+];
 
 export function toProviderOptions(
   model: LanguageModel,
@@ -83,10 +115,18 @@ export function toProviderOptions(
     return;
   }
 
-  const mapper = reasoningMappers[model.provider];
-  if (mapper) {
-    return mapper(reasoning, model.modelId);
+  for (const strategy of reasoningStrategies) {
+    if (strategy.matches(model)) {
+      const result = strategy.transform(reasoning);
+      if (result) {
+        return result;
+      }
+    }
   }
+
+  return {
+    [model.provider]: reasoning,
+  };
 }
 
 function convertToModelContent(content: OpenAICompatibleContentPart[]) {
