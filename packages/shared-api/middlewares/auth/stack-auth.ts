@@ -19,7 +19,7 @@ const verifyJwt = async (token: string): Promise<string | undefined> => {
     const { payload } = await jwtVerify(token, jwks);
     return payload.sub;
   } catch {
-    return undefined;
+    throw new AuthError("Invalid JWT", 401);
   }
 };
 
@@ -40,7 +40,7 @@ const checkApiKey = async (key: string): Promise<string | undefined> => {
   if (res.status === 200) {
     const { user_id } = await res.json();
     return user_id;
-  }
+  } else throw new AuthError("Invalid API key", 401);
 };
 
 // FUTURE: Cache the user id lookup
@@ -61,6 +61,6 @@ export const authServiceStackAuth = new Elysia({
     if (apiKey) return { userId: await checkApiKey(apiKey) } as const;
     if (jwt) return { userId: await verifyJwt(jwt) } as const;
 
-    return { userId: undefined } as const;
+    throw new AuthError("No credentials provided", 400);
   })
   .as("scoped");
