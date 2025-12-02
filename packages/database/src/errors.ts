@@ -3,7 +3,7 @@ const prismaErrorsHttpStatusMapping = {
   P2025: { status: 404, message: "Resource not found" },
 } as const;
 
-export const getPrismaError = (error: unknown) =>
+export const identifyPrismaError = (error: unknown) =>
   error &&
   typeof error === "object" &&
   "code" in error &&

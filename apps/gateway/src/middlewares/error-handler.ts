@@ -1,6 +1,6 @@
 import { Elysia, status } from "elysia";
 
-import { getPrismaError } from "@hebo/database/src/errors";
+import { identifyPrismaError } from "@hebo/database/src/errors";
 import { AuthError } from "@hebo/shared-api/middlewares/auth/errors";
 
 import { toOpenAiCompatibleError } from "~gateway/utils/converters";
@@ -64,7 +64,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
         ),
       );
 
-    const prismaError = getPrismaError(error);
+    const prismaError = identifyPrismaError(error);
     if (prismaError)
       return status(
         prismaError.status,
