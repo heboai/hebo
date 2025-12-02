@@ -24,6 +24,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
         ),
       );
 
+    // Elysia validation errors
     if (code === "VALIDATION")
       return status(
         400,
@@ -34,6 +35,7 @@ export const errorHandler = new Elysia({ name: "error-handler" })
         ),
       );
 
+    // Upstream errors
     const res = upstreamRes(error);
     if (res) {
       try {
