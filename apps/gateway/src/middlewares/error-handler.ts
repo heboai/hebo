@@ -1,7 +1,7 @@
 import { Elysia, status } from "elysia";
 
 import { identifyPrismaError } from "@hebo/database/src/errors";
-import { AuthError, BadRequestError } from "@hebo/shared-api/errors";
+import { HttpError } from "@hebo/shared-api/errors";
 
 import { toOpenAiCompatibleError } from "~gateway/utils/converters";
 
@@ -12,7 +12,7 @@ const upstreamRes = (e: unknown) =>
 
 export const errorHandler = new Elysia({ name: "error-handler" })
   .onError(async ({ code, error }) => {
-    if (error instanceof AuthError || error instanceof BadRequestError)
+    if (error instanceof HttpError)
       return status(
         error.status,
         toOpenAiCompatibleError(
@@ -51,16 +51,6 @@ export const errorHandler = new Elysia({ name: "error-handler" })
         );
       }
     }
-
-    if (error instanceof BadRequestError)
-      return status(
-        error.status,
-        toOpenAiCompatibleError(
-          error.message,
-          "invalid_request_error",
-          error.code,
-        ),
-      );
 
     const prismaError = identifyPrismaError(error);
     if (prismaError)
