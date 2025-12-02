@@ -1,5 +1,6 @@
 import { Elysia, status } from "elysia";
 
+import { getPrismaError } from "@hebo/database/src/errors";
 import { AuthError } from "@hebo/shared-api/middlewares/auth/errors";
 
 import { toOpenAiCompatibleError } from "~gateway/utils/converters";
@@ -59,17 +60,12 @@ export const errorHandler = new Elysia({ name: "error-handler" })
         ),
       );
 
-    // Prisma errors
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "P2025"
-    )
+    const prismaError = getPrismaError(error);
+    if (prismaError)
       return status(
-        404,
+        prismaError.status,
         toOpenAiCompatibleError(
-          "Resource not found",
+          prismaError.message,
           "invalid_request_error",
           "not_found",
         ),

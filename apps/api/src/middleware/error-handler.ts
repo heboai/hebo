@@ -1,5 +1,6 @@
 import { Elysia, status } from "elysia";
 
+import { getPrismaError } from "@hebo/database/src/errors";
 import { AuthError } from "@hebo/shared-api/middlewares/auth/errors";
 
 export const errorHandler = new Elysia({ name: "error-handler" })
@@ -7,13 +8,9 @@ export const errorHandler = new Elysia({ name: "error-handler" })
     if (error instanceof AuthError) {
       return status(error.status, error.message);
     }
-    if (error && typeof error === "object" && "code" in error) {
-      if (error.code === "P2002") {
-        return status(409, "Resource already exists");
-      }
-      if (error.code === "P2025") {
-        return status(404, "Resource not found");
-      }
+    const prismaError = getPrismaError(error);
+    if (prismaError) {
+      return status(prismaError.status, prismaError.message);
     }
   })
   .as("scoped");
