@@ -51,7 +51,7 @@ const hebo = createOpenAICompatible({
 
 const { text } = await generateText({
   model: hebo("<HEBO_MODEL_ALIAS>"), // For example "my-first-agent/main/default"
-  prompt: "Tell me a joke about monkeys!"
+  prompt: "Tell me a joke about monkeys."
 });
 
 console.log(text);
@@ -69,7 +69,7 @@ const completion = await hebo.chat.completions.create({
   model: '<HEBO_MODEL_ALIAS>', // For example "my-first-agent/main/default"
   messages: [{
     role: 'user',
-    content: 'Tell me a joke about monkeys!',
+    content: 'Tell me a joke about monkeys.',
   }],
 });
 
@@ -85,7 +85,7 @@ hebo = ChatOpenAI(
   model="<HEBO_MODEL_ALIAS>", # For example "my-first-agent/main/default"
 )
 
-response = hebo.invoke("Tell me a joke about monkeys!")
+response = hebo.invoke("Tell me a joke about monkeys.")
 
 print(response.content)
 ```
