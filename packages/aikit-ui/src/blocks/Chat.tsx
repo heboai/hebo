@@ -293,7 +293,7 @@ export function Chat({
         <PromptInput
           onSubmit={handleSubmit}
           role="form"
-          className="bg-background mt-4"
+          className="bg-background mt-4 rounded-md"
           globalDrop
           multiple
         >
