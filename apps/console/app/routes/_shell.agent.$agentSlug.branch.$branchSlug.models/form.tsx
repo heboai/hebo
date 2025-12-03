@@ -48,6 +48,7 @@ import {
   type ModelConfigFormValue,
   type ModelsConfigFormValues,
 } from "./schema";
+import ModelSelector from "~console/components/ui/ModelSelector";
 
 
 type ModelsConfigProps = {
@@ -227,13 +228,7 @@ function ModelCard(props: {
                 <FormField field={modelFieldset.type} className="flex flex-col gap-2">
                   <FormLabel>Type</FormLabel>
                   <FormControl>
-                    <Select
-                      items={supportedModels.map((item) => ({
-                        value: item.type,
-                        name: item.displayName,
-                      }))}
-                      placeholder="Select the model"
-                    />
+                    <ModelSelector />
                   </FormControl>
                   <FormMessage />
                 </FormField>

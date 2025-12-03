@@ -20,11 +20,9 @@ import {
   FormMessage,
 } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
-import {
-  Select
-} from "@hebo/shared-ui/components/Select";
 
-import { useFormErrorToast } from "~console/lib/errors";
+import { useFormErrorToast } from "~console/lib/errors";import ModelSelector from "~console/components/ui/ModelSelector";
+;
 
 
 export const AgentCreateSchema = z.object({
@@ -54,8 +52,7 @@ export function AgentCreateForm() {
         <CardHeader>
           <CardTitle><h1>Create a new agent</h1></CardTitle>
           <CardDescription>
-            Each agent has its own model configuration and API keys. Learn more
-            about which model to choose based on Use Case.
+            Each agent has its own set of models. Model choice usually depends on use case and pricing. <a href="https://docs.hebo.ai">Learn more</a>
           </CardDescription>
         </CardHeader>
         
@@ -73,24 +70,7 @@ export function AgentCreateForm() {
             <FormField field={fields.defaultModel} className="contents">
               <FormLabel className="sm:w-32">Default Model</FormLabel>
               <FormControl>
-                <Select
-                  items={supportedModels.map((m) => ({
-                    value: m.type,
-                    name: (
-                        <>
-                          {m.displayName}{" "}
-                          <span className="text-xs">
-                            ({new Intl.NumberFormat("en", {
-                              notation: "compact",
-                              compactDisplay: "short",
-                              maximumFractionDigits: 1,
-                            }).format(m.rateLimit)}{" "}
-                            free tokens / month)
-                          </span>
-                        </>
-                      ),
-                  }))}
-                />
+                <ModelSelector />
               </FormControl>
               <FormMessage className="sm:col-start-2" />
             </FormField>
