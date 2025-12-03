@@ -22,6 +22,72 @@ import {
   type OpenAICompatibleReasoning,
 } from "./openai-compatible-api-schemas";
 
+function replacePlaceholders(obj: any, variables: Record<string, any>): any {
+  if (typeof obj === "string") {
+    let result = obj;
+    for (const [key, value] of Object.entries(variables)) {
+      // eslint-disable-next-line security/detect-non-literal-regexp
+      const placeholderRegex = new RegExp(`{{${key}}}`, "g");
+      result = result.replace(placeholderRegex, String(value));
+    }
+    return result;
+  } else if (Array.isArray(obj)) {
+    return obj.map((item) => replacePlaceholders(item, variables));
+  } else if (typeof obj === "object" && obj !== null) {
+    const newObj: any = {};
+    for (const key of Object.keys(obj)) {
+      newObj[key] = replacePlaceholders(obj[key], variables);
+    }
+    return newObj;
+  }
+  return obj;
+}
+
+function traverseConfig(
+  reasoningConfig: any,
+  reasoning: OpenAICompatibleReasoning,
+) {
+  // 1. Determine config path keys
+  const isEnabled = reasoning.enabled ? "enabled" : "disabled";
+  const effortKey = reasoning.max_tokens
+    ? "custom"
+    : reasoning.effort || "medium";
+  const isExcluded = reasoning.exclude ? "excluded" : "included";
+
+  // 2. Traverse the config tree
+  // Path: [enabled] -> [effort] -> [excluded]
+  let current = reasoningConfig[isEnabled];
+
+  // Traverse deeper if keys exist at the current level
+  if (current && (current[effortKey] || current.low)) {
+    current = current[effortKey];
+  }
+  if (current && (current[isExcluded] || current.included)) {
+    current = current[isExcluded];
+  }
+
+  return current;
+}
+
+function handleGptOss(model: LanguageModel, finalConfig: any) {
+  const effort = finalConfig.reasoningEffort;
+  if (model.provider === "bedrock") {
+    return {
+      bedrock: {
+        additionalModelRequestFields: { reasoning_effort: effort },
+      },
+    };
+  }
+  if (model.provider === "groq") {
+    if (effort === "none") {
+      throw new Error(
+        "Groq does not support disabling reasoning for this model.",
+      );
+    }
+    return { groq: { reasoningEffort: effort } };
+  }
+}
+
 export function toProviderOptions(
   model: LanguageModel,
   reasoning?: OpenAICompatibleReasoning,
@@ -38,34 +104,33 @@ export function toProviderOptions(
 
   const modelConfig = supportedModels.find((m) => m.type === model.modelId);
   // @ts-expect-error - reasoning is not fully typed in the imported json
-  const expressionString = modelConfig?.reasoning?.[model.provider];
+  const reasoningConfig = modelConfig?.reasoning;
 
-  if (!expressionString) {
+  if (!reasoningConfig) {
     return {
       [model.provider]: reasoning,
     };
   }
 
-  const context = {
-    enabled: reasoning.enabled ?? false,
-    effort: reasoning.effort,
-    max_tokens: reasoning.max_tokens,
-    exclude: reasoning.exclude ?? false,
-  };
+  const current = traverseConfig(reasoningConfig, reasoning);
 
-  try {
-    with (context) {
-      // eslint-disable-next-line security/detect-eval-with-expression, sonarjs/code-eval
-      return eval(expressionString);
-    }
-  } catch (error) {
-    console.error(
-      `Failed to evaluate reasoning expression for model ${model.modelId}:`,
-      error,
-    );
-    // eslint-disable-next-line unicorn/no-useless-undefined
-    return undefined;
+  if (!current) return;
+
+  let finalConfig = current;
+
+  if (reasoning.max_tokens !== undefined) {
+    const variables = { max_tokens: reasoning.max_tokens };
+    finalConfig = replacePlaceholders(current, variables);
   }
+
+  // 3. Special handling for GPT-OSS models (Bedrock/Groq specific logic)
+  if (modelConfig?.type.startsWith("openai/gpt-oss")) {
+    return handleGptOss(model, finalConfig);
+  }
+
+  // 4. Map provider key (e.g., vertex -> google) and return
+  const providerKey = model.provider === "vertex" ? "google" : model.provider;
+  return { [providerKey]: finalConfig };
 }
 
 function convertToModelContent(content: OpenAICompatibleContentPart[]) {

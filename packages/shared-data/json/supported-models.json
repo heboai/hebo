@@ -5,14 +5,20 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": "openai.gpt-oss-120b-1:0",
+        "bedrock": "openai.gpt-oss-120b-1:0"
+      },
+      {
         "groq": "openai/gpt-oss-120b"
       }
     ],
     "modality": "chat",
     "reasoning": {
-      "bedrock": "({ bedrock: { additionalModelRequestFields: { reasoning_effort: enabled ? (effort || 'medium') : 'none' } } })",
-      "groq": "({ groq: { reasoningEffort: enabled ? (effort || 'medium') : undefined } })"
+      "enabled": {
+        "low": { "reasoningEffort": "low" },
+        "medium": { "reasoningEffort": "medium" },
+        "high": { "reasoningEffort": "high" }
+      },
+      "disabled": { "reasoningEffort": "none" }
     }
   },
   {
@@ -21,14 +27,20 @@
     "rateLimit": 400000000,
     "providers": [
       {
-        "bedrock": "openai.gpt-oss-20b-1:0",
+        "bedrock": "openai.gpt-oss-20b-1:0"
+      },
+      {
         "groq": "openai/gpt-oss-20b"
       }
     ],
     "modality": "chat",
     "reasoning": {
-      "bedrock": "({ bedrock: { additionalModelRequestFields: { reasoning_effort: enabled ? (effort || 'medium') : 'none' } } })",
-      "groq": "({ groq: { reasoningEffort: enabled ? (effort || 'medium') : undefined } })"
+      "enabled": {
+        "low": { "reasoningEffort": "low" },
+        "medium": { "reasoningEffort": "medium" },
+        "high": { "reasoningEffort": "high" }
+      },
+      "disabled": { "reasoningEffort": "none" }
     }
   },
   {
@@ -42,7 +54,64 @@
     ],
     "modality": "chat",
     "reasoning": {
-      "vertex": "({ google: { thinkingConfig: { includeThoughts: enabled && !exclude, thinkingBudget: enabled ? (max_tokens || (effort === 'low' ? 1024 : (effort === 'high' ? 24576 : 8192))) : undefined } } })"
+      "enabled": {
+        "low": {
+          "excluded": {
+            "thinkingConfig": {
+              "includeThoughts": false,
+              "thinkingBudget": 1024
+            }
+          },
+          "included": {
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 1024
+            }
+          }
+        },
+        "medium": {
+          "excluded": {
+            "thinkingConfig": {
+              "includeThoughts": false,
+              "thinkingBudget": 8192
+            }
+          },
+          "included": {
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 8192
+            }
+          }
+        },
+        "high": {
+          "excluded": {
+            "thinkingConfig": {
+              "includeThoughts": false,
+              "thinkingBudget": 24576
+            }
+          },
+          "included": {
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 24576
+            }
+          }
+        },
+        "custom": {
+          "excluded": {
+            "thinkingConfig": {
+              "includeThoughts": false,
+              "thinkingBudget": "{{max_tokens}}"
+            }
+          },
+          "included": {
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": "{{max_tokens}}"
+            }
+          }
+        }
+      }
     }
   },
   {
@@ -56,7 +125,64 @@
     ],
     "modality": "chat",
     "reasoning": {
-      "vertex": "({ google: { thinkingConfig: { includeThoughts: enabled && !exclude, thinkingBudget: enabled ? (max_tokens || (effort === 'low' ? 1024 : (effort === 'high' ? 24576 : 8192))) : undefined } } })"
+      "enabled": {
+        "low": {
+          "excluded": {
+            "thinkingConfig": {
+              "includeThoughts": false,
+              "thinkingBudget": 1024
+            }
+          },
+          "included": {
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 1024
+            }
+          }
+        },
+        "medium": {
+          "excluded": {
+            "thinkingConfig": {
+              "includeThoughts": false,
+              "thinkingBudget": 8192
+            }
+          },
+          "included": {
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 8192
+            }
+          }
+        },
+        "high": {
+          "excluded": {
+            "thinkingConfig": {
+              "includeThoughts": false,
+              "thinkingBudget": 24576
+            }
+          },
+          "included": {
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": 24576
+            }
+          }
+        },
+        "custom": {
+          "excluded": {
+            "thinkingConfig": {
+              "includeThoughts": false,
+              "thinkingBudget": "{{max_tokens}}"
+            }
+          },
+          "included": {
+            "thinkingConfig": {
+              "includeThoughts": true,
+              "thinkingBudget": "{{max_tokens}}"
+            }
+          }
+        }
+      }
     }
   },
   {
@@ -70,7 +196,26 @@
     ],
     "modality": "chat",
     "reasoning": {
-      "bedrock": "({ bedrock: { reasoningConfig: { type: enabled ? 'enabled' : 'disabled', budgetTokens: enabled ? (max_tokens || 1024) : 0 } } })"
+      "enabled": {
+        "low": {
+          "reasoningConfig": { "type": "enabled", "budgetTokens": 1024 }
+        },
+        "medium": {
+          "reasoningConfig": { "type": "enabled", "budgetTokens": 8192 }
+        },
+        "high": {
+          "reasoningConfig": { "type": "enabled", "budgetTokens": 24576 }
+        },
+        "custom": {
+          "reasoningConfig": {
+            "type": "enabled",
+            "budgetTokens": "{{max_tokens}}"
+          }
+        }
+      },
+      "disabled": {
+        "reasoningConfig": { "type": "disabled", "budgetTokens": 0 }
+      }
     }
   },
   {
@@ -84,7 +229,26 @@
     ],
     "modality": "chat",
     "reasoning": {
-      "bedrock": "({ bedrock: { reasoningConfig: { type: enabled ? 'enabled' : 'disabled', budgetTokens: enabled ? (max_tokens || 1024) : 0 } } })"
+      "enabled": {
+        "low": {
+          "reasoningConfig": { "type": "enabled", "budgetTokens": 1024 }
+        },
+        "medium": {
+          "reasoningConfig": { "type": "enabled", "budgetTokens": 8192 }
+        },
+        "high": {
+          "reasoningConfig": { "type": "enabled", "budgetTokens": 24576 }
+        },
+        "custom": {
+          "reasoningConfig": {
+            "type": "enabled",
+            "budgetTokens": "{{max_tokens}}"
+          }
+        }
+      },
+      "disabled": {
+        "reasoningConfig": { "type": "disabled", "budgetTokens": 0 }
+      }
     }
   },
   {
