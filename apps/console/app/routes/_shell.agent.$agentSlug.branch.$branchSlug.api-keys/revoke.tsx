@@ -46,7 +46,7 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
   useFormErrorToast(form.allErrors);
 
   useEffect(() => {
-    if (fetcher.state === "idle" && form.status === "success") {
+    if (fetcher.state === "idle" && form.status !== "error") {
       onOpenChange(false);
     }
   }, [fetcher.state, form.status]);
@@ -67,13 +67,10 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
             </AlertDescription>
           </Alert>
 
-          <input type="hidden" name="intent" value="revoke" />
-
-          <FormField field={fields.apiKeyId}>
-            <FormControl className="hidden">
+          <FormField field={fields.apiKeyId} className="hidden">
+            <FormControl>
               <input type="hidden" />
             </FormControl>
-            <FormMessage />
           </FormField>
 
           <DialogFooter>
@@ -87,6 +84,8 @@ export function RevokeApiKeyDialog({open, onOpenChange, apiKey}: RevokeApiKeyDia
             <Button
               type="submit"
               variant="destructive"
+              name="intent"
+              value="revoke"
               isLoading={fetcher.state !== "idle"}
             >
               Revoke

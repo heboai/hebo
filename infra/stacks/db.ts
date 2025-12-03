@@ -4,13 +4,13 @@ import heboVpc from "./network";
 const globalCluster = new aws.rds.GlobalCluster("HeboDbGlobal", {
   globalClusterIdentifier: `${$app.stage}-hebo-db-global`,
   engine: "aurora-postgresql",
-  engineVersion: "17.5",
+  engineVersion: "17.6",
   storageEncrypted: true,
 });
 
 const heboDatabase = new sst.aws.Aurora("HeboDatabase", {
   engine: "postgres",
-  version: "17.5",
+  version: "17.6",
   vpc: heboVpc,
   replicas: isProd ? 1 : 0,
   scaling: isProd

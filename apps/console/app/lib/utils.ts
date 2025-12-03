@@ -26,3 +26,26 @@ export const kbs = (shortcut: string): string => {
       return map[lower] ?? match.toUpperCase();
     });
 };
+
+export const formatDateTime = (date: Date) => {
+  return date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+};
+
+// Create human readable labels, e.g. "serviceAccount" => "Service Account"
+export function labelize(value: string) {
+  return value
+    .replaceAll(/([a-z\d])([A-Z])/g, "$1 $2")
+    .replace(/^\w/, (c) => c.toUpperCase());
+}
+
+export function objectId(obj: unknown): string {
+  const stable = JSON.stringify(obj);
+  let hash = 0;
+  for (const ch of stable) {
+    hash = (hash * 31 + ch.codePointAt(0)!) >>> 0;
+  }
+  return hash.toString(36);
+}

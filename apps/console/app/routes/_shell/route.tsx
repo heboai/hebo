@@ -24,6 +24,7 @@ import { authStore } from "~console/state/auth";
 
 import { AgentSelect } from "./sidebar-agent";
 import { BranchSelect } from "./sidebar-branch";
+import { SidebarPlatform } from "./sidebar-platform";
 import { PlaygroundSidebar } from "./sidebar-playground";
 import { UserMenu } from "./sidebar-user";
 import { SidebarNav } from "./sidebar-nav";
@@ -97,6 +98,12 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
             )}
           </SidebarContent>
           <SidebarFooter>
+              {activeAgent && activeBranch && (
+                <>
+                  <SidebarSeparator className="mx-0" />
+                  <SidebarPlatform activeAgent={activeAgent} activeBranch={activeBranch} />
+                </>
+              )}
               <StaticContent />
               <SidebarSeparator className="mx-0" />
               <UserMenu user={user} />

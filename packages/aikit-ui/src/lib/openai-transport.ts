@@ -34,6 +34,11 @@ type OpenAIChatDelta = {
     };
     finish_reason?: string | null;
   }>;
+  error?: {
+    message?: string;
+    type?: string;
+    code?: string;
+  };
 };
 
 type ToolCall = {
@@ -43,34 +48,26 @@ type ToolCall = {
   arguments: string;
 };
 
-type OpenAIHttpChatTransportOptions =
-  HttpChatTransportInitOptions<UIMessage> & {
-    model: string;
-    reasoningEffort?: "low" | "medium" | "high";
-  };
+type OpenAIHttpChatTransportOptions = HttpChatTransportInitOptions<UIMessage>;
 
 export class OpenAIHttpChatTransport<
   UI_MESSAGE extends UIMessage = UIMessage,
 > extends HttpChatTransport<UI_MESSAGE> {
   constructor(options: OpenAIHttpChatTransportOptions) {
-    const { model, reasoningEffort, ...rest } = options;
-    const fetchImpl = rest.fetch ?? globalThis.fetch;
     super({
-      ...rest,
-      fetch: fetchImpl,
+      ...options,
       prepareSendMessagesRequest: async ({ messages, body }) => {
         const openaiMessages = await Promise.all(
-          messages.map((m) => toOpenAIMessage(m as UIMessage, fetchImpl)),
+          messages.map((m) => toOpenAIMessage(m as UIMessage)),
         );
 
-        const reasoning = reasoningEffort
-          ? { effort: reasoningEffort }
+        const reasoning = body!.reasoningEffort
+          ? { effort: body!.reasoningEffort }
           : undefined;
 
         return {
           body: {
             ...body,
-            model,
             messages: openaiMessages,
             stream: true,
             ...(reasoning ? { reasoning } : {}),
@@ -87,10 +84,7 @@ export class OpenAIHttpChatTransport<
   }
 }
 
-async function toOpenAIMessage(
-  message: UIMessage,
-  fetchImpl: typeof fetch,
-): Promise<OpenAIMessage> {
+async function toOpenAIMessage(message: UIMessage): Promise<OpenAIMessage> {
   const contentParts: OpenAIContentPart[] = [];
   const reasoningText: string[] = [];
 
@@ -107,7 +101,7 @@ async function toOpenAIMessage(
         break;
       }
       case "file": {
-        const filePart = await toFileContent(part, fetchImpl);
+        const filePart = await toFileContent(part);
         if (filePart) contentParts.push(filePart);
 
         break;
@@ -130,10 +124,11 @@ async function toOpenAIMessage(
   };
 }
 
-async function toFileContent(
-  part: { mediaType?: string; url?: string; filename?: string },
-  fetchImpl: typeof fetch,
-): Promise<
+async function toFileContent(part: {
+  mediaType?: string;
+  url?: string;
+  filename?: string;
+}): Promise<
   | {
       type: "file";
       file: { data: string; media_type: string; filename: string };
@@ -152,7 +147,7 @@ async function toFileContent(
   }
 
   try {
-    const resp = await fetchImpl(part.url);
+    const resp = await fetch(part.url);
     const blob = await resp.blob();
     const mediaType = part.mediaType || blob.type || "application/octet-stream";
     const arrayBuffer = await blob.arrayBuffer();
@@ -172,6 +167,7 @@ function handleSSEStream(
   let textStarted = false;
   let reasoningStarted = false;
   let finalFinish: FinishReason | undefined;
+  let hasError = false;
 
   return parseJsonEventStream<OpenAIChatDelta>({
     stream,
@@ -183,7 +179,9 @@ function handleSSEStream(
         ctrl.enqueue({ type: "start", messageId });
       },
       transform(result, ctrl) {
+        if (hasError) return;
         if (!result?.success) {
+          hasError = true;
           ctrl.enqueue({
             type: "error",
             errorText: result?.error?.message ?? "Stream parse error",
@@ -192,6 +190,17 @@ function handleSSEStream(
         }
 
         const parsed = result.value;
+
+        if (parsed.error) {
+          hasError = true;
+          ctrl.enqueue({
+            type: "error",
+            errorText:
+              parsed.error.message ?? "An error occurred during streaming",
+          });
+          return;
+        }
+
         const delta = parsed.choices?.[0]?.delta;
         const finishReason = parsed.choices?.[0]?.finish_reason;
 

@@ -9,6 +9,12 @@ import { modelsConfigFormSchema } from "./schema";
 
 import type { Route } from "./+types/route";
 
+export async function clientLoader() {
+  const providers = (await api.providers.get({ query: { configured: true } })).data ?? [];
+
+  return { providers };
+}
+
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
 
   const formData = await request.formData();
@@ -41,21 +47,24 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 }
 
 
-export default function ModelsConfigRoute() {
+export default function ModelsConfigRoute({ loaderData }: Route.ComponentProps) {
 
   const { agent, branch } = useRoute("routes/_shell.agent.$agentSlug")!.loaderData!;
 
   return (
       <>
-        <h1>Model Configuration</h1>
-        <p className="text-muted-foreground text-sm">
-          Configure access for the agent to different models. Use our managed providers or connect your existing inference endpoints.
-        </p>
+        <div>
+          <h1>Model Configuration</h1>
+          <p className="text-muted-foreground text-sm">
+            Configure access for the agent to different models. Use our managed providers or connect your existing inference endpoints.
+          </p>
+        </div>
 
         <ModelsConfigForm
           agentSlug={agent.slug}
           branchSlug={branch!.slug}
           models={branch!.models}
+          providers={loaderData.providers}
         />
       </>
   );

@@ -1,5 +1,5 @@
 import { Collection } from "@msw/data";
-import z from "zod";
+import { z } from "zod";
 
 import { authStore } from "~console/state/auth";
 
