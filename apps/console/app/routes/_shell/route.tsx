@@ -21,6 +21,7 @@ import { api } from "~console/lib/service";
 import { dontRevalidateOnFormErrors } from "~console/lib/errors";
 import { getCookie, kbs } from "~console/lib/utils";
 import { authStore } from "~console/state/auth";
+import { PageLoader } from "~console/components/ui/PageLoader";
 
 import { AgentSelect } from "./sidebar-agent";
 import { BranchSelect } from "./sidebar-branch";
@@ -119,6 +120,7 @@ export default function ShellLayout({ loaderData: { agents } }: Route.ComponentP
         />
         <div ref={mainRef} tabIndex={-1} className="min-w-0 flex flex-1 flex-col focus:outline-none gap-4 px-4 sm:px-10 py-10">
           <div className="mx-auto max-w-4xl min-w-0 w-full">
+            <PageLoader />
             <Outlet />
           </div>
         </div>
