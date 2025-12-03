@@ -65,7 +65,7 @@ const hebo = new OpenAI({
   apiKey: "<HEBO_API_KEY>", // Replace with your generated key
 });
 
-const completion = await openai.chat.completions.create({
+const completion = await hebo.chat.completions.create({
   model: '<HEBO_MODEL_ALIAS>', // For example "my-first-agent/main/default"
   messages: [{
     role: 'user',
