@@ -9,6 +9,8 @@ import {
   type ToolChoice,
 } from "ai";
 
+import supportedModels from "@hebo/shared-data/json/supported-models";
+
 import {
   type OpenAICompatibleAssistantMessage,
   type OpenAICompatibleContentPart,
@@ -20,93 +22,6 @@ import {
   type OpenAICompatibleReasoning,
 } from "./openai-compatible-api-schemas";
 
-type ReasoningMatcher = (model: Exclude<LanguageModel, string>) => boolean;
-type ReasoningTransformer = (
-  reasoning: OpenAICompatibleReasoning,
-) => Record<string, any> | undefined;
-
-interface ReasoningStrategy {
-  matches: ReasoningMatcher;
-  transform: ReasoningTransformer;
-}
-
-const reasoningStrategies: ReasoningStrategy[] = [
-  // Bedrock
-  {
-    matches: (model) =>
-      model.provider === "bedrock" &&
-      model.modelId.startsWith("anthropic.claude"),
-    transform: (reasoning) => {
-      if (reasoning.max_tokens) {
-        return {
-          bedrock: {
-            reasoningConfig: {
-              type: reasoning.enabled ? "enabled" : "disabled",
-              budgetTokens: reasoning.max_tokens,
-            },
-          },
-        };
-      }
-    },
-  },
-  {
-    matches: (model) =>
-      model.provider === "bedrock" &&
-      model.modelId.startsWith("openai.gpt-oss"),
-    transform: (reasoning) => {
-      return {
-        bedrock: {
-          additionalModelRequestFields: {
-            reasoningEffort: reasoning.enabled ? reasoning.effort : "none",
-          },
-        },
-      };
-    },
-  },
-  // Google Vertex
-  {
-    matches: (model) =>
-      model.provider === "vertex" && model.modelId.startsWith("gemini"),
-    transform: (reasoning) => {
-      if (reasoning.max_tokens) {
-        return {
-          google: {
-            thinkingConfig: {
-              includeThoughts: reasoning.exclude ? false : true,
-              thinkingBudget: reasoning.max_tokens,
-            },
-          },
-        };
-      }
-    },
-  },
-  // Groq
-  {
-    matches: (model) =>
-      model.provider === "groq" && model.modelId.startsWith("openai/gpt-oss"),
-    transform: (reasoning) => {
-      return {
-        // cannot disable reasoning due to ai sdk lacking include_reasoning option
-        groq: {
-          reasoningEffort: reasoning.effort,
-        },
-      };
-    },
-  },
-  {
-    matches: (model) =>
-      model.provider === "groq" && !model.modelId.startsWith("openai/gpt-oss"),
-    transform: (reasoning) => {
-      return {
-        groq: {
-          reasoningEffort: reasoning.enabled ? "default" : "none",
-          reasoningFormat: reasoning.exclude ? "hidden" : "parsed",
-        },
-      };
-    },
-  },
-];
-
 export function toProviderOptions(
   model: LanguageModel,
   reasoning?: OpenAICompatibleReasoning,
@@ -115,18 +30,42 @@ export function toProviderOptions(
     return;
   }
 
-  for (const strategy of reasoningStrategies) {
-    if (strategy.matches(model)) {
-      const result = strategy.transform(reasoning);
-      if (result) {
-        return result;
-      }
-    }
+  if (reasoning.effort && reasoning.max_tokens) {
+    throw new Error(
+      "Mutually exclusive parameters: You cannot specify both effort and max_tokens in the same request.",
+    );
   }
 
-  return {
-    [model.provider]: reasoning,
+  const modelConfig = supportedModels.find((m) => m.type === model.modelId);
+  // @ts-expect-error - reasoning is not fully typed in the imported json
+  const expressionString = modelConfig?.reasoning?.[model.provider];
+
+  if (!expressionString) {
+    return {
+      [model.provider]: reasoning,
+    };
+  }
+
+  const context = {
+    enabled: reasoning.enabled ?? false,
+    effort: reasoning.effort,
+    max_tokens: reasoning.max_tokens,
+    exclude: reasoning.exclude ?? false,
   };
+
+  try {
+    with (context) {
+      // eslint-disable-next-line security/detect-eval-with-expression, sonarjs/code-eval
+      return eval(expressionString);
+    }
+  } catch (error) {
+    console.error(
+      `Failed to evaluate reasoning expression for model ${model.modelId}:`,
+      error,
+    );
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    return undefined;
+  }
 }
 
 function convertToModelContent(content: OpenAICompatibleContentPart[]) {
