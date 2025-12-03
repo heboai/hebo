@@ -21,8 +21,8 @@ import {
 } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 
-import { useFormErrorToast } from "~console/lib/errors";import ModelSelector from "~console/components/ui/ModelSelector";
-;
+import { useFormErrorToast } from "~console/lib/errors";
+import ModelSelector from "~console/components/ui/ModelSelector";
 
 
 export const AgentCreateSchema = z.object({

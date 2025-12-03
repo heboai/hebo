@@ -9,12 +9,13 @@ export function PageLoader() {
 
   useEffect(() => {
     if (!isLoading) {
-      const t = setTimeout(() => {
-        setProgress(100);
-        const r = setTimeout(() => setProgress(0), 400);
-        return () => clearTimeout(r);
-      });
-      return () => clearTimeout(t);
+      const ft = globalThis.setTimeout(() => setProgress(100), 0);
+      const rt = globalThis.setTimeout(() => setProgress(0), 400);
+
+      return () => {
+        clearTimeout(ft);
+        clearTimeout(rt);
+      };
     }
 
     const id = setInterval(() => {
@@ -29,6 +30,7 @@ export function PageLoader() {
     <div
       className="fixed top-0 left-0 h-0.5 bg-blue-200 transition-all duration-300 ease-out"
       style={{ width: `${progress}%`, opacity: progress === 0 ? 0 : 1 }}
+      aria-hidden="true"
     />
   );
 }
