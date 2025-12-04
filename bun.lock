@@ -149,8 +149,8 @@
       },
     },
     "apps/mcp": {
-      "name": "bun-react-template",
-      "version": "0.1.0",
+      "name": "@hebo/mcp",
+      "version": "0.0.1",
       "dependencies": {
         "bun-plugin-tailwind": "^0.1.2",
         "react": "^19",
@@ -600,6 +600,8 @@
     "@hebo/database": ["@hebo/database@workspace:packages/database"],
 
     "@hebo/gateway": ["@hebo/gateway@workspace:apps/gateway"],
+
+    "@hebo/mcp": ["@hebo/mcp@workspace:apps/mcp"],
 
     "@hebo/shared-api": ["@hebo/shared-api@workspace:packages/shared-api"],
 
@@ -1372,8 +1374,6 @@
     "bun": ["bun@1.3.3", "", { "optionalDependencies": { "@oven/bun-darwin-aarch64": "1.3.3", "@oven/bun-darwin-x64": "1.3.3", "@oven/bun-darwin-x64-baseline": "1.3.3", "@oven/bun-linux-aarch64": "1.3.3", "@oven/bun-linux-aarch64-musl": "1.3.3", "@oven/bun-linux-x64": "1.3.3", "@oven/bun-linux-x64-baseline": "1.3.3", "@oven/bun-linux-x64-musl": "1.3.3", "@oven/bun-linux-x64-musl-baseline": "1.3.3", "@oven/bun-windows-x64": "1.3.3", "@oven/bun-windows-x64-baseline": "1.3.3" }, "os": [ "linux", "win32", "darwin", ], "cpu": [ "x64", "arm64", ], "bin": { "bun": "bin/bun.exe", "bunx": "bin/bunx.exe" } }, "sha512-2hJ4ocTZ634/Ptph4lysvO+LbbRZq8fzRvMwX0/CqaLBxrF2UB5D1LdMB8qGcdtCer4/VR9Bx5ORub0yn+yzmw=="],
 
     "bun-plugin-tailwind": ["bun-plugin-tailwind@0.1.2", "", { "peerDependencies": { "bun": ">=1.0.0" } }, "sha512-41jNC1tZRSK3s1o7pTNrLuQG8kL/0vR/JgiTmZAJ1eHwe0w5j6HFPKeqEk0WAD13jfrUC7+ULuewFBBCoADPpg=="],
-
-    "bun-react-template": ["bun-react-template@workspace:apps/mcp"],
 
     "bun-types": ["bun-types@1.3.3", "", { "dependencies": { "@types/node": "*" } }, "sha512-z3Xwlg7j2l9JY27x5Qn3Wlyos8YAp0kKRlrePAOjgjMGS5IG6E7Jnlx736vH9UVI4wUICwwhC9anYL++XeOgTQ=="],
 
