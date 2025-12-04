@@ -23,7 +23,7 @@ const createMcpServer = () => {
 createServer(async (req, res) => {
   const url = new URL(req.url || "", `http://localhost:${PORT}`);
 
-  if (url.pathname !== "/") {
+  if (url.pathname !== "/aikit") {
     logger.error({ path: url.pathname }, "Not found");
     res.writeHead(404).end("Not Found");
     return;
@@ -66,6 +66,7 @@ createServer(async (req, res) => {
       res.writeHead(500).end(
         JSON.stringify({
           jsonrpc: "2.0",
+          // JSON-RPC 2.0 error codes: https://www.jsonrpc.org/specification#error_object
           error: { code: -32_603, message: "Internal server error" },
           // eslint-disable-next-line unicorn/no-null -- JSON-RPC 2.0 spec requires null
           id: null,
@@ -74,5 +75,5 @@ createServer(async (req, res) => {
     }
   }
 }).listen(PORT, () =>
-  logger.info(`🐵 Hebo MCP Server running at http://localhost:${PORT}/mcp`),
+  logger.info(`🐵 Hebo MCP Server running at http://localhost:${PORT}/aikit`),
 );
