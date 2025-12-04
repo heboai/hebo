@@ -2,14 +2,11 @@ import { createServer } from "node:http";
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 
 import { logger } from "./logger.js";
 import { countLetterTool } from "./tools/count-letter.js";
 
 const PORT = Number(process.env.PORT ?? 3100);
-
-const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 
 const createMcpServer = () => {
   const server = new McpServer({ name: "hebo-mcp", version: "0.0.1" });
@@ -50,40 +47,32 @@ createServer(async (req, res) => {
     req.on("end", () => resolve(data ? JSON.parse(data) : undefined));
   });
 
-  const sessionId = req.headers["mcp-session-id"] as string | undefined;
+  const server = createMcpServer();
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: undefined, // Stateless: no session management
+  });
 
-  if (sessionId && transports[sessionId]) {
-    await transports[sessionId].handleRequest(req, res, body);
-    return;
-  }
-
-  if (isInitializeRequest(body)) {
-    const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => crypto.randomUUID(),
-      enableJsonResponse: true,
-      onsessioninitialized: (sid) => {
-        logger.info({ sessionId: sid }, "New MCP session initialized");
-        transports[sid] = transport;
-      },
-    });
-
-    await createMcpServer().connect(transport);
+  try {
+    await server.connect(transport);
     await transport.handleRequest(req, res, body);
-    return;
-  }
 
-  logger.error(
-    { body },
-    "Bad request: missing session ID or not an initialize request",
-  );
-  res.writeHead(400).end(
-    JSON.stringify({
-      jsonrpc: "2.0",
-      error: { code: -32_000, message: "Bad Request" },
-      // eslint-disable-next-line unicorn/no-null -- JSON-RPC 2.0 spec requires null
-      id: null,
-    }),
-  );
+    res.on("close", () => {
+      transport.close();
+      server.close();
+    });
+  } catch (error) {
+    logger.error({ error }, "Error handling MCP request");
+    if (!res.headersSent) {
+      res.writeHead(500).end(
+        JSON.stringify({
+          jsonrpc: "2.0",
+          error: { code: -32_603, message: "Internal server error" },
+          // eslint-disable-next-line unicorn/no-null -- JSON-RPC 2.0 spec requires null
+          id: null,
+        }),
+      );
+    }
+  }
 }).listen(PORT, () =>
-  logger.info(`🐵 Hebo MCP Server running at http://localhost:${PORT}/`),
+  logger.info(`🐵 Hebo MCP Server running at http://localhost:${PORT}/mcp`),
 );
