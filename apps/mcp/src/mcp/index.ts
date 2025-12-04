@@ -27,7 +27,7 @@ createServer(async (req, res) => {
   const url = new URL(req.url || "", `http://localhost:${PORT}`);
 
   if (url.pathname !== "/") {
-    logger.warn({ path: url.pathname }, "Not found");
+    logger.error({ path: url.pathname }, "Not found");
     res.writeHead(404).end("Not Found");
     return;
   }
@@ -39,7 +39,7 @@ createServer(async (req, res) => {
   }
 
   if (req.method !== "POST") {
-    logger.warn({ method: req.method }, "Method not allowed");
+    logger.error({ method: req.method }, "Method not allowed");
     res.writeHead(405).end("Method Not Allowed");
     return;
   }
@@ -72,7 +72,10 @@ createServer(async (req, res) => {
     return;
   }
 
-  logger.warn("Bad request: missing session ID or not an initialize request");
+  logger.error(
+    { body },
+    "Bad request: missing session ID or not an initialize request",
+  );
   res.writeHead(400).end(
     JSON.stringify({
       jsonrpc: "2.0",
