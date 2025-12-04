@@ -10,7 +10,6 @@ const PORT = process.env.MCP_PORT
   ? Number.parseInt(process.env.MCP_PORT, 10)
   : 3100;
 
- 
 const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 
 const createMcpServer = () => {
@@ -33,7 +32,7 @@ createServer(async (req, res) => {
   }
 
   const body = await new Promise<unknown>((resolve) => {
-    if (req.method !== "POST") return resolve();
+    if (req.method !== "POST") return resolve(void 0);
     let data = "";
     req.on("data", (chunk) => (data += chunk));
     req.on("end", () => resolve(data ? JSON.parse(data) : undefined));
