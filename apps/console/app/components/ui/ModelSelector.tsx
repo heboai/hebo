@@ -1,17 +1,24 @@
 
+import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Badge } from "@hebo/shared-ui/components/Badge";
 import { Select } from "@hebo/shared-ui/components/Select";
 
-import { supportedModels } from "~console/routes/_shell.agent.$agentSlug.branch.$branchSlug.models/schema";
-
 import type { ComponentProps } from "react";
+
+const SUPPORTED_MODELS = Object.fromEntries(
+  supportedModels.map(({ type, displayName }) => [type, { displayName }]),
+);
+const DEFAULT_MODEL_TYPE = supportedModels[0].type;
+const SUPPORTED_PROVIDERS = Object.fromEntries(
+  supportedModels.map((m) => [m.type, Object.keys(m.providers[0])]),
+);
 
 type ModelSelectorProps = Omit<
   ComponentProps<typeof Select>,
   "items" | "placeholder"
 > & { placeholder?: string };
 
-export default function ModelSelector({
+function ModelSelector({
   placeholder = "Select the model",
   ...props
 }: ModelSelectorProps) {
@@ -23,7 +30,7 @@ export default function ModelSelector({
         name: (
           <>
             {m.displayName}{" "}
-            {m.monthlyFreeTokens && (
+            {m.monthlyFreeTokens > 0 && (
               <Badge className="bg-green-600 text-white">Free Tier</Badge>
             )}
             {m.modality === "embedding" && (
@@ -36,3 +43,10 @@ export default function ModelSelector({
     />
   );
 }
+
+export {
+  SUPPORTED_MODELS,
+  DEFAULT_MODEL_TYPE,
+  SUPPORTED_PROVIDERS,
+  ModelSelector,
+};

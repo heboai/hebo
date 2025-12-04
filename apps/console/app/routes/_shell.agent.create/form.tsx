@@ -3,7 +3,6 @@ import { z } from "zod";
 import { useForm, getFormProps } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
 
-import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Button } from "@hebo/shared-ui/components/Button";
 import {
   Card,
@@ -21,8 +20,8 @@ import {
 } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 
+import { DEFAULT_MODEL_TYPE, ModelSelector } from "~console/components/ui/ModelSelector";
 import { useFormErrorToast } from "~console/lib/errors";
-import ModelSelector from "~console/components/ui/ModelSelector";
 
 
 export const AgentCreateSchema = z.object({
@@ -38,7 +37,7 @@ export function AgentCreateForm() {
     lastResult,
     constraint: getZodConstraint(AgentCreateSchema),
     defaultValue: {
-      defaultModel: supportedModels[0].type,
+      defaultModel: DEFAULT_MODEL_TYPE,
     }
   });
   useFormErrorToast(form.allErrors);

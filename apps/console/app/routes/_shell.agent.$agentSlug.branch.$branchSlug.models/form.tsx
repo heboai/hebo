@@ -44,11 +44,10 @@ import { objectId } from "~console/lib/utils";
 
 import {
   modelsConfigFormSchema,
-  supportedModels,
   type ModelConfigFormValue,
   type ModelsConfigFormValues,
 } from "./schema";
-import ModelSelector from "~console/components/ui/ModelSelector";
+import { ModelSelector, SUPPORTED_MODELS, SUPPORTED_PROVIDERS } from "~console/components/ui/ModelSelector";
 
 
 type ModelsConfigProps = {
@@ -171,9 +170,6 @@ function ModelCard(props: {
   const [routingEnabled, setRoutingEnabled] = useState(Boolean(routingOnlyField.value)); 
 
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const supportedProviders = Object.fromEntries(
-    supportedModels.map(m => [m.type, Object.keys(m.providers[0])])
-  );
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onOpenChange}>
@@ -190,7 +186,7 @@ function ModelCard(props: {
 
             <Badge variant="outline">
               <Brain />
-              {supportedModels.find((m) => m.type === modelFieldset.type.value)?.displayName || "undefined"}
+              {modelFieldset.type.value ?? "undefined"}
             </Badge>
 
             <CollapsibleTrigger asChild>
@@ -269,7 +265,7 @@ function ModelCard(props: {
                       <ItemActions>
                         <FormControl>
                           {(() => {
-                            const availableProviders = providers.filter((p) => supportedProviders[modelFieldset.type.value ?? ""]?.includes(p.slug));
+                            const availableProviders = providers.filter((p) => SUPPORTED_PROVIDERS[modelFieldset.type.value ?? ""]?.includes(p.slug));
                             return (
                               <Select
                                 disabled={!routingEnabled}
