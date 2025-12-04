@@ -1,0 +1,64 @@
+name: Publish AiKit Packages to NPM
+
+on:
+  release:
+    types: [published]
+    tags:
+      - "@hebo/aikit-*@*"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Determine Package Directory
+        id: pkg
+        run: |
+          # Tag format: @hebo/aikit-name@version
+          TAG=${{ github.ref_name }}
+          echo "Processing tag: $TAG"
+
+          # Remove scope prefix (@hebo/)
+          NO_SCOPE=${TAG#@hebo/}
+
+          # Extract package name (remove version starting from last @)
+          PKG_NAME=${NO_SCOPE%@*}
+
+          PKG_DIR="packages/$PKG_NAME"
+          echo "Identified package directory: $PKG_DIR"
+
+          if [ ! -d "$PKG_DIR" ]; then
+            echo "Error: Directory $PKG_DIR does not exist."
+            exit 1
+          fi
+
+          echo "dir=$PKG_DIR" >> $GITHUB_OUTPUT
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: "1.3.1"
+
+      - name: Install dependencies
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: |
+          bun install --frozen-lockfile
+
+      - name: Build & Test
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: |
+          bun run build
+          bun run test
+
+      - name: Publish
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: |
+          bun publish
