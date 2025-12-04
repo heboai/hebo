@@ -1,13 +1,8 @@
 import { z } from "zod";
 
-import { SUPPORTED_MODELS } from "~console/components/ui/ModelSelector";
-
 export const modelConfigSchema = z.object({
   alias: ((msg) => z.string(msg).trim().min(1, msg))("Please enter a unique alias name"),
-  type: z.literal(
-    Object.keys(SUPPORTED_MODELS),
-    "Select one of the supported models"
-  ),
+  type: ((msg) => z.string(msg).trim().min(1, msg))("Select one of the supported models"),
   routing: z
     .object({
       only: z.array(z.string().optional())
@@ -22,4 +17,3 @@ export const modelsConfigFormSchema = z.object({
 
 export type ModelsConfigFormValues = z.infer<typeof modelsConfigFormSchema>;
 export type ModelConfigFormValue = NonNullable<ModelsConfigFormValues["models"]>[number];
-

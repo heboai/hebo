@@ -10,7 +10,6 @@ const SUPPORTED_MODELS = Object.fromEntries(
     { displayName, providers: Object.keys(providers[0]) },
   ]),
 );
-const DEFAULT_MODEL_TYPE = supportedModels[0].type;
 
 type ModelSelectorProps = Omit<
   ComponentProps<typeof Select>,
@@ -43,4 +42,4 @@ function ModelSelector({
   );
 }
 
-export { SUPPORTED_MODELS, DEFAULT_MODEL_TYPE, ModelSelector };
+export { SUPPORTED_MODELS, ModelSelector };

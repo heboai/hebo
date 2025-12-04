@@ -20,7 +20,7 @@ import {
 } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
 
-import { DEFAULT_MODEL_TYPE, ModelSelector } from "~console/components/ui/ModelSelector";
+import { ModelSelector, SUPPORTED_MODELS } from "~console/components/ui/ModelSelector";
 import { useFormErrorToast } from "~console/lib/errors";
 
 
@@ -37,7 +37,7 @@ export function AgentCreateForm() {
     lastResult,
     constraint: getZodConstraint(AgentCreateSchema),
     defaultValue: {
-      defaultModel: DEFAULT_MODEL_TYPE,
+      defaultModel: Object.keys(SUPPORTED_MODELS)[0],
     }
   });
   useFormErrorToast(form.allErrors);
