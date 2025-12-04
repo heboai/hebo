@@ -47,7 +47,7 @@ import {
   type ModelConfigFormValue,
   type ModelsConfigFormValues,
 } from "./schema";
-import { ModelSelector, SUPPORTED_MODELS, SUPPORTED_PROVIDERS } from "~console/components/ui/ModelSelector";
+import { ModelSelector, SUPPORTED_MODELS } from "~console/components/ui/ModelSelector";
 
 
 type ModelsConfigProps = {
@@ -265,7 +265,7 @@ function ModelCard(props: {
                       <ItemActions>
                         <FormControl>
                           {(() => {
-                            const availableProviders = providers.filter((p) => SUPPORTED_PROVIDERS[modelFieldset.type.value ?? ""]?.includes(p.slug));
+                            const availableProviders = providers.filter((p) => SUPPORTED_MODELS[modelFieldset.type.value ?? ""]?.providers.includes(p.slug));
                             return (
                               <Select
                                 disabled={!routingEnabled}
