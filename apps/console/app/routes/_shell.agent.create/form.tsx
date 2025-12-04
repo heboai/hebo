@@ -3,7 +3,6 @@ import { z } from "zod";
 import { useForm, getFormProps } from "@conform-to/react";
 import { getZodConstraint } from "@conform-to/zod/v4";
 
-import supportedModels from "@hebo/shared-data/json/supported-models";
 import { Button } from "@hebo/shared-ui/components/Button";
 import {
   Card,
@@ -20,10 +19,8 @@ import {
   FormMessage,
 } from "@hebo/shared-ui/components/Form";
 import { Input } from "@hebo/shared-ui/components/Input";
-import {
-  Select
-} from "@hebo/shared-ui/components/Select";
 
+import { ModelSelector, SUPPORTED_MODELS } from "~console/components/ui/ModelSelector";
 import { useFormErrorToast } from "~console/lib/errors";
 
 
@@ -40,7 +37,7 @@ export function AgentCreateForm() {
     lastResult,
     constraint: getZodConstraint(AgentCreateSchema),
     defaultValue: {
-      defaultModel: supportedModels[0].type,
+      defaultModel: Object.keys(SUPPORTED_MODELS)[0],
     }
   });
   useFormErrorToast(form.allErrors);
@@ -54,8 +51,7 @@ export function AgentCreateForm() {
         <CardHeader>
           <CardTitle><h1>Create a new agent</h1></CardTitle>
           <CardDescription>
-            Each agent has its own model configuration and API keys. Learn more
-            about which model to choose based on Use Case.
+            Each agent has its own set of models. Model choice usually depends on use case and pricing. <a href="https://docs.hebo.ai">Learn more</a>
           </CardDescription>
         </CardHeader>
         
@@ -73,24 +69,7 @@ export function AgentCreateForm() {
             <FormField field={fields.defaultModel} className="contents">
               <FormLabel className="sm:w-32">Default Model</FormLabel>
               <FormControl>
-                <Select
-                  items={supportedModels.map((m) => ({
-                    value: m.type,
-                    name: (
-                        <>
-                          {m.displayName}{" "}
-                          <span className="text-xs">
-                            ({new Intl.NumberFormat("en", {
-                              notation: "compact",
-                              compactDisplay: "short",
-                              maximumFractionDigits: 1,
-                            }).format(m.rateLimit)}{" "}
-                            free tokens / month)
-                          </span>
-                        </>
-                      ),
-                  }))}
-                />
+                <ModelSelector />
               </FormControl>
               <FormMessage className="sm:col-start-2" />
             </FormField>

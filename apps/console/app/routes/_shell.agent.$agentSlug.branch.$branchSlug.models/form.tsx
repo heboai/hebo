@@ -44,10 +44,10 @@ import { objectId } from "~console/lib/utils";
 
 import {
   modelsConfigFormSchema,
-  supportedModels,
   type ModelConfigFormValue,
   type ModelsConfigFormValues,
 } from "./schema";
+import { ModelSelector, SUPPORTED_MODELS } from "~console/components/ui/ModelSelector";
 
 
 type ModelsConfigProps = {
@@ -170,9 +170,6 @@ function ModelCard(props: {
   const [routingEnabled, setRoutingEnabled] = useState(Boolean(routingOnlyField.value)); 
 
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const supportedProviders = Object.fromEntries(
-    supportedModels.map(m => [m.type, Object.keys(m.providers[0])])
-  );
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onOpenChange}>
@@ -189,7 +186,7 @@ function ModelCard(props: {
 
             <Badge variant="outline">
               <Brain />
-              {supportedModels.find((m) => m.type === modelFieldset.type.value)?.displayName || "undefined"}
+              {modelFieldset.type.value ?? "undefined"}
             </Badge>
 
             <CollapsibleTrigger asChild>
@@ -227,13 +224,7 @@ function ModelCard(props: {
                 <FormField field={modelFieldset.type} className="flex flex-col gap-2">
                   <FormLabel>Type</FormLabel>
                   <FormControl>
-                    <Select
-                      items={supportedModels.map((item) => ({
-                        value: item.type,
-                        name: item.displayName,
-                      }))}
-                      placeholder="Select the model"
-                    />
+                    <ModelSelector />
                   </FormControl>
                   <FormMessage />
                 </FormField>
@@ -274,7 +265,7 @@ function ModelCard(props: {
                       <ItemActions>
                         <FormControl>
                           {(() => {
-                            const availableProviders = providers.filter((p) => supportedProviders[modelFieldset.type.value ?? ""]?.includes(p.slug));
+                            const availableProviders = providers.filter((p) => SUPPORTED_MODELS[modelFieldset.type.value ?? ""]?.providers.includes(p.slug));
                             return (
                               <Select
                                 disabled={!routingEnabled}
