@@ -11,15 +11,7 @@ const SUPPORTED_MODELS = Object.fromEntries(
   ]),
 );
 
-type ModelSelectorProps = Omit<
-  ComponentProps<typeof Select>,
-  "items" | "placeholder"
-> & { placeholder?: string };
-
-function ModelSelector({
-  placeholder = "Select the model",
-  ...props
-}: ModelSelectorProps) {
+function ModelSelector({ ...props }: ComponentProps<typeof Select>) {
   return (
     <Select
       {...props}
@@ -37,7 +29,7 @@ function ModelSelector({
           </>
         ),
       }))}
-      placeholder={placeholder}
+      placeholder="Select the model"
     />
   );
 }
