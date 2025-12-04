@@ -4,11 +4,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 
+import { logger } from "./logger.js";
 import { countLetterTool } from "./tools/count-letter.js";
 
-const PORT = process.env.MCP_PORT
-  ? Number.parseInt(process.env.MCP_PORT, 10)
-  : 3100;
+const PORT = Number(process.env.PORT ?? 3100);
 
 const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
 
@@ -26,13 +25,26 @@ const createMcpServer = () => {
 
 createServer(async (req, res) => {
   const url = new URL(req.url || "", `http://localhost:${PORT}`);
-  if (url.pathname !== "/mcp") {
+
+  if (url.pathname !== "/") {
+    logger.warn({ path: url.pathname }, "Not found");
     res.writeHead(404).end("Not Found");
     return;
   }
 
+  if (req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("🐵 Hebo MCP Server says hello!");
+    return;
+  }
+
+  if (req.method !== "POST") {
+    logger.warn({ method: req.method }, "Method not allowed");
+    res.writeHead(405).end("Method Not Allowed");
+    return;
+  }
+
   const body = await new Promise<unknown>((resolve) => {
-    if (req.method !== "POST") return resolve(void 0);
     let data = "";
     req.on("data", (chunk) => (data += chunk));
     req.on("end", () => resolve(data ? JSON.parse(data) : undefined));
@@ -45,11 +57,12 @@ createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === "POST" && isInitializeRequest(body)) {
+  if (isInitializeRequest(body)) {
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: () => crypto.randomUUID(),
       enableJsonResponse: true,
       onsessioninitialized: (sid) => {
+        logger.info({ sessionId: sid }, "New MCP session initialized");
         transports[sid] = transport;
       },
     });
@@ -59,6 +72,7 @@ createServer(async (req, res) => {
     return;
   }
 
+  logger.warn("Bad request: missing session ID or not an initialize request");
   res.writeHead(400).end(
     JSON.stringify({
       jsonrpc: "2.0",
@@ -68,5 +82,5 @@ createServer(async (req, res) => {
     }),
   );
 }).listen(PORT, () =>
-  console.log(`Hebo MCP Server running on http://localhost:${PORT}/mcp`),
+  logger.info(`🐵 Hebo MCP Server running at http://localhost:${PORT}/`),
 );

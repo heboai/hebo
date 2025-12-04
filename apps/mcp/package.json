@@ -12,6 +12,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.24.2",
     "bun-plugin-tailwind": "^0.1.2",
+    "pino": "^9.8.0",
     "react": "^19",
     "react-dom": "^19",
     "tailwindcss": "^4.1.11",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "pino-pretty": "^13.1.1"
   }
 }
