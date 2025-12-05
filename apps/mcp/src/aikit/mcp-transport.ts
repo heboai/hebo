@@ -8,6 +8,22 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 
 const logger = createPinoLogger({ level: process.env.LOG_LEVEL ?? "info" });
 
+async function doCleanup(
+  transport: StreamableHTTPServerTransport,
+  server: McpServer,
+) {
+  for (const [closeFn, msg] of [
+    [() => transport.close(), "Error closing transport"],
+    [() => server.close(), "Error closing server"],
+  ] as const) {
+    try {
+      await closeFn();
+    } catch (error) {
+      logger.error({ error }, msg);
+    }
+  }
+}
+
 function toIncomingMessage(request: Request): IncomingMessage {
   const url = new URL(request.url);
   const headers = Object.fromEntries(
@@ -102,17 +118,13 @@ export function createMcpHandler({ createServer }: McpRequestHandlerOptions) {
     });
     const { res, body: responseBody, state } = createResponseShim();
 
-    const cleanup = async () => {
-      for (const [fn, msg] of [
-        [() => transport.close(), "Error closing transport"],
-        [() => server.close(), "Error closing server"],
-      ] as const) {
-        try {
-          await fn();
-        } catch (error) {
-          logger.error({ error }, msg);
-        }
-      }
+    let cleanedUp = false;
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      doCleanup(transport, server).catch((error) =>
+        logger.error({ error }, "Cleanup failed"),
+      );
     };
 
     try {
@@ -137,7 +149,7 @@ export function createMcpHandler({ createServer }: McpRequestHandlerOptions) {
       });
     } catch (error) {
       logger.error({ error }, "Error handling MCP request");
-      await cleanup();
+      cleanup();
 
       return Response.json(
         {
