@@ -12,19 +12,12 @@ import { Home } from "./ui/root";
 const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
 const PORT = Number(process.env.PORT ?? 3003);
 
-const createMcpServer = () => {
-  const server = new McpServer({ name: "hebo-mcp", version: "0.0.1" });
-
-  server.registerTool(
-    countLetterTool.name,
-    countLetterTool.config,
-    countLetterTool.handler,
-  );
-
-  return server;
-};
-
-export const mcpHandler = createMcpHandler({ createServer: createMcpServer });
+const mcpServer = new McpServer({ name: "hebo-mcp", version: "0.0.1" });
+mcpServer.registerTool(
+  countLetterTool.name,
+  countLetterTool.config,
+  countLetterTool.handler,
+);
 
 const createApp = () =>
   new Elysia()
@@ -45,8 +38,10 @@ const createApp = () =>
     )
     .group("/aikit", (app) =>
       app
-        .get("/", () => "🐵 Hebo MCP Server says hello!")
-        .post("/", async ({ request, body }) => mcpHandler(request, body)),
+        .get("/", () => "🐵 Hebo Aikit says hello!")
+        .post("/", async ({ request, body }) =>
+          createMcpHandler({ server: mcpServer })(request, body),
+        ),
     );
 
 if (import.meta.main) {

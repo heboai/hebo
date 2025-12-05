@@ -8,19 +8,11 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 
 const logger = createPinoLogger({ level: process.env.LOG_LEVEL ?? "info" });
 
-async function doCleanup(
-  transport: StreamableHTTPServerTransport,
-  server: McpServer,
-) {
-  for (const [closeFn, msg] of [
-    [() => transport.close(), "Error closing transport"],
-    [() => server.close(), "Error closing server"],
-  ] as const) {
-    try {
-      await closeFn();
-    } catch (error) {
-      logger.error({ error }, msg);
-    }
+async function doCleanup(transport: StreamableHTTPServerTransport) {
+  try {
+    await transport.close();
+  } catch (error) {
+    logger.error({ error }, "Error closing transport");
   }
 }
 
@@ -107,12 +99,11 @@ const toWebStream = (stream: PassThrough): ReadableStream<Uint8Array> =>
   });
 
 export interface McpRequestHandlerOptions {
-  createServer: () => McpServer;
+  server: McpServer;
 }
 
-export function createMcpHandler({ createServer }: McpRequestHandlerOptions) {
+export function createMcpHandler({ server }: McpRequestHandlerOptions) {
   return async (request: Request, body: unknown): Promise<Response> => {
-    const server = createServer();
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined, // Stateless: no session management
     });
@@ -122,7 +113,7 @@ export function createMcpHandler({ createServer }: McpRequestHandlerOptions) {
     const cleanup = () => {
       if (cleanedUp) return;
       cleanedUp = true;
-      doCleanup(transport, server).catch((error) =>
+      doCleanup(transport).catch((error) =>
         logger.error({ error }, "Cleanup failed"),
       );
     };
