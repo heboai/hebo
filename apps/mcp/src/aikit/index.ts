@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { countLetterTool } from "./tools/count-letter.js";
-import { createMcpHandler } from "./utils/mcp-transport.js";
+import { countLetterTool } from "./count-letter.js";
+import { createMcpHandler } from "./mcp-transport.js";
 
 const createMcpServer = () => {
   const server = new McpServer({ name: "hebo-mcp", version: "0.0.1" });
