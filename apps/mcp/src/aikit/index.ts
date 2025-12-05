@@ -18,6 +18,6 @@ const createMcpServer = () => {
 
 const mcpHandler = createMcpHandler({ createServer: createMcpServer });
 
-export const aikitPlugin = new Elysia({ prefix: "/aikit" })
+export const aikit = new Elysia({ prefix: "/aikit" })
   .get("/", () => "🐵 Hebo MCP Server says hello!")
   .post("/", async ({ request, body }) => mcpHandler(request, body));

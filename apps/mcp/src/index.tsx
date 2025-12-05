@@ -3,7 +3,7 @@ import tailwindPlugin from "bun-plugin-tailwind";
 import { Elysia } from "elysia";
 import { renderToReadableStream } from "react-dom/server";
 
-import { aikitPlugin } from "./aikit";
+import { aikit } from "./aikit";
 import { App } from "./App";
 
 const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
@@ -53,7 +53,7 @@ await buildAssets();
 const createApp = () =>
   new Elysia()
     .use(logger({ level: LOG_LEVEL }))
-    .use(aikitPlugin)
+    .use(aikit)
     // SSR route - serves server-side rendered React app
     .get("/", async () => {
       const stream = await renderToReadableStream(
