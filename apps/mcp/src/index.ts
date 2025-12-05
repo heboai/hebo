@@ -1,14 +1,30 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { staticPlugin } from "@elysiajs/static";
-import { Elysia } from "elysia";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import Elysia from "elysia";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 
-import { mcpHandler } from "./aikit";
+import { countLetterTool } from "./aikit/count-letter.js";
+import { createMcpHandler } from "./aikit/mcp-transport.js";
 import { Home } from "./ui/root";
 
 const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
 const PORT = Number(process.env.PORT ?? 3003);
+
+const createMcpServer = () => {
+  const server = new McpServer({ name: "hebo-mcp", version: "0.0.1" });
+
+  server.registerTool(
+    countLetterTool.name,
+    countLetterTool.config,
+    countLetterTool.handler,
+  );
+
+  return server;
+};
+
+export const mcpHandler = createMcpHandler({ createServer: createMcpServer });
 
 const createApp = () =>
   new Elysia()
