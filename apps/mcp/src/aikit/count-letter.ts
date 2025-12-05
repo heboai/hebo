@@ -16,10 +16,12 @@ export const countLetterTool = {
     let total = 0;
     const wordLower = word.toLowerCase();
 
-    for (const letter of letters.toLowerCase()) {
-      const count = [...wordLower].filter((c) => c === letter).length;
-      counts.set(letter, count);
-      total += count;
+    const lettersSet = new Set(letters.toLowerCase());
+    for (const char of wordLower) {
+      if (lettersSet.has(char)) {
+        counts.set(char, (counts.get(char) || 0) + 1);
+        total++;
+      }
     }
 
     const breakdown = [...counts.entries()]
