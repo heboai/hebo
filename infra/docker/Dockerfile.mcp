@@ -26,8 +26,11 @@ RUN bun run build
 FROM oven/bun:1-slim AS runner
 WORKDIR /app
 
+RUN groupadd -g 65532 nonroot \
+  && useradd -u 65532 -g nonroot -m nonroot
+
 COPY --from=builder /repo/apps/mcp/dist/ ./dist/
 
 EXPOSE 3003
-USER 65532:65532
+USER nonroot:nonroot
 CMD ["/app/dist/server"]
