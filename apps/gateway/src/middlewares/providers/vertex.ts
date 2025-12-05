@@ -16,6 +16,10 @@ export class VertexProviderAdapter
     super("vertex", modelName);
   }
 
+  protected getProviderName(): string {
+    return "google";
+  }
+
   async initialize(config?: VertexProviderConfig): Promise<this> {
     if (config) {
       this.config = config;

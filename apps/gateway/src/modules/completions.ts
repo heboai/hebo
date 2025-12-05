@@ -6,7 +6,6 @@ import {
   toModelMessages,
   toOpenAICompatibleNonStreamResponse,
   toOpenAICompatibleStream,
-  toProviderOptions,
   toToolChoice,
   toToolSet,
 } from "~gateway/utils/converters";
@@ -35,12 +34,15 @@ export const completions = new Elysia({
         stream = false,
       } = body;
 
-      const chatModel = await aiModelFactory.create(modelAliasPath, "chat");
+      const { model: chatModel, provider } = await aiModelFactory.create(
+        modelAliasPath,
+        "chat",
+      );
 
       const toolSet = toToolSet(tools);
       const modelMessages = toModelMessages(messages);
       const coreToolChoice = toToolChoice(toolChoice);
-      const providerOptions = toProviderOptions(chatModel, reasoning);
+      const providerOptions = provider.getProviderOptions(reasoning);
 
       if (stream) {
         const result = streamText({

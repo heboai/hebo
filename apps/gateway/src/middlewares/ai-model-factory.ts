@@ -7,6 +7,7 @@ import supportedModels from "@hebo/shared-data/json/supported-models";
 import { ModelConfigService } from "./model-config";
 import { ProviderAdapterFactory } from "./providers";
 
+import type { ProviderAdapter } from "./providers/provider";
 import type { EmbeddingModel, LanguageModel } from "ai";
 
 type Modality = "chat" | "embedding";
@@ -27,7 +28,7 @@ export const aiModelFactory = new Elysia({
     const createAIModel = async <M extends Modality>(
       modelAliasPath: string,
       modality: M,
-    ): Promise<AiModelFor<M>> => {
+    ): Promise<{ model: AiModelFor<M>; provider: ProviderAdapter }> => {
       const modelType = await modelConfigService.getModelType(modelAliasPath);
 
       const modelModality = supportedModels.find(
@@ -51,9 +52,12 @@ export const aiModelFactory = new Elysia({
       const provider = await providerAdapter.getProvider();
       const modelId = await providerAdapter.resolveModelId();
 
-      return modality === "chat"
-        ? (provider.languageModel(modelId) as AiModelFor<M>)
-        : (provider.textEmbeddingModel(modelId) as AiModelFor<M>);
+      const model =
+        modality === "chat"
+          ? (provider.languageModel(modelId) as AiModelFor<M>)
+          : (provider.textEmbeddingModel(modelId) as AiModelFor<M>);
+
+      return { model, provider: providerAdapter };
     };
 
     return {

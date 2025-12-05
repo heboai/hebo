@@ -6,6 +6,9 @@ import {
 
 import type { BedrockProviderConfig } from "@hebo/database/src/types/providers";
 import { getSecret } from "@hebo/shared-api/utils/secrets";
+import { getReasoningConfig } from "@hebo/shared-data/models/index";
+
+import type { OpenAICompatibleReasoning } from "~gateway/utils/openai-compatible-api-schemas";
 
 import { assumeRole } from "./adapters/aws";
 import { ProviderAdapterBase, type ProviderAdapter } from "./provider";
@@ -22,6 +25,43 @@ export class BedrockProviderAdapter
 
   constructor(modelName: string) {
     super("bedrock", modelName);
+  }
+
+  protected getProviderName(): string {
+    return "bedrock";
+  }
+
+  private static toSnakeCase(str: string): string {
+    return str.replaceAll(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  }
+
+  private static convertObjectKeysToSnakeCase(
+    obj: Record<string, any>,
+  ): Record<string, any> {
+    const newObj: Record<string, any> = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        newObj[BedrockProviderAdapter.toSnakeCase(key)] = obj[key];
+      }
+    }
+    return newObj;
+  }
+
+  getProviderOptions(reasoning?: OpenAICompatibleReasoning): any {
+    if (!reasoning) return;
+
+    const config = getReasoningConfig(this.modelName, reasoning);
+
+    if (!config || Object.keys(config).length === 0) return;
+
+    const snakeCaseConfig =
+      BedrockProviderAdapter.convertObjectKeysToSnakeCase(config);
+
+    return {
+      bedrock: {
+        additionalModelRequestFields: snakeCaseConfig,
+      },
+    };
   }
 
   private async getCredentials() {
