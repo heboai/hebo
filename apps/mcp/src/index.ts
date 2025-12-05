@@ -40,7 +40,7 @@ const createApp = () =>
       app
         .get("/", () => "🐵 Hebo Aikit says hello!")
         .post("/", async ({ request, body }) =>
-          createMcpHandler({ server: mcpServer })(request, body),
+          createMcpHandler(mcpServer)(request, body),
         ),
     );
 

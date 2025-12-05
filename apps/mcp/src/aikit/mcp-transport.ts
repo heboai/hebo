@@ -98,11 +98,7 @@ const toWebStream = (stream: PassThrough): ReadableStream<Uint8Array> =>
     },
   });
 
-export interface McpRequestHandlerOptions {
-  server: McpServer;
-}
-
-export function createMcpHandler({ server }: McpRequestHandlerOptions) {
+export function createMcpHandler(server: McpServer) {
   return async (request: Request, body: unknown): Promise<Response> => {
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined, // Stateless: no session management
