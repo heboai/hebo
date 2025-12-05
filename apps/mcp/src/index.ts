@@ -36,6 +36,13 @@ const createApp = () =>
           headers: { "Content-Type": "text/css" },
         }),
     )
+    .get(
+      "/static/client.js",
+      () =>
+        new Response(Bun.file("dist/client.js"), {
+          headers: { "Content-Type": "application/javascript" },
+        }),
+    )
     .group("/aikit", (app) =>
       app
         .get("/", () => "🐵 Hebo Aikit says hello!")
