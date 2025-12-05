@@ -1,5 +1,4 @@
 import { logger } from "@bogeychan/elysia-logger";
-import tailwindPlugin from "bun-plugin-tailwind";
 import { Elysia } from "elysia";
 import { renderToReadableStream } from "react-dom/server";
 
@@ -29,26 +28,6 @@ function Document({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
-
-// Build assets with Tailwind plugin at startup
-async function buildAssets() {
-  const result = await Bun.build({
-    entrypoints: ["src/frontend.tsx"],
-    outdir: "./dist",
-    minify: process.env.NODE_ENV === "production",
-    target: "browser",
-    plugins: [tailwindPlugin],
-  });
-
-  if (!result.success) {
-    console.error("Build failed:", result.logs);
-    return;
-  }
-
-  console.log("✅ Assets built successfully");
-}
-
-await buildAssets();
 
 const createApp = () =>
   new Elysia()

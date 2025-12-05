@@ -4,9 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.tsx",
-    "start": "NODE_ENV=production bun src/index.tsx",
-    "aikit": "bun src/aikit"
+    "build": "bun run build:frontend && bun run build:server",
+    "build:frontend": "bun run scripts/build-frontend.ts",
+    "build:server": "bun build src/index.tsx --compile --minify-whitespace --minify-syntax --target=bun --outfile dist/server",
+    "clean": "git clean -fdx -e '.env*' .",
+    "dev": "bun --hot src/index.tsx | pino-pretty",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "prestart": "bun run build",
+    "start": "./dist/server"
   },
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",
