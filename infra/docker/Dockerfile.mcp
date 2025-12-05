@@ -13,11 +13,10 @@ RUN turbo prune @hebo/mcp --docker
 ########################  installer + builder stage  ########################
 FROM oven/bun:1 AS builder
 WORKDIR /repo
+RUN bun install --global turbo@2
 
 COPY --from=pruner /repo/out/json/ ./
-# FUTURE: remove this once turbo prune is more stable
-RUN bun install --lockfile-only
-RUN bun install --frozen-lockfile --ignore-scripts
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 COPY --from=pruner /repo/out/full/ ./
 RUN bun run build
