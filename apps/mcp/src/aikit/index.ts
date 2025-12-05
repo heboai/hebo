@@ -1,5 +1,4 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import Elysia from "elysia";
 
 import { countLetterTool } from "./tools/count-letter.js";
 import { createMcpHandler } from "./utils/mcp-transport.js";
@@ -16,8 +15,4 @@ const createMcpServer = () => {
   return server;
 };
 
-const mcpHandler = createMcpHandler({ createServer: createMcpServer });
-
-export const aikit = new Elysia({ prefix: "/aikit" })
-  .get("/", () => "🐵 Hebo MCP Server says hello!")
-  .post("/", async ({ request, body }) => mcpHandler(request, body));
+export const mcpHandler = createMcpHandler({ createServer: createMcpServer });
