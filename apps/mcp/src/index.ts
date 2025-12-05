@@ -1,8 +1,10 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { Elysia } from "elysia";
+import { createElement } from "react";
+import { renderToString } from "react-dom/server";
 
 import { mcpHandler } from "./aikit";
-import { renderHome } from "./ui/render";
+import { Home } from "./ui/root";
 
 const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
 const PORT = Number(process.env.PORT ?? 3000);
@@ -10,9 +12,9 @@ const PORT = Number(process.env.PORT ?? 3000);
 const createApp = () =>
   new Elysia()
     .use(logger({ level: LOG_LEVEL }))
-    .get("/", async () => {
-      const stream = await renderHome();
-      return new Response(stream, {
+    .get("/", () => {
+      const html = renderToString(createElement(Home));
+      return new Response(html, {
         headers: { "Content-Type": "text/html" },
       });
     })

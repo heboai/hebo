@@ -1,8 +1,4 @@
-import { renderToReadableStream } from "react-dom/server";
-
-import { App } from "./App";
-
-function Document({ children }: { children: React.ReactNode }) {
+export function Home() {
   return (
     <html lang="en">
       <head>
@@ -13,17 +9,13 @@ function Document({ children }: { children: React.ReactNode }) {
         <link rel="stylesheet" href="/static/styles.css" />
       </head>
       <body>
-        <div id="root">{children}</div>
+        <div id="root">
+          <div className="flex min-h-screen items-center justify-center bg-zinc-900">
+            <h1 className="text-4xl font-bold text-white">Hello World 🐵</h1>
+          </div>
+        </div>
         <script type="module" src="/static/frontend.js" />
       </body>
     </html>
-  );
-}
-
-export async function renderHome(): Promise<ReadableStream> {
-  return renderToReadableStream(
-    <Document>
-      <App />
-    </Document>,
   );
 }
