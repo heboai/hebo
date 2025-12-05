@@ -26,7 +26,6 @@ FROM oven/bun:1-slim AS runner
 WORKDIR /app
 
 COPY --from=builder /repo/apps/mcp/dist/ ./dist/
-COPY --from=builder /repo/apps/mcp/public/ ./public/
 
 EXPOSE 3000
 USER 65532:65532

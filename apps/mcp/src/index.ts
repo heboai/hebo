@@ -31,26 +31,7 @@ const createApp = () =>
             new Response(Bun.file("dist/frontend.js"), {
               headers: { "Content-Type": "application/javascript" },
             }),
-        )
-        .get("/*", async ({ params }) => {
-          const file = Bun.file(`public/${params["*"]}`);
-          const exists = await file.exists();
-          return exists ? file : new Response("Not Found", { status: 404 });
-        }),
-    )
-    .group("/api/hello", (app) =>
-      app
-        .get("/", () => ({
-          message: "Hello, world!",
-          method: "GET",
-        }))
-        .put("/", () => ({
-          message: "Hello, world!",
-          method: "PUT",
-        }))
-        .get("/:name", ({ params }) => ({
-          message: `Hello, ${params.name}!`,
-        })),
+        ),
     )
     .group("/aikit", (app) =>
       app
