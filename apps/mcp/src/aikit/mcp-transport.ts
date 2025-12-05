@@ -102,6 +102,19 @@ export function createMcpHandler({ createServer }: McpRequestHandlerOptions) {
     });
     const { res, body: responseBody, state } = createResponseShim();
 
+    const cleanup = async () => {
+      for (const [fn, msg] of [
+        [() => transport.close(), "Error closing transport"],
+        [() => server.close(), "Error closing server"],
+      ] as const) {
+        try {
+          await fn();
+        } catch (error) {
+          logger.error({ error }, msg);
+        }
+      }
+    };
+
     try {
       await server.connect(transport);
       await transport.handleRequest(toIncomingMessage(request), res, body);
@@ -115,14 +128,16 @@ export function createMcpHandler({ createServer }: McpRequestHandlerOptions) {
         }
       }
 
+      responseBody.on("finish", cleanup);
+      responseBody.on("error", cleanup);
+
       return new Response(toWebStream(responseBody), {
         status: state.statusCode,
         headers,
       });
     } catch (error) {
       logger.error({ error }, "Error handling MCP request");
-      transport.close();
-      server.close();
+      await cleanup();
 
       return Response.json(
         {
