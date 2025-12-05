@@ -22,7 +22,7 @@ mcpServer.registerTool(
 const createApp = () =>
   new Elysia()
     .use(logger({ level: LOG_LEVEL }))
-    .use(staticPlugin())
+    .use(staticPlugin({ assets: "src/ui/public" }))
     .get("/", () => {
       const html = renderToString(createElement(Home));
       return new Response(html, {
