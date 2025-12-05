@@ -98,7 +98,7 @@ export function createMcpHandler({ createServer }: McpRequestHandlerOptions) {
   return async (request: Request, body: unknown): Promise<Response> => {
     const server = createServer();
     const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: undefined,
+      sessionIdGenerator: undefined, // Stateless: no session management
     });
     const { res, body: responseBody, state } = createResponseShim();
 
@@ -127,6 +127,7 @@ export function createMcpHandler({ createServer }: McpRequestHandlerOptions) {
       return Response.json(
         {
           jsonrpc: "2.0",
+          // JSON-RPC 2.0 error codes: https://www.jsonrpc.org/specification#error_object
           error: { code: -32_603, message: "Internal server error" },
           // eslint-disable-next-line unicorn/no-null -- JSON-RPC 2.0 spec requires null for unknown id
           id: null,
