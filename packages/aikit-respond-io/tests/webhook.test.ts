@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-unresolved
+ 
 import { describe, test, expect, mock } from "bun:test";
 
 import { webhook } from "../src/webhook";

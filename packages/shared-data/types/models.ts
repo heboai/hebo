@@ -2,10 +2,10 @@ import { Type, type Static } from "@sinclair/typebox";
 
 import { ProviderSlug } from "@hebo/database/src/types/providers";
 
-import supportedModels from "../json/supported-models.json";
+import { SUPPORTED_MODELS } from "../models";
 
 export const SupportedModelType = Type.Enum(
-  Object.fromEntries(supportedModels.map(({ type }) => [type, type])),
+  Object.fromEntries(SUPPORTED_MODELS.map(({ type }) => [type, type])),
   { error: "Invalid model type" },
 );
 

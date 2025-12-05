@@ -6,6 +6,7 @@
   },
   "exports": {
     "./json/*": "./json/*.json",
+    "./models/*": "./models/*.ts",
     "./types/*": "./types/*.ts",
     "./utils/*": "./utils/*.ts"
   },
