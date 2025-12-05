@@ -112,6 +112,9 @@ export function createMcpHandler(server: McpServer) {
       );
     };
 
+    responseBody.on("finish", cleanup);
+    responseBody.on("error", cleanup);
+
     try {
       await server.connect(transport);
       await transport.handleRequest(toIncomingMessage(request), res, body);
@@ -124,9 +127,6 @@ export function createMcpHandler(server: McpServer) {
           headers.set(k, v);
         }
       }
-
-      responseBody.on("finish", cleanup);
-      responseBody.on("error", cleanup);
 
       return new Response(toWebStream(responseBody), {
         status: state.statusCode,
