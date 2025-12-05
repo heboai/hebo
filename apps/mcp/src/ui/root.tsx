@@ -14,7 +14,6 @@ export function Home() {
             <h1 className="text-4xl font-bold text-white">Hello World 🐵</h1>
           </div>
         </div>
-        <script type="module" src="/static/frontend.js" />
       </body>
     </html>
   );

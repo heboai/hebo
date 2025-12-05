@@ -19,21 +19,13 @@ const createApp = () =>
       });
     })
     .group("/static", (app) =>
-      app
-        .get(
-          "/styles.css",
-          () =>
-            new Response(Bun.file("dist/frontend.css"), {
-              headers: { "Content-Type": "text/css" },
-            }),
-        )
-        .get(
-          "/frontend.js",
-          () =>
-            new Response(Bun.file("dist/frontend.js"), {
-              headers: { "Content-Type": "application/javascript" },
-            }),
-        ),
+      app.get(
+        "/styles.css",
+        () =>
+          new Response(Bun.file("dist/frontend.css"), {
+            headers: { "Content-Type": "text/css" },
+          }),
+      ),
     )
     .group("/aikit", (app) =>
       app
