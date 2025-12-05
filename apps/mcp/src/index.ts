@@ -1,4 +1,5 @@
 import { logger } from "@bogeychan/elysia-logger";
+import { staticPlugin } from "@elysiajs/static";
 import { Elysia } from "elysia";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
@@ -12,20 +13,19 @@ const PORT = Number(process.env.PORT ?? 3003);
 const createApp = () =>
   new Elysia()
     .use(logger({ level: LOG_LEVEL }))
+    .use(staticPlugin())
     .get("/", () => {
       const html = renderToString(createElement(Home));
       return new Response(html, {
         headers: { "Content-Type": "text/html" },
       });
     })
-    .group("/static", (app) =>
-      app.get(
-        "/styles.css",
-        () =>
-          new Response(Bun.file("dist/frontend.css"), {
-            headers: { "Content-Type": "text/css" },
-          }),
-      ),
+    .get(
+      "/static/styles.css",
+      () =>
+        new Response(Bun.file("dist/frontend.css"), {
+          headers: { "Content-Type": "text/css" },
+        }),
     )
     .group("/aikit", (app) =>
       app

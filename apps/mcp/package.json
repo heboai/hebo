@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",
+    "@elysiajs/static": "^1.4.7",
     "@modelcontextprotocol/sdk": "^1.24.2",
     "elysia": "^1.4.9",
     "pino": "^9.8.0",
