@@ -1,9 +1,11 @@
 # syntax=docker/dockerfile:1
 
-########################  pruner stage  ########################
-FROM oven/bun:1 AS pruner
-WORKDIR /repo
+FROM oven/bun:1 AS base
 RUN bun install --global turbo@2
+
+########################  pruner stage  ########################
+FROM base AS pruner
+WORKDIR /repo
 
 COPY . .
 
@@ -11,9 +13,8 @@ COPY . .
 RUN turbo prune @hebo/mcp --docker
 
 ########################  installer + builder stage  ########################
-FROM oven/bun:1 AS builder
+FROM base AS builder
 WORKDIR /repo
-RUN bun install --global turbo@2
 
 COPY --from=pruner /repo/out/json/ ./
 RUN bun install --frozen-lockfile --production --ignore-scripts
