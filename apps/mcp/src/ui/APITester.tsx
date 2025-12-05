@@ -29,7 +29,7 @@ export function APITester() {
       >
         <select
           name="method"
-          className="min-w-[0px] cursor-pointer appearance-none rounded-lg bg-[#fbf0df] px-3 py-1.5 text-sm font-bold text-[#1a1a1a] transition-colors duration-100 hover:bg-[#f3d5a3]"
+          className="min-w-0 cursor-pointer appearance-none rounded-lg bg-[#fbf0df] px-3 py-1.5 text-sm font-bold text-[#1a1a1a] transition-colors duration-100 hover:bg-[#f3d5a3]"
         >
           <option value="GET" className="py-1">
             GET

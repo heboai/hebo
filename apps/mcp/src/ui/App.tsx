@@ -23,7 +23,7 @@ export function App() {
       <p>
         Edit{" "}
         <code className="rounded bg-[#1a1a1a] px-2 py-1 font-mono">
-          src/App.tsx
+          src/ui/App.tsx
         </code>{" "}
         and save to test HMR
       </p>

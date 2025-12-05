@@ -29,8 +29,7 @@ WORKDIR /app
 COPY --from=builder /repo/apps/mcp/dist/server .
 COPY --from=builder /repo/apps/mcp/dist/frontend.css ./dist/
 COPY --from=builder /repo/apps/mcp/dist/frontend.js ./dist/
-COPY --from=builder /repo/apps/mcp/src/logo.svg ./src/
-COPY --from=builder /repo/apps/mcp/src/react.svg ./src/
+COPY --from=builder /repo/apps/mcp/public/ ./public/
 
 EXPOSE 3000
 USER 65532:65532

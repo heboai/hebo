@@ -5,7 +5,7 @@
 import tailwindPlugin from "bun-plugin-tailwind";
 
 const result = await Bun.build({
-  entrypoints: ["src/frontend.tsx"],
+  entrypoints: ["src/ui/frontend.tsx"],
   outdir: "./dist",
   minify: process.env.NODE_ENV === "production",
   target: "browser",

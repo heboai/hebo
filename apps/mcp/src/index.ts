@@ -1,50 +1,22 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { Elysia } from "elysia";
-import { renderToReadableStream } from "react-dom/server";
 
 import { aikit } from "./aikit";
-import { App } from "./App";
+import { renderHome } from "./ui/render";
 
 const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
 const PORT = Number(process.env.PORT ?? 3000);
-
-/**
- * SSR HTML shell that wraps the React app with proper document structure.
- */
-function Document({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/svg+xml" href="/static/logo.svg" />
-        <title>Bun + React</title>
-        <link rel="stylesheet" href="/static/styles.css" />
-      </head>
-      <body>
-        <div id="root">{children}</div>
-        <script type="module" src="/static/frontend.js" />
-      </body>
-    </html>
-  );
-}
 
 const createApp = () =>
   new Elysia()
     .use(logger({ level: LOG_LEVEL }))
     .use(aikit)
-    // SSR route - serves server-side rendered React app
     .get("/", async () => {
-      const stream = await renderToReadableStream(
-        <Document>
-          <App />
-        </Document>,
-      );
+      const stream = await renderHome();
       return new Response(stream, {
         headers: { "Content-Type": "text/html" },
       });
     })
-    // Static assets from dist folder (built with Tailwind)
     .get(
       "/static/styles.css",
       () =>
@@ -59,10 +31,11 @@ const createApp = () =>
           headers: { "Content-Type": "application/javascript" },
         }),
     )
-    // Static source assets
-    .get("/static/logo.svg", () => Bun.file("src/logo.svg"))
-    .get("/static/react.svg", () => Bun.file("src/react.svg"))
-    // API routes
+    .get("/static/*", async ({ params }) => {
+      const file = Bun.file(`public/${params["*"]}`);
+      const exists = await file.exists();
+      return exists ? file : new Response("Not Found", { status: 404 });
+    })
     .get("/api/hello", () => ({
       message: "Hello, world!",
       method: "GET",
