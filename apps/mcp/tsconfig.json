@@ -1,21 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "Preserve",
-    "moduleDetection": "force",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "~mcp/*": ["./src/*"]
     },
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
-  },
-  "exclude": ["dist", "node_modules"]
+    "types": ["bun-types"],
+    "verbatimModuleSyntax": true
+  }
 }
