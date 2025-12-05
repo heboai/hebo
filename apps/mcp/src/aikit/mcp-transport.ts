@@ -18,9 +18,7 @@ async function doCleanup(transport: StreamableHTTPServerTransport) {
 
 function toIncomingMessage(request: Request): IncomingMessage {
   const url = new URL(request.url);
-  const headers = Object.fromEntries(
-    request.headers as unknown as Iterable<[string, string]>,
-  );
+  const headers = Object.fromEntries(request.headers.entries());
 
   return Object.assign(
     new Readable({
