@@ -7,7 +7,7 @@ import { mcpHandler } from "./aikit";
 import { Home } from "./ui/root";
 
 const LOG_LEVEL = process.env.LOG_LEVEL ?? "info";
-const PORT = Number(process.env.PORT ?? 3000);
+const PORT = Number(process.env.PORT ?? 3003);
 
 const createApp = () =>
   new Elysia()

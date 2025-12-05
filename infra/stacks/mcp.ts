@@ -2,7 +2,7 @@ import heboCluster from "./cluster";
 import { isProd } from "./env";
 
 const mcpDomain = isProd ? "mcp.hebo.ai" : `mcp.${$app.stage}.hebo.ai`;
-const mcpPort = "3000";
+const mcpPort = "3003";
 
 const heboMcp = new sst.aws.Service("HeboMcp", {
   cluster: heboCluster,
