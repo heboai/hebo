@@ -23,26 +23,13 @@ const createApp = () =>
   new Elysia()
     .use(logger({ level: LOG_LEVEL }))
     .use(staticPlugin({ assets: "src/ui/public" }))
+    .use(staticPlugin({ assets: "dist", prefix: "/static" }))
     .get("/", () => {
       const html = renderToString(createElement(Home));
       return new Response(html, {
         headers: { "Content-Type": "text/html" },
       });
     })
-    .get(
-      "/static/styles.css",
-      () =>
-        new Response(Bun.file("dist/frontend.css"), {
-          headers: { "Content-Type": "text/css" },
-        }),
-    )
-    .get(
-      "/static/client.js",
-      () =>
-        new Response(Bun.file("dist/client.js"), {
-          headers: { "Content-Type": "application/javascript" },
-        }),
-    )
     .group("/aikit", (app) =>
       app
         .get("/", () => "🐵 Hebo Aikit says hello!")

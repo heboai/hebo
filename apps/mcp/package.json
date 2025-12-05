@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:client": "bunx @tailwindcss/cli -i src/ui/index.css -o dist/frontend.css && bun build src/ui/client.tsx --outfile dist/client.js --minify --target=browser",
+    "build:client": "bunx @tailwindcss/cli -i src/ui/index.css -o dist/styles.css && bun build src/ui/client.tsx --outfile dist/client.js --minify --target=browser",
     "build:server": "bun build src/index.ts --compile --minify-whitespace --minify-syntax --target=bun --outfile dist/server",
     "build": "bun run build:server && bun run build:client",
     "clean": "git clean -fdx -e '.env*' .",
