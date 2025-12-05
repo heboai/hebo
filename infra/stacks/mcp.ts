@@ -4,15 +4,6 @@ import { isProd } from "./env";
 const mcpDomain = isProd ? "mcp.hebo.ai" : `mcp.${$app.stage}.hebo.ai`;
 const mcpPort = "3000";
 
-/**
- * MCP Service - Elysia server with SSR React frontend
- *
- * Serves:
- * - GET / → Server-side rendered React app
- * - /static/* → CSS, JS, and assets
- * - /api/* → API endpoints
- * - /aikit/* → AI Kit MCP endpoints (if needed separately)
- */
 const heboMcp = new sst.aws.Service("HeboMcp", {
   cluster: heboCluster,
   architecture: "arm64",
