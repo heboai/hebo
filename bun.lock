@@ -152,8 +152,10 @@
       "name": "@hebo/mcp",
       "version": "0.0.1",
       "dependencies": {
+        "@bogeychan/elysia-logger": "^0.1.10",
         "@modelcontextprotocol/sdk": "^1.24.2",
         "bun-plugin-tailwind": "^0.1.2",
+        "elysia": "^1.4.9",
         "pino": "^9.8.0",
         "react": "^19",
         "react-dom": "^19",
